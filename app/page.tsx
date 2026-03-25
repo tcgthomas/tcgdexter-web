@@ -2,15 +2,14 @@
 
 const links = [
   {
-    title: "Shop the Collection",
-    description: "Singles, slabs & sealed product on eBay",
-    href: "https://www.ebay.com/usr/tcgdexter",
+    title: "Deck Analyzer",
+    description: "Paste a deck list, get a full breakdown instantly",
+    href: "/analyze",
     icon: (
       <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 21v-7.5a.75.75 0 0 1 .75-.75h3a.75.75 0 0 1 .75.75V21m-4.5 0H2.36m11.14 0H18m0 0h3.64m-1.39 0V9.349M3.75 21V9.349m0 0a.75.75 0 0 1 .218-.53l7.5-7.5a.75.75 0 0 1 1.064 0l7.5 7.5a.75.75 0 0 1 .218.53" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 3v11.25A2.25 2.25 0 0 0 6 16.5h2.25M3.75 3h-1.5m1.5 0h16.5m0 0h1.5m-1.5 0v11.25A2.25 2.25 0 0 1 18 16.5h-2.25m-7.5 0h7.5m-7.5 0-1 3m8.5-3 1 3m0 0 .5 1.5m-.5-1.5h-9.5m0 0-.5 1.5m.75-9 3-3 2.148 2.148A12.061 12.061 0 0 1 16.5 7.605" />
       </svg>
     ),
-    external: true,
   },
   {
     title: "TCG News",
@@ -23,6 +22,17 @@ const links = [
     ),
   },
   {
+    title: "Shop the Collection",
+    description: "Singles, slabs & sealed product on eBay",
+    href: "https://www.ebay.com/usr/tcgdexter",
+    icon: (
+      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 21v-7.5a.75.75 0 0 1 .75-.75h3a.75.75 0 0 1 .75.75V21m-4.5 0H2.36m11.14 0H18m0 0h3.64m-1.39 0V9.349M3.75 21V9.349m0 0a.75.75 0 0 1 .218-.53l7.5-7.5a.75.75 0 0 1 1.064 0l7.5 7.5a.75.75 0 0 1 .218.53" />
+      </svg>
+    ),
+    external: true,
+  },
+  {
     title: "Follow on TikTok",
     description: "Pack openings, deck techs & collection tours",
     href: "https://www.tiktok.com/@tcgdexter",
@@ -30,16 +40,6 @@ const links = [
     icon: (
       <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
         <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1v-3.5a6.37 6.37 0 0 0-.79-.05A6.34 6.34 0 0 0 3.15 15a6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.34-6.34V8.71a8.21 8.21 0 0 0 4.76 1.5v-3.4a4.85 4.85 0 0 1-1-.12Z" />
-      </svg>
-    ),
-  },
-  {
-    title: "Deck Analyzer",
-    description: "Paste a deck list, get a full breakdown instantly",
-    href: "/analyze",
-    icon: (
-      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 3v11.25A2.25 2.25 0 0 0 6 16.5h2.25M3.75 3h-1.5m1.5 0h16.5m0 0h1.5m-1.5 0v11.25A2.25 2.25 0 0 1 18 16.5h-2.25m-7.5 0h7.5m-7.5 0-1 3m8.5-3 1 3m0 0 .5 1.5m-.5-1.5h-9.5m0 0-.5 1.5m.75-9 3-3 2.148 2.148A12.061 12.061 0 0 1 16.5 7.605" />
       </svg>
     ),
   },
