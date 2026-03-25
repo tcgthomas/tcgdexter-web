@@ -13,7 +13,7 @@ const links = [
     external: true,
   },
   {
-    title: "Dexter & Co Newsletter",
+    title: "TCG News",
     description: "Market moves, pulls & competitive meta",
     href: "https://tcgdexter.beehiiv.com/",
     icon: (
