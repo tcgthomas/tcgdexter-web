@@ -59,7 +59,7 @@ export default function Home() {
           Dexter
         </h1>
 
-        <p className="mt-4 text-lg sm:text-xl text-slate-400 max-w-md mx-auto leading-relaxed">
+        <p className="mt-4 text-lg sm:text-xl text-brown-500 max-w-md mx-auto leading-relaxed">
           Pokémon cards. Competitive insight. Community.
         </p>
       </header>
@@ -73,26 +73,26 @@ export default function Home() {
               href={link.href}
               target={link.external ? "_blank" : undefined}
               rel={link.external ? "noopener noreferrer" : undefined}
-              className="card-lift group relative flex items-center gap-4 rounded-xl border border-white/[0.06] bg-navy-800/80 px-5 py-4 backdrop-blur-sm transition-colors hover:border-energy/30 hover:bg-navy-700/60"
+              className="card-lift group relative flex items-center gap-4 rounded-xl border border-tan-200 bg-tan-100 px-5 py-4 backdrop-blur-sm transition-colors hover:border-energy/30 hover:bg-tan-200"
             >
               {/* Icon */}
-              <span className="flex-shrink-0 flex items-center justify-center w-10 h-10 rounded-lg bg-white/[0.04] text-slate-400 group-hover:text-energy transition-colors">
+              <span className="flex-shrink-0 flex items-center justify-center w-10 h-10 rounded-lg bg-tan-50 text-brown-500 group-hover:text-energy transition-colors">
                 {link.icon}
               </span>
 
               {/* Text */}
               <span className="flex-1 min-w-0">
-                <span className="font-semibold text-white text-sm sm:text-base">
+                <span className="font-semibold text-brown-900 text-sm sm:text-base">
                   {link.title}
                 </span>
-                <span className="block text-sm text-slate-400 mt-0.5 truncate">
+                <span className="block text-sm text-brown-500 mt-0.5 truncate">
                   {link.description}
                 </span>
               </span>
 
               {/* Arrow */}
               <svg
-                className="flex-shrink-0 w-4 h-4 text-slate-400 group-hover:text-energy group-hover:translate-x-0.5 transition-all"
+                className="flex-shrink-0 w-4 h-4 text-brown-500 group-hover:text-energy group-hover:translate-x-0.5 transition-all"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -106,7 +106,7 @@ export default function Home() {
       </main>
 
       {/* ── Footer ───────────────────────────────────────────── */}
-      <footer className="flex-shrink-0 py-8 text-center text-sm text-slate-400/60">
+      <footer className="flex-shrink-0 py-8 text-center text-sm text-brown-300">
         &copy; 2026 Dexter&apos;s Collection &middot; tcgdexter.com
       </footer>
     </div>

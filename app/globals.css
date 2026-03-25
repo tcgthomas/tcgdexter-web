@@ -10,16 +10,15 @@
 
   /* Custom selection color */
   ::selection {
-    background-color: rgba(232, 69, 69, 0.3);
-    color: white;
+    background-color: rgba(192, 57, 43, 0.2);
+    color: #2c1f0e;
   }
 }
 
 @layer components {
-  /* Subtle glow effect for the energy accent */
-  .energy-glow {
-    box-shadow: 0 0 20px rgba(232, 69, 69, 0.15),
-                0 0 60px rgba(232, 69, 69, 0.05);
+  /* Warm shadow utility */
+  .warm-shadow {
+    box-shadow: 0 2px 12px rgba(44, 31, 14, 0.08);
   }
 
   /* Card hover lift */
@@ -28,6 +27,6 @@
   }
   .card-lift:hover {
     transform: translateY(-2px);
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
   }
 }

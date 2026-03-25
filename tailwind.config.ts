@@ -8,21 +8,26 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        // Deep dark backgrounds
-        navy: {
-          900: "#0a0e1a",
-          800: "#111827",
-          700: "#1a2236",
+        // Warm tan backgrounds
+        tan: {
+          50:  "#fdf8f2",
+          100: "#f5ede0",
+          200: "#ecdcc8",
+          300: "#d9c4a8",
+          400: "#b89d7e",
         },
-        // TCG energy accent — warm red-orange
+        // Deep warm brown for text
+        brown: {
+          900: "#2c1f0e",
+          700: "#5c3d1e",
+          500: "#8b6040",
+          300: "#b89d7e",
+        },
+        // Energy accent — deeper/warmer for light bg readability
         energy: {
-          DEFAULT: "#e84545",
-          light: "#ff6b6b",
-          dark: "#c23030",
-        },
-        // Muted text
-        slate: {
-          400: "#94a3b8",
+          DEFAULT: "#c0392b",
+          light:   "#e74c3c",
+          dark:    "#922b21",
         },
       },
       fontFamily: {

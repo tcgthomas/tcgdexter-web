@@ -55,26 +55,26 @@ interface AnalysisResult {
 /* ─── Energy type colors ─────────────────────────────────────── */
 
 const ENERGY_COLORS: Record<string, string> = {
-  Fire: "bg-red-500/20 text-red-400 border-red-500/30",
-  Water: "bg-blue-500/20 text-blue-400 border-blue-500/30",
-  Grass: "bg-green-500/20 text-green-400 border-green-500/30",
-  Lightning: "bg-yellow-500/20 text-yellow-400 border-yellow-500/30",
-  Psychic: "bg-purple-500/20 text-purple-400 border-purple-500/30",
-  Fighting: "bg-orange-500/20 text-orange-400 border-orange-500/30",
-  Darkness: "bg-zinc-600/30 text-zinc-300 border-zinc-500/30",
-  Metal: "bg-slate-500/20 text-slate-300 border-slate-400/30",
-  Fairy: "bg-pink-500/20 text-pink-400 border-pink-500/30",
-  Dragon: "bg-amber-600/20 text-amber-400 border-amber-500/30",
-  Colorless: "bg-gray-500/20 text-gray-400 border-gray-500/30",
+  Fire: "bg-red-100 text-red-700 border-red-200",
+  Water: "bg-blue-100 text-blue-700 border-blue-200",
+  Grass: "bg-green-100 text-green-700 border-green-200",
+  Lightning: "bg-yellow-100 text-yellow-700 border-yellow-200",
+  Psychic: "bg-purple-100 text-purple-700 border-purple-200",
+  Fighting: "bg-orange-100 text-orange-700 border-orange-200",
+  Darkness: "bg-stone-200 text-stone-700 border-stone-300",
+  Metal: "bg-slate-100 text-slate-600 border-slate-200",
+  Fairy: "bg-pink-100 text-pink-700 border-pink-200",
+  Dragon: "bg-amber-100 text-amber-700 border-amber-200",
+  Colorless: "bg-gray-100 text-gray-600 border-gray-200",
 };
 
 /* ─── Tier badge ─────────────────────────────────────────────── */
 
 function TierBadge({ tier }: { tier: number }) {
   const styles: Record<number, string> = {
-    1: "bg-energy/20 text-energy-light border-energy/30",
-    2: "bg-blue-500/20 text-blue-400 border-blue-500/30",
-    3: "bg-zinc-500/20 text-zinc-400 border-zinc-500/30",
+    1: "bg-red-100 text-red-700 border-red-200",
+    2: "bg-blue-100 text-blue-700 border-blue-200",
+    3: "bg-stone-100 text-stone-600 border-stone-200",
   };
   return (
     <span
@@ -89,9 +89,9 @@ function TierBadge({ tier }: { tier: number }) {
 
 function MatchupBadge({ result }: { result: MatchupEntry["result"] }) {
   const styles: Record<string, string> = {
-    Favorable: "bg-green-500/20 text-green-400 border-green-500/30",
-    Even: "bg-yellow-500/20 text-yellow-400 border-yellow-500/30",
-    Unfavorable: "bg-red-500/20 text-red-400 border-red-500/30",
+    Favorable: "bg-green-100 text-green-800 border-green-200",
+    Even: "bg-amber-100 text-amber-800 border-amber-200",
+    Unfavorable: "bg-red-100 text-red-800 border-red-200",
   };
   return (
     <span
@@ -107,17 +107,17 @@ function MatchupBadge({ result }: { result: MatchupEntry["result"] }) {
 function ratingColor(rating: string): string {
   switch (rating) {
     case "Very High":
-      return "text-green-400";
+      return "text-green-700";
     case "High":
-      return "text-emerald-400";
+      return "text-emerald-700";
     case "Moderate":
-      return "text-yellow-400";
+      return "text-amber-700";
     case "Low":
-      return "text-orange-400";
+      return "text-orange-700";
     case "Very Low":
-      return "text-red-400";
+      return "text-red-700";
     default:
-      return "text-slate-400";
+      return "text-brown-500";
   }
 }
 
@@ -205,7 +205,7 @@ export default function AnalyzePage() {
       <header className="flex-shrink-0 pt-12 pb-8 px-6 text-center">
         <Link
           href="/"
-          className="inline-flex items-center gap-2 text-slate-400 hover:text-white text-sm transition-colors mb-6"
+          className="inline-flex items-center gap-2 text-brown-500 hover:text-brown-900 text-sm transition-colors mb-6"
         >
           <svg
             className="w-4 h-4"
@@ -228,7 +228,7 @@ export default function AnalyzePage() {
         <h1 className="text-3xl sm:text-4xl font-bold tracking-tight">
           Deck Analyzer
         </h1>
-        <p className="mt-3 text-sm sm:text-base text-slate-400 max-w-md mx-auto leading-relaxed">
+        <p className="mt-3 text-sm sm:text-base text-brown-500 max-w-md mx-auto leading-relaxed">
           Paste a PTCGL deck list and get an instant breakdown — energy profile,
           archetype, consistency, and more.
         </p>
@@ -238,11 +238,11 @@ export default function AnalyzePage() {
       <main className="flex-1 px-6 pb-20">
         <div className="mx-auto max-w-2xl flex flex-col gap-6">
           {/* Input section */}
-          <div className="rounded-xl border border-white/[0.06] bg-navy-800/80 p-5 backdrop-blur-sm">
+          <div className="rounded-xl border border-tan-200 bg-tan-100 p-5 backdrop-blur-sm">
             <div className="flex items-center justify-between mb-3">
               <label
                 htmlFor="deck-input"
-                className="text-sm font-medium text-slate-400"
+                className="text-sm font-medium text-brown-500"
               >
                 Deck List
               </label>
@@ -260,7 +260,7 @@ export default function AnalyzePage() {
               onChange={(e) => setDeckList(e.target.value)}
               placeholder={`Pokémon: 12\n4 Charizard ex OBF 125\n2 Charmander OBF 26\n...\n\nTrainer: 18\n4 Arven OBF 186\n...\n\nEnergy: 10\n10 Basic Fire Energy SVE 2`}
               rows={12}
-              className="w-full rounded-lg border border-white/[0.06] bg-navy-900/60 px-4 py-3 text-sm font-mono text-white placeholder:text-slate-400/40 focus:outline-none focus:border-energy/40 focus:ring-1 focus:ring-energy/20 resize-y"
+              className="w-full rounded-lg border border-tan-200 bg-tan-50 px-4 py-3 text-sm font-mono text-brown-900 placeholder:text-brown-300 focus:outline-none focus:border-energy/40 focus:ring-1 focus:ring-energy/20 resize-y"
             />
 
             <div className="mt-4 flex items-center gap-3">
@@ -298,7 +298,7 @@ export default function AnalyzePage() {
               </button>
 
               {error && (
-                <p className="text-sm text-red-400">{error}</p>
+                <p className="text-sm text-red-600">{error}</p>
               )}
             </div>
           </div>
@@ -308,8 +308,8 @@ export default function AnalyzePage() {
             <div className="flex flex-col gap-4">
               {/* Warnings */}
               {result.warnings.length > 0 && (
-                <div className="rounded-xl border border-yellow-500/20 bg-yellow-500/5 p-4">
-                  <h3 className="text-sm font-semibold text-yellow-400 mb-2 flex items-center gap-2">
+                <div className="rounded-xl border border-amber-600/30 bg-amber-50 p-4">
+                  <h3 className="text-sm font-semibold text-amber-800 mb-2 flex items-center gap-2">
                     <svg
                       className="w-4 h-4"
                       fill="none"
@@ -327,7 +327,7 @@ export default function AnalyzePage() {
                   </h3>
                   <ul className="space-y-1">
                     {result.warnings.map((w, i) => (
-                      <li key={i} className="text-sm text-yellow-300/80">
+                      <li key={i} className="text-sm text-amber-700">
                         {w}
                       </li>
                     ))}
@@ -336,29 +336,29 @@ export default function AnalyzePage() {
               )}
 
               {/* Overview */}
-              <div className="rounded-xl border border-white/[0.06] bg-navy-800/80 p-5 backdrop-blur-sm">
+              <div className="rounded-xl border border-tan-200 bg-tan-100 p-5 backdrop-blur-sm">
                 <h2 className="text-lg font-semibold mb-4">Overview</h2>
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                   <Stat label="Total" value={result.deckSize} />
                   <Stat
                     label="Pokémon"
                     value={result.sections.pokemon}
-                    color="text-blue-400"
+                    color="text-blue-600"
                   />
                   <Stat
                     label="Trainers"
                     value={result.sections.trainer}
-                    color="text-green-400"
+                    color="text-green-600"
                   />
                   <Stat
                     label="Energy"
                     value={result.sections.energy}
-                    color="text-yellow-400"
+                    color="text-yellow-600"
                   />
                 </div>
 
                 {/* Composition bar */}
-                <div className="mt-4 flex h-2.5 rounded-full overflow-hidden bg-navy-900/60">
+                <div className="mt-4 flex h-2.5 rounded-full overflow-hidden bg-tan-200">
                   {result.sections.pokemon > 0 && (
                     <div
                       className="bg-blue-500 transition-all"
@@ -384,7 +384,7 @@ export default function AnalyzePage() {
                     />
                   )}
                 </div>
-                <div className="mt-2 flex justify-between text-xs text-slate-400">
+                <div className="mt-2 flex justify-between text-xs text-brown-500">
                   <span className="flex items-center gap-1.5">
                     <span className="w-2 h-2 rounded-full bg-blue-500" />
                     Pokémon
@@ -402,25 +402,25 @@ export default function AnalyzePage() {
 
               {/* Archetype */}
               {result.archetype && (
-                <div className="rounded-xl border border-white/[0.06] bg-navy-800/80 p-5 backdrop-blur-sm">
+                <div className="rounded-xl border border-tan-200 bg-tan-100 p-5 backdrop-blur-sm">
                   <h2 className="text-lg font-semibold mb-3">Archetype</h2>
                   <div className="flex items-center gap-3 mb-3">
-                    <span className="text-xl font-bold text-energy-light">
+                    <span className="text-xl font-bold text-energy">
                       {result.archetype.name}
                     </span>
                     <TierBadge tier={result.archetype.tier} />
-                    <span className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-medium bg-slate-500/20 text-slate-300 border-slate-500/30">
+                    <span className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-medium bg-tan-200 text-brown-700 border-tan-300">
                       {result.archetype.style}
                     </span>
                   </div>
-                  <p className="text-sm text-slate-400 leading-relaxed">
+                  <p className="text-sm text-brown-500 leading-relaxed">
                     {result.archetype.strategy}
                   </p>
                   <div className="mt-3">
-                    <p className="text-xs text-slate-400 uppercase tracking-wide mb-1">
+                    <p className="text-xs text-brown-500 uppercase tracking-wide mb-1">
                       Win Condition
                     </p>
-                    <p className="text-sm text-slate-200 leading-relaxed">
+                    <p className="text-sm text-brown-700 leading-relaxed">
                       {result.archetype.winCondition}
                     </p>
                   </div>
@@ -428,13 +428,13 @@ export default function AnalyzePage() {
               )}
 
               {/* Energy Profile */}
-              <div className="rounded-xl border border-white/[0.06] bg-navy-800/80 p-5 backdrop-blur-sm">
+              <div className="rounded-xl border border-tan-200 bg-tan-100 p-5 backdrop-blur-sm">
                 <h2 className="text-lg font-semibold mb-3">Energy Profile</h2>
 
                 {result.energyProfile.primaryType && (
-                  <p className="text-sm text-slate-400 mb-4">
+                  <p className="text-sm text-brown-500 mb-4">
                     Primary type:{" "}
-                    <span className="font-semibold text-white">
+                    <span className="font-semibold text-brown-900">
                       {result.energyProfile.primaryType}
                     </span>
                   </p>
@@ -446,7 +446,7 @@ export default function AnalyzePage() {
                       ([type, count]) => (
                         <span
                           key={type}
-                          className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-sm font-medium ${ENERGY_COLORS[type] ?? "bg-white/5 text-white border-white/10"}`}
+                          className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-sm font-medium ${ENERGY_COLORS[type] ?? "bg-tan-50 text-brown-900 border-tan-200"}`}
                         >
                           {type}
                           <span className="text-xs opacity-70">&times;{count}</span>
@@ -458,14 +458,14 @@ export default function AnalyzePage() {
 
                 {result.energyProfile.specialEnergy.length > 0 && (
                   <div>
-                    <p className="text-xs text-slate-400 uppercase tracking-wide mb-2">
+                    <p className="text-xs text-brown-500 uppercase tracking-wide mb-2">
                       Special Energy
                     </p>
                     <div className="flex flex-wrap gap-2">
                       {result.energyProfile.specialEnergy.map((se, i) => (
                         <span
                           key={i}
-                          className="inline-flex items-center rounded-full border border-white/10 bg-white/5 px-3 py-1 text-sm text-white"
+                          className="inline-flex items-center rounded-full border border-tan-200 bg-tan-50 px-3 py-1 text-sm text-brown-900"
                         >
                           {se}
                         </span>
@@ -476,7 +476,7 @@ export default function AnalyzePage() {
               </div>
 
               {/* Consistency */}
-              <div className="rounded-xl border border-white/[0.06] bg-navy-800/80 p-5 backdrop-blur-sm">
+              <div className="rounded-xl border border-tan-200 bg-tan-100 p-5 backdrop-blur-sm">
                 <div className="flex items-center justify-between mb-4">
                   <h2 className="text-lg font-semibold">Consistency</h2>
                   <span
@@ -489,7 +489,7 @@ export default function AnalyzePage() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   {/* Draw */}
                   <div>
-                    <p className="text-xs text-slate-400 uppercase tracking-wide mb-2">
+                    <p className="text-xs text-brown-500 uppercase tracking-wide mb-2">
                       Draw Supporters ({result.consistency.totalDraw})
                     </p>
                     {result.consistency.drawSupporters.length > 0 ? (
@@ -499,15 +499,15 @@ export default function AnalyzePage() {
                             key={i}
                             className="text-sm flex justify-between"
                           >
-                            <span className="text-white">{d.name}</span>
-                            <span className="text-slate-400">
+                            <span className="text-brown-900">{d.name}</span>
+                            <span className="text-brown-500">
                               &times;{d.qty}
                             </span>
                           </li>
                         ))}
                       </ul>
                     ) : (
-                      <p className="text-sm text-slate-400/60">
+                      <p className="text-sm text-brown-300">
                         None detected
                       </p>
                     )}
@@ -515,7 +515,7 @@ export default function AnalyzePage() {
 
                   {/* Search */}
                   <div>
-                    <p className="text-xs text-slate-400 uppercase tracking-wide mb-2">
+                    <p className="text-xs text-brown-500 uppercase tracking-wide mb-2">
                       Search Cards ({result.consistency.totalSearch})
                     </p>
                     {result.consistency.searchCards.length > 0 ? (
@@ -525,15 +525,15 @@ export default function AnalyzePage() {
                             key={i}
                             className="text-sm flex justify-between"
                           >
-                            <span className="text-white">{s.name}</span>
-                            <span className="text-slate-400">
+                            <span className="text-brown-900">{s.name}</span>
+                            <span className="text-brown-500">
                               &times;{s.qty}
                             </span>
                           </li>
                         ))}
                       </ul>
                     ) : (
-                      <p className="text-sm text-slate-400/60">
+                      <p className="text-sm text-brown-300">
                         None detected
                       </p>
                     )}
@@ -543,17 +543,17 @@ export default function AnalyzePage() {
 
               {/* Matchup Guide */}
               {result.archetype?.matchups && result.archetype.matchups.length > 0 && (
-                <div className="rounded-xl border border-white/[0.06] bg-navy-800/80 p-5 backdrop-blur-sm">
+                <div className="rounded-xl border border-tan-200 bg-tan-100 p-5 backdrop-blur-sm">
                   <h2 className="text-lg font-semibold">Matchup Guide</h2>
-                  <p className="text-xs text-slate-400 mb-4">vs current top meta</p>
-                  <div className="divide-y divide-white/[0.06]">
+                  <p className="text-xs text-brown-500 mb-4">vs current top meta</p>
+                  <div className="divide-y divide-tan-200">
                     {result.archetype.matchups.map((m, i) => (
                       <div key={i} className="py-3 first:pt-0 last:pb-0">
                         <div className="flex items-center justify-between">
-                          <span className="text-sm font-medium text-white">{m.opponent}</span>
+                          <span className="text-sm font-medium text-brown-900">{m.opponent}</span>
                           <MatchupBadge result={m.result} />
                         </div>
-                        <p className="text-xs text-slate-400 mt-1">{m.note}</p>
+                        <p className="text-xs text-brown-500 mt-1">{m.note}</p>
                       </div>
                     ))}
                   </div>
@@ -565,7 +565,7 @@ export default function AnalyzePage() {
       </main>
 
       {/* ── Footer ───────────────────────────────────────────── */}
-      <footer className="flex-shrink-0 py-8 text-center text-sm text-slate-400/60">
+      <footer className="flex-shrink-0 py-8 text-center text-sm text-brown-300">
         &copy; 2026 Dexter&apos;s Collection &middot; tcgdexter.com
       </footer>
     </div>
@@ -577,7 +577,7 @@ export default function AnalyzePage() {
 function Stat({
   label,
   value,
-  color = "text-white",
+  color = "text-brown-900",
 }: {
   label: string;
   value: number;
@@ -586,7 +586,7 @@ function Stat({
   return (
     <div className="text-center">
       <p className={`text-2xl font-bold ${color}`}>{value}</p>
-      <p className="text-xs text-slate-400 mt-0.5">{label}</p>
+      <p className="text-xs text-brown-500 mt-0.5">{label}</p>
     </div>
   );
 }
