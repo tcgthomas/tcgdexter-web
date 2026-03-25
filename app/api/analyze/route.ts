@@ -116,6 +116,21 @@ const BASIC_ENERGY_MAP: Record<string, string> = {
   colorless: "Colorless",
 };
 
+// PTCGL symbol codes → type name (e.g. "Basic {D} Energy" → Darkness)
+const ENERGY_SYMBOL_MAP: Record<string, string> = {
+  "{R}": "Fire",
+  "{W}": "Water",
+  "{G}": "Grass",
+  "{L}": "Lightning",
+  "{P}": "Psychic",
+  "{F}": "Fighting",
+  "{D}": "Darkness",
+  "{M}": "Metal",
+  "{Y}": "Fairy",
+  "{N}": "Dragon",
+  "{C}": "Colorless",
+};
+
 const SPECIAL_ENERGY_NAMES = [
   "Double Turbo Energy",
   "Jet Energy",
@@ -150,15 +165,28 @@ function analyzeEnergy(cards: Card[]): EnergyProfile {
       continue;
     }
 
-    // Match basic energy by name
+    // Match basic energy — first try PTCGL symbol codes ({D}, {R}, etc.)
     const nameLower = card.name.toLowerCase();
     let matched = false;
-    for (const [keyword, typeName] of Object.entries(BASIC_ENERGY_MAP)) {
-      if (nameLower.includes(keyword)) {
+
+    for (const [symbol, typeName] of Object.entries(ENERGY_SYMBOL_MAP)) {
+      if (card.name.includes(symbol)) {
         types[typeName] = (types[typeName] || 0) + card.qty;
         totalBasic += card.qty;
         matched = true;
         break;
+      }
+    }
+
+    if (!matched) {
+      // Fall back to keyword matching ("Basic Fire Energy", "Darkness Energy", etc.)
+      for (const [keyword, typeName] of Object.entries(BASIC_ENERGY_MAP)) {
+        if (nameLower.includes(keyword)) {
+          types[typeName] = (types[typeName] || 0) + card.qty;
+          totalBasic += card.qty;
+          matched = true;
+          break;
+        }
       }
     }
 
@@ -380,6 +408,19 @@ const ARCHETYPE_RULES: ArchetypeRule[] = [
         { opponent: "Raging Bolt ex", result: "Even", note: "Energy-stack race; depends on draw" },
         { opponent: "Regidrago VSTAR", result: "Favorable", note: "Too aggressive for Regidrago's slow combo setup" },
       ],
+    },
+  },
+  {
+    required: ["Marnie's Grimmsnarl ex", "Froslass"],
+    result: {
+      name: "Grimmsnarl ex / Froslass",
+      strategy:
+        "Darkness-type disruption deck. Froslass puts damage counters on the opponent's bench while Marnie's Grimmsnarl ex hits hard with Darkness energy stacked via Munkidori. One of the most disruptive builds in Standard.",
+      tier: 1,
+      style: "Control",
+      winCondition:
+        "Stack damage counters with Froslass and Munkidori, then close out with Marnie's Grimmsnarl ex's boosted attacks.",
+      matchups: [],
     },
   },
   {
