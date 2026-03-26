@@ -2,9 +2,10 @@
 
 const links = [
   {
-    title: "Deck Analyzer",
+    title: "Deck Profiler",
     description: "Paste a deck list, get a full breakdown instantly",
     href: "/analyze",
+    badge: "Beta",
     icon: (
       <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
         <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 3v11.25A2.25 2.25 0 0 0 6 16.5h2.25M3.75 3h-1.5m1.5 0h16.5m0 0h1.5m-1.5 0v11.25A2.25 2.25 0 0 1 18 16.5h-2.25m-7.5 0h7.5m-7.5 0-1 3m8.5-3 1 3m0 0 .5 1.5m-.5-1.5h-9.5m0 0-.5 1.5m.75-9 3-3 2.148 2.148A12.061 12.061 0 0 1 16.5 7.605" />
@@ -82,8 +83,15 @@ export default function Home() {
 
               {/* Text */}
               <span className="flex-1 min-w-0">
-                <span className="font-semibold text-brown-900 text-sm sm:text-base">
-                  {link.title}
+                <span className="flex items-center gap-2">
+                  <span className="font-semibold text-brown-900 text-sm sm:text-base">
+                    {link.title}
+                  </span>
+                  {link.badge && (
+                    <span className="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-energy/10 text-energy border border-energy/20">
+                      {link.badge}
+                    </span>
+                  )}
                 </span>
                 <span className="block text-sm text-brown-500 mt-0.5 truncate">
                   {link.description}
@@ -107,7 +115,7 @@ export default function Home() {
 
       {/* ── Footer ───────────────────────────────────────────── */}
       <footer className="flex-shrink-0 py-8 text-center text-sm text-brown-300">
-        &copy; 2026 Dexter&apos;s Collection &middot; tcgdexter.com
+        &copy; 2026 TCG Dexter &middot; tcgdexter.com
       </footer>
     </div>
   );
