@@ -18,17 +18,6 @@ export default function Icon() {
           borderRadius: "112px",
         }}
       >
-        {/* Red accent dot top */}
-        <div
-          style={{
-            position: "absolute",
-            top: "72px",
-            width: "28px",
-            height: "28px",
-            borderRadius: "50%",
-            backgroundColor: "#c0392b",
-          }}
-        />
         {/* D lettermark */}
         <div
           style={{
