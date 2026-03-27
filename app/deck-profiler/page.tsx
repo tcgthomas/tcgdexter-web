@@ -53,17 +53,31 @@ interface AnalysisResult {
 /* ─── Energy type colors ─────────────────────────────────────── */
 
 const ENERGY_COLORS: Record<string, string> = {
-  Fire: "bg-red-100 text-red-700 border-red-200",
-  Water: "bg-blue-100 text-blue-700 border-blue-200",
-  Grass: "bg-green-100 text-green-700 border-green-200",
-  Lightning: "bg-yellow-100 text-yellow-700 border-yellow-200",
-  Psychic: "bg-purple-100 text-purple-700 border-purple-200",
-  Fighting: "bg-orange-100 text-orange-700 border-orange-200",
-  Darkness: "bg-stone-200 text-stone-700 border-stone-300",
-  Metal: "bg-slate-100 text-slate-600 border-slate-200",
-  Fairy: "bg-pink-100 text-pink-700 border-pink-200",
-  Dragon: "bg-amber-100 text-amber-700 border-amber-200",
-  Colorless: "bg-gray-100 text-gray-600 border-gray-200",
+  Fire:      "bg-red-100 text-red-500 border-red-200",
+  Water:     "bg-blue-100 text-blue-500 border-blue-200",
+  Grass:     "bg-green-100 text-green-600 border-green-200",
+  Lightning: "bg-yellow-100 text-yellow-600 border-yellow-200",
+  Psychic:   "bg-violet-100 text-violet-500 border-violet-200",
+  Fighting:  "bg-amber-100 text-amber-700 border-amber-200",
+  Darkness:  "bg-teal-100 text-teal-700 border-teal-200",
+  Metal:     "bg-zinc-100 text-zinc-500 border-zinc-200",
+  Fairy:     "bg-pink-100 text-pink-500 border-pink-200",
+  Dragon:    "bg-amber-100 text-amber-600 border-amber-200",
+  Colorless: "bg-stone-100 text-stone-400 border-stone-200",
+};
+
+const ENERGY_LETTER: Record<string, string> = {
+  Fire:      "R",
+  Water:     "W",
+  Grass:     "G",
+  Lightning: "L",
+  Psychic:   "P",
+  Fighting:  "F",
+  Darkness:  "D",
+  Metal:     "M",
+  Fairy:     "Y",
+  Dragon:    "N",
+  Colorless: "C",
 };
 
 /* ─── Example deck list ──────────────────────────────────────── */
@@ -103,12 +117,14 @@ Energy: 12
 
 function EnergyCostPill({ type }: { type: string }) {
   const colorClass =
-    ENERGY_COLORS[type] ?? "bg-gray-100 text-gray-600 border-gray-200";
+    ENERGY_COLORS[type] ?? "bg-stone-100 text-stone-400 border-stone-200";
+  const letter = ENERGY_LETTER[type] ?? type[0]?.toUpperCase() ?? "?";
   return (
     <span
-      className={`inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-medium ${colorClass}`}
+      className={`inline-flex items-center justify-center rounded-full border w-5 h-5 text-xs font-bold ${colorClass}`}
+      title={type}
     >
-      {type}
+      {letter}
     </span>
   );
 }
