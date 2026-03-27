@@ -226,11 +226,10 @@ export default function AnalyzePage() {
         <div className="mx-auto mb-6 h-1 w-12 rounded-full bg-energy" />
 
         <h1 className="text-3xl sm:text-4xl font-bold tracking-tight">
-          Deck Analyzer
+          Deck Profiler
         </h1>
         <p className="mt-3 text-sm sm:text-base text-brown-500 max-w-md mx-auto leading-relaxed">
-          Paste a PTCGL deck list and get an instant breakdown — energy profile,
-          archetype, consistency, and more.
+          Paste your TCG Live deck list below and get an instant breakdown — energy profile, archetype, meta competitiveness, and more.
         </p>
       </header>
 
