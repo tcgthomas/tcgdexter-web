@@ -72,11 +72,11 @@ interface AnalysisResult {
   abilityRatio: number;
   dexterScore: number;
   scoreBreakdown: {
-    archetype: number;
-    rotation: number;
-    energy: number;
-    retreat: number;
-    deckSize: number;
+    drawEngine: number;
+    searchDensity: number;
+    lineBalance: number;
+    abilityUtilization: number;
+    energyEfficiency: number;
   };
 }
 
@@ -398,29 +398,29 @@ export default function DeckProfilerPage() {
 
                 <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
                   <ScoreBreakdownPill
-                    label="Archetype"
-                    score={result.scoreBreakdown.archetype}
-                    max={30}
+                    label="Draw Engine"
+                    score={result.scoreBreakdown.drawEngine}
+                    max={25}
                   />
                   <ScoreBreakdownPill
-                    label="Rotation"
-                    score={result.scoreBreakdown.rotation}
+                    label="Search Density"
+                    score={result.scoreBreakdown.searchDensity}
                     max={20}
                   />
                   <ScoreBreakdownPill
-                    label="Energy"
-                    score={result.scoreBreakdown.energy}
-                    max={20}
-                  />
-                  <ScoreBreakdownPill
-                    label="Retreat"
-                    score={result.scoreBreakdown.retreat}
+                    label="Line Balance"
+                    score={result.scoreBreakdown.lineBalance}
                     max={15}
                   />
                   <ScoreBreakdownPill
-                    label="Deck Size"
-                    score={result.scoreBreakdown.deckSize}
-                    max={15}
+                    label="Ability Utilization"
+                    score={result.scoreBreakdown.abilityUtilization}
+                    max={10}
+                  />
+                  <ScoreBreakdownPill
+                    label="Energy Efficiency"
+                    score={result.scoreBreakdown.energyEfficiency}
+                    max={10}
                   />
                 </div>
               </div>

@@ -96,11 +96,11 @@ interface AnalysisResult {
   // Dexter Score
   dexterScore: number;
   scoreBreakdown: {
-    archetype: number;
-    rotation: number;
-    energy: number;
-    retreat: number;
-    deckSize: number;
+    drawEngine: number;
+    searchDensity: number;
+    lineBalance: number;
+    abilityUtilization: number;
+    energyEfficiency: number;
   };
 }
 
@@ -767,61 +767,200 @@ function buildAbilityDensity(
   return { abilityPokemon, attackOnlyPokemon, abilityRatio };
 }
 
-/* ─── Dexter Score ───────────────────────────────────────────── */
+/* ─── Dexter Score v2 ────────────────────────────────────────── */
 
-function buildDexterScore(
-  archetype: Archetype | null,
-  rotatingCount: number,
-  attackerMismatches: AttackerMismatch[],
-  retreatBurdenRating: "Low" | "Moderate" | "High",
-  deckSize: number
-): Pick<AnalysisResult, "dexterScore" | "scoreBreakdown"> {
-  // Archetype score (0-30)
-  let archetypeScore = 0;
-  if (archetype) {
-    if (archetype.name === "Unknown") archetypeScore = 0;
-    else if (archetype.tier === 1) archetypeScore = 30;
-    else if (archetype.tier === 2) archetypeScore = 20;
-    else archetypeScore = 10; // tier 3+ but known
+const DRAW_SUPPORTERS = [
+  "Professor's Research",
+  "Professor Turo's Scenario",
+  "Professor Sada's Vitality",
+  "Iono",
+  "Judge",
+  "N",
+  "Cynthia",
+  "Colress",
+  "Colress's Experiment",
+];
+
+const ABILITY_DRAW_ENGINES = [
+  "Bibarel",
+  "Cinccino",
+  "Crobat V",
+  "Pidgeot ex",
+];
+
+const SEARCH_CARDS = [
+  "Ultra Ball",
+  "Nest Ball",
+  "Level Ball",
+  "Quick Ball",
+  "Great Ball",
+  "Hisuian Heavy Ball",
+  "PokéStop",
+  "Poké Ball",
+  "Arven",
+  "Irida",
+  "Buddy-Buddy Poffin",
+  "Battle VIP Pass",
+  "Pokégear 3.0",
+];
+
+function scoreDrawEngine(cards: Card[]): number {
+  let total = 0;
+
+  for (const card of cards) {
+    const nameLower = card.name.toLowerCase();
+
+    // Check ability draw engines (count as 2 each if present)
+    const isAbilityDraw = ABILITY_DRAW_ENGINES.some((e) =>
+      nameLower.includes(e.toLowerCase())
+    );
+    if (isAbilityDraw) {
+      total += 2; // presence only, not qty
+      continue;
+    }
+
+    // Check draw supporters
+    const isDrawSupporter = DRAW_SUPPORTERS.some((s) =>
+      nameLower.includes(s.toLowerCase())
+    );
+    if (isDrawSupporter) {
+      total += card.qty;
+    }
   }
 
-  // Rotation score (0-20)
-  let rotationScore = 0;
-  if (rotatingCount === 0) rotationScore = 20;
-  else if (rotatingCount <= 3) rotationScore = 15;
-  else if (rotatingCount <= 7) rotationScore = 8;
-  else rotationScore = 0;
+  if (total >= 10) return 25;
+  if (total >= 8) return 20;
+  if (total >= 6) return 15;
+  if (total >= 4) return 8;
+  return 0;
+}
 
-  // Energy score (0-20)
-  let energyScore = 0;
-  const mismatchCount = attackerMismatches.length;
-  if (mismatchCount === 0) energyScore = 20;
-  else if (mismatchCount === 1) energyScore = 12;
-  else energyScore = 4;
+function scoreSearchDensity(cards: Card[]): number {
+  let total = 0;
 
-  // Retreat score (0-15)
-  let retreatScore = 0;
-  if (retreatBurdenRating === "Low") retreatScore = 15;
-  else if (retreatBurdenRating === "Moderate") retreatScore = 8;
-  else retreatScore = 0;
+  for (const card of cards) {
+    const nameLower = card.name.toLowerCase();
 
-  // Deck size score (0-15)
-  let deckSizeScore = 0;
-  if (deckSize === 60) deckSizeScore = 15;
-  else if (deckSize >= 58 && deckSize <= 62) deckSizeScore = 8;
-  else deckSizeScore = 0;
+    // Earthen Vessel counts as 2
+    if (nameLower.includes("earthen vessel")) {
+      total += card.qty * 2;
+      continue;
+    }
 
-  const dexterScore =
-    archetypeScore + rotationScore + energyScore + retreatScore + deckSizeScore;
+    const isSearch = SEARCH_CARDS.some((s) =>
+      nameLower.includes(s.toLowerCase())
+    );
+    if (isSearch) {
+      total += card.qty;
+    }
+  }
+
+  if (total >= 13) return 20;
+  if (total >= 10) return 18;
+  if (total >= 7) return 14;
+  if (total >= 4) return 8;
+  return 0;
+}
+
+function scoreLineBalance(
+  pokemonCards: Card[],
+  cardDataMap: Map<string, DaemonCard>
+): number {
+  let stage2 = 0;
+  let stage1 = 0;
+  let basic = 0;
+
+  for (const card of pokemonCards) {
+    const data = cardDataMap.get(card.name);
+    const subtypes = data?.subtypes ?? [];
+
+    if (subtypes.includes("Stage 2")) {
+      stage2 += card.qty;
+    } else if (subtypes.includes("Stage 1")) {
+      stage1 += card.qty;
+    } else if (subtypes.includes("Basic")) {
+      basic += card.qty;
+    } else {
+      // No data — treat as basic (benefit of the doubt)
+      basic += card.qty;
+    }
+  }
+
+  // All basics
+  if (stage2 === 0 && stage1 === 0) return 15;
+
+  // Stage 2 present
+  if (stage2 > 0) {
+    if (stage1 < stage2) return 0; // critical — no support
+    if (basic < stage1) return 3;
+    return 15;
+  }
+
+  // Stage 1 only (no stage 2)
+  if (stage1 > 0) {
+    if (basic >= stage1) return 15;
+    return 8;
+  }
+
+  return 15;
+}
+
+function scoreAbilityUtilization(
+  abilityPokemon: number,
+  attackOnlyPokemon: number
+): number {
+  const total = abilityPokemon + attackOnlyPokemon;
+  if (total === 0) return 2;
+  const ratio = abilityPokemon / total;
+  if (ratio >= 0.51) return 10;
+  if (ratio >= 0.26) return 8;
+  if (ratio >= 0.01) return 5;
+  return 2;
+}
+
+function scoreEnergyEfficiency(attackerMismatches: AttackerMismatch[]): number {
+  const count = attackerMismatches.length;
+  if (count === 0) return 10;
+  if (count === 1) return 6;
+  return 2;
+}
+
+function buildDexterScore(
+  cards: Card[],
+  pokemonCards: Card[],
+  cardDataMap: Map<string, DaemonCard>,
+  archetype: Archetype | null,
+  attackerMismatches: AttackerMismatch[],
+  abilityPokemon: number,
+  attackOnlyPokemon: number
+): Pick<AnalysisResult, "dexterScore" | "scoreBreakdown"> {
+  // Visible components
+  const drawEngine = scoreDrawEngine(cards);
+  const searchDensity = scoreSearchDensity(cards);
+  const lineBalance = scoreLineBalance(pokemonCards, cardDataMap);
+  const abilityUtilization = scoreAbilityUtilization(abilityPokemon, attackOnlyPokemon);
+  const energyEfficiency = scoreEnergyEfficiency(attackerMismatches);
+
+  const visibleScore = drawEngine + searchDensity + lineBalance + abilityUtilization + energyEfficiency;
+
+  // Hidden archetype bump
+  let archetypeBump = 0;
+  if (archetype && archetype.name !== "Unknown") {
+    if (archetype.tier === 1) archetypeBump = 20;
+    else if (archetype.tier === 2) archetypeBump = 12;
+    else archetypeBump = 6; // recognized but unranked
+  }
+
+  const dexterScore = Math.min(100, visibleScore + archetypeBump);
 
   return {
     dexterScore,
     scoreBreakdown: {
-      archetype: archetypeScore,
-      rotation: rotationScore,
-      energy: energyScore,
-      retreat: retreatScore,
-      deckSize: deckSizeScore,
+      drawEngine,
+      searchDensity,
+      lineBalance,
+      abilityUtilization,
+      energyEfficiency,
     },
   };
 }
@@ -946,11 +1085,13 @@ export async function POST(req: NextRequest) {
 
     // ── Dexter Score ──
     const { dexterScore, scoreBreakdown } = buildDexterScore(
+      cards,
+      pokemonCards,
+      cardDataMap,
       archetype,
-      rotatingCount,
       attackerMismatches,
-      retreatBurdenRating,
-      deckSize
+      abilityPokemon,
+      attackOnlyPokemon
     );
 
     const result: AnalysisResult = {
