@@ -588,11 +588,12 @@ function parseJSONField<T>(value: string | T[] | null | undefined): T[] {
 
 /* ─── Rotation Check ─────────────────────────────────────────── */
 
-// Rotating = regulation_mark is G or earlier (F, E, D, C, B, A) or null/missing
+// Rotating = regulation_mark is explicitly G or earlier (F, E, D, C, B, A)
+// null/missing = unknown, treat as NOT rotating (benefit of the doubt)
 const ROTATING_MARKS = new Set(["A", "B", "C", "D", "E", "F", "G"]);
 
 function isRotating(regulationMark: string | null | undefined): boolean {
-  if (!regulationMark) return true;
+  if (!regulationMark) return false;
   return ROTATING_MARKS.has(regulationMark.toUpperCase());
 }
 
