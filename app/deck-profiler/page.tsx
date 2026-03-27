@@ -53,17 +53,17 @@ interface AnalysisResult {
 /* ─── Energy type colors ─────────────────────────────────────── */
 
 const ENERGY_COLORS: Record<string, string> = {
-  Fire:      "bg-red-100 text-red-500 border-red-200",
-  Water:     "bg-blue-100 text-blue-500 border-blue-200",
-  Grass:     "bg-green-100 text-green-600 border-green-200",
-  Lightning: "bg-yellow-100 text-yellow-600 border-yellow-200",
-  Psychic:   "bg-violet-100 text-violet-500 border-violet-200",
-  Fighting:  "bg-amber-100 text-amber-700 border-amber-200",
-  Darkness:  "bg-teal-100 text-teal-700 border-teal-200",
-  Metal:     "bg-zinc-100 text-zinc-500 border-zinc-200",
-  Fairy:     "bg-pink-100 text-pink-500 border-pink-200",
-  Dragon:    "bg-amber-100 text-amber-600 border-amber-200",
-  Colorless: "bg-stone-100 text-stone-400 border-stone-200",
+  Fire:      "bg-red-100 text-black border-red-200",
+  Water:     "bg-blue-100 text-black border-blue-200",
+  Grass:     "bg-green-100 text-black border-green-200",
+  Lightning: "bg-yellow-100 text-black border-yellow-200",
+  Psychic:   "bg-violet-100 text-black border-violet-200",
+  Fighting:  "bg-amber-100 text-black border-amber-200",
+  Darkness:  "bg-teal-200 text-black border-teal-400",
+  Metal:     "bg-zinc-100 text-black border-zinc-200",
+  Fairy:     "bg-pink-100 text-black border-pink-200",
+  Dragon:    "bg-amber-100 text-black border-amber-200",
+  Colorless: "bg-stone-100 text-black border-stone-200",
 };
 
 const ENERGY_LETTER: Record<string, string> = {
