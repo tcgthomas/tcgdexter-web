@@ -63,6 +63,9 @@ interface AnalysisResult {
   pokemon: {
     totalCards: number;
     uniqueSpecies: number;
+    basicCount: number;
+    stage1Count: number;
+    stage2Count: number;
     abilities: PokemonAbility[];
     attacks: PokemonAttack[];
   };
@@ -261,9 +264,20 @@ export async function POST(req: NextRequest) {
 
     const abilities: PokemonAbility[] = [];
     const attacks: PokemonAttack[] = [];
+    let basicCount = 0;
+    let stage1Count = 0;
+    let stage2Count = 0;
 
     for (const pokemonName of uniquePokemonNames) {
       const card = lookupCard(pokemonName);
+      const deckCard = pokemonCards.find((c) => c.name === pokemonName);
+      const qty = deckCard?.qty ?? 1;
+      if (card) {
+        const subtypes: string[] = card.subtypes ?? [];
+        if (subtypes.includes("Stage 2")) stage2Count += qty;
+        else if (subtypes.includes("Stage 1")) stage1Count += qty;
+        else if (subtypes.includes("Basic")) basicCount += qty;
+      }
       if (!card) continue;
 
       for (const ab of card.abilities) {
@@ -318,6 +332,9 @@ export async function POST(req: NextRequest) {
       pokemon: {
         totalCards: totalPokemonCards,
         uniqueSpecies: uniquePokemonNames.length,
+        basicCount,
+        stage1Count,
+        stage2Count,
         abilities,
         attacks,
       },

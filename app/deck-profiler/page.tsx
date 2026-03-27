@@ -38,6 +38,9 @@ interface AnalysisResult {
   pokemon: {
     totalCards: number;
     uniqueSpecies: number;
+    basicCount: number;
+    stage1Count: number;
+    stage2Count: number;
     abilities: PokemonAbility[];
     attacks: PokemonAttack[];
   };
@@ -341,13 +344,28 @@ export default function DeckProfilerPage() {
                 </button>
 
                 {/* Stat pills — always visible */}
-                <div className="flex gap-3 flex-wrap" style={{ marginBottom: pokemonOpen ? "1.25rem" : 0 }}>
+                <div className="flex gap-2 flex-wrap" style={{ marginBottom: pokemonOpen ? "1.25rem" : 0 }}>
                   <span className="inline-flex items-center rounded-full border border-tan-300 bg-tan-50 px-3 py-1 text-sm font-medium text-brown-700">
-                    {result.pokemon.totalCards} Total Cards
+                    {result.pokemon.totalCards} Total
                   </span>
                   <span className="inline-flex items-center rounded-full border border-tan-300 bg-tan-50 px-3 py-1 text-sm font-medium text-brown-700">
-                    {result.pokemon.uniqueSpecies} Unique Species
+                    {result.pokemon.uniqueSpecies} Unique
                   </span>
+                  {result.pokemon.basicCount > 0 && (
+                    <span className="inline-flex items-center rounded-full border border-tan-300 bg-tan-50 px-3 py-1 text-sm font-medium text-brown-700">
+                      {result.pokemon.basicCount} Basic
+                    </span>
+                  )}
+                  {result.pokemon.stage1Count > 0 && (
+                    <span className="inline-flex items-center rounded-full border border-tan-300 bg-tan-50 px-3 py-1 text-sm font-medium text-brown-700">
+                      {result.pokemon.stage1Count} Stage 1
+                    </span>
+                  )}
+                  {result.pokemon.stage2Count > 0 && (
+                    <span className="inline-flex items-center rounded-full border border-tan-300 bg-tan-50 px-3 py-1 text-sm font-medium text-brown-700">
+                      {result.pokemon.stage2Count} Stage 2
+                    </span>
+                  )}
                 </div>
 
                 {/* Collapsable body */}
