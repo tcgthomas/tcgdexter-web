@@ -136,6 +136,9 @@ export default function DeckProfilerPage() {
   const [result, setResult] = useState<AnalysisResult | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [pokemonOpen, setPokemonOpen] = useState(true);
+  const [abilitiesOpen, setAbilitiesOpen] = useState(true);
+  const [attacksOpen, setAttacksOpen] = useState(true);
 
   async function handleAnalyze() {
     if (!deckList.trim()) {
@@ -350,10 +353,22 @@ export default function DeckProfilerPage() {
 
               {/* ── 2. Pokémon Breakdown ─────────────────────── */}
               <div className="rounded-xl border border-tan-200 bg-tan-100 p-5 backdrop-blur-sm">
-                <h2 className="text-lg font-semibold mb-4">Pokémon Breakdown</h2>
+                {/* Header — always visible */}
+                <button
+                  onClick={() => setPokemonOpen(!pokemonOpen)}
+                  className="w-full flex items-center justify-between mb-4 group"
+                >
+                  <h2 className="text-lg font-semibold">Pokémon Breakdown</h2>
+                  <svg
+                    className={`w-4 h-4 text-brown-400 transition-transform ${pokemonOpen ? "rotate-180" : ""}`}
+                    fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
 
-                {/* Stat pills */}
-                <div className="flex gap-3 mb-5">
+                {/* Stat pills — always visible */}
+                <div className="flex gap-3 flex-wrap" style={{ marginBottom: pokemonOpen ? "1.25rem" : 0 }}>
                   <span className="inline-flex items-center rounded-full border border-tan-300 bg-tan-50 px-3 py-1 text-sm font-medium text-brown-700">
                     {result.pokemon.totalCards} Total Cards
                   </span>
@@ -362,11 +377,22 @@ export default function DeckProfilerPage() {
                   </span>
                 </div>
 
+                {/* Collapsable body */}
+                {pokemonOpen && <>
+
                 {/* Abilities grouped by Pokémon */}
                 {result.pokemon.abilities.length > 0 && (
                   <div className="mb-5">
-                    <h3 className="text-sm font-semibold text-brown-700 mb-2">Abilities</h3>
-                    <div className="flex flex-col gap-3">
+                    <button
+                      onClick={() => setAbilitiesOpen(!abilitiesOpen)}
+                      className="w-full flex items-center justify-between mb-2 group"
+                    >
+                      <h3 className="text-sm font-semibold text-brown-700">Abilities</h3>
+                      <svg className={`w-3.5 h-3.5 text-brown-400 transition-transform ${abilitiesOpen ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </button>
+                    {abilitiesOpen && <div className="flex flex-col gap-3">
                       {(() => {
                         const grouped = result.pokemon.abilities.reduce<Record<string, PokemonAbility[]>>(
                           (acc, ab) => {
@@ -394,15 +420,23 @@ export default function DeckProfilerPage() {
                           </div>
                         ));
                       })()}
-                    </div>
+                    </div>}
                   </div>
                 )}
 
                 {/* Attacks grouped by Pokémon */}
                 {result.pokemon.attacks.length > 0 && (
                   <div>
-                    <h3 className="text-sm font-semibold text-brown-700 mb-2">Attacks</h3>
-                    <div className="flex flex-col gap-3">
+                    <button
+                      onClick={() => setAttacksOpen(!attacksOpen)}
+                      className="w-full flex items-center justify-between mb-2 group"
+                    >
+                      <h3 className="text-sm font-semibold text-brown-700">Attacks</h3>
+                      <svg className={`w-3.5 h-3.5 text-brown-400 transition-transform ${attacksOpen ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </button>
+                    {attacksOpen && <div className="flex flex-col gap-3">
                       {(() => {
                         // Group attacks by pokemonName
                         const grouped = result.pokemon.attacks.reduce<Record<string, PokemonAttack[]>>(
@@ -449,7 +483,7 @@ export default function DeckProfilerPage() {
                           </div>
                         ));
                       })()}
-                    </div>
+                    </div>}
                   </div>
                 )}
 
@@ -458,6 +492,7 @@ export default function DeckProfilerPage() {
                     No ability or attack data found — Pokémon may not be in the card database.
                   </p>
                 )}
+                </>}
               </div>
 
               {/* ── 3. Meta Match ────────────────────────────── */}
