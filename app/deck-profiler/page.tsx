@@ -385,61 +385,57 @@ export default function DeckProfilerPage() {
                   </div>
                 )}
 
-                {/* Attacks table */}
+                {/* Attacks grouped by Pokémon */}
                 {result.pokemon.attacks.length > 0 && (
                   <div>
                     <h3 className="text-sm font-semibold text-brown-700 mb-2">Attacks</h3>
-                    <div className="border border-tan-200 rounded-xl overflow-hidden">
-                      <table className="w-full text-sm">
-                        <thead>
-                          <tr className="bg-tan-200">
-                            <th className="text-left px-3 py-2 text-xs font-semibold text-brown-600 uppercase tracking-wide">
-                              Pokémon
-                            </th>
-                            <th className="text-left px-3 py-2 text-xs font-semibold text-brown-600 uppercase tracking-wide">
-                              Attack
-                            </th>
-                            <th className="text-left px-3 py-2 text-xs font-semibold text-brown-600 uppercase tracking-wide">
-                              Cost
-                            </th>
-                            <th className="text-left px-3 py-2 text-xs font-semibold text-brown-600 uppercase tracking-wide">
-                              Damage
-                            </th>
-                            <th className="text-left px-3 py-2 text-xs font-semibold text-brown-600 uppercase tracking-wide">
-                              Effect
-                            </th>
-                          </tr>
-                        </thead>
-                        <tbody className="divide-y divide-tan-100">
-                          {result.pokemon.attacks.map((atk, i) => (
-                            <tr key={i} className="bg-tan-50 hover:bg-tan-100 transition-colors">
-                              <td className="px-3 py-2.5 font-medium text-brown-900 whitespace-nowrap">
-                                {atk.pokemonName}
-                              </td>
-                              <td className="px-3 py-2.5 font-medium text-brown-800 whitespace-nowrap">
-                                {atk.attackName}
-                              </td>
-                              <td className="px-3 py-2.5">
-                                {atk.cost.length > 0 ? (
-                                  <div className="flex flex-wrap gap-1">
-                                    {atk.cost.map((type, j) => (
-                                      <EnergyCostPill key={j} type={type} />
-                                    ))}
+                    <div className="flex flex-col gap-3">
+                      {(() => {
+                        // Group attacks by pokemonName
+                        const grouped = result.pokemon.attacks.reduce<Record<string, PokemonAttack[]>>(
+                          (acc, atk) => {
+                            if (!acc[atk.pokemonName]) acc[atk.pokemonName] = [];
+                            acc[atk.pokemonName].push(atk);
+                            return acc;
+                          },
+                          {}
+                        );
+                        return Object.entries(grouped).map(([pokemonName, attacks]) => (
+                          <div key={pokemonName} className="border border-tan-200 rounded-xl overflow-hidden">
+                            {/* Pokémon header */}
+                            <div className="bg-tan-200 px-4 py-2">
+                              <span className="text-sm font-semibold text-brown-800">{pokemonName}</span>
+                            </div>
+                            {/* Attacks for this Pokémon */}
+                            <div className="divide-y divide-tan-100">
+                              {attacks.map((atk, i) => (
+                                <div key={i} className="bg-tan-50 px-4 py-3">
+                                  <div className="flex items-center gap-3 flex-wrap">
+                                    {/* Cost pills */}
+                                    {atk.cost.length > 0 && (
+                                      <div className="flex flex-wrap gap-1">
+                                        {atk.cost.map((type, j) => (
+                                          <EnergyCostPill key={j} type={type} />
+                                        ))}
+                                      </div>
+                                    )}
+                                    {/* Attack name */}
+                                    <span className="font-semibold text-brown-900 text-sm">{atk.attackName}</span>
+                                    {/* Damage */}
+                                    {atk.damage && (
+                                      <span className="ml-auto font-bold text-brown-900 text-sm">{atk.damage}</span>
+                                    )}
                                   </div>
-                                ) : (
-                                  <span className="text-brown-400">—</span>
-                                )}
-                              </td>
-                              <td className="px-3 py-2.5 font-semibold text-brown-900 whitespace-nowrap">
-                                {atk.damage || "—"}
-                              </td>
-                              <td className="px-3 py-2.5 text-brown-500 leading-relaxed">
-                                {atk.description || "—"}
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
+                                  {/* Effect text */}
+                                  {atk.description && (
+                                    <p className="mt-1.5 text-xs text-brown-500 leading-relaxed">{atk.description}</p>
+                                  )}
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        ));
+                      })()}
                     </div>
                   </div>
                 )}
