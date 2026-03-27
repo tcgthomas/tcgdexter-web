@@ -411,6 +411,8 @@ export default function DeckProfilerPage() {
                               {attacks.map((atk, i) => (
                                 <div key={i} className="bg-tan-50 px-4 py-3">
                                   <div className="flex items-center gap-3 flex-wrap">
+                                    {/* Attack name */}
+                                    <span className="font-semibold text-brown-900 text-sm">{atk.attackName}</span>
                                     {/* Cost pills */}
                                     {atk.cost.length > 0 && (
                                       <div className="flex flex-wrap gap-1">
@@ -419,8 +421,6 @@ export default function DeckProfilerPage() {
                                         ))}
                                       </div>
                                     )}
-                                    {/* Attack name */}
-                                    <span className="font-semibold text-brown-900 text-sm">{atk.attackName}</span>
                                     {/* Damage */}
                                     {atk.damage && (
                                       <span className="ml-auto font-bold text-brown-900 text-sm">{atk.damage}</span>
