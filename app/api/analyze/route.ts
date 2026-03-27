@@ -10,98 +10,70 @@ interface Card {
   section: "pokemon" | "trainer" | "energy";
 }
 
-interface EnergyProfile {
-  primaryType: string | null;
-  types: Record<string, number>;
-  specialEnergy: string[];
-  totalBasic: number;
-  totalSpecial: number;
+interface PokemonAbility {
+  pokemonName: string;
+  abilityName: string;
+  description: string;
 }
 
-interface MatchupEntry {
-  opponent: string;
-  result: "Favorable" | "Even" | "Unfavorable";
-  note: string;
+interface PokemonAttack {
+  pokemonName: string;
+  attackName: string;
+  cost: string[];
+  damage: string;
+  description: string;
 }
 
-interface Archetype {
-  name: string;
-  strategy: string;
-  tier: number;
-  style: "Aggro" | "Control" | "Combo" | "Stall" | "Midrange";
-  winCondition: string;
-  matchups: MatchupEntry[];
+interface AnalysisResult {
+  deckSize: number;
+  sections: {
+    pokemon: number;
+    trainer: number;
+    energy: number;
+    pokemonRatio: string;
+    trainerRatio: string;
+    energyRatio: string;
+  };
+  pokemon: {
+    totalCards: number;
+    uniqueSpecies: number;
+    abilities: PokemonAbility[];
+    attacks: PokemonAttack[];
+  };
+  metaMatch: {
+    matched: boolean;
+    archetypeName: string | null;
+    matchPct: number | null;
+  };
+  cards: Card[];
+  warnings: string[];
 }
 
 interface DaemonCard {
   name?: string;
-  hp?: number | string;
-  retreat_cost?: number | string;
-  attacks?: string | AttackData[];
-  abilities?: string | AbilityData[];
-  regulation_mark?: string | null;
-  supertype?: string;
-  subtypes?: string[];
+  attacks?: string | RawAttack[];
+  abilities?: string | RawAbility[];
 }
 
-interface AttackData {
+interface RawAttack {
   name: string;
-  cost: string[];
+  cost?: string[];
   damage?: string;
+  text?: string;
+  convertedEnergyCost?: number;
 }
 
-interface AbilityData {
+interface RawAbility {
   name: string;
   text?: string;
   type?: string;
 }
 
-interface RotatingCard {
+interface MetaArchetype {
+  id?: string | number;
   name: string;
-  qty: number;
-  regulationMark: string | null;
-}
-
-interface AttackerMismatch {
-  cardName: string;
-  attackName: string;
-  cost: string[];
-  missingTypes: string[];
-}
-
-interface HPCurveEntry {
-  range: string;
-  count: number;
-}
-
-interface AnalysisResult {
-  deckSize: number;
-  sections: { pokemon: number; trainer: number; energy: number };
-  cards: Card[];
-  energyProfile: EnergyProfile;
-  archetype: Archetype | null;
-  warnings: string[];
-  // 5 new signals
-  rotatingCards: RotatingCard[];
-  rotatingCount: number;
-  rotationSafeCount: number;
-  attackerMismatches: AttackerMismatch[];
-  hpCurve: HPCurveEntry[];
-  totalRetreatCost: number;
-  switchCards: number;
-  retreatBurdenRating: "Low" | "Moderate" | "High";
-  abilityPokemon: number;
-  attackOnlyPokemon: number;
-  abilityRatio: number;
-  // Dexter Score
-  dexterScore: number;
-  scoreBreakdown: {
-    drawEngine: number;
-    searchDensity: number;
-    lineBalance: number;
-    abilityUtilization: number;
-    energyEfficiency: number;
-  };
+  representation_pct: number;
+  top_cut_entries?: number;
 }
 
 /* ─── Parser ─────────────────────────────────────────────────── */
@@ -148,432 +120,7 @@ function parseDeckList(raw: string): Card[] {
   return cards;
 }
 
-/* ─── Energy Profile ─────────────────────────────────────────── */
-
-const BASIC_ENERGY_MAP: Record<string, string> = {
-  fire: "Fire",
-  water: "Water",
-  grass: "Grass",
-  lightning: "Lightning",
-  psychic: "Psychic",
-  fighting: "Fighting",
-  darkness: "Darkness",
-  dark: "Darkness",
-  metal: "Metal",
-  fairy: "Fairy",
-  dragon: "Dragon",
-  colorless: "Colorless",
-};
-
-const ENERGY_SYMBOL_MAP: Record<string, string> = {
-  "{R}": "Fire",
-  "{W}": "Water",
-  "{G}": "Grass",
-  "{L}": "Lightning",
-  "{P}": "Psychic",
-  "{F}": "Fighting",
-  "{D}": "Darkness",
-  "{M}": "Metal",
-  "{Y}": "Fairy",
-  "{N}": "Dragon",
-  "{C}": "Colorless",
-};
-
-const SPECIAL_ENERGY_NAMES = [
-  "Double Turbo Energy",
-  "Jet Energy",
-  "Luminous Energy",
-  "Reversal Energy",
-  "Therapeutic Energy",
-  "Gift Energy",
-  "Neo Upper Energy",
-  "Legacy Energy",
-  "Mist Energy",
-  "V Guard Energy",
-  "Regenerative Energy",
-  "Super Rod Energy",
-];
-
-function analyzeEnergy(cards: Card[]): EnergyProfile {
-  const energyCards = cards.filter((c) => c.section === "energy");
-  const types: Record<string, number> = {};
-  const specialEnergy: string[] = [];
-  let totalBasic = 0;
-  let totalSpecial = 0;
-
-  for (const card of energyCards) {
-    const isSpecial = SPECIAL_ENERGY_NAMES.some((se) =>
-      card.name.toLowerCase().includes(se.toLowerCase())
-    );
-
-    if (isSpecial) {
-      specialEnergy.push(card.name);
-      totalSpecial += card.qty;
-      continue;
-    }
-
-    const nameLower = card.name.toLowerCase();
-    let matched = false;
-
-    for (const [symbol, typeName] of Object.entries(ENERGY_SYMBOL_MAP)) {
-      if (card.name.includes(symbol)) {
-        types[typeName] = (types[typeName] || 0) + card.qty;
-        totalBasic += card.qty;
-        matched = true;
-        break;
-      }
-    }
-
-    if (!matched) {
-      for (const [keyword, typeName] of Object.entries(BASIC_ENERGY_MAP)) {
-        if (nameLower.includes(keyword)) {
-          types[typeName] = (types[typeName] || 0) + card.qty;
-          totalBasic += card.qty;
-          matched = true;
-          break;
-        }
-      }
-    }
-
-    if (!matched) {
-      types[card.name] = (types[card.name] || 0) + card.qty;
-      totalBasic += card.qty;
-    }
-  }
-
-  let primaryType: string | null = null;
-  let maxCount = 0;
-  for (const [type, count] of Object.entries(types)) {
-    if (count > maxCount) {
-      maxCount = count;
-      primaryType = type;
-    }
-  }
-
-  return { primaryType, types, specialEnergy, totalBasic, totalSpecial };
-}
-
-/* ─── Archetype Detection ────────────────────────────────────── */
-
-interface ArchetypeRule {
-  required: string[];
-  optional?: string[];
-  result: Archetype;
-}
-
-const ARCHETYPE_RULES: ArchetypeRule[] = [
-  {
-    required: ["Charizard ex"],
-    optional: ["Pidgeot ex"],
-    result: {
-      name: "Charizard ex",
-      strategy:
-        "Discard-and-accelerate fire aggro. Dominated the meta for two years — fast, explosive, high damage ceiling.",
-      tier: 1,
-      style: "Aggro",
-      winCondition:
-        "Accelerate Fire energy from the discard with Burning Darkness, hit for 330+ by late game.",
-      matchups: [
-        { opponent: "Dragapult ex / Dusknoir", result: "Unfavorable", note: "Phantom Dive pressure and spread counter your slow setup" },
-        { opponent: "Gardevoir ex", result: "Even", note: "Similar speed; prize trade comes down to execution" },
-        { opponent: "Miraidon ex", result: "Favorable", note: "Charizard bulk absorbs early hits; Burning Darkness OHKOs their basics" },
-        { opponent: "Raging Bolt ex", result: "Even", note: "Both hit hard; first to set up wins" },
-        { opponent: "Chien-Pao ex / Baxcalibur", result: "Unfavorable", note: "Water weakness; Hail Blade hits for weakness" },
-        { opponent: "Regidrago VSTAR", result: "Favorable", note: "Outrace their setup; single-prize pressure disrupts them" },
-      ],
-    },
-  },
-  {
-    required: ["Dragapult ex", "Dusknoir"],
-    result: {
-      name: "Dragapult ex / Dusknoir",
-      strategy:
-        "Spread damage counters with Dusknoir, close out with Dragapult's high burst. Control-aggro hybrid.",
-      tier: 1,
-      style: "Midrange",
-      winCondition:
-        "Distribute damage counters with Dusknoir's Ominous Boards, then finish with Phantom Dive.",
-      matchups: [
-        { opponent: "Charizard ex", result: "Favorable", note: "Spread damage bypasses their healing and punishes multi-prize reliance" },
-        { opponent: "Gardevoir ex", result: "Favorable", note: "Phantom Dive spreads into their bench; hard to recover" },
-        { opponent: "Miraidon ex", result: "Favorable", note: "Spread damage hits their wide bench efficiently" },
-        { opponent: "Raging Bolt ex", result: "Even", note: "Both are fast; depends on who draws disruption first" },
-        { opponent: "Chien-Pao ex / Baxcalibur", result: "Even", note: "Spread vs burst; roughly even prize trade" },
-        { opponent: "Regidrago VSTAR", result: "Favorable", note: "Dusknoir disrupts their setup before they can copy attacks" },
-      ],
-    },
-  },
-  {
-    required: ["Regidrago VSTAR"],
-    result: {
-      name: "Regidrago VSTAR",
-      strategy:
-        "Copy attacks from Dragon Pokémon in the discard. Extremely flexible — adapts to any matchup with the right discard setup.",
-      tier: 1,
-      style: "Combo",
-      winCondition:
-        "Fill the discard with Dragon attackers, copy their attacks with Star Reading VSTAR Power.",
-      matchups: [],
-    },
-  },
-  {
-    required: ["Gardevoir ex"],
-    optional: ["Drifloon"],
-    result: {
-      name: "Gardevoir ex",
-      strategy:
-        "Psychic energy acceleration from the discard pile. Strong draw engine with Kirlia's Refinement. Scales damage in the late game.",
-      tier: 1,
-      style: "Midrange",
-      winCondition:
-        "Accelerate Psychic energy from the discard with Psychic Embrace, scale Miracle Force damage over time.",
-      matchups: [
-        { opponent: "Charizard ex", result: "Even", note: "Mirror-ish speed; Charizard weakness to water not relevant" },
-        { opponent: "Dragapult ex / Dusknoir", result: "Unfavorable", note: "Spread damage outpaces Gardevoir's scaling" },
-        { opponent: "Miraidon ex", result: "Favorable", note: "Gardevoir's HP and energy scaling outlasts their aggro" },
-        { opponent: "Raging Bolt ex", result: "Even", note: "Depends on Iono timing and disruption draws" },
-        { opponent: "Chien-Pao ex / Baxcalibur", result: "Unfavorable", note: "High-HP Psychic types get OHKOd by Hail Blade with energy stacking" },
-        { opponent: "Regidrago VSTAR", result: "Favorable", note: "Faster setup; take prizes before Regidrago goes online" },
-      ],
-    },
-  },
-  {
-    required: ["Lugia VSTAR"],
-    optional: ["Archeops"],
-    result: {
-      name: "Lugia VSTAR / Archeops",
-      strategy:
-        "Summon Archeops from the discard with Lugia's VSTAR Power, then accelerate special energy to power up any attacker. Toolbox-style deck.",
-      tier: 2,
-      style: "Combo",
-      winCondition:
-        "Use Summoning Star to pull two Archeops, then power up any attacker with Primal Turbo.",
-      matchups: [],
-    },
-  },
-  {
-    required: ["Snorlax"],
-    optional: ["Rotom V"],
-    result: {
-      name: "Snorlax Stall",
-      strategy:
-        "Block the active slot with Snorlax, disrupt the opponent's resources, and win by decking them out. Pure control.",
-      tier: 2,
-      style: "Stall",
-      winCondition:
-        "Survive every hit with Snorlax + Rigid Band, deck the opponent out.",
-      matchups: [],
-    },
-  },
-  {
-    required: ["Raging Bolt ex"],
-    optional: ["Ogerpon ex"],
-    result: {
-      name: "Raging Bolt ex",
-      strategy:
-        "Stack Lightning energy on Raging Bolt for massive damage. Ogerpon provides energy acceleration. Simple but explosive.",
-      tier: 1,
-      style: "Aggro",
-      winCondition:
-        "Stack Lightning energy with Ogerpon's Teal Dance, swing for 200+ with Raging Blast.",
-      matchups: [
-        { opponent: "Charizard ex", result: "Even", note: "First to set up wins; both are explosive" },
-        { opponent: "Dragapult ex / Dusknoir", result: "Even", note: "Raging Bolt can OHKO Dragapult; Dusknoir spread is annoying" },
-        { opponent: "Gardevoir ex", result: "Even", note: "Depends on disruption and Iono timing" },
-        { opponent: "Miraidon ex", result: "Unfavorable", note: "Slower to set up; Miraidon contests early prizes" },
-        { opponent: "Chien-Pao ex / Baxcalibur", result: "Even", note: "Both are energy-stack decks; speed determines winner" },
-        { opponent: "Regidrago VSTAR", result: "Favorable", note: "Too fast for Regidrago's combo; takes prizes before setup" },
-      ],
-    },
-  },
-  {
-    required: ["Terapagos ex"],
-    result: {
-      name: "Terapagos ex",
-      strategy:
-        "Flexible Colorless attacker that copies attacks. Pairs with various support Pokémon for a toolbox approach.",
-      tier: 2,
-      style: "Midrange",
-      winCondition:
-        "Copy powerful attacks with Tera Shell, adapting to whatever the matchup demands.",
-      matchups: [],
-    },
-  },
-  {
-    required: ["Miraidon ex"],
-    result: {
-      name: "Miraidon ex",
-      strategy:
-        "Fast Lightning aggro — Miraidon fills the bench with Electric-types and accelerates energy. Aims to take quick prizes.",
-      tier: 2,
-      style: "Aggro",
-      winCondition:
-        "Fill the bench with Lightning-types via Tandem Unit, overwhelm with Photon Blaster.",
-      matchups: [
-        { opponent: "Charizard ex", result: "Unfavorable", note: "Fire resistance on some attackers; Charizard OHKO potential" },
-        { opponent: "Dragapult ex / Dusknoir", result: "Unfavorable", note: "Wide bench is a liability against spread" },
-        { opponent: "Gardevoir ex", result: "Unfavorable", note: "Gardevoir scales past Miraidon's damage ceiling" },
-        { opponent: "Raging Bolt ex", result: "Favorable", note: "Faster bench setup and consistent damage output" },
-        { opponent: "Chien-Pao ex / Baxcalibur", result: "Even", note: "Both are fast aggro; coin flip matchup" },
-        { opponent: "Regidrago VSTAR", result: "Favorable", note: "Overwhelm before Regidrago copies anything threatening" },
-      ],
-    },
-  },
-  {
-    required: ["Palkia VSTAR"],
-    result: {
-      name: "Palkia VSTAR",
-      strategy:
-        "Water-based tempo deck that scales damage with bench size. Star Portal VSTAR Power provides mid-game energy recovery.",
-      tier: 2,
-      style: "Midrange",
-      winCondition:
-        "Scale Subspace Swell damage with bench size, recover with Star Portal mid-game.",
-      matchups: [],
-    },
-  },
-  {
-    required: ["Chien-Pao ex"],
-    optional: ["Baxcalibur"],
-    result: {
-      name: "Chien-Pao ex / Baxcalibur",
-      strategy:
-        "Baxcalibur accelerates Water energy each turn. Chien-Pao hits for huge numbers based on total energy in play.",
-      tier: 2,
-      style: "Aggro",
-      winCondition:
-        "Stack Water energy with Wild Cry, hit for massive damage with Hail Blade.",
-      matchups: [
-        { opponent: "Charizard ex", result: "Favorable", note: "Water weakness; Hail Blade OHKOs Charizard" },
-        { opponent: "Dragapult ex / Dusknoir", result: "Even", note: "Chien-Pao can OHKO Dragapult; Dusknoir spread is a problem" },
-        { opponent: "Gardevoir ex", result: "Favorable", note: "High damage output pressures Gardevoir before it scales" },
-        { opponent: "Miraidon ex", result: "Even", note: "Both are aggro; coin flip matchup" },
-        { opponent: "Raging Bolt ex", result: "Even", note: "Energy-stack race; depends on draw" },
-        { opponent: "Regidrago VSTAR", result: "Favorable", note: "Too aggressive for Regidrago's slow combo setup" },
-      ],
-    },
-  },
-  {
-    required: ["Marnie's Grimmsnarl ex", "Froslass"],
-    result: {
-      name: "Grimmsnarl ex / Froslass",
-      strategy:
-        "Darkness-type disruption deck. Froslass puts damage counters on the opponent's bench while Marnie's Grimmsnarl ex hits hard with Darkness energy stacked via Munkidori. One of the most disruptive builds in Standard.",
-      tier: 1,
-      style: "Control",
-      winCondition:
-        "Stack damage counters with Froslass and Munkidori, then close out with Marnie's Grimmsnarl ex's boosted attacks.",
-      matchups: [],
-    },
-  },
-  {
-    required: ["Lost Zone", "Comfey"],
-    result: {
-      name: "Lost Zone Box",
-      strategy:
-        "Engine built around Comfey's Flower Selecting to fill the Lost Zone, unlocking powerful attacks and abilities from Mirage Gate and friends.",
-      tier: 2,
-      style: "Combo",
-      winCondition:
-        "Mill 10 into the Lost Zone via Comfey + Colress's Experiment, unlock Mirage Gate and Cramorant.",
-      matchups: [],
-    },
-  },
-];
-
-function inferStyle(cards: Card[]): Archetype["style"] {
-  const nameLower = (name: string) => name.toLowerCase();
-  const findCard = (search: string) =>
-    cards.find((c) => nameLower(c.name).includes(nameLower(search)));
-
-  const hasRockyHelmet = findCard("Rocky Helmet");
-  const hasSnorlax = findCard("Snorlax");
-  const hasKlawf = findCard("Klawf");
-  if (hasRockyHelmet || hasSnorlax || hasKlawf) return "Stall";
-
-  const hasComfey = findCard("Comfey");
-  const hasMirageGate = findCard("Mirage Gate");
-  if (hasComfey || hasMirageGate) return "Combo";
-
-  const crushingHammer = findCard("Crushing Hammer");
-  const enhancedHammer = findCard("Enhanced Hammer");
-  const ionoCard = findCard("Iono");
-  const judgeCard = findCard("Judge");
-  const controlSignals =
-    (crushingHammer ? crushingHammer.qty : 0) +
-    (enhancedHammer ? enhancedHammer.qty : 0) +
-    (ionoCard && ionoCard.qty >= 3 ? ionoCard.qty : 0) +
-    (judgeCard ? judgeCard.qty : 0);
-  if (controlSignals >= 4) return "Control";
-
-  const pokemonCards = cards.filter((c) => c.section === "pokemon");
-  const totalPokemon = pokemonCards.reduce((s, c) => s + c.qty, 0);
-  const hasEnergyAccel =
-    findCard("Earthen Vessel") ||
-    findCard("Double Turbo Energy") ||
-    findCard("Jet Energy");
-  if (totalPokemon >= 12 && hasEnergyAccel) return "Aggro";
-
-  return "Midrange";
-}
-
-function detectArchetype(cards: Card[]): Archetype | null {
-  const names = cards.map((c) => c.name.toLowerCase());
-  const hasCard = (name: string) => {
-    const lower = name.toLowerCase();
-    return names.some((n) => n === lower || n.includes(lower));
-  };
-
-  const sorted = [...ARCHETYPE_RULES].sort(
-    (a, b) => b.required.length - a.required.length
-  );
-
-  for (const rule of sorted) {
-    const allRequired = rule.required.every((r) => hasCard(r));
-    if (allRequired) {
-      return rule.result;
-    }
-  }
-
-  return null;
-}
-
-function detectArchetypeWithFallback(cards: Card[]): Archetype | null {
-  const archetype = detectArchetype(cards);
-  if (archetype) return archetype;
-
-  const style = inferStyle(cards);
-  return {
-    name: "Unknown",
-    strategy: "No recognized archetype detected. Analysis based on card composition.",
-    tier: 3,
-    style,
-    winCondition: "No specific win condition identified for this archetype.",
-    matchups: [],
-  };
-}
-
-/* ─── Daemon Card Fetch ──────────────────────────────────────── */
-
-async function fetchCardFromDaemon(name: string): Promise<DaemonCard | null> {
-  try {
-    const url = `${DAEMON_URL}/v1/cards?q=${encodeURIComponent(name)}&limit=10`;
-    const res = await fetch(url, { cache: "no-store" });
-    if (!res.ok) return null;
-    const data = await res.json();
-    const cards: DaemonCard[] = Array.isArray(data)
-      ? data
-      : (data.data ?? data.cards ?? data.results ?? []);
-    if (!cards.length) return null;
-    // Prefer exact name match
-    const exact = cards.find(
-      (c) => c.name?.toLowerCase() === name.toLowerCase()
-    );
-    return exact ?? cards[0];
-  } catch {
-    return null;
-  }
-}
+/* ─── JSON field parser ──────────────────────────────────────── */
 
 function parseJSONField<T>(value: string | T[] | null | undefined): T[] {
   if (!value) return [];
@@ -586,423 +133,85 @@ function parseJSONField<T>(value: string | T[] | null | undefined): T[] {
   }
 }
 
-/* ─── Rotation Check ─────────────────────────────────────────── */
+/* ─── Archetype Detection ────────────────────────────────────── */
 
-// Rotating = regulation_mark is explicitly G or earlier (F, E, D, C, B, A)
-// null/missing = unknown, treat as NOT rotating (benefit of the doubt)
-const ROTATING_MARKS = new Set(["A", "B", "C", "D", "E", "F", "G"]);
-
-function isRotating(regulationMark: string | null | undefined): boolean {
-  if (!regulationMark) return false;
-  return ROTATING_MARKS.has(regulationMark.toUpperCase());
+interface ArchetypeRule {
+  required: string[];
+  optional?: string[];
+  name: string;
 }
 
-function buildRotationCheck(
-  cards: Card[],
-  cardDataMap: Map<string, DaemonCard>
-): Pick<AnalysisResult, "rotatingCards" | "rotatingCount" | "rotationSafeCount"> {
-  const rotatingCards: RotatingCard[] = [];
-  let rotationSafeCount = 0;
-
-  for (const card of cards) {
-    const data = cardDataMap.get(card.name);
-    const mark = data?.regulation_mark ?? null;
-    if (isRotating(mark)) {
-      rotatingCards.push({ name: card.name, qty: card.qty, regulationMark: mark });
-    } else {
-      rotationSafeCount += card.qty;
-    }
-  }
-
-  const rotatingCount = rotatingCards.reduce((s, c) => s + c.qty, 0);
-  return { rotatingCards, rotatingCount, rotationSafeCount };
-}
-
-/* ─── Attack Coverage ────────────────────────────────────────── */
-
-function buildAttackCoverage(
-  pokemonCards: Card[],
-  cardDataMap: Map<string, DaemonCard>,
-  energyTypes: Record<string, number>
-): { attackerMismatches: AttackerMismatch[] } {
-  const attackerMismatches: AttackerMismatch[] = [];
-
-  for (const card of pokemonCards) {
-    const data = cardDataMap.get(card.name);
-    if (!data) continue;
-
-    const attacks = parseJSONField<AttackData>(data.attacks);
-    for (const attack of attacks) {
-      const cost = attack.cost ?? [];
-      const missingTypes: string[] = [];
-
-      for (const type of cost) {
-        if (type === "Colorless") continue;
-        if (missingTypes.includes(type)) continue;
-        if (!energyTypes[type] || energyTypes[type] === 0) {
-          missingTypes.push(type);
-        }
-      }
-
-      if (missingTypes.length > 0) {
-        // Avoid duplicate card+attack combos
-        const existing = attackerMismatches.find(
-          (m) => m.cardName === card.name && m.attackName === attack.name
-        );
-        if (!existing) {
-          attackerMismatches.push({
-            cardName: card.name,
-            attackName: attack.name,
-            cost,
-            missingTypes,
-          });
-        }
-      }
-    }
-  }
-
-  return { attackerMismatches };
-}
-
-/* ─── HP Curve ───────────────────────────────────────────────── */
-
-function buildHPCurve(
-  pokemonCards: Card[],
-  cardDataMap: Map<string, DaemonCard>
-): HPCurveEntry[] {
-  const buckets = { "0-60": 0, "61-120": 0, "121-180": 0, "181+": 0 };
-
-  for (const card of pokemonCards) {
-    const data = cardDataMap.get(card.name);
-    if (!data?.hp) continue;
-
-    const hp = typeof data.hp === "string" ? parseInt(data.hp, 10) : data.hp;
-    if (isNaN(hp)) continue;
-
-    // Count each copy as 1 individual Pokémon
-    const count = card.qty;
-    if (hp <= 60) buckets["0-60"] += count;
-    else if (hp <= 120) buckets["61-120"] += count;
-    else if (hp <= 180) buckets["121-180"] += count;
-    else buckets["181+"] += count;
-  }
-
-  return Object.entries(buckets).map(([range, count]) => ({ range, count }));
-}
-
-/* ─── Retreat Burden ─────────────────────────────────────────── */
-
-const SWITCH_CARD_KEYWORDS = [
-  "Switch",
-  "Escape Rope",
-  "Jet Energy",
-  "Switching Cart",
-  "Fog Crystal",
+const ARCHETYPE_RULES: ArchetypeRule[] = [
+  { required: ["Charizard ex"], optional: ["Pidgeot ex"], name: "Charizard ex" },
+  { required: ["Dragapult ex", "Dusknoir"], name: "Dragapult ex / Dusknoir" },
+  { required: ["Regidrago VSTAR"], name: "Regidrago VSTAR" },
+  { required: ["Gardevoir ex"], optional: ["Drifloon"], name: "Gardevoir ex" },
+  { required: ["Lugia VSTAR"], optional: ["Archeops"], name: "Lugia VSTAR / Archeops" },
+  { required: ["Snorlax"], optional: ["Rotom V"], name: "Snorlax Stall" },
+  { required: ["Raging Bolt ex"], optional: ["Ogerpon ex"], name: "Raging Bolt ex" },
+  { required: ["Terapagos ex"], name: "Terapagos ex" },
+  { required: ["Miraidon ex"], name: "Miraidon ex" },
+  { required: ["Palkia VSTAR"], name: "Palkia VSTAR" },
+  { required: ["Chien-Pao ex"], optional: ["Baxcalibur"], name: "Chien-Pao ex / Baxcalibur" },
+  { required: ["Marnie's Grimmsnarl ex", "Froslass"], name: "Grimmsnarl ex / Froslass" },
+  { required: ["Lost Zone", "Comfey"], name: "Lost Zone Box" },
 ];
 
-function buildRetreatBurden(
-  cards: Card[],
-  pokemonCards: Card[],
-  cardDataMap: Map<string, DaemonCard>
-): Pick<AnalysisResult, "totalRetreatCost" | "switchCards" | "retreatBurdenRating"> {
-  // Count switch-out cards in deck
-  let switchCards = 0;
-  for (const card of cards) {
-    const nameLower = card.name.toLowerCase();
-    if (SWITCH_CARD_KEYWORDS.some((k) => nameLower.includes(k.toLowerCase()))) {
-      switchCards += card.qty;
-    }
-  }
-
-  // Sum total retreat cost across all Pokémon copies
-  let totalRetreatCost = 0;
-  for (const card of pokemonCards) {
-    const data = cardDataMap.get(card.name);
-    if (!data) continue;
-    const rc =
-      typeof data.retreat_cost === "string"
-        ? parseInt(data.retreat_cost, 10)
-        : (data.retreat_cost ?? 0);
-    if (!isNaN(rc)) {
-      totalRetreatCost += rc * card.qty;
-    }
-  }
-
-  let retreatBurdenRating: "Low" | "Moderate" | "High";
-  if (switchCards >= 4 || totalRetreatCost <= 8) {
-    retreatBurdenRating = "Low";
-  } else if (switchCards <= 1 && totalRetreatCost >= 15) {
-    retreatBurdenRating = "High";
-  } else {
-    retreatBurdenRating = "Moderate";
-  }
-
-  return { totalRetreatCost, switchCards, retreatBurdenRating };
-}
-
-/* ─── Ability Density ────────────────────────────────────────── */
-
-function buildAbilityDensity(
-  pokemonCards: Card[],
-  cardDataMap: Map<string, DaemonCard>
-): Pick<AnalysisResult, "abilityPokemon" | "attackOnlyPokemon" | "abilityRatio"> {
-  let abilityPokemon = 0;
-  let attackOnlyPokemon = 0;
-
-  for (const card of pokemonCards) {
-    const data = cardDataMap.get(card.name);
-    if (!data) continue;
-
-    const abilities = parseJSONField<AbilityData>(data.abilities);
-    if (abilities.length > 0) {
-      abilityPokemon++;
-    } else {
-      attackOnlyPokemon++;
-    }
-  }
-
-  const total = abilityPokemon + attackOnlyPokemon;
-  const abilityRatio = total > 0 ? Math.round((abilityPokemon / total) * 100) / 100 : 0;
-
-  return { abilityPokemon, attackOnlyPokemon, abilityRatio };
-}
-
-/* ─── Dexter Score v2 ────────────────────────────────────────── */
-
-const DRAW_SUPPORTERS = [
-  "Professor's Research",
-  "Professor Turo's Scenario",
-  "Professor Sada's Vitality",
-  "Iono",
-  "Judge",
-  "N",
-  "Cynthia",
-  "Colress",
-  "Colress's Experiment",
-];
-
-const ABILITY_DRAW_ENGINES = [
-  "Bibarel",
-  "Cinccino",
-  "Crobat V",
-  "Pidgeot ex",
-];
-
-const SEARCH_CARDS = [
-  "Ultra Ball",
-  "Nest Ball",
-  "Level Ball",
-  "Quick Ball",
-  "Great Ball",
-  "Hisuian Heavy Ball",
-  "PokéStop",
-  "Poké Ball",
-  "Arven",
-  "Irida",
-  "Buddy-Buddy Poffin",
-  "Battle VIP Pass",
-  "Pokégear 3.0",
-];
-
-function scoreDrawEngine(cards: Card[]): number {
-  let total = 0;
-
-  for (const card of cards) {
-    const nameLower = card.name.toLowerCase();
-
-    // Check ability draw engines (count as 2 each if present)
-    const isAbilityDraw = ABILITY_DRAW_ENGINES.some((e) =>
-      nameLower.includes(e.toLowerCase())
-    );
-    if (isAbilityDraw) {
-      total += 2; // presence only, not qty
-      continue;
-    }
-
-    // Check draw supporters
-    const isDrawSupporter = DRAW_SUPPORTERS.some((s) =>
-      nameLower.includes(s.toLowerCase())
-    );
-    if (isDrawSupporter) {
-      total += card.qty;
-    }
-  }
-
-  if (total >= 10) return 25;
-  if (total >= 8) return 20;
-  if (total >= 6) return 15;
-  if (total >= 4) return 8;
-  return 0;
-}
-
-function scoreSearchDensity(cards: Card[]): number {
-  let total = 0;
-
-  for (const card of cards) {
-    const nameLower = card.name.toLowerCase();
-
-    // Earthen Vessel counts as 2
-    if (nameLower.includes("earthen vessel")) {
-      total += card.qty * 2;
-      continue;
-    }
-
-    const isSearch = SEARCH_CARDS.some((s) =>
-      nameLower.includes(s.toLowerCase())
-    );
-    if (isSearch) {
-      total += card.qty;
-    }
-  }
-
-  if (total >= 13) return 20;
-  if (total >= 10) return 18;
-  if (total >= 7) return 14;
-  if (total >= 4) return 8;
-  return 0;
-}
-
-function scoreLineBalance(
-  pokemonCards: Card[],
-  cardDataMap: Map<string, DaemonCard>
-): number {
-  let stage2 = 0;
-  let stage1 = 0;
-  let basic = 0;
-
-  for (const card of pokemonCards) {
-    const data = cardDataMap.get(card.name);
-    const subtypes = data?.subtypes ?? [];
-
-    if (subtypes.includes("Stage 2")) {
-      stage2 += card.qty;
-    } else if (subtypes.includes("Stage 1")) {
-      stage1 += card.qty;
-    } else if (subtypes.includes("Basic")) {
-      basic += card.qty;
-    } else {
-      // No data — treat as basic (benefit of the doubt)
-      basic += card.qty;
-    }
-  }
-
-  // All basics
-  if (stage2 === 0 && stage1 === 0) return 15;
-
-  // Stage 2 present
-  if (stage2 > 0) {
-    if (stage1 < stage2) return 0; // critical — no support
-    if (basic < stage1) return 3;
-    return 15;
-  }
-
-  // Stage 1 only (no stage 2)
-  if (stage1 > 0) {
-    if (basic >= stage1) return 15;
-    return 8;
-  }
-
-  return 15;
-}
-
-function scoreAbilityUtilization(
-  abilityPokemon: number,
-  attackOnlyPokemon: number
-): number {
-  const total = abilityPokemon + attackOnlyPokemon;
-  if (total === 0) return 2;
-  const ratio = abilityPokemon / total;
-  if (ratio >= 0.51) return 10;
-  if (ratio >= 0.26) return 8;
-  if (ratio >= 0.01) return 5;
-  return 2;
-}
-
-function scoreEnergyEfficiency(attackerMismatches: AttackerMismatch[]): number {
-  const count = attackerMismatches.length;
-  if (count === 0) return 10;
-  if (count === 1) return 6;
-  return 2;
-}
-
-function buildDexterScore(
-  cards: Card[],
-  pokemonCards: Card[],
-  cardDataMap: Map<string, DaemonCard>,
-  archetype: Archetype | null,
-  attackerMismatches: AttackerMismatch[],
-  abilityPokemon: number,
-  attackOnlyPokemon: number
-): Pick<AnalysisResult, "dexterScore" | "scoreBreakdown"> {
-  // Visible components
-  const drawEngine = scoreDrawEngine(cards);
-  const searchDensity = scoreSearchDensity(cards);
-  const lineBalance = scoreLineBalance(pokemonCards, cardDataMap);
-  const abilityUtilization = scoreAbilityUtilization(abilityPokemon, attackOnlyPokemon);
-  const energyEfficiency = scoreEnergyEfficiency(attackerMismatches);
-
-  const visibleScore = drawEngine + searchDensity + lineBalance + abilityUtilization + energyEfficiency;
-
-  // Hidden archetype bump
-  let archetypeBump = 0;
-  if (archetype && archetype.name !== "Unknown") {
-    if (archetype.tier === 1) archetypeBump = 20;
-    else if (archetype.tier === 2) archetypeBump = 12;
-    else archetypeBump = 6; // recognized but unranked
-  }
-
-  const dexterScore = Math.min(100, visibleScore + archetypeBump);
-
-  return {
-    dexterScore,
-    scoreBreakdown: {
-      drawEngine,
-      searchDensity,
-      lineBalance,
-      abilityUtilization,
-      energyEfficiency,
-    },
+function detectArchetypeName(cards: Card[]): string | null {
+  const names = cards.map((c) => c.name.toLowerCase());
+  const hasCard = (name: string) => {
+    const lower = name.toLowerCase();
+    return names.some((n) => n === lower || n.includes(lower));
   };
-}
 
-/* ─── Warnings ───────────────────────────────────────────────── */
-
-function generateWarnings(
-  cards: Card[],
-  sections: AnalysisResult["sections"],
-  deckSize: number
-): string[] {
-  const warnings: string[] = [];
-
-  if (deckSize !== 60) {
-    warnings.push(
-      `Deck has ${deckSize} cards — standard format requires exactly 60.`
-    );
-  }
-
-  if (sections.pokemon === 0) {
-    warnings.push("No Pokémon detected. Check your deck list format.");
-  }
-
-  if (sections.energy === 0) {
-    warnings.push(
-      "No energy cards detected. Most decks need energy to attack."
-    );
-  }
-
-  const nonEnergy = cards.filter(
-    (c) =>
-      c.section !== "energy" || !c.name.toLowerCase().includes("basic")
+  const sorted = [...ARCHETYPE_RULES].sort(
+    (a, b) => b.required.length - a.required.length
   );
-  for (const card of nonEnergy) {
-    if (card.qty > 4) {
-      warnings.push(
-        `${card.name} has ${card.qty} copies — max 4 allowed (except basic energy).`
-      );
+
+  for (const rule of sorted) {
+    if (rule.required.every((r) => hasCard(r))) {
+      return rule.name;
     }
   }
 
-  return warnings;
+  return null;
+}
+
+/* ─── Daemon Fetches ─────────────────────────────────────────── */
+
+async function fetchCardFromDaemon(name: string): Promise<DaemonCard | null> {
+  try {
+    const url = `${DAEMON_URL}/v1/cards?q=${encodeURIComponent(name)}&limit=3`;
+    const res = await fetch(url, { cache: "no-store" });
+    if (!res.ok) return null;
+    const data = await res.json();
+    const cards: DaemonCard[] = Array.isArray(data)
+      ? data
+      : (data.data ?? data.cards ?? data.results ?? []);
+    if (!cards.length) return null;
+    const exact = cards.find(
+      (c) => c.name?.toLowerCase() === name.toLowerCase()
+    );
+    return exact ?? cards[0];
+  } catch {
+    return null;
+  }
+}
+
+async function fetchMetaArchetypes(): Promise<MetaArchetype[]> {
+  try {
+    const res = await fetch(`${DAEMON_URL}/v1/meta/archetypes`, { cache: "no-store" });
+    if (!res.ok) return [];
+    const data = await res.json();
+    const list: MetaArchetype[] = Array.isArray(data)
+      ? data
+      : (data.data ?? data.archetypes ?? data.results ?? []);
+    return list
+      .sort((a, b) => b.representation_pct - a.representation_pct)
+      .slice(0, 20);
+  } catch {
+    return [];
+  }
 }
 
 /* ─── Route Handler ──────────────────────────────────────────── */
@@ -1027,93 +236,110 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    const pokemonCount = cards
+      .filter((c) => c.section === "pokemon")
+      .reduce((s, c) => s + c.qty, 0);
+    const trainerCount = cards
+      .filter((c) => c.section === "trainer")
+      .reduce((s, c) => s + c.qty, 0);
+    const energyCount = cards
+      .filter((c) => c.section === "energy")
+      .reduce((s, c) => s + c.qty, 0);
+    const deckSize = pokemonCount + trainerCount + energyCount;
+
     const sections = {
-      pokemon: cards
-        .filter((c) => c.section === "pokemon")
-        .reduce((s, c) => s + c.qty, 0),
-      trainer: cards
-        .filter((c) => c.section === "trainer")
-        .reduce((s, c) => s + c.qty, 0),
-      energy: cards
-        .filter((c) => c.section === "energy")
-        .reduce((s, c) => s + c.qty, 0),
+      pokemon: pokemonCount,
+      trainer: trainerCount,
+      energy: energyCount,
+      pokemonRatio: deckSize > 0 ? `${Math.round((pokemonCount / deckSize) * 100)}%` : "0%",
+      trainerRatio: deckSize > 0 ? `${Math.round((trainerCount / deckSize) * 100)}%` : "0%",
+      energyRatio: deckSize > 0 ? `${Math.round((energyCount / deckSize) * 100)}%` : "0%",
     };
 
-    const deckSize = sections.pokemon + sections.trainer + sections.energy;
-    const energyProfile = analyzeEnergy(cards);
-    const archetype = detectArchetypeWithFallback(cards);
-    const warnings = generateWarnings(cards, sections, deckSize);
-
-    // ── Fetch all unique card names from daemon in parallel ──
-    const seen = new Set<string>();
-    const uniqueNames: string[] = [];
-    for (const c of cards) {
-      if (!seen.has(c.name)) {
-        seen.add(c.name);
-        uniqueNames.push(c.name);
-      }
+    // Warnings — deck size only
+    const warnings: string[] = [];
+    if (deckSize !== 60) {
+      warnings.push(`Deck has ${deckSize} cards — standard format requires exactly 60.`);
     }
-    const fetchResults = await Promise.all(
-      uniqueNames.map((name) => fetchCardFromDaemon(name))
-    );
 
-    const cardDataMap = new Map<string, DaemonCard>();
-    uniqueNames.forEach((name, i) => {
-      const data = fetchResults[i];
-      if (data) cardDataMap.set(name, data);
+    // ── Pokémon Breakdown ──────────────────────────────────────
+    const pokemonCards = cards.filter((c) => c.section === "pokemon");
+    const uniquePokemonNames = Array.from(new Set(pokemonCards.map((c) => c.name)));
+    const totalPokemonCards = pokemonCards.reduce((s, c) => s + c.qty, 0);
+
+    // Fetch meta archetypes + all pokemon cards in parallel
+    const [metaArchetypes, ...pokemonFetchResults] = await Promise.all([
+      fetchMetaArchetypes(),
+      ...uniquePokemonNames.map((name) => fetchCardFromDaemon(name)),
+    ]);
+
+    const abilities: PokemonAbility[] = [];
+    const attacks: PokemonAttack[] = [];
+
+    uniquePokemonNames.forEach((pokemonName, i) => {
+      const daemonCard = pokemonFetchResults[i];
+      if (!daemonCard) return;
+
+      const rawAbilities = parseJSONField<RawAbility>(daemonCard.abilities);
+      for (const ab of rawAbilities) {
+        if (ab.name) {
+          abilities.push({
+            pokemonName,
+            abilityName: ab.name,
+            description: ab.text ?? "",
+          });
+        }
+      }
+
+      const rawAttacks = parseJSONField<RawAttack>(daemonCard.attacks);
+      for (const atk of rawAttacks) {
+        if (atk.name) {
+          attacks.push({
+            pokemonName,
+            attackName: atk.name,
+            cost: atk.cost ?? [],
+            damage: atk.damage ?? "",
+            description: atk.text ?? "",
+          });
+        }
+      }
     });
 
-    const pokemonCards = cards.filter((c) => c.section === "pokemon");
+    // ── Meta Match ─────────────────────────────────────────────
+    const archetypeName = detectArchetypeName(cards);
+    let metaMatch: AnalysisResult["metaMatch"] = {
+      matched: false,
+      archetypeName: null,
+      matchPct: null,
+    };
 
-    // ── Compute 5 signals ──
-    const { rotatingCards, rotatingCount, rotationSafeCount } =
-      buildRotationCheck(cards, cardDataMap);
-
-    const { attackerMismatches } = buildAttackCoverage(
-      pokemonCards,
-      cardDataMap,
-      energyProfile.types
-    );
-
-    const hpCurve = buildHPCurve(pokemonCards, cardDataMap);
-
-    const { totalRetreatCost, switchCards, retreatBurdenRating } =
-      buildRetreatBurden(cards, pokemonCards, cardDataMap);
-
-    const { abilityPokemon, attackOnlyPokemon, abilityRatio } =
-      buildAbilityDensity(pokemonCards, cardDataMap);
-
-    // ── Dexter Score ──
-    const { dexterScore, scoreBreakdown } = buildDexterScore(
-      cards,
-      pokemonCards,
-      cardDataMap,
-      archetype,
-      attackerMismatches,
-      abilityPokemon,
-      attackOnlyPokemon
-    );
+    if (archetypeName) {
+      const archLower = archetypeName.toLowerCase();
+      const metaEntry = metaArchetypes.find((m) =>
+        m.name.toLowerCase().includes(archLower) ||
+        archLower.includes(m.name.toLowerCase())
+      );
+      if (metaEntry) {
+        metaMatch = {
+          matched: true,
+          archetypeName,
+          matchPct: metaEntry.representation_pct,
+        };
+      }
+    }
 
     const result: AnalysisResult = {
       deckSize,
       sections,
+      pokemon: {
+        totalCards: totalPokemonCards,
+        uniqueSpecies: uniquePokemonNames.length,
+        abilities,
+        attacks,
+      },
+      metaMatch,
       cards,
-      energyProfile,
-      archetype,
       warnings,
-      rotatingCards,
-      rotatingCount,
-      rotationSafeCount,
-      attackerMismatches,
-      hpCurve,
-      totalRetreatCost,
-      switchCards,
-      retreatBurdenRating,
-      abilityPokemon,
-      attackOnlyPokemon,
-      abilityRatio,
-      dexterScore,
-      scoreBreakdown,
     };
 
     return NextResponse.json(result);

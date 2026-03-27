@@ -11,73 +11,43 @@ interface Card {
   section: "pokemon" | "trainer" | "energy";
 }
 
-interface EnergyProfile {
-  primaryType: string | null;
-  types: Record<string, number>;
-  specialEnergy: string[];
-  totalBasic: number;
-  totalSpecial: number;
+interface PokemonAbility {
+  pokemonName: string;
+  abilityName: string;
+  description: string;
 }
 
-interface MatchupEntry {
-  opponent: string;
-  result: "Favorable" | "Even" | "Unfavorable";
-  note: string;
-}
-
-interface Archetype {
-  name: string;
-  strategy: string;
-  tier: number;
-  style: "Aggro" | "Control" | "Combo" | "Stall" | "Midrange";
-  winCondition: string;
-  matchups: MatchupEntry[];
-}
-
-interface RotatingCard {
-  name: string;
-  qty: number;
-  regulationMark: string | null;
-}
-
-interface AttackerMismatch {
-  cardName: string;
+interface PokemonAttack {
+  pokemonName: string;
   attackName: string;
   cost: string[];
-  missingTypes: string[];
-}
-
-interface HPCurveEntry {
-  range: string;
-  count: number;
+  damage: string;
+  description: string;
 }
 
 interface AnalysisResult {
   deckSize: number;
-  sections: { pokemon: number; trainer: number; energy: number };
-  cards: Card[];
-  energyProfile: EnergyProfile;
-  archetype: Archetype | null;
-  warnings: string[];
-  rotatingCards: RotatingCard[];
-  rotatingCount: number;
-  rotationSafeCount: number;
-  attackerMismatches: AttackerMismatch[];
-  hpCurve: HPCurveEntry[];
-  totalRetreatCost: number;
-  switchCards: number;
-  retreatBurdenRating: "Low" | "Moderate" | "High";
-  abilityPokemon: number;
-  attackOnlyPokemon: number;
-  abilityRatio: number;
-  dexterScore: number;
-  scoreBreakdown: {
-    drawEngine: number;
-    searchDensity: number;
-    lineBalance: number;
-    abilityUtilization: number;
-    energyEfficiency: number;
+  sections: {
+    pokemon: number;
+    trainer: number;
+    energy: number;
+    pokemonRatio: string;
+    trainerRatio: string;
+    energyRatio: string;
   };
+  pokemon: {
+    totalCards: number;
+    uniqueSpecies: number;
+    abilities: PokemonAbility[];
+    attacks: PokemonAttack[];
+  };
+  metaMatch: {
+    matched: boolean;
+    archetypeName: string | null;
+    matchPct: number | null;
+  };
+  cards: Card[];
+  warnings: string[];
 }
 
 /* ─── Energy type colors ─────────────────────────────────────── */
@@ -95,94 +65,6 @@ const ENERGY_COLORS: Record<string, string> = {
   Dragon: "bg-amber-100 text-amber-700 border-amber-200",
   Colorless: "bg-gray-100 text-gray-600 border-gray-200",
 };
-
-/* ─── Tier badge ─────────────────────────────────────────────── */
-
-function TierBadge({ tier }: { tier: number }) {
-  const styles: Record<number, string> = {
-    1: "bg-red-100 text-red-700 border-red-200",
-    2: "bg-blue-100 text-blue-700 border-blue-200",
-    3: "bg-stone-100 text-stone-600 border-stone-200",
-  };
-  return (
-    <span
-      className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-medium ${styles[tier] ?? styles[3]}`}
-    >
-      Tier {tier}
-    </span>
-  );
-}
-
-/* ─── Matchup badge ─────────────────────────────────────────── */
-
-function MatchupBadge({ result }: { result: MatchupEntry["result"] }) {
-  const styles: Record<string, string> = {
-    Favorable: "bg-green-100 text-green-800 border-green-200",
-    Even: "bg-amber-100 text-amber-800 border-amber-200",
-    Unfavorable: "bg-red-100 text-red-800 border-red-200",
-  };
-  return (
-    <span
-      className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-medium ${styles[result]}`}
-    >
-      {result}
-    </span>
-  );
-}
-
-/* ─── Dexter Score display ───────────────────────────────────── */
-
-function dexterScoreColor(score: number): string {
-  if (score >= 71) return "text-green-600";
-  if (score >= 41) return "text-amber-600";
-  return "text-red-600";
-}
-
-function dexterScoreBgColor(score: number): string {
-  if (score >= 71) return "border-green-200 bg-green-50";
-  if (score >= 41) return "border-amber-200 bg-amber-50";
-  return "border-red-200 bg-red-50";
-}
-
-function dexterScoreLabel(score: number): string {
-  if (score >= 80) return "Tournament Ready";
-  if (score >= 71) return "Competitive";
-  if (score >= 55) return "Solid Build";
-  if (score >= 41) return "Needs Work";
-  if (score >= 25) return "Casual";
-  return "Not Competitive";
-}
-
-function ScoreBreakdownPill({
-  label,
-  score,
-  max,
-}: {
-  label: string;
-  score: number;
-  max: number;
-}) {
-  const pct = max > 0 ? (score / max) * 100 : 0;
-  const barColor =
-    pct >= 80 ? "bg-green-500" : pct >= 50 ? "bg-amber-500" : "bg-red-400";
-
-  return (
-    <div className="flex flex-col gap-1 min-w-0">
-      <div className="flex justify-between items-center">
-        <span className="text-xs text-brown-500 truncate">{label}</span>
-        <span className="text-xs font-semibold text-brown-900 ml-2 shrink-0">
-          {score}/{max}
-        </span>
-      </div>
-      <div className="h-1.5 rounded-full bg-tan-200 overflow-hidden">
-        <div
-          className={`h-full rounded-full ${barColor} transition-all`}
-          style={{ width: `${pct}%` }}
-        />
-      </div>
-    </div>
-  );
-}
 
 /* ─── Example deck list ──────────────────────────────────────── */
 
@@ -216,6 +98,20 @@ Energy: 12
 7 Basic Fire Energy SVE 2
 3 Basic Fire Energy SVE 2
 2 Double Turbo Energy BRS 151`;
+
+/* ─── Energy cost pill ───────────────────────────────────────── */
+
+function EnergyCostPill({ type }: { type: string }) {
+  const colorClass =
+    ENERGY_COLORS[type] ?? "bg-gray-100 text-gray-600 border-gray-200";
+  return (
+    <span
+      className={`inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-medium ${colorClass}`}
+    >
+      {type}
+    </span>
+  );
+}
 
 /* ─── Page Component ─────────────────────────────────────────── */
 
@@ -292,7 +188,7 @@ export default function DeckProfilerPage() {
           Deck Profiler
         </h1>
         <p className="mt-3 text-sm sm:text-base text-brown-500 max-w-md mx-auto leading-relaxed">
-          Paste your TCG Live deck list below and get an instant breakdown — Dexter Score, rotation check, energy coverage, HP curve, and more.
+          Paste your TCG Live deck list for a clean breakdown — card types, Pokémon abilities and attacks, and meta positioning.
         </p>
       </header>
 
@@ -369,92 +265,7 @@ export default function DeckProfilerPage() {
           {result && (
             <div className="flex flex-col gap-4">
 
-              {/* ── Dexter Score ────────────────────────────── */}
-              <div
-                className={`rounded-xl border p-5 backdrop-blur-sm ${dexterScoreBgColor(result.dexterScore)}`}
-              >
-                <div className="flex items-center justify-between mb-4">
-                  <div>
-                    <p className="text-xs text-brown-500 uppercase tracking-wide mb-0.5">
-                      Competitive Rating
-                    </p>
-                    <p className="text-xs text-brown-400">Dexter Score</p>
-                  </div>
-                  <div className="text-right">
-                    <p
-                      className={`text-5xl font-black leading-none ${dexterScoreColor(result.dexterScore)}`}
-                    >
-                      {result.dexterScore}
-                    </p>
-                    <p className="text-xs text-brown-400 mt-1">out of 100</p>
-                  </div>
-                </div>
-
-                <p
-                  className={`text-sm font-semibold mb-4 ${dexterScoreColor(result.dexterScore)}`}
-                >
-                  {dexterScoreLabel(result.dexterScore)}
-                </p>
-
-                <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
-                  <ScoreBreakdownPill
-                    label="Draw Engine"
-                    score={result.scoreBreakdown.drawEngine}
-                    max={25}
-                  />
-                  <ScoreBreakdownPill
-                    label="Search Density"
-                    score={result.scoreBreakdown.searchDensity}
-                    max={20}
-                  />
-                  <ScoreBreakdownPill
-                    label="Line Balance"
-                    score={result.scoreBreakdown.lineBalance}
-                    max={15}
-                  />
-                  <ScoreBreakdownPill
-                    label="Ability Utilization"
-                    score={result.scoreBreakdown.abilityUtilization}
-                    max={10}
-                  />
-                  <ScoreBreakdownPill
-                    label="Energy Efficiency"
-                    score={result.scoreBreakdown.energyEfficiency}
-                    max={10}
-                  />
-                </div>
-              </div>
-
-              {/* ── Warnings ────────────────────────────────── */}
-              {result.warnings.length > 0 && (
-                <div className="rounded-xl border border-amber-600/30 bg-amber-50 p-4">
-                  <h3 className="text-sm font-semibold text-amber-800 mb-2 flex items-center gap-2">
-                    <svg
-                      className="w-4 h-4"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                      strokeWidth={2}
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z"
-                      />
-                    </svg>
-                    Warnings
-                  </h3>
-                  <ul className="space-y-1">
-                    {result.warnings.map((w, i) => (
-                      <li key={i} className="text-sm text-amber-700">
-                        {w}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-
-              {/* ── Overview ────────────────────────────────── */}
+              {/* ── 1. Overview ─────────────────────────────── */}
               <div className="rounded-xl border border-tan-200 bg-tan-100 p-5 backdrop-blur-sm">
                 <h2 className="text-lg font-semibold mb-4">Overview</h2>
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
@@ -462,16 +273,19 @@ export default function DeckProfilerPage() {
                   <Stat
                     label="Pokémon"
                     value={result.sections.pokemon}
+                    sub={result.sections.pokemonRatio}
                     color="text-blue-600"
                   />
                   <Stat
                     label="Trainers"
                     value={result.sections.trainer}
+                    sub={result.sections.trainerRatio}
                     color="text-green-600"
                   />
                   <Stat
                     label="Energy"
                     value={result.sections.energy}
+                    sub={result.sections.energyRatio}
                     color="text-yellow-600"
                   />
                 </div>
@@ -518,280 +332,181 @@ export default function DeckProfilerPage() {
                 </div>
               </div>
 
-              {/* ── Archetype ───────────────────────────────── */}
-              {result.archetype && (
-                <div className="rounded-xl border border-tan-200 bg-tan-100 p-5 backdrop-blur-sm">
-                  <h2 className="text-lg font-semibold mb-3">Archetype</h2>
-                  <div className="flex items-center gap-3 mb-3">
-                    <span className="text-xl font-bold text-energy">
-                      {result.archetype.name}
-                    </span>
-                    <TierBadge tier={result.archetype.tier} />
-                    <span className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-medium bg-tan-200 text-brown-700 border-tan-300">
-                      {result.archetype.style}
-                    </span>
-                  </div>
-                  <p className="text-sm text-brown-500 leading-relaxed">
-                    {result.archetype.strategy}
-                  </p>
-                  <div className="mt-3">
-                    <p className="text-xs text-brown-500 uppercase tracking-wide mb-1">
-                      Win Condition
-                    </p>
-                    <p className="text-sm text-brown-700 leading-relaxed">
-                      {result.archetype.winCondition}
-                    </p>
-                  </div>
-                </div>
-              )}
-
-              {/* ── Energy Profile ───────────────────────────── */}
+              {/* ── 2. Pokémon Breakdown ─────────────────────── */}
               <div className="rounded-xl border border-tan-200 bg-tan-100 p-5 backdrop-blur-sm">
-                <h2 className="text-lg font-semibold mb-3">Energy Profile</h2>
+                <h2 className="text-lg font-semibold mb-4">Pokémon Breakdown</h2>
 
-                {result.energyProfile.primaryType && (
-                  <p className="text-sm text-brown-500 mb-4">
-                    Primary type:{" "}
-                    <span className="font-semibold text-brown-900">
-                      {result.energyProfile.primaryType}
-                    </span>
-                  </p>
-                )}
-
-                {Object.keys(result.energyProfile.types).length > 0 && (
-                  <div className="flex flex-wrap gap-2 mb-4">
-                    {Object.entries(result.energyProfile.types).map(
-                      ([type, count]) => (
-                        <span
-                          key={type}
-                          className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-sm font-medium ${ENERGY_COLORS[type] ?? "bg-tan-50 text-brown-900 border-tan-200"}`}
-                        >
-                          {type}
-                          <span className="text-xs opacity-70">&times;{count}</span>
-                        </span>
-                      )
-                    )}
-                  </div>
-                )}
-
-                {result.energyProfile.specialEnergy.length > 0 && (
-                  <div>
-                    <p className="text-xs text-brown-500 uppercase tracking-wide mb-2">
-                      Special Energy
-                    </p>
-                    <div className="flex flex-wrap gap-2">
-                      {result.energyProfile.specialEnergy.map((se, i) => (
-                        <span
-                          key={i}
-                          className="inline-flex items-center rounded-full border border-tan-200 bg-tan-50 px-3 py-1 text-sm text-brown-900"
-                        >
-                          {se}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              {/* ── Rotation Warning ─────────────────────────── */}
-              {result.rotatingCards.length > 0 ? (
-                <div className="rounded-xl border border-amber-600/30 bg-amber-50 p-5">
-                  <h2 className="text-lg font-semibold text-amber-900 mb-1 flex items-center gap-2">
-                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
-                    </svg>
-                    Rotation Warning
-                  </h2>
-                  <p className="text-sm text-amber-700 mb-3">
-                    {result.rotatingCount} card{result.rotatingCount !== 1 ? "s" : ""} rotating April 10, 2026
-                  </p>
-                  <div className="space-y-1">
-                    {result.rotatingCards.map((card, i) => (
-                      <div key={i} className="flex items-center justify-between text-sm">
-                        <span className="text-amber-900 font-medium">{card.name}</span>
-                        <div className="flex items-center gap-3">
-                          {card.regulationMark && (
-                            <span className="text-xs text-amber-600 bg-amber-100 rounded px-1.5 py-0.5 font-mono">
-                              {card.regulationMark}
-                            </span>
-                          )}
-                          <span className="text-amber-700">&times;{card.qty}</span>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              ) : (
-                <div className="rounded-xl border border-green-200 bg-green-50 p-4">
-                  <div className="flex items-center gap-2 text-green-800">
-                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                    <span className="text-sm font-semibold">Rotation Ready ✓</span>
-                  </div>
-                  <p className="text-xs text-green-700 mt-1 ml-7">All cards legal after April 10, 2026</p>
-                </div>
-              )}
-
-              {/* ── Attack Coverage ──────────────────────────── */}
-              {result.attackerMismatches.length > 0 ? (
-                <div className="rounded-xl border border-red-200 bg-red-50 p-5">
-                  <h2 className="text-lg font-semibold text-red-900 mb-1">Attack Coverage</h2>
-                  <p className="text-sm text-red-700 mb-3">
-                    {result.attackerMismatches.length} attack{result.attackerMismatches.length !== 1 ? "s" : ""} may lack required energy types
-                  </p>
-                  <div className="space-y-2">
-                    {result.attackerMismatches.map((m, i) => (
-                      <div key={i} className="rounded-lg bg-red-100 px-3 py-2">
-                        <div className="flex items-start justify-between gap-2">
-                          <div>
-                            <span className="text-sm font-medium text-red-900">{m.cardName}</span>
-                            <span className="text-xs text-red-600 ml-2">— {m.attackName}</span>
-                          </div>
-                        </div>
-                        <p className="text-xs text-red-700 mt-0.5">
-                          Missing: {m.missingTypes.join(", ")}
-                        </p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              ) : (
-                <div className="rounded-xl border border-green-200 bg-green-50 p-4">
-                  <div className="flex items-center gap-2 text-green-800">
-                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                    <span className="text-sm font-semibold">Energy matches all attackers ✓</span>
-                  </div>
-                  <p className="text-xs text-green-700 mt-1 ml-7">All attack costs are covered by your energy types</p>
-                </div>
-              )}
-
-              {/* ── HP Curve ─────────────────────────────────── */}
-              <div className="rounded-xl border border-tan-200 bg-tan-100 p-5 backdrop-blur-sm">
-                <h2 className="text-lg font-semibold mb-4">HP Curve</h2>
-                {(() => {
-                  const maxCount = Math.max(...result.hpCurve.map((b) => b.count), 1);
-                  return (
-                    <div className="space-y-2">
-                      {result.hpCurve.map((bucket) => (
-                        <div key={bucket.range} className="flex items-center gap-3">
-                          <span className="text-xs text-brown-500 w-16 shrink-0 font-mono">
-                            {bucket.range}
-                          </span>
-                          <div className="flex-1 h-6 rounded bg-tan-200 overflow-hidden">
-                            <div
-                              className="h-full rounded bg-blue-400 transition-all"
-                              style={{
-                                width: `${bucket.count > 0 ? Math.max((bucket.count / maxCount) * 100, 4) : 0}%`,
-                              }}
-                            />
-                          </div>
-                          <span className="text-xs font-semibold text-brown-700 w-6 text-right shrink-0">
-                            {bucket.count}
-                          </span>
-                        </div>
-                      ))}
-                    </div>
-                  );
-                })()}
-                <p className="text-xs text-brown-400 mt-3">HP ranges for Pokémon in your deck (by unique lines)</p>
-              </div>
-
-              {/* ── Retreat Burden ───────────────────────────── */}
-              <div className="rounded-xl border border-tan-200 bg-tan-100 p-5 backdrop-blur-sm">
-                <div className="flex items-center justify-between mb-3">
-                  <h2 className="text-lg font-semibold">Retreat Burden</h2>
-                  <span
-                    className={`text-sm font-semibold px-2.5 py-0.5 rounded-full border text-xs ${
-                      result.retreatBurdenRating === "Low"
-                        ? "bg-green-100 text-green-700 border-green-200"
-                        : result.retreatBurdenRating === "Moderate"
-                        ? "bg-amber-100 text-amber-700 border-amber-200"
-                        : "bg-red-100 text-red-700 border-red-200"
-                    }`}
-                  >
-                    {result.retreatBurdenRating}
+                {/* Stat pills */}
+                <div className="flex gap-3 mb-5">
+                  <span className="inline-flex items-center rounded-full border border-tan-300 bg-tan-50 px-3 py-1 text-sm font-medium text-brown-700">
+                    {result.pokemon.totalCards} Total Cards
+                  </span>
+                  <span className="inline-flex items-center rounded-full border border-tan-300 bg-tan-50 px-3 py-1 text-sm font-medium text-brown-700">
+                    {result.pokemon.uniqueSpecies} Unique Species
                   </span>
                 </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="text-center">
-                    <p className="text-2xl font-bold text-brown-900">
-                      {result.totalRetreatCost}
-                    </p>
-                    <p className="text-xs text-brown-500 mt-0.5">Total Retreat Cost</p>
+
+                {/* Abilities table */}
+                {result.pokemon.abilities.length > 0 && (
+                  <div className="mb-5">
+                    <h3 className="text-sm font-semibold text-brown-700 mb-2">Abilities</h3>
+                    <div className="border border-tan-200 rounded-xl overflow-hidden">
+                      <table className="w-full text-sm">
+                        <thead>
+                          <tr className="bg-tan-200">
+                            <th className="text-left px-3 py-2 text-xs font-semibold text-brown-600 uppercase tracking-wide">
+                              Pokémon
+                            </th>
+                            <th className="text-left px-3 py-2 text-xs font-semibold text-brown-600 uppercase tracking-wide">
+                              Ability
+                            </th>
+                            <th className="text-left px-3 py-2 text-xs font-semibold text-brown-600 uppercase tracking-wide">
+                              Description
+                            </th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-tan-100">
+                          {result.pokemon.abilities.map((ab, i) => (
+                            <tr key={i} className="bg-tan-50 hover:bg-tan-100 transition-colors">
+                              <td className="px-3 py-2.5 font-medium text-brown-900 whitespace-nowrap">
+                                {ab.pokemonName}
+                              </td>
+                              <td className="px-3 py-2.5 text-energy font-medium whitespace-nowrap">
+                                {ab.abilityName}
+                              </td>
+                              <td className="px-3 py-2.5 text-brown-600 leading-relaxed">
+                                {ab.description || "—"}
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
                   </div>
-                  <div className="text-center">
-                    <p className="text-2xl font-bold text-brown-900">
-                      {result.switchCards}
-                    </p>
-                    <p className="text-xs text-brown-500 mt-0.5">Switch Cards</p>
+                )}
+
+                {/* Attacks table */}
+                {result.pokemon.attacks.length > 0 && (
+                  <div>
+                    <h3 className="text-sm font-semibold text-brown-700 mb-2">Attacks</h3>
+                    <div className="border border-tan-200 rounded-xl overflow-hidden">
+                      <table className="w-full text-sm">
+                        <thead>
+                          <tr className="bg-tan-200">
+                            <th className="text-left px-3 py-2 text-xs font-semibold text-brown-600 uppercase tracking-wide">
+                              Pokémon
+                            </th>
+                            <th className="text-left px-3 py-2 text-xs font-semibold text-brown-600 uppercase tracking-wide">
+                              Attack
+                            </th>
+                            <th className="text-left px-3 py-2 text-xs font-semibold text-brown-600 uppercase tracking-wide">
+                              Cost
+                            </th>
+                            <th className="text-left px-3 py-2 text-xs font-semibold text-brown-600 uppercase tracking-wide">
+                              Damage
+                            </th>
+                            <th className="text-left px-3 py-2 text-xs font-semibold text-brown-600 uppercase tracking-wide">
+                              Effect
+                            </th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-tan-100">
+                          {result.pokemon.attacks.map((atk, i) => (
+                            <tr key={i} className="bg-tan-50 hover:bg-tan-100 transition-colors">
+                              <td className="px-3 py-2.5 font-medium text-brown-900 whitespace-nowrap">
+                                {atk.pokemonName}
+                              </td>
+                              <td className="px-3 py-2.5 font-medium text-brown-800 whitespace-nowrap">
+                                {atk.attackName}
+                              </td>
+                              <td className="px-3 py-2.5">
+                                {atk.cost.length > 0 ? (
+                                  <div className="flex flex-wrap gap-1">
+                                    {atk.cost.map((type, j) => (
+                                      <EnergyCostPill key={j} type={type} />
+                                    ))}
+                                  </div>
+                                ) : (
+                                  <span className="text-brown-400">—</span>
+                                )}
+                              </td>
+                              <td className="px-3 py-2.5 font-semibold text-brown-900 whitespace-nowrap">
+                                {atk.damage || "—"}
+                              </td>
+                              <td className="px-3 py-2.5 text-brown-500 leading-relaxed">
+                                {atk.description || "—"}
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
                   </div>
-                </div>
-                {result.retreatBurdenRating === "High" && (
-                  <p className="text-xs text-red-600 mt-3">
-                    ⚠️ High retreat burden — consider adding more Switch, Escape Rope, or Jet Energy.
+                )}
+
+                {result.pokemon.abilities.length === 0 && result.pokemon.attacks.length === 0 && (
+                  <p className="text-sm text-brown-400 italic">
+                    No ability or attack data found — Pokémon may not be in the card database.
                   </p>
                 )}
               </div>
 
-              {/* ── Ability Density ──────────────────────────── */}
-              <div className="rounded-xl border border-tan-200 bg-tan-100 p-5 backdrop-blur-sm">
-                <h2 className="text-lg font-semibold mb-3">Ability Density</h2>
-                <div className="grid grid-cols-2 gap-4 mb-3">
-                  <div className="text-center">
-                    <p className="text-2xl font-bold text-purple-600">
-                      {result.abilityPokemon}
-                    </p>
-                    <p className="text-xs text-brown-500 mt-0.5">With Abilities</p>
-                  </div>
-                  <div className="text-center">
-                    <p className="text-2xl font-bold text-brown-700">
-                      {result.attackOnlyPokemon}
-                    </p>
-                    <p className="text-xs text-brown-500 mt-0.5">Attack-Only</p>
-                  </div>
-                </div>
-                {/* Ratio bar */}
-                {(result.abilityPokemon + result.attackOnlyPokemon) > 0 && (
-                  <div className="flex h-2.5 rounded-full overflow-hidden bg-tan-200 mb-2">
-                    <div
-                      className="bg-purple-400 transition-all"
-                      style={{ width: `${result.abilityRatio * 100}%` }}
-                    />
-                    <div className="bg-tan-300 flex-1" />
-                  </div>
-                )}
-                <p className="text-xs text-brown-500">
-                  {Math.round(result.abilityRatio * 100)}% of unique Pokémon lines have abilities
-                  {result.abilityRatio < 0.2 && (
-                    <span className="text-amber-600 ml-1">— may be vulnerable to ability-lock strategies</span>
-                  )}
-                  {result.abilityRatio > 0.8 && (
-                    <span className="text-purple-600 ml-1">— heavy ability reliance, watch for Canceling Cologne</span>
-                  )}
-                </p>
-              </div>
-
-              {/* ── Matchup Guide ────────────────────────────── */}
-              {result.archetype?.matchups && result.archetype.matchups.length > 0 && (
-                <div className="rounded-xl border border-tan-200 bg-tan-100 p-5 backdrop-blur-sm">
-                  <h2 className="text-lg font-semibold">Matchup Guide</h2>
-                  <p className="text-xs text-brown-500 mb-4">vs current top meta</p>
-                  <div className="divide-y divide-tan-200">
-                    {result.archetype.matchups.map((m, i) => (
-                      <div key={i} className="py-3 first:pt-0 last:pb-0">
-                        <div className="flex items-center justify-between">
-                          <span className="text-sm font-medium text-brown-900">{m.opponent}</span>
-                          <MatchupBadge result={m.result} />
-                        </div>
-                        <p className="text-xs text-brown-500 mt-1">{m.note}</p>
+              {/* ── 3. Meta Match ────────────────────────────── */}
+              {result.metaMatch.matched && (
+                <div className="rounded-xl border border-green-200 bg-green-50 p-5">
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <span className="inline-flex items-center rounded-full border border-green-200 bg-green-100 px-2.5 py-0.5 text-xs font-semibold text-green-700 mb-2">
+                        Top Meta Deck
+                      </span>
+                      <h2 className="text-xl font-bold text-green-900">
+                        {result.metaMatch.archetypeName}
+                      </h2>
+                    </div>
+                    {result.metaMatch.matchPct !== null && (
+                      <div className="text-right shrink-0">
+                        <p className="text-2xl font-black text-green-700 leading-none">
+                          {(result.metaMatch.matchPct * 100).toFixed(1)}%
+                        </p>
+                        <p className="text-xs text-green-600 mt-0.5">meta share</p>
                       </div>
-                    ))}
+                    )}
                   </div>
+                  <p className="text-sm text-green-700 mt-2">
+                    This deck matches a recognized archetype in the current top 20 meta.
+                  </p>
                 </div>
               )}
+
+              {/* ── 4. Warnings ──────────────────────────────── */}
+              {result.warnings.length > 0 && (
+                <div className="rounded-xl border border-amber-600/30 bg-amber-50 p-4">
+                  <h3 className="text-sm font-semibold text-amber-800 mb-2 flex items-center gap-2">
+                    <svg
+                      className="w-4 h-4"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      strokeWidth={2}
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z"
+                      />
+                    </svg>
+                    Warnings
+                  </h3>
+                  <ul className="space-y-1">
+                    {result.warnings.map((w, i) => (
+                      <li key={i} className="text-sm text-amber-700">
+                        {w}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
             </div>
           )}
         </div>
@@ -813,15 +528,18 @@ export default function DeckProfilerPage() {
 function Stat({
   label,
   value,
+  sub,
   color = "text-brown-900",
 }: {
   label: string;
   value: number;
+  sub?: string;
   color?: string;
 }) {
   return (
     <div className="text-center">
       <p className={`text-2xl font-bold ${color}`}>{value}</p>
+      {sub && <p className="text-xs text-brown-400 mt-0">{sub}</p>}
       <p className="text-xs text-brown-500 mt-0.5">{label}</p>
     </div>
   );
