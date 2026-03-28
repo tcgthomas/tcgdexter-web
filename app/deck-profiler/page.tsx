@@ -222,9 +222,10 @@ export default function DeckProfilerPage() {
     <div className="min-h-screen flex flex-col">
       {/* ── Header ───────────────────────────────────────────── */}
       <header className="flex-shrink-0 pt-12 pb-8 px-6 text-center">
+        <div className="text-left mb-6">
         <Link
           href="/"
-          className="inline-flex items-center gap-2 text-brown-500 hover:text-brown-900 text-sm transition-colors mb-6"
+          className="inline-flex items-center gap-2 text-brown-500 hover:text-brown-900 text-sm transition-colors"
         >
           <svg
             className="w-4 h-4"
@@ -241,7 +242,7 @@ export default function DeckProfilerPage() {
           </svg>
           Home
         </Link>
-
+        </div>
 
         <h1 className="text-3xl sm:text-4xl font-bold tracking-tight">
           Deck Profiler
