@@ -535,7 +535,7 @@ export default function DeckProfilerPage() {
                   onClick={() => setTrainerOpen(!trainerOpen)}
                   className="w-full flex items-center justify-between mb-4 group"
                 >
-                  <h2 className="text-lg font-semibold">Trainers</h2>
+                  <h2 className="text-lg font-semibold">Trainer</h2>
                   <svg className={`w-4 h-4 text-brown-400 transition-transform ${trainerOpen ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
                   </svg>
