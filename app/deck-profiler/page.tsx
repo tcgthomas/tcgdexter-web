@@ -122,36 +122,35 @@ const ENERGY_LETTER: Record<string, string> = {
 
 /* ─── Example deck list ──────────────────────────────────────── */
 
-const EXAMPLE_DECK = `Pokémon: 15
-3 Charizard ex OBF 125
-1 Charizard ex TEF 54
-4 Charmander OBF 26
-1 Charmeleon OBF 27
-2 Pidgeot ex OBF 164
-2 Pidgey OBF 162
-1 Rotom V CRZ 45
-1 Lumineon V BRS 40
+const EXAMPLE_DECK = `Pokémon: 18
+2 Mega Gardevoir ex MEG 159
+2 Mega Latias ex MEG 100
+2 Mega Manectric ex MEG 50
+2 Ralts ASC 84
+2 Kirlia ASC 84
+2 Gardevoir ex SVI 228
+2 Budew PRE 4
+2 Elgyem BLK 40
+2 Beheeyem BLK 41
 
-Trainer: 33
-4 Arven OBF 186
+Trainer: 30
 4 Iono PAL 185
-2 Boss's Orders PAL 172
-2 Professor's Research SVI 189
-4 Rare Candy SVI 191
 4 Ultra Ball SVI 196
 4 Nest Ball SVI 181
-2 Super Rod PAL 188
-2 Pal Pad SVI 182
-1 Counter Catcher PAR 160
-1 Lost Vacuum CRZ 135
-1 Forest Seal Stone SIT 156
-1 Choice Belt PAL 176
-1 Collapsed Stadium BRS 137
+3 Arven OBF 186
+2 Boss's Orders MEG 114
+2 Professor's Research SVI 189
+2 Rare Candy MEG 175
+2 Night Stretcher MEG 173
+2 Switch MEG 170
+1 Super Rod PAL 188
+1 Secret Box TWM 163
+1 Pal Pad SVI 182
+2 Lillie's Determination MEG 119
 
 Energy: 12
-7 Basic Fire Energy SVE 2
-3 Basic Fire Energy SVE 2
-2 Double Turbo Energy BRS 151`;
+8 Basic Psychic Energy SVE 5
+4 Luminous Energy PAL 191`;
 
 /* ─── Energy cost pill ───────────────────────────────────────── */
 
