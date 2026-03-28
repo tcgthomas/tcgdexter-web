@@ -1,5 +1,21 @@
 import { NextRequest, NextResponse } from "next/server";
 import cardData from "@/data/cards-standard.json";
+import shopListingsData from "@/data/shop-listings.json";
+
+/* ─── Shop Listings ──────────────────────────────────────────── */
+
+interface ShopListing {
+  title: string;
+  price: number;
+  currency: string;
+  imageUrl: string | null;
+  listingUrl: string;
+  condition: string;
+  bestOffer: boolean;
+  itemId: string;
+}
+
+const SHOP_LISTINGS = shopListingsData as Record<string, ShopListing[]>;
 
 /* ─── Card DB ────────────────────────────────────────────────── */
 
@@ -101,6 +117,10 @@ interface AnalysisResult {
   deckPrice: number;
   cards: Card[];
   warnings: string[];
+  shopMatches: Array<{
+    cardName: string;
+    listings: ShopListing[];
+  }>;
 }
 
 interface MetaArchetype {
@@ -434,6 +454,16 @@ export async function POST(req: NextRequest) {
     }
     const rotatingCount = rotatingCards.reduce((s, c) => s + c.qty, 0);
 
+    // ── Shop Matches ───────────────────────────────────────────
+    const shopMatches = cards
+      .map(card => ({
+        cardName: card.name,
+        listings: SHOP_LISTINGS[card.name.toLowerCase()] ?? []
+      }))
+      .filter(m => m.listings.length > 0)
+      // dedupe by card name (multiple printings of same card → one entry)
+      .filter((m, i, arr) => arr.findIndex(x => x.cardName === m.cardName) === i);
+
     const result: AnalysisResult = {
       deckSize,
       sections,
@@ -471,6 +501,7 @@ export async function POST(req: NextRequest) {
       metaMatch,
       cards,
       warnings,
+      shopMatches,
     };
 
     return NextResponse.json(result);

@@ -5,6 +5,17 @@ import Link from "next/link";
 
 /* ─── Types (mirrors API response) ───────────────────────────── */
 
+interface ShopListing {
+  title: string;
+  price: number;
+  currency: string;
+  imageUrl: string | null;
+  listingUrl: string;
+  condition: string;
+  bestOffer: boolean;
+  itemId: string;
+}
+
 interface Card {
   qty: number;
   name: string;
@@ -73,6 +84,10 @@ interface AnalysisResult {
   };
   cards: Card[];
   warnings: string[];
+  shopMatches: Array<{
+    cardName: string;
+    listings: ShopListing[];
+  }>;
 }
 
 /* ─── Energy type colors ─────────────────────────────────────── */
@@ -310,6 +325,51 @@ export default function DeckProfilerPage() {
                 <div className="rounded-xl border border-tan-200 bg-tan-100 px-5 py-4 flex items-center justify-between">
                   <p className="text-xs text-brown-400 uppercase tracking-wide">Estimated Deck Price</p>
                   <p className="text-2xl font-bold text-brown-900">${result.deckPrice.toFixed(2)}</p>
+                </div>
+              )}
+
+              {/* ── Shop Matches ─────────────────────────────── */}
+              {result.shopMatches.length > 0 && (
+                <div className="rounded-xl border border-blue-200 bg-blue-50 p-5">
+                  <div className="mb-4">
+                    <h2 className="text-lg font-semibold text-brown-900">Available in Our Shop</h2>
+                    <p className="text-xs text-brown-400 mt-0.5">Cards from this deck currently listed on eBay</p>
+                  </div>
+                  <div className="flex flex-col gap-4">
+                    {result.shopMatches.map((match) => (
+                      <div key={match.cardName} className="rounded-lg border border-blue-200 bg-white overflow-hidden">
+                        <div className="px-4 py-2 bg-blue-100 border-b border-blue-200">
+                          <span className="text-sm font-bold text-brown-900">{match.cardName}</span>
+                        </div>
+                        <div className="divide-y divide-blue-100">
+                          {match.listings.map((listing) => (
+                            <div key={listing.itemId} className="px-4 py-3 flex items-center gap-3 flex-wrap">
+                              <span className="text-sm font-semibold text-brown-900">
+                                ${listing.price.toFixed(2)}
+                              </span>
+                              <span className="text-xs text-brown-500">{listing.condition}</span>
+                              {listing.bestOffer && (
+                                <span className="inline-flex items-center rounded-full border border-green-200 bg-green-50 px-2 py-0.5 text-xs font-medium text-green-700">
+                                  Best Offer
+                                </span>
+                              )}
+                              <a
+                                href={listing.listingUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="ml-auto inline-flex items-center gap-1 rounded-md border border-blue-200 bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-700 hover:bg-blue-100 transition-colors"
+                              >
+                                View
+                                <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                  <path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                </svg>
+                              </a>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               )}
 
