@@ -270,7 +270,7 @@ export default function DeckProfilerPage() {
             <div className="mt-4 flex flex-col gap-2">
               <div className="flex gap-3">
                 <button
-                  onClick={() => { setDeckList(""); setResult(null); setError(null); }}
+                  onClick={() => { setDeckList(""); setResult(null); setError(null); setPokemonOpen(false); setAbilitiesOpen(true); setAttacksOpen(true); setTrainerOpen(false); setEnergyOpen(false); }}
                   disabled={loading}
                   className="flex-1 rounded-lg border border-tan-300 bg-tan-50 px-5 py-2.5 text-sm font-semibold text-brown-700 transition-all hover:bg-tan-200 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
