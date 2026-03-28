@@ -22,6 +22,7 @@ interface CardDataEntry {
   rules: string[];
   regulation_mark: string | null;
   retreat_cost: number | null;
+  market_price: number;
 }
 
 const CARD_DB = cardData as unknown as Record<string, CardDataEntry[]>;
@@ -96,6 +97,7 @@ interface AnalysisResult {
     archetypeName: string | null;
     matchPct: number | null;
   };
+  deckPrice: number;
   cards: Card[];
   warnings: string[];
 }
@@ -402,6 +404,12 @@ export async function POST(req: NextRequest) {
     }
     const energyBasicCount = Object.values(basicByType).reduce((s, n) => s + n, 0);
 
+    // ── Deck Price ─────────────────────────────────────────────
+    const deckPrice = cards.reduce((sum, card) => {
+      const data = CARD_DB_LOWER.get(card.name.toLowerCase())?.[0];
+      return sum + (data?.market_price ?? 0) * card.qty;
+    }, 0);
+
     // ── Rotation Check ─────────────────────────────────────────
     const ROTATING_MARKS = new Set(["A", "B", "C", "D", "E", "F", "G"]);
     const rotatingCards: Array<{ name: string; qty: number }> = [];
@@ -447,6 +455,7 @@ export async function POST(req: NextRequest) {
         rotatingCount,
         rotatingCards,
       },
+      deckPrice: Math.round(deckPrice * 100) / 100,
       metaMatch,
       cards,
       warnings,

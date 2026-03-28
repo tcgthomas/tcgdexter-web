@@ -60,6 +60,7 @@ interface AnalysisResult {
     specialCount: number;
     specialDetails: Array<{ name: string; qty: number; description: string }>;
   };
+  deckPrice: number;
   rotation: {
     ready: boolean;
     rotatingCount: number;
@@ -304,7 +305,18 @@ export default function DeckProfilerPage() {
           {result && (
             <div className="flex flex-col gap-4">
 
-              {/* ── 0. Rotation Status ──────────────────────── */}
+              {/* ── 0. Deck Price ───────────────────────────── */}
+              {result.deckPrice > 0 && (
+                <div className="rounded-xl border border-tan-200 bg-tan-100 px-5 py-4 flex items-center justify-between">
+                  <div>
+                    <p className="text-xs text-brown-400 uppercase tracking-wide mb-0.5">Estimated Deck Price</p>
+                    <p className="text-2xl font-bold text-brown-900">${result.deckPrice.toFixed(2)}</p>
+                  </div>
+                  <p className="text-xs text-brown-400 text-right max-w-[140px] leading-relaxed">Based on lowest market price per card</p>
+                </div>
+              )}
+
+              {/* ── 1. Rotation Status ──────────────────────── */}
               {result.rotation.ready ? (
                 <div className="rounded-xl border border-green-200 bg-green-50 px-5 py-4">
                   <div className="flex items-center gap-3">
