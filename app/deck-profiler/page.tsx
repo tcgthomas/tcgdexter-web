@@ -239,10 +239,9 @@ export default function DeckProfilerPage() {
               d="M15.75 19.5L8.25 12l7.5-7.5"
             />
           </svg>
-          Back to Dexter
+          Home
         </Link>
 
-        <div className="mx-auto mb-6 h-1 w-12 rounded-full bg-energy" />
 
         <h1 className="text-3xl sm:text-4xl font-bold tracking-tight">
           Deck Profiler
