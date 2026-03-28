@@ -44,6 +44,20 @@ interface AnalysisResult {
     abilities: PokemonAbility[];
     attacks: PokemonAttack[];
   };
+  trainer: {
+    totalCards: number;
+    uniqueCards: number;
+    supporterCount: number;
+    itemCount: number;
+    toolCount: number;
+    stadiumCount: number;
+  };
+  energy: {
+    totalCards: number;
+    typeCount: number;
+    basicCount: number;
+    specialCount: number;
+  };
   rotation: {
     ready: boolean;
     rotatingCount: number;
@@ -517,7 +531,45 @@ export default function DeckProfilerPage() {
                 </>}
               </div>
 
-              {/* ── 3. Meta Match ────────────────────────────── */}
+              {/* ── 3. Trainer Breakdown ─────────────────────── */}
+              <div className="rounded-xl border border-tan-200 bg-tan-100 p-5 backdrop-blur-sm">
+                <h2 className="text-lg font-semibold mb-4">Trainer Breakdown</h2>
+                <div className="flex gap-2 flex-wrap">
+                  {[
+                    { count: result.trainer.totalCards, label: "Total" },
+                    { count: result.trainer.uniqueCards, label: "Unique" },
+                    ...(result.trainer.supporterCount > 0 ? [{ count: result.trainer.supporterCount, label: "Supporter" }] : []),
+                    ...(result.trainer.itemCount > 0 ? [{ count: result.trainer.itemCount, label: "Item" }] : []),
+                    ...(result.trainer.toolCount > 0 ? [{ count: result.trainer.toolCount, label: "Tool" }] : []),
+                    ...(result.trainer.stadiumCount > 0 ? [{ count: result.trainer.stadiumCount, label: "Stadium" }] : []),
+                  ].map(({ count, label }) => (
+                    <span key={label} className="inline-flex items-center gap-1 rounded-full border border-tan-300 bg-tan-50 px-3 py-1 text-sm text-brown-700">
+                      <span className="font-semibold">{count}</span>
+                      <span className="font-normal">{label}</span>
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              {/* ── 4. Energy Breakdown ──────────────────────── */}
+              <div className="rounded-xl border border-tan-200 bg-tan-100 p-5 backdrop-blur-sm">
+                <h2 className="text-lg font-semibold mb-4">Energy Breakdown</h2>
+                <div className="flex gap-2 flex-wrap">
+                  {[
+                    { count: result.energy.totalCards, label: "Total" },
+                    ...(result.energy.typeCount > 0 ? [{ count: result.energy.typeCount, label: "Type" }] : []),
+                    ...(result.energy.basicCount > 0 ? [{ count: result.energy.basicCount, label: "Basic" }] : []),
+                    ...(result.energy.specialCount > 0 ? [{ count: result.energy.specialCount, label: "Special" }] : []),
+                  ].map(({ count, label }) => (
+                    <span key={label} className="inline-flex items-center gap-1 rounded-full border border-tan-300 bg-tan-50 px-3 py-1 text-sm text-brown-700">
+                      <span className="font-semibold">{count}</span>
+                      <span className="font-normal">{label}</span>
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              {/* ── 5. Meta Match ────────────────────────────── */}
               {result.metaMatch.matched && (
                 <div className="rounded-xl border border-green-200 bg-green-50 p-5">
                   <div className="flex items-start justify-between gap-3">

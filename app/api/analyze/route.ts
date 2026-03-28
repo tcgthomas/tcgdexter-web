@@ -69,6 +69,20 @@ interface AnalysisResult {
     abilities: PokemonAbility[];
     attacks: PokemonAttack[];
   };
+  trainer: {
+    totalCards: number;
+    uniqueCards: number;
+    supporterCount: number;
+    itemCount: number;
+    toolCount: number;
+    stadiumCount: number;
+  };
+  energy: {
+    totalCards: number;
+    typeCount: number;
+    basicCount: number;
+    specialCount: number;
+  };
   rotation: {
     ready: boolean;
     rotatingCount: number;
@@ -331,6 +345,39 @@ export async function POST(req: NextRequest) {
       }
     }
 
+    // ── Trainer Breakdown ──────────────────────────────────────
+    const trainerCards = cards.filter((c) => c.section === "trainer");
+    const uniqueTrainerNames = new Set(trainerCards.map((c) => c.name));
+    let supporterCount = 0, itemCount = 0, toolCount = 0, stadiumCount = 0;
+    for (const tc of trainerCards) {
+      const data = CARD_DB_LOWER.get(tc.name.toLowerCase())?.[0];
+      const subtypes: string[] = data?.subtypes ?? [];
+      if (subtypes.includes("Supporter")) supporterCount += tc.qty;
+      else if (subtypes.includes("Stadium")) stadiumCount += tc.qty;
+      else if (subtypes.includes("Pokémon Tool")) toolCount += tc.qty;
+      else if (subtypes.includes("Item")) itemCount += tc.qty;
+    }
+
+    // ── Energy Breakdown ───────────────────────────────────────
+    const energyCards = cards.filter((c) => c.section === "energy");
+    const energyTypes = new Set<string>();
+    let energyBasicCount = 0, energySpecialCount = 0;
+    for (const ec of energyCards) {
+      const data = CARD_DB_LOWER.get(ec.name.toLowerCase())?.[0];
+      const subtypes: string[] = data?.subtypes ?? [];
+      // Infer from name if subtype missing
+      const isBasic = subtypes.includes("Basic") || ec.name.toLowerCase().includes("basic");
+      if (isBasic) {
+        energyBasicCount += ec.qty;
+        // Extract type from name e.g. "Basic {D} Energy" or "Basic Fire Energy"
+        const typeMatch = ec.name.match(/\{(\w)\}/) ?? ec.name.match(/Basic (\w+) Energy/i);
+        if (typeMatch) energyTypes.add(typeMatch[1]);
+      } else {
+        energySpecialCount += ec.qty;
+        energyTypes.add(ec.name);
+      }
+    }
+
     // ── Rotation Check ─────────────────────────────────────────
     const ROTATING_MARKS = new Set(["A", "B", "C", "D", "E", "F", "G"]);
     const rotatingCards: Array<{ name: string; qty: number }> = [];
@@ -354,6 +401,20 @@ export async function POST(req: NextRequest) {
         stage2Count,
         abilities,
         attacks,
+      },
+      trainer: {
+        totalCards: trainerCount,
+        uniqueCards: uniqueTrainerNames.size,
+        supporterCount,
+        itemCount,
+        toolCount,
+        stadiumCount,
+      },
+      energy: {
+        totalCards: energyCount,
+        typeCount: energyTypes.size,
+        basicCount: energyBasicCount,
+        specialCount: energySpecialCount,
       },
       rotation: {
         ready: rotatingCount === 0,
