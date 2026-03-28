@@ -266,39 +266,33 @@ export default function DeckProfilerPage() {
               className="w-full rounded-lg border border-tan-200 bg-tan-50 px-4 py-3 text-sm font-mono text-brown-900 placeholder:text-brown-300 focus:outline-none focus:border-energy/40 focus:ring-1 focus:ring-energy/20 resize-y [font-size:16px] sm:text-sm"
             />
 
-            <div className="mt-4 flex items-center gap-3">
-              <button
-                onClick={handleAnalyze}
-                disabled={loading}
-                className="inline-flex items-center gap-2 rounded-lg bg-energy px-5 py-2.5 text-sm font-semibold text-white transition-all hover:bg-energy-light disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {loading ? (
-                  <>
-                    <svg
-                      className="w-4 h-4 animate-spin"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                    >
-                      <circle
-                        className="opacity-25"
-                        cx="12"
-                        cy="12"
-                        r="10"
-                        stroke="currentColor"
-                        strokeWidth="4"
-                      />
-                      <path
-                        className="opacity-75"
-                        fill="currentColor"
-                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
-                      />
-                    </svg>
-                    Analyzing…
-                  </>
-                ) : (
-                  "Analyze Deck"
-                )}
-              </button>
+            <div className="mt-4 flex flex-col gap-2">
+              <div className="flex gap-3">
+                <button
+                  onClick={() => { setDeckList(""); setResult(null); setError(null); }}
+                  disabled={loading}
+                  className="flex-1 rounded-lg border border-tan-300 bg-tan-50 px-5 py-2.5 text-sm font-semibold text-brown-700 transition-all hover:bg-tan-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Clear
+                </button>
+                <button
+                  onClick={handleAnalyze}
+                  disabled={loading}
+                  className="flex-1 inline-flex items-center justify-center gap-2 rounded-lg bg-energy px-5 py-2.5 text-sm font-semibold text-white transition-all hover:bg-energy-light disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {loading ? (
+                    <>
+                      <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                      </svg>
+                      Analyzing…
+                    </>
+                  ) : (
+                    "Submit"
+                  )}
+                </button>
+              </div>
 
               {error && (
                 <p className="text-sm text-red-600">{error}</p>
@@ -579,15 +573,16 @@ export default function DeckProfilerPage() {
 
               {/* ── 4. Energy Breakdown ──────────────────────── */}
               <div className="rounded-xl border border-tan-200 bg-tan-100 p-5 backdrop-blur-sm">
-                <button
-                  onClick={() => setEnergyOpen(!energyOpen)}
-                  className="w-full flex items-center justify-between mb-4 group"
-                >
+                <div className="w-full flex items-center justify-between mb-4">
                   <h2 className="text-lg font-semibold">Energy Breakdown</h2>
-                  <svg className={`w-4 h-4 text-brown-400 transition-transform ${energyOpen ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-                  </svg>
-                </button>
+                  {result.energy.specialDetails.length > 0 && (
+                    <button onClick={() => setEnergyOpen(!energyOpen)}>
+                      <svg className={`w-4 h-4 text-brown-400 transition-transform ${energyOpen ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </button>
+                  )}
+                </div>
                 <div className="flex gap-2 flex-wrap" style={{ marginBottom: energyOpen ? "1rem" : 0 }}>
                   {[
                     { count: result.energy.totalCards, label: "Total" },
