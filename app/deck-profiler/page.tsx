@@ -277,7 +277,11 @@ export default function DeckProfilerPage() {
           Deck Profiler
         </h1>
         <p className="mt-3 text-sm sm:text-base text-brown-500 max-w-md mx-auto leading-relaxed">
-          Paste your TCG Live deck list for a clean breakdown — card types, Pokémon abilities and attacks, and meta positioning.
+          Paste your TCG Live deck list to get pricing and suggestions.
+        </p>
+        <p className="mt-3 text-xs text-brown-400 max-w-md mx-auto bg-tan-100 border border-tan-200 rounded-lg px-4 py-2">
+          This feature is in beta. Please share your thoughts to{' '}
+          <a href="mailto:feedback@tcgdexter.com" className="underline hover:text-brown-600">feedback@tcgdexter.com</a>
         </p>
       </header>
 
