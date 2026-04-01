@@ -2,105 +2,105 @@
   "items": [
     {
       "card_label": "Umbreon ex - 161/131 PRE",
-      "market_price": 1356.29
+      "market_price": 1420.39
     },
     {
       "card_label": "Mega Gengar ex - 284/217 SV14",
-      "market_price": 1075.0
-    },
-    {
-      "card_label": "Mega Dragonite ex - 290/217 SV14 290/217",
-      "market_price": 974.98
+      "market_price": 1092.19
     },
     {
       "card_label": "Mega Charizard X ex - 125/094 PF",
-      "market_price": 828.59
-    },
-    {
-      "card_label": "Pikachu ex - 276/217 SV14 276/217",
-      "market_price": 806.0
-    },
-    {
-      "card_label": "Pikachu ex - 276/217 SV14 276/217",
-      "market_price": 803.8399999999999
-    },
-    {
-      "card_label": "Pikachu ex - 276/217 SV14 276/217",
-      "market_price": 753.95
-    },
-    {
-      "card_label": "Pikachu ex - 276/217 SV14 276/217",
-      "market_price": 753.95
+      "market_price": 785.2
     },
     {
       "card_label": "Mew ex - 232/091 PAF",
-      "market_price": 706.35
+      "market_price": 724.03
+    },
+    {
+      "card_label": "Mega Dragonite ex - 290/217 SV14 290/217",
+      "market_price": 683.23
     },
     {
       "card_label": "Mega Dragonite ex - 290/217 SV14",
-      "market_price": 680.5
+      "market_price": 683.23
     },
     {
-      "card_label": "Mega Charizard Y ex - 294/217 SV14 294/217",
-      "market_price": 620.0
+      "card_label": "Pikachu ex - 276/217 SV14 276/217",
+      "market_price": 653.16
     },
     {
-      "card_label": "Mega Charizard Y ex - 294/217 SV14 294/217",
-      "market_price": 620.0
+      "card_label": "Pikachu ex - 276/217 SV14 276/217",
+      "market_price": 653.16
+    },
+    {
+      "card_label": "Pikachu ex - 276/217 SV14 276/217",
+      "market_price": 653.16
+    },
+    {
+      "card_label": "Pikachu ex - 276/217 SV14 276/217",
+      "market_price": 653.16
     },
     {
       "card_label": "Pikachu ex - 276/217 SV14",
-      "market_price": 562.28
+      "market_price": 653.16
     },
     {
       "card_label": "Team Rocket's Mewtwo ex - 231/182 DRI",
-      "market_price": 523.36
+      "market_price": 522.18
     },
     {
       "card_label": "charizard ex sir 199/165 199/165",
       "market_price": 449.99
     },
     {
-      "card_label": "Charizard ex - 199/165 MEW",
-      "market_price": 444.78
+      "card_label": "Mega Charizard Y ex - 294/217 SV14 294/217",
+      "market_price": 434.06
+    },
+    {
+      "card_label": "Mega Charizard Y ex - 294/217 SV14 294/217",
+      "market_price": 434.06
     },
     {
       "card_label": "Mega Charizard Y ex - 294/217 SV14",
-      "market_price": 437.43
+      "market_price": 434.06
     },
     {
       "card_label": "Victini - 171/086 SV10",
-      "market_price": 415.36
+      "market_price": 418.68
     },
     {
-      "card_label": "Team Rocket's Mewtwo ex - 281/217 SV14 281/217",
-      "market_price": 409.98
-    },
-    {
-      "card_label": "Team Rocket's Mewtwo ex - 281/217 SV14 281/217",
-      "market_price": 409.98
-    },
-    {
-      "card_label": "Team Rocket's Mewtwo ex - 281/217 SV14 281/217",
-      "market_price": 399.99
-    },
-    {
-      "card_label": "Victini - 172/086 SV11",
-      "market_price": 387.51
-    },
-    {
-      "card_label": "Team Rocket's Mewtwo ex - 281/217 SV14 281/217",
-      "market_price": 374.95
+      "card_label": "Charizard ex - 199/165 MEW",
+      "market_price": 402.8
     },
     {
       "card_label": "Zekrom ex - 172/086 SV10",
-      "market_price": 371.67
+      "market_price": 392.86
+    },
+    {
+      "card_label": "Victini - 172/086 SV11",
+      "market_price": 389.72
     },
     {
       "card_label": "Reshiram ex - 173/086 SV11",
-      "market_price": 355.15
+      "market_price": 358.42
+    },
+    {
+      "card_label": "Sylveon ex - 156/131 PRE",
+      "market_price": 347.3
+    },
+    {
+      "card_label": "Pikachu ex - 277/217 SV14",
+      "market_price": 337.38
+    },
+    {
+      "card_label": "Mega Charizard X ex - 130/094 PF",
+      "market_price": 335.35
+    },
+    {
+      "card_label": "Greninja ex - 214/167 TWM",
+      "market_price": 320.32
     }
   ],
-  "updated_at": "2026-04-01T17:15:13Z",
+  "updated_at": "2026-04-01T17:24:50Z",
   "count": 25
 }
