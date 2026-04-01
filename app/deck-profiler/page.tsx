@@ -181,6 +181,32 @@ export default function DeckProfilerPage() {
   const [trainerOpen, setTrainerOpen] = useState(false);
   const [energyOpen, setEnergyOpen] = useState(false);
 
+  /* ── Share state ──────────────────────────────────────────── */
+  const [sharing, setSharing] = useState(false);
+  const [shareToast, setShareToast] = useState(false);
+
+  async function handleShare() {
+    if (!result || sharing) return;
+    setSharing(true);
+    try {
+      const res = await fetch("/api/deck-share", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ deckList, analysis: result }),
+      });
+      const data = await res.json();
+      if (res.ok && data.url) {
+        await navigator.clipboard.writeText(data.url);
+        setShareToast(true);
+        setTimeout(() => setShareToast(false), 2000);
+      }
+    } catch {
+      // silent fail
+    } finally {
+      setSharing(false);
+    }
+  }
+
   /* ── Alert form state ──────────────────────────────────────── */
   const [alertEmail, setAlertEmail] = useState("");
   const [alertThreshold, setAlertThreshold] = useState("");
@@ -351,6 +377,30 @@ export default function DeckProfilerPage() {
           {/* Results */}
           {result && (
             <div className="flex flex-col gap-4">
+
+              {/* ── Share Button ──────────────────────────── */}
+              <button
+                onClick={handleShare}
+                disabled={sharing}
+                className="inline-flex items-center justify-center gap-2 rounded-lg bg-energy px-5 py-2.5 text-sm font-semibold text-white transition-all hover:bg-energy-light disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {sharing ? (
+                  <>
+                    <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                    </svg>
+                    Sharing…
+                  </>
+                ) : (
+                  <>
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m9.86-2.54a4.5 4.5 0 00-1.242-7.244l-4.5-4.5a4.5 4.5 0 00-6.364 6.364L4.34 8.592" />
+                    </svg>
+                    Share this deck
+                  </>
+                )}
+              </button>
 
               {/* ── 0. Deck Price ───────────────────────────── */}
               {result.deckPrice > 0 && (
@@ -824,6 +874,13 @@ export default function DeckProfilerPage() {
           )}
         </div>
       </main>
+
+      {/* ── Share Toast ─────────────────────────────────────── */}
+      {shareToast && (
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 rounded-lg bg-energy px-5 py-2.5 text-sm font-semibold text-white shadow-lg animate-fade-toast">
+          Link copied!
+        </div>
+      )}
 
       {/* ── Footer ───────────────────────────────────────────── */}
       <footer className="flex-shrink-0 py-8 px-6 text-center text-sm text-brown-300">

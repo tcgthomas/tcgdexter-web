@@ -29,4 +29,16 @@
     transform: translateY(-2px);
     box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
   }
+
+  /* Toast fade-in then out */
+  .animate-fade-toast {
+    animation: fadeToast 2s ease forwards;
+  }
+}
+
+@keyframes fadeToast {
+  0%   { opacity: 0; transform: translateX(-50%) translateY(8px); }
+  10%  { opacity: 1; transform: translateX(-50%) translateY(0); }
+  80%  { opacity: 1; transform: translateX(-50%) translateY(0); }
+  100% { opacity: 0; transform: translateX(-50%) translateY(8px); }
 }
