@@ -29,10 +29,6 @@
       "market_price": 523.36
     },
     {
-      "card_label": "charizard ex sir 199/165 199/165",
-      "market_price": 449.99
-    },
-    {
       "card_label": "Charizard ex - 199/165 MEW",
       "market_price": 444.78
     },
@@ -99,8 +95,12 @@
     {
       "card_label": "Pikachu ex - 238/191 SSP",
       "market_price": 258.04
+    },
+    {
+      "card_label": "Espeon ex - 155/131 PRE",
+      "market_price": 235.43
     }
   ],
-  "updated_at": "2026-04-01T17:26:57Z",
+  "updated_at": "2026-04-01T17:38:59Z",
   "count": 25
 }
