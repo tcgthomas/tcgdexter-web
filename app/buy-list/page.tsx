@@ -1,4 +1,5 @@
 import Link from "next/link";
+import buyListData from "@/data/buy-list.json";
 
 /* ─── Types ────────────────────────────────────────────────────── */
 
@@ -7,32 +8,11 @@ interface BuyListItem {
   market_price: number;
 }
 
-interface BuyListResponse {
-  items: BuyListItem[];
-  updated_at: string | null;
-}
-
-/* ─── Data fetching ────────────────────────────────────────────── */
-
-async function getBuyList(): Promise<BuyListResponse> {
-  try {
-    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || process.env.VERCEL_URL
-      ? `https://${process.env.VERCEL_URL}`
-      : "http://localhost:3000";
-    const res = await fetch(`${baseUrl}/api/buy-list`, {
-      cache: "no-store",
-    });
-    if (!res.ok) return { items: [], updated_at: null };
-    return res.json();
-  } catch {
-    return { items: [], updated_at: null };
-  }
-}
-
 /* ─── Page ─────────────────────────────────────────────────────── */
 
-export default async function BuyListPage() {
-  const { items, updated_at } = await getBuyList();
+export default function BuyListPage() {
+  const items = (buyListData as { items: BuyListItem[]; updated_at: string }).items;
+  const updated_at = (buyListData as { items: BuyListItem[]; updated_at: string }).updated_at;
 
   return (
     <div className="min-h-screen flex flex-col">
