@@ -181,7 +181,7 @@ export async function generateMetadata({
     title,
     description: descParts.join(" · "),
     openGraph: { title, description: descParts.join(" · ") },
-    twitter: { card: "summary", title, description: descParts.join(" · ") },
+    twitter: { card: "summary_large_image", title, description: descParts.join(" · ") },
   };
 }
 
