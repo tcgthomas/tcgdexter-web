@@ -340,7 +340,7 @@ export default function DeckProfilerPage() {
         <h1 className="text-3xl sm:text-4xl font-bold tracking-tight">
           Deck Profiler
         </h1>
-        <p className="mt-3 text-xs text-brown-400 max-w-md mx-auto bg-tan-100 border border-tan-200 rounded-lg px-4 py-2">
+        <p className="mt-3 text-xs text-brown-400 max-w-md mx-auto">
           This feature is in beta. Please share your thoughts to{' '}
           <a href="mailto:feedback@tcgdexter.com" className="underline hover:text-brown-600">feedback@tcgdexter.com</a>
         </p>
