@@ -274,7 +274,7 @@ export default async function SharedDeckPage({
 
   const { analysis, profiledAt } = deck;
   const result = analysis;
-  const pageTitle = result.metaMatch.archetypeName ?? "Deck Analysis";
+  const pageTitle = "Deck Profile";
   const dateStr = new Date(profiledAt).toLocaleDateString("en-US", {
     month: "long",
     day: "numeric",
@@ -301,7 +301,7 @@ export default async function SharedDeckPage({
           {pageTitle}
         </h1>
         <p className="mt-2 text-sm text-brown-400">
-          Profiled on {dateStr}
+          Created on {dateStr}
         </p>
       </header>
 
