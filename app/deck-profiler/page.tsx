@@ -417,10 +417,12 @@ export default function DeckProfilerPage() {
             const daysLeft = Math.ceil((rotationDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
             if (daysLeft <= 0) return null;
             return (
-              <div className="rounded-xl border border-tan-200 bg-tan-100 px-6 py-8 text-center">
-                <div className="text-6xl font-black text-brown-900">{daysLeft}</div>
-                <div className="text-sm text-brown-500 uppercase tracking-widest mt-2">Days Until Rotation</div>
-                <div className="text-xs text-brown-400 mt-2">April 10, 2026 — H Regulation</div>
+              <div className="rounded-xl border border-tan-200 bg-tan-100 px-6 py-5 flex items-center justify-center gap-5">
+                <div className="text-6xl font-black text-brown-900 leading-none">{daysLeft}</div>
+                <div className="flex flex-col">
+                  <div className="text-sm text-brown-500 uppercase tracking-widest">Days Until Rotation</div>
+                  <div className="text-xs text-brown-400 mt-1">April 10, 2026</div>
+                </div>
               </div>
             );
           })()}
