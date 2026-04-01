@@ -344,9 +344,7 @@ export default function DeckProfilerPage() {
           This feature is in beta. Please share your thoughts to{' '}
           <a href="mailto:feedback@tcgdexter.com" className="underline hover:text-brown-600">feedback@tcgdexter.com</a>
         </p>
-        <p className="mt-3 text-sm sm:text-base text-brown-500 max-w-md mx-auto leading-relaxed">
-          Paste your TCG Live deck list to get pricing and suggestions.
-        </p>
+
       </header>
 
       {/* ── Main ─────────────────────────────────────────────── */}
@@ -359,7 +357,7 @@ export default function DeckProfilerPage() {
                 htmlFor="deck-input"
                 className="text-sm font-medium text-brown-500"
               >
-                Deck List
+                Paste your Deck List
               </label>
               <button
                 onClick={handleLoadExample}
