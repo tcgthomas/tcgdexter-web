@@ -44,7 +44,7 @@ export default function BuyListPage() {
           Buy List
         </h1>
         <p className="mt-3 text-sm sm:text-base text-brown-500 max-w-md mx-auto leading-relaxed">
-          Sell your collection
+          Sell your collection: <a href="mailto:trade@tcgdexter.com" className="underline hover:text-brown-700">trade@tcgdexter.com</a>
         </p>
       </header>
 
