@@ -346,6 +346,70 @@ export default async function SharedDeckPage({
             </div>
           )}
 
+          {/* Estimated Deck Price */}
+          {result.deckPrice > 0 && (
+            <div className="rounded-xl border border-tan-200 bg-tan-100 px-5 py-4 flex items-center justify-between">
+              <p className="text-xs text-brown-400 uppercase tracking-wide">Estimated Deck Price</p>
+              <p className="text-2xl font-bold text-brown-900">${result.deckPrice.toFixed(2)}</p>
+            </div>
+          )}
+
+          {/* Shop Matches */}
+          {result.shopMatches.length > 0 && (
+            <details className="rounded-xl border border-blue-200 bg-blue-50 p-5 group">
+              <summary className="flex items-center justify-between cursor-pointer list-none [&::-webkit-details-marker]:hidden">
+                <div>
+                  <h2 className="text-lg font-semibold text-brown-900">Available in the Shop</h2>
+                  <p className="text-xs text-brown-400 mt-0.5">Check out cards from this deck on eBay</p>
+                </div>
+                <svg
+                  className="w-4 h-4 text-brown-400 transition-transform group-open:rotate-180"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth={2}
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                </svg>
+              </summary>
+              <div className="flex flex-col gap-4 mt-4">
+                {result.shopMatches.map((match) => (
+                  <div key={match.cardName} className="rounded-lg border border-blue-200 bg-white overflow-hidden">
+                    <div className="px-4 py-2 bg-blue-100 border-b border-blue-200">
+                      <span className="text-sm font-bold text-brown-900">{match.cardName}</span>
+                    </div>
+                    <div className="divide-y divide-blue-100">
+                      {match.listings.map((listing) => (
+                        <div key={listing.itemId} className="px-4 py-3 flex items-center gap-3 flex-wrap">
+                          <span className="text-sm font-semibold text-brown-900">
+                            ${listing.price.toFixed(2)}
+                          </span>
+                          <span className="text-xs text-brown-500">{listing.condition}</span>
+                          {listing.bestOffer && (
+                            <span className="inline-flex items-center rounded-full border border-green-200 bg-green-50 px-2 py-0.5 text-xs font-medium text-green-700">
+                              Best Offer
+                            </span>
+                          )}
+                          <a
+                            href={listing.listingUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="ml-auto inline-flex items-center gap-1 rounded-md border border-blue-200 bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-700 hover:bg-blue-100 transition-colors"
+                          >
+                            View
+                            <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                            </svg>
+                          </a>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </details>
+          )}
+
           {/* Overview */}
           <div className="rounded-xl border border-tan-200 bg-tan-100 p-5 backdrop-blur-sm">
             <div className="flex items-baseline justify-between mb-4">
@@ -590,70 +654,6 @@ export default async function SharedDeckPage({
                 This deck matches a recognized archetype in the current top 20 meta.
               </p>
             </div>
-          )}
-
-          {/* Estimated Deck Price */}
-          {result.deckPrice > 0 && (
-            <div className="rounded-xl border border-tan-200 bg-tan-100 px-5 py-4 flex items-center justify-between">
-              <p className="text-xs text-brown-400 uppercase tracking-wide">Estimated Deck Price</p>
-              <p className="text-2xl font-bold text-brown-900">${result.deckPrice.toFixed(2)}</p>
-            </div>
-          )}
-
-          {/* Shop Matches */}
-          {result.shopMatches.length > 0 && (
-            <details className="rounded-xl border border-blue-200 bg-blue-50 p-5 group">
-              <summary className="flex items-center justify-between cursor-pointer list-none [&::-webkit-details-marker]:hidden">
-                <div>
-                  <h2 className="text-lg font-semibold text-brown-900">Available in the Shop</h2>
-                  <p className="text-xs text-brown-400 mt-0.5">Check out cards from this deck on eBay</p>
-                </div>
-                <svg
-                  className="w-4 h-4 text-brown-400 transition-transform group-open:rotate-180"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  strokeWidth={2}
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-                </svg>
-              </summary>
-              <div className="flex flex-col gap-4 mt-4">
-                {result.shopMatches.map((match) => (
-                  <div key={match.cardName} className="rounded-lg border border-blue-200 bg-white overflow-hidden">
-                    <div className="px-4 py-2 bg-blue-100 border-b border-blue-200">
-                      <span className="text-sm font-bold text-brown-900">{match.cardName}</span>
-                    </div>
-                    <div className="divide-y divide-blue-100">
-                      {match.listings.map((listing) => (
-                        <div key={listing.itemId} className="px-4 py-3 flex items-center gap-3 flex-wrap">
-                          <span className="text-sm font-semibold text-brown-900">
-                            ${listing.price.toFixed(2)}
-                          </span>
-                          <span className="text-xs text-brown-500">{listing.condition}</span>
-                          {listing.bestOffer && (
-                            <span className="inline-flex items-center rounded-full border border-green-200 bg-green-50 px-2 py-0.5 text-xs font-medium text-green-700">
-                              Best Offer
-                            </span>
-                          )}
-                          <a
-                            href={listing.listingUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="ml-auto inline-flex items-center gap-1 rounded-md border border-blue-200 bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-700 hover:bg-blue-100 transition-colors"
-                          >
-                            View
-                            <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                              <path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                            </svg>
-                          </a>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </details>
           )}
 
           {/* Warnings */}
