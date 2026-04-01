@@ -168,6 +168,50 @@ function EnergyCostPill({ type }: { type: string }) {
   );
 }
 
+/* ─── Collapsible section ───────────────────────────────────────── */
+
+function CollapsibleSection({
+  title,
+  children,
+  badge,
+}: {
+  title: string;
+  children: React.ReactNode;
+  badge?: React.ReactNode;
+}) {
+  return (
+    <details className="rounded-xl border border-tan-200 bg-tan-100 p-5 backdrop-blur-sm group">
+      <summary className="flex items-center justify-between cursor-pointer list-none [&::-webkit-details-marker]:hidden">
+        <h2 className="text-lg font-semibold">{title}</h2>
+        <svg
+          className="w-4 h-4 text-brown-400 transition-transform group-open:rotate-180"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          strokeWidth={2}
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M19 9l-7 7-7-7"
+          />
+        </svg>
+      </summary>
+      {badge && <div className="flex gap-2 flex-wrap mt-4 mb-4">{badge}</div>}
+      <div className="mt-4">{children}</div>
+    </details>
+  );
+}
+
+function StatPill({ count, label }: { count: number; label: string }) {
+  return (
+    <span className="inline-flex items-center gap-1 rounded-full border border-tan-300 bg-tan-50 px-3 py-1 text-sm text-brown-700">
+      <span className="font-semibold">{count}</span>
+      <span className="font-normal">{label}</span>
+    </span>
+  );
+}
+
 /* ─── Page Component ─────────────────────────────────────────── */
 
 export default function DeckProfilerPage() {
@@ -175,12 +219,6 @@ export default function DeckProfilerPage() {
   const [result, setResult] = useState<AnalysisResult | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const [pokemonOpen, setPokemonOpen] = useState(false);
-  const [abilitiesOpen, setAbilitiesOpen] = useState(true);
-  const [attacksOpen, setAttacksOpen] = useState(true);
-  const [trainerOpen, setTrainerOpen] = useState(false);
-  const [energyOpen, setEnergyOpen] = useState(false);
-
   /* ── Share state ──────────────────────────────────────────── */
   const [sharing, setSharing] = useState(false);
   const [shareToast, setShareToast] = useState(false);
@@ -343,7 +381,7 @@ export default function DeckProfilerPage() {
             <div className="mt-4 flex flex-col gap-2">
               <div className="flex gap-3">
                 <button
-                  onClick={() => { setDeckList(""); setResult(null); setError(null); setPokemonOpen(false); setAbilitiesOpen(true); setAttacksOpen(true); setTrainerOpen(false); setEnergyOpen(false); }}
+                  onClick={() => { setDeckList(""); setResult(null); setError(null); }}
                   disabled={loading}
                   className="flex-1 rounded-lg border border-tan-300 bg-tan-50 px-5 py-2.5 text-sm font-semibold text-brown-700 transition-all hover:bg-tan-200 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
@@ -454,14 +492,60 @@ export default function DeckProfilerPage() {
                 </div>
               )}
 
+              {/* ── Rotation Status ────────────────────────── */}
+              {result.rotation.ready ? (
+                <div className="rounded-xl border border-green-200 bg-green-50 px-5 py-4">
+                  <div className="flex items-center gap-3">
+                    <svg className="w-4 h-4 text-green-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                    </svg>
+                    <div>
+                      <p className="text-sm font-semibold text-green-900">Rotation Ready</p>
+                      <p className="text-xs text-green-700 mt-0.5">All cards H-mark and later</p>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="rounded-xl border border-amber-200 bg-amber-50 px-5 py-4">
+                  <div className="flex items-center gap-3 mb-3">
+                    <svg className="w-4 h-4 text-amber-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
+                    </svg>
+                    <div>
+                      <p className="text-sm font-semibold text-amber-900">Rotation Blocked</p>
+                      <p className="text-xs text-amber-700 mt-0.5">{result.rotation.rotatingCount} card{result.rotation.rotatingCount !== 1 ? "s" : ""} not legal after April 10</p>
+                    </div>
+                  </div>
+                  <div className="flex flex-wrap gap-2 pl-7">
+                    {result.rotation.rotatingCards.map((c) => (
+                      <span key={c.name} className="inline-flex items-center gap-1 rounded-full border border-amber-200 bg-amber-100 px-2.5 py-0.5 text-xs text-amber-800">
+                        <span className="font-semibold">{c.qty}</span>
+                        <span>{c.name}</span>
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               {/* ── Shop Matches ─────────────────────────────── */}
               {result.shopMatches.length > 0 && (
-                <div className="rounded-xl border border-blue-200 bg-blue-50 p-5">
-                  <div className="mb-4">
-                    <h2 className="text-lg font-semibold text-brown-900">Available in the Shop</h2>
-                    <p className="text-xs text-brown-400 mt-0.5">Check out cards from this deck on eBay</p>
-                  </div>
-                  <div className="flex flex-col gap-4">
+                <details className="rounded-xl border border-blue-200 bg-blue-50 p-5 group">
+                  <summary className="flex items-center justify-between cursor-pointer list-none [&::-webkit-details-marker]:hidden">
+                    <div>
+                      <h2 className="text-lg font-semibold text-brown-900">Available in the Shop</h2>
+                      <p className="text-xs text-brown-400 mt-0.5">Check out cards from this deck on eBay</p>
+                    </div>
+                    <svg
+                      className="w-4 h-4 text-brown-400 transition-transform group-open:rotate-180"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      strokeWidth={2}
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </summary>
+                  <div className="flex flex-col gap-4 mt-4">
                     {result.shopMatches.map((match) => (
                       <div key={match.cardName} className="rounded-lg border border-blue-200 bg-white overflow-hidden">
                         <div className="px-4 py-2 bg-blue-100 border-b border-blue-200">
@@ -496,42 +580,7 @@ export default function DeckProfilerPage() {
                       </div>
                     ))}
                   </div>
-                </div>
-              )}
-
-              {/* ── 1. Rotation Status ──────────────────────── */}
-              {result.rotation.ready ? (
-                <div className="rounded-xl border border-green-200 bg-green-50 px-5 py-4">
-                  <div className="flex items-center gap-3">
-                    <svg className="w-4 h-4 text-green-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                    </svg>
-                    <div>
-                      <p className="text-sm font-semibold text-green-900">Rotation Ready</p>
-                      <p className="text-xs text-green-700 mt-0.5">All cards H-mark and later</p>
-                    </div>
-                  </div>
-                </div>
-              ) : (
-                <div className="rounded-xl border border-amber-200 bg-amber-50 px-5 py-4">
-                  <div className="flex items-center gap-3 mb-3">
-                    <svg className="w-4 h-4 text-amber-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
-                    </svg>
-                    <div>
-                      <p className="text-sm font-semibold text-amber-900">Rotation Blocked</p>
-                      <p className="text-xs text-amber-700 mt-0.5">{result.rotation.rotatingCount} card{result.rotation.rotatingCount !== 1 ? "s" : ""} not legal after April 10</p>
-                    </div>
-                  </div>
-                  <div className="flex flex-wrap gap-2 pl-7">
-                    {result.rotation.rotatingCards.map((c) => (
-                      <span key={c.name} className="inline-flex items-center gap-1 rounded-full border border-amber-200 bg-amber-100 px-2.5 py-0.5 text-xs text-amber-800">
-                        <span className="font-semibold">{c.qty}</span>
-                        <span>{c.name}</span>
-                      </span>
-                    ))}
-                  </div>
-                </div>
+                </details>
               )}
 
               {/* ── 1. Overview ─────────────────────────────── */}
@@ -574,54 +623,28 @@ export default function DeckProfilerPage() {
                 </div>
               </div>
 
-              {/* ── 2. Pokémon Breakdown ─────────────────────── */}
-              <div className="rounded-xl border border-tan-200 bg-tan-100 p-5 backdrop-blur-sm">
-                {/* Header — always visible */}
-                <button
-                  onClick={() => setPokemonOpen(!pokemonOpen)}
-                  className="w-full flex items-center justify-between mb-4 group"
-                >
-                  <h2 className="text-lg font-semibold">Pokémon</h2>
-                  <svg
-                    className={`w-4 h-4 text-brown-400 transition-transform ${pokemonOpen ? "rotate-180" : ""}`}
-                    fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}
-                  >
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-                  </svg>
-                </button>
-
-                {/* Stat pills — always visible */}
-                <div className="flex gap-2 flex-wrap" style={{ marginBottom: pokemonOpen ? "1.25rem" : 0 }}>
-                  {[
-                    { count: result.pokemon.totalCards, label: "Total" },
-                    { count: result.pokemon.uniqueSpecies, label: "Unique" },
-                    ...(result.pokemon.basicCount > 0 ? [{ count: result.pokemon.basicCount, label: "Basic" }] : []),
-                    ...(result.pokemon.stage1Count > 0 ? [{ count: result.pokemon.stage1Count, label: "Stage 1" }] : []),
-                    ...(result.pokemon.stage2Count > 0 ? [{ count: result.pokemon.stage2Count, label: "Stage 2" }] : []),
-                  ].map(({ count, label }) => (
-                    <span key={label} className="inline-flex items-center gap-1 rounded-full border border-tan-300 bg-tan-50 px-3 py-1 text-sm text-brown-700">
-                      <span className="font-semibold">{count}</span>
-                      <span className="font-normal">{label}</span>
-                    </span>
-                  ))}
-                </div>
-
-                {/* Collapsable body */}
-                {pokemonOpen && <>
-
-                {/* Abilities grouped by Pokémon */}
+              {/* ── Pokémon Breakdown ──────────────────────── */}
+              <CollapsibleSection
+                title="Pok&eacute;mon"
+                badge={
+                  <>
+                    {[
+                      { count: result.pokemon.totalCards, label: "Total" },
+                      { count: result.pokemon.uniqueSpecies, label: "Unique" },
+                      ...(result.pokemon.basicCount > 0 ? [{ count: result.pokemon.basicCount, label: "Basic" }] : []),
+                      ...(result.pokemon.stage1Count > 0 ? [{ count: result.pokemon.stage1Count, label: "Stage 1" }] : []),
+                      ...(result.pokemon.stage2Count > 0 ? [{ count: result.pokemon.stage2Count, label: "Stage 2" }] : []),
+                    ].map(({ count, label }) => (
+                      <StatPill key={label} count={count} label={label} />
+                    ))}
+                  </>
+                }
+              >
+                {/* Abilities */}
                 {result.pokemon.abilities.length > 0 && (
                   <div className="mb-5">
-                    <button
-                      onClick={() => setAbilitiesOpen(!abilitiesOpen)}
-                      className="w-full flex items-center justify-between mb-2 group"
-                    >
-                      <h3 className="text-sm font-semibold text-brown-700">Abilities</h3>
-                      <svg className={`w-3.5 h-3.5 text-brown-400 transition-transform ${abilitiesOpen ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-                      </svg>
-                    </button>
-                    {abilitiesOpen && <div className="flex flex-col gap-3">
+                    <h3 className="text-sm font-semibold text-brown-700 mb-2">Abilities</h3>
+                    <div className="flex flex-col gap-3">
                       {(() => {
                         const grouped = result.pokemon.abilities.reduce<Record<string, PokemonAbility[]>>(
                           (acc, ab) => {
@@ -649,25 +672,16 @@ export default function DeckProfilerPage() {
                           </div>
                         ));
                       })()}
-                    </div>}
+                    </div>
                   </div>
                 )}
 
-                {/* Attacks grouped by Pokémon */}
+                {/* Attacks */}
                 {result.pokemon.attacks.length > 0 && (
                   <div>
-                    <button
-                      onClick={() => setAttacksOpen(!attacksOpen)}
-                      className="w-full flex items-center justify-between mb-2 group"
-                    >
-                      <h3 className="text-sm font-semibold text-brown-700">Attacks</h3>
-                      <svg className={`w-3.5 h-3.5 text-brown-400 transition-transform ${attacksOpen ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-                      </svg>
-                    </button>
-                    {attacksOpen && <div className="flex flex-col gap-3">
+                    <h3 className="text-sm font-semibold text-brown-700 mb-2">Attacks</h3>
+                    <div className="flex flex-col gap-3">
                       {(() => {
-                        // Group attacks by pokemonName
                         const grouped = result.pokemon.attacks.reduce<Record<string, PokemonAttack[]>>(
                           (acc, atk) => {
                             if (!acc[atk.pokemonName]) acc[atk.pokemonName] = [];
@@ -678,18 +692,14 @@ export default function DeckProfilerPage() {
                         );
                         return Object.entries(grouped).map(([pokemonName, attacks]) => (
                           <div key={pokemonName} className="border border-tan-200 rounded-xl overflow-hidden">
-                            {/* Pokémon header */}
                             <div className="bg-tan-200 px-4 py-2">
                               <span className="text-sm font-semibold text-brown-800">{pokemonName}</span>
                             </div>
-                            {/* Attacks for this Pokémon */}
                             <div className="divide-y divide-tan-100">
                               {attacks.map((atk, i) => (
                                 <div key={i} className="bg-tan-50 px-4 py-3">
                                   <div className="flex items-center gap-3 flex-wrap">
-                                    {/* Attack name */}
                                     <span className="font-semibold text-brown-900 text-sm">{atk.attackName}</span>
-                                    {/* Cost pills */}
                                     {atk.cost.length > 0 && (
                                       <div className="flex flex-wrap gap-1">
                                         {atk.cost.map((type, j) => (
@@ -697,12 +707,10 @@ export default function DeckProfilerPage() {
                                         ))}
                                       </div>
                                     )}
-                                    {/* Damage */}
                                     {atk.damage && (
                                       <span className="ml-auto font-bold text-brown-900 text-sm">{atk.damage}</span>
                                     )}
                                   </div>
-                                  {/* Effect text */}
                                   {atk.description && (
                                     <p className="mt-1.5 text-xs text-brown-500 leading-relaxed">{atk.description}</p>
                                   )}
@@ -712,45 +720,36 @@ export default function DeckProfilerPage() {
                           </div>
                         ));
                       })()}
-                    </div>}
+                    </div>
                   </div>
                 )}
 
                 {result.pokemon.abilities.length === 0 && result.pokemon.attacks.length === 0 && (
                   <p className="text-sm text-brown-400 italic">
-                    No ability or attack data found — Pokémon may not be in the card database.
+                    No ability or attack data found.
                   </p>
                 )}
-                </>}
-              </div>
+              </CollapsibleSection>
 
-              {/* ── 3. Trainer Breakdown ─────────────────────── */}
-              <div className="rounded-xl border border-tan-200 bg-tan-100 p-5 backdrop-blur-sm">
-                <button
-                  onClick={() => setTrainerOpen(!trainerOpen)}
-                  className="w-full flex items-center justify-between mb-4 group"
-                >
-                  <h2 className="text-lg font-semibold">Trainer</h2>
-                  <svg className={`w-4 h-4 text-brown-400 transition-transform ${trainerOpen ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-                  </svg>
-                </button>
-                <div className="flex gap-2 flex-wrap" style={{ marginBottom: trainerOpen ? "1rem" : 0 }}>
-                  {[
-                    { count: result.trainer.totalCards, label: "Total" },
-                    { count: result.trainer.uniqueCards, label: "Unique" },
-                    ...(result.trainer.supporterCount > 0 ? [{ count: result.trainer.supporterCount, label: "Supporter" }] : []),
-                    ...(result.trainer.itemCount > 0 ? [{ count: result.trainer.itemCount, label: "Item" }] : []),
-                    ...(result.trainer.toolCount > 0 ? [{ count: result.trainer.toolCount, label: "Tool" }] : []),
-                    ...(result.trainer.stadiumCount > 0 ? [{ count: result.trainer.stadiumCount, label: "Stadium" }] : []),
-                  ].map(({ count, label }) => (
-                    <span key={label} className="inline-flex items-center gap-1 rounded-full border border-tan-300 bg-tan-50 px-3 py-1 text-sm text-brown-700">
-                      <span className="font-semibold">{count}</span>
-                      <span className="font-normal">{label}</span>
-                    </span>
-                  ))}
-                </div>
-                {trainerOpen && result.trainer.details.length > 0 && (
+              {/* ── Trainer Breakdown ──────────────────────── */}
+              <CollapsibleSection
+                title="Trainer"
+                badge={
+                  <>
+                    {[
+                      { count: result.trainer.totalCards, label: "Total" },
+                      { count: result.trainer.uniqueCards, label: "Unique" },
+                      ...(result.trainer.supporterCount > 0 ? [{ count: result.trainer.supporterCount, label: "Supporter" }] : []),
+                      ...(result.trainer.itemCount > 0 ? [{ count: result.trainer.itemCount, label: "Item" }] : []),
+                      ...(result.trainer.toolCount > 0 ? [{ count: result.trainer.toolCount, label: "Tool" }] : []),
+                      ...(result.trainer.stadiumCount > 0 ? [{ count: result.trainer.stadiumCount, label: "Stadium" }] : []),
+                    ].map(({ count, label }) => (
+                      <StatPill key={label} count={count} label={label} />
+                    ))}
+                  </>
+                }
+              >
+                {result.trainer.details.length > 0 ? (
                   <div className="flex flex-col gap-3">
                     {result.trainer.details.map((t) => (
                       <div key={t.name} className="border border-tan-200 rounded-xl overflow-hidden">
@@ -763,45 +762,36 @@ export default function DeckProfilerPage() {
                       </div>
                     ))}
                   </div>
-                )}
-              </div>
-
-              {/* ── 4. Energy Breakdown ──────────────────────── */}
-              <div className="rounded-xl border border-tan-200 bg-tan-100 p-5 backdrop-blur-sm">
-                {result.energy.specialDetails.length > 0 ? (
-                  <button
-                    onClick={() => setEnergyOpen(!energyOpen)}
-                    className="w-full flex items-center justify-between mb-4 group"
-                  >
-                    <h2 className="text-lg font-semibold">Energy</h2>
-                    <svg className={`w-4 h-4 text-brown-400 transition-transform ${energyOpen ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-                    </svg>
-                  </button>
                 ) : (
-                  <div className="w-full flex items-center justify-between mb-4">
-                    <h2 className="text-lg font-semibold">Energy</h2>
-                  </div>
+                  <p className="text-sm text-brown-400 italic">No trainer details available.</p>
                 )}
-                <div className="flex gap-2 flex-wrap" style={{ marginBottom: energyOpen ? "1rem" : 0 }}>
-                  {[
-                    { count: result.energy.totalCards, label: "Total" },
-                    ...Object.entries(result.energy.basicByType).map(([type, count]) => ({ count, label: `Basic ${type}` })),
-                    ...(result.energy.specialCount > 0 ? [{ count: result.energy.specialCount, label: "Special" }] : []),
-                  ].map(({ count, label }) => (
-                    <span key={label} className="inline-flex items-center gap-1 rounded-full border border-tan-300 bg-tan-50 px-3 py-1 text-sm text-brown-700">
-                      <span className="font-semibold">{count}</span>
-                      <span className="font-normal">{label}</span>
-                    </span>
-                  ))}
-                </div>
-                {energyOpen && result.energy.specialDetails.length > 0 && (
+              </CollapsibleSection>
+
+              {/* ── Energy Breakdown ──────────────────────── */}
+              <CollapsibleSection
+                title="Energy"
+                badge={
+                  <>
+                    {[
+                      { count: result.energy.totalCards, label: "Total" },
+                      ...Object.entries(result.energy.basicByType).map(([type, count]) => ({
+                        count,
+                        label: `Basic ${type}`,
+                      })),
+                      ...(result.energy.specialCount > 0 ? [{ count: result.energy.specialCount, label: "Special" }] : []),
+                    ].map(({ count, label }) => (
+                      <StatPill key={label} count={count} label={label} />
+                    ))}
+                  </>
+                }
+              >
+                {result.energy.specialDetails.length > 0 ? (
                   <div className="flex flex-col gap-3">
                     {result.energy.specialDetails.map((e) => (
                       <div key={e.name} className="border border-tan-200 rounded-xl overflow-hidden">
                         <div className="bg-tan-200 px-4 py-2 flex items-center justify-between">
                           <span className="text-sm font-semibold text-brown-800">{e.name}</span>
-                          <span className="text-xs text-brown-500">×{e.qty}</span>
+                          <span className="text-xs text-brown-500">&times;{e.qty}</span>
                         </div>
                         {e.description && (
                           <div className="bg-tan-50 px-4 py-3">
@@ -811,10 +801,12 @@ export default function DeckProfilerPage() {
                       </div>
                     ))}
                   </div>
+                ) : (
+                  <p className="text-sm text-brown-400 italic">No special energy details.</p>
                 )}
-              </div>
+              </CollapsibleSection>
 
-              {/* ── 5. Meta Match ────────────────────────────── */}
+              {/* ── Meta Match ────────────────────────────── */}
               {result.metaMatch.matched && (
                 <div className="rounded-xl border border-green-200 bg-green-50 p-5">
                   <div className="flex items-start justify-between gap-3">
@@ -841,7 +833,7 @@ export default function DeckProfilerPage() {
                 </div>
               )}
 
-              {/* ── 4. Warnings ──────────────────────────────── */}
+              {/* ── Warnings ──────────────────────────────── */}
               {result.warnings.length > 0 && (
                 <div className="rounded-xl border border-amber-600/30 bg-amber-50 p-4">
                   <h3 className="text-sm font-semibold text-amber-800 mb-2 flex items-center gap-2">
