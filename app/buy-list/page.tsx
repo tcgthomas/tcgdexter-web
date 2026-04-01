@@ -5,7 +5,6 @@ import Link from "next/link";
 interface BuyListItem {
   card_label: string;
   market_price: number;
-  buy_rate: number;
 }
 
 interface BuyListResponse {
@@ -89,17 +88,12 @@ export default async function BuyListPage() {
                     {item.card_label}
                   </span>
                   <span className="text-energy font-medium text-sm ml-4 flex-shrink-0">
-                    ${item.buy_rate.toFixed(2)}
+                    ${item.market_price.toFixed(2)}
                   </span>
                 </div>
               ))}
             </div>
           )}
-
-          {/* ── Footer note ──────────────────────────────────── */}
-          <p className="mt-4 text-xs text-brown-400 text-center leading-relaxed">
-            Buy rates are 70% of current market price. Updated daily.
-          </p>
 
           {updated_at && (
             <p className="mt-2 text-xs text-brown-300 text-center">
