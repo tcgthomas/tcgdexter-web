@@ -411,7 +411,7 @@ export default function DeckProfilerPage() {
           </div>
 
           {/* Rotation Countdown */}
-          {deckList === "" && (() => {
+          {result === null && (() => {
             const rotationDate = new Date("2026-04-10T00:00:00");
             const now = new Date();
             const daysLeft = Math.ceil((rotationDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
