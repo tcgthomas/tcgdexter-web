@@ -414,49 +414,55 @@ export default function DeckProfilerPage() {
             <div className="flex flex-col gap-4">
 
               {/* ── Deck Score ─────────────────────────────── */}
-              <details className="rounded-xl border border-tan-200 bg-tan-100 p-5 backdrop-blur-sm group">
-                <summary className="flex items-center justify-between cursor-pointer list-none [&::-webkit-details-marker]:hidden">
-                  <h2 className="text-lg font-semibold">
-                    <span className="group-open:hidden">Deck Score &mdash; {result.deckScore.grade} ({result.deckScore.total}/100)</span>
-                    <span className="hidden group-open:inline">Deck Score</span>
-                  </h2>
-                  <svg
-                    className="w-4 h-4 text-brown-400 transition-transform group-open:rotate-180"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    strokeWidth={2}
-                  >
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-                  </svg>
-                </summary>
-                <div className="mt-4 flex flex-col items-center gap-1 mb-6">
-                  <span className={`text-5xl font-bold ${
-                    result.deckScore.grade === "S" ? "text-purple-600" :
-                    result.deckScore.grade === "A" ? "text-green-600" :
-                    result.deckScore.grade === "B" ? "text-blue-600" :
-                    result.deckScore.grade === "C" ? "text-yellow-600" :
-                    "text-red-600"
-                  }`}>{result.deckScore.grade}</span>
-                  <span className="text-sm text-gray-500">{result.deckScore.total} / 100</span>
-                </div>
-                <div className="flex flex-col gap-3">
-                  {([
-                    { label: "Rotation", value: result.deckScore.rotation },
-                    { label: "Consistency", value: result.deckScore.consistency },
-                    { label: "Evolution", value: result.deckScore.evolution },
-                    { label: "Energy Fit", value: result.deckScore.energyFit },
-                  ] as const).map(({ label, value }) => (
-                    <div key={label} className="flex items-center gap-3">
-                      <span className="text-sm text-brown-700 w-24 shrink-0">{label}</span>
-                      <div className="flex-1 bg-gray-200 rounded-full h-2">
-                        <div className="bg-blue-500 rounded-full h-2" style={{ width: `${(value / 25) * 100}%` }} />
-                      </div>
-                      <span className="text-sm text-brown-500 w-10 text-right shrink-0">{value}/25</span>
+              {(() => {
+                const { grade, rotation, consistency, evolution, energyFit } = result.deckScore;
+                const rotatingCount = result.rotation.rotatingCards.length;
+
+                const rotationStr = rotatingCount === 0
+                  ? "Rotation Ready — all cards legal after April 10."
+                  : rotatingCount <= 2
+                  ? `${rotatingCount} card${rotatingCount > 1 ? "s" : ""} rotate${rotatingCount === 1 ? "s" : ""} out April 10 — minor updates needed.`
+                  : "This deck does not survive 2026 Standard Format Rotation as-is.";
+
+                const consistencyStr = consistency >= 22
+                  ? "Strong draw engine with key supporters and search cards."
+                  : consistency >= 15
+                  ? "Decent consistency — a few more draw supporters could help."
+                  : consistency >= 6
+                  ? "Thin draw engine — this deck may struggle to set up reliably."
+                  : "Missing core draw and search cards — consider building out your supporter and item line.";
+
+                const evolutionStr = evolution >= 23
+                  ? "Evolution lines look complete."
+                  : evolution >= 15
+                  ? "Most evolution lines intact — double-check your Stage 1 and Stage 2 ratios."
+                  : "Incomplete evolution lines detected — this deck may struggle to evolve consistently.";
+
+                const energyStr = energyFit === 25
+                  ? "Energy count is in the optimal range."
+                  : energyFit >= 15
+                  ? "Energy count is slightly outside the typical range."
+                  : "Energy count may be too high or too low for consistent attachment.";
+
+                const gradeColor = grade === "S" ? "text-purple-600" : grade === "A" ? "text-green-600" : grade === "B" ? "text-blue-600" : grade === "C" ? "text-yellow-600" : "text-red-600";
+
+                return (
+                  <div className="rounded-xl border border-tan-200 bg-tan-100 p-5 backdrop-blur-sm">
+                    <div className="flex items-center gap-4 mb-4">
+                      <span className={`text-5xl font-bold leading-none ${gradeColor}`}>{grade}</span>
+                      <h2 className="text-lg font-semibold text-brown-900">Deck Score</h2>
                     </div>
-                  ))}
-                </div>
-              </details>
+                    <ul className="flex flex-col gap-2">
+                      {[rotationStr, consistencyStr, evolutionStr, energyStr].map((str, i) => (
+                        <li key={i} className="flex items-start gap-2 text-sm text-brown-700">
+                          <span className="mt-0.5 shrink-0 text-brown-400">—</span>
+                          <span>{str}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                );
+              })()}
 
               {/* ── Deck Price + Alert ──────────────────────── */}
               <DeckPriceModule deckPrice={result.deckPrice} deckList={deckList} />
