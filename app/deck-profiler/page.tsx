@@ -82,6 +82,14 @@ interface AnalysisResult {
     archetypeName: string | null;
     matchPct: number | null;
   };
+  deckScore: {
+    total: number;
+    grade: string;
+    rotation: number;
+    consistency: number;
+    evolution: number;
+    energyFit: number;
+  };
   cards: Card[];
   warnings: string[];
   shopMatches: Array<{
@@ -812,6 +820,51 @@ export default function DeckProfilerPage() {
                 )}
               </CollapsibleSection>
 
+              {/* ── Deck Score ─────────────────────────────── */}
+              <details className="rounded-xl border border-tan-200 bg-tan-100 p-5 backdrop-blur-sm group">
+                <summary className="flex items-center justify-between cursor-pointer list-none [&::-webkit-details-marker]:hidden">
+                  <h2 className="text-lg font-semibold">
+                    <span className="group-open:hidden">Deck Score &mdash; {result.deckScore.grade} ({result.deckScore.total}/100)</span>
+                    <span className="hidden group-open:inline">Deck Score</span>
+                  </h2>
+                  <svg
+                    className="w-4 h-4 text-brown-400 transition-transform group-open:rotate-180"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth={2}
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                  </svg>
+                </summary>
+                <div className="mt-4 flex flex-col items-center gap-1 mb-6">
+                  <span className={`text-5xl font-bold ${
+                    result.deckScore.grade === "S" ? "text-purple-600" :
+                    result.deckScore.grade === "A" ? "text-green-600" :
+                    result.deckScore.grade === "B" ? "text-blue-600" :
+                    result.deckScore.grade === "C" ? "text-yellow-600" :
+                    "text-red-600"
+                  }`}>{result.deckScore.grade}</span>
+                  <span className="text-sm text-gray-500">{result.deckScore.total} / 100</span>
+                </div>
+                <div className="flex flex-col gap-3">
+                  {([
+                    { label: "Rotation", value: result.deckScore.rotation },
+                    { label: "Consistency", value: result.deckScore.consistency },
+                    { label: "Evolution", value: result.deckScore.evolution },
+                    { label: "Energy Fit", value: result.deckScore.energyFit },
+                  ] as const).map(({ label, value }) => (
+                    <div key={label} className="flex items-center gap-3">
+                      <span className="text-sm text-brown-700 w-24 shrink-0">{label}</span>
+                      <div className="flex-1 bg-gray-200 rounded-full h-2">
+                        <div className="bg-blue-500 rounded-full h-2" style={{ width: `${(value / 25) * 100}%` }} />
+                      </div>
+                      <span className="text-sm text-brown-500 w-10 text-right shrink-0">{value}/25</span>
+                    </div>
+                  ))}
+                </div>
+              </details>
+
               {/* ── Meta Match ────────────────────────────── */}
               {result.metaMatch.matched && (
                 <div className="rounded-xl border border-green-200 bg-green-50 p-5">
@@ -834,7 +887,7 @@ export default function DeckProfilerPage() {
                     )}
                   </div>
                   <p className="text-sm text-green-700 mt-2">
-                    This deck matches a recognized archetype in the current top 20 meta.
+                    This deck matches a recognized archetype in the current top 40 meta.
                   </p>
                 </div>
               )}
