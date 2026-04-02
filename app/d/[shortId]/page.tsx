@@ -349,19 +349,13 @@ export default async function SharedDeckPage({
               ? "Energy count is slightly outside the typical range."
               : "Energy count may be too high or too low for consistent attachment.";
 
-            const gradeColor = grade === "S" ? "text-purple-600" : grade === "A" ? "text-green-600" : grade === "B" ? "text-blue-600" : grade === "C" ? "text-yellow-600" : "text-red-600";
-
             return (
               <div className="rounded-xl border border-tan-200 bg-tan-100 p-5 backdrop-blur-sm">
-                <div className="flex items-center gap-4 mb-4">
-                  <span className={`text-5xl font-bold leading-none ${gradeColor}`}>{grade}</span>
-                  <h2 className="text-lg font-semibold text-brown-900">Deck Score</h2>
-                </div>
-                <ul className="flex flex-col gap-2">
+                <h2 className="text-lg font-semibold text-brown-900 mb-3">Deck Notes</h2>
+                <ul className="flex flex-col gap-2 list-disc list-inside">
                   {[rotationStr, consistencyStr, evolutionStr, energyStr].map((str, i) => (
-                    <li key={i} className="flex items-start gap-2 text-sm text-brown-700">
-                      <span className="mt-0.5 shrink-0 text-brown-400">—</span>
-                      <span>{str}</span>
+                    <li key={i} className="text-sm text-brown-700">
+                      {str}
                     </li>
                   ))}
                 </ul>
