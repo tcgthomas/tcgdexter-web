@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import DeckPriceModule from "@/app/components/DeckPriceModule";
 
 /* ─── Types (mirrors API response) ───────────────────────────── */
 
@@ -253,34 +254,7 @@ export default function DeckProfilerPage() {
     }
   }
 
-  /* ── Alert form state ──────────────────────────────────────── */
-  const [alertEmail, setAlertEmail] = useState("");
-  const [alertThreshold, setAlertThreshold] = useState("");
-  const [alertStatus, setAlertStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
 
-  async function handleAlertSubmit() {
-    if (!result || !alertEmail.includes("@") || !alertThreshold) return;
-    setAlertStatus("loading");
-    try {
-      const res = await fetch("/api/alerts", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          email: alertEmail,
-          threshold: parseFloat(alertThreshold),
-          deckList,
-          deckPrice: result.deckPrice,
-        }),
-      });
-      if (res.ok) {
-        setAlertStatus("success");
-      } else {
-        setAlertStatus("error");
-      }
-    } catch {
-      setAlertStatus("error");
-    }
-  }
 
   async function handleAnalyze() {
     if (!deckList.trim()) {
@@ -439,81 +413,53 @@ export default function DeckProfilerPage() {
           {result && (
             <div className="flex flex-col gap-4">
 
-              {/* ── Share Button ──────────────────────────── */}
-              <button
-                onClick={handleShare}
-                disabled={sharing}
-                className="inline-flex items-center justify-center gap-2 rounded-lg bg-energy px-5 py-2.5 text-sm font-semibold text-white transition-all hover:bg-energy-light disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {sharing ? (
-                  <>
-                    <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-                    </svg>
-                    Sharing…
-                  </>
-                ) : (
-                  <>
-                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M7.217 10.907a2.25 2.25 0 1 0 0 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186 9.566-5.314m-9.566 7.5 9.566 5.314m0 0 a2.25 2.25 0 1 0 3.935 2.186 2.25 2.25 0 0 0-3.935-2.186zm0-12.814a2.25 2.25 0 1 0 3.933-2.185 2.25 2.25 0 0 0-3.933 2.185z" />
-                    </svg>
-                    Share this Deck Profile
-                  </>
-                )}
-              </button>
-
-              {/* ── 0. Deck Price ───────────────────────────── */}
-              {result.deckPrice > 0 && (
-                <div className="rounded-xl border border-tan-200 bg-tan-100 px-5 py-4 flex items-center justify-between">
-                  <p className="text-xs text-brown-400 uppercase tracking-wide">Estimated Deck Price</p>
-                  <p className="text-2xl font-bold text-brown-900">${result.deckPrice.toFixed(2)}</p>
+              {/* ── Deck Score ─────────────────────────────── */}
+              <details className="rounded-xl border border-tan-200 bg-tan-100 p-5 backdrop-blur-sm group">
+                <summary className="flex items-center justify-between cursor-pointer list-none [&::-webkit-details-marker]:hidden">
+                  <h2 className="text-lg font-semibold">
+                    <span className="group-open:hidden">Deck Score &mdash; {result.deckScore.grade} ({result.deckScore.total}/100)</span>
+                    <span className="hidden group-open:inline">Deck Score</span>
+                  </h2>
+                  <svg
+                    className="w-4 h-4 text-brown-400 transition-transform group-open:rotate-180"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth={2}
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                  </svg>
+                </summary>
+                <div className="mt-4 flex flex-col items-center gap-1 mb-6">
+                  <span className={`text-5xl font-bold ${
+                    result.deckScore.grade === "S" ? "text-purple-600" :
+                    result.deckScore.grade === "A" ? "text-green-600" :
+                    result.deckScore.grade === "B" ? "text-blue-600" :
+                    result.deckScore.grade === "C" ? "text-yellow-600" :
+                    "text-red-600"
+                  }`}>{result.deckScore.grade}</span>
+                  <span className="text-sm text-gray-500">{result.deckScore.total} / 100</span>
                 </div>
-              )}
-
-              {/* ── Price Alert ──────────────────────────────── */}
-              {result.deckPrice > 0 && (
-                <div className="rounded-xl border border-tan-200 bg-tan-100 px-5 py-4">
-                  {alertStatus === "success" ? (
-                    <p className="text-sm text-green-700 font-medium">&#10003; We&apos;ll let you know!</p>
-                  ) : (
-                    <>
-                      <p className="text-xs text-brown-400 mb-3">Alert me when this deck drops below</p>
-                      <div className="flex flex-col sm:flex-row gap-2">
-                        <div className="relative flex-shrink-0">
-                          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-brown-400">$</span>
-                          <input
-                            type="number"
-                            min="1"
-                            step="0.01"
-                            value={alertThreshold || (result ? Math.round(result.deckPrice * 0.85) : "")}
-                            onChange={(e) => setAlertThreshold(e.target.value)}
-                            onFocus={() => { if (!alertThreshold && result) setAlertThreshold(String(Math.round(result.deckPrice * 0.85))); }}
-                            className="w-full sm:w-28 rounded-lg border border-tan-200 bg-tan-50 pl-7 pr-3 py-2 text-sm text-brown-900 focus:outline-none focus:border-energy/40 focus:ring-1 focus:ring-energy/20 [font-size:16px] sm:text-sm"
-                          />
-                        </div>
-                        <input
-                          type="email"
-                          placeholder="your@email.com"
-                          value={alertEmail}
-                          onChange={(e) => setAlertEmail(e.target.value)}
-                          className="flex-1 rounded-lg border border-tan-200 bg-tan-50 px-3 py-2 text-sm text-brown-900 placeholder:text-brown-300 focus:outline-none focus:border-energy/40 focus:ring-1 focus:ring-energy/20 [font-size:16px] sm:text-sm"
-                        />
-                        <button
-                          onClick={handleAlertSubmit}
-                          disabled={alertStatus === "loading" || !alertEmail.includes("@")}
-                          className="flex-shrink-0 rounded-lg bg-energy px-4 py-2 text-sm font-semibold text-white transition-all hover:bg-energy-light disabled:opacity-50 disabled:cursor-not-allowed"
-                        >
-                          {alertStatus === "loading" ? "Saving…" : "Notify Me"}
-                        </button>
+                <div className="flex flex-col gap-3">
+                  {([
+                    { label: "Rotation", value: result.deckScore.rotation },
+                    { label: "Consistency", value: result.deckScore.consistency },
+                    { label: "Evolution", value: result.deckScore.evolution },
+                    { label: "Energy Fit", value: result.deckScore.energyFit },
+                  ] as const).map(({ label, value }) => (
+                    <div key={label} className="flex items-center gap-3">
+                      <span className="text-sm text-brown-700 w-24 shrink-0">{label}</span>
+                      <div className="flex-1 bg-gray-200 rounded-full h-2">
+                        <div className="bg-blue-500 rounded-full h-2" style={{ width: `${(value / 25) * 100}%` }} />
                       </div>
-                      {alertStatus === "error" && (
-                        <p className="text-xs text-red-600 mt-2">Something went wrong, try again.</p>
-                      )}
-                    </>
-                  )}
+                      <span className="text-sm text-brown-500 w-10 text-right shrink-0">{value}/25</span>
+                    </div>
+                  ))}
                 </div>
-              )}
+              </details>
+
+              {/* ── Deck Price + Alert ──────────────────────── */}
+              <DeckPriceModule deckPrice={result.deckPrice} deckList={deckList} />
 
               {/* ── Rotation Status ────────────────────────── */}
               {result.rotation.ready ? (
@@ -597,51 +543,6 @@ export default function DeckProfilerPage() {
                 </details>
               )}
 
-              {/* ── Deck Score ─────────────────────────────── */}
-              <details className="rounded-xl border border-tan-200 bg-tan-100 p-5 backdrop-blur-sm group">
-                <summary className="flex items-center justify-between cursor-pointer list-none [&::-webkit-details-marker]:hidden">
-                  <h2 className="text-lg font-semibold">
-                    <span className="group-open:hidden">Deck Score &mdash; {result.deckScore.grade} ({result.deckScore.total}/100)</span>
-                    <span className="hidden group-open:inline">Deck Score</span>
-                  </h2>
-                  <svg
-                    className="w-4 h-4 text-brown-400 transition-transform group-open:rotate-180"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    strokeWidth={2}
-                  >
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-                  </svg>
-                </summary>
-                <div className="mt-4 flex flex-col items-center gap-1 mb-6">
-                  <span className={`text-5xl font-bold ${
-                    result.deckScore.grade === "S" ? "text-purple-600" :
-                    result.deckScore.grade === "A" ? "text-green-600" :
-                    result.deckScore.grade === "B" ? "text-blue-600" :
-                    result.deckScore.grade === "C" ? "text-yellow-600" :
-                    "text-red-600"
-                  }`}>{result.deckScore.grade}</span>
-                  <span className="text-sm text-gray-500">{result.deckScore.total} / 100</span>
-                </div>
-                <div className="flex flex-col gap-3">
-                  {([
-                    { label: "Rotation", value: result.deckScore.rotation },
-                    { label: "Consistency", value: result.deckScore.consistency },
-                    { label: "Evolution", value: result.deckScore.evolution },
-                    { label: "Energy Fit", value: result.deckScore.energyFit },
-                  ] as const).map(({ label, value }) => (
-                    <div key={label} className="flex items-center gap-3">
-                      <span className="text-sm text-brown-700 w-24 shrink-0">{label}</span>
-                      <div className="flex-1 bg-gray-200 rounded-full h-2">
-                        <div className="bg-blue-500 rounded-full h-2" style={{ width: `${(value / 25) * 100}%` }} />
-                      </div>
-                      <span className="text-sm text-brown-500 w-10 text-right shrink-0">{value}/25</span>
-                    </div>
-                  ))}
-                </div>
-              </details>
-
               {/* ── 1. Overview ─────────────────────────────── */}
               <div className="rounded-xl border border-tan-200 bg-tan-100 p-5 backdrop-blur-sm">
                 <div className="flex items-baseline justify-between mb-4">
@@ -681,6 +582,30 @@ export default function DeckProfilerPage() {
                   </div>
                 </div>
               </div>
+
+              {/* ── Share Button ──────────────────────────── */}
+              <button
+                onClick={handleShare}
+                disabled={sharing}
+                className="inline-flex items-center justify-center gap-2 rounded-lg bg-energy px-5 py-2.5 text-sm font-semibold text-white transition-all hover:bg-energy-light disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {sharing ? (
+                  <>
+                    <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                    </svg>
+                    Sharing…
+                  </>
+                ) : (
+                  <>
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M7.217 10.907a2.25 2.25 0 1 0 0 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186 9.566-5.314m-9.566 7.5 9.566 5.314m0 0 a2.25 2.25 0 1 0 3.935 2.186 2.25 2.25 0 0 0-3.935-2.186zm0-12.814a2.25 2.25 0 1 0 3.933-2.185 2.25 2.25 0 0 0-3.933 2.185z" />
+                    </svg>
+                    Share this Deck Profile
+                  </>
+                )}
+              </button>
 
               {/* ── Pokémon Breakdown ──────────────────────── */}
               <CollapsibleSection
