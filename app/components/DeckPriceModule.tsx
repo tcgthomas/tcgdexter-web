@@ -40,19 +40,19 @@ export default function DeckPriceModule({ deckPrice, deckList }: Props) {
   return (
     <details className="rounded-xl border border-tan-200 bg-tan-100 p-5 backdrop-blur-sm group">
       <summary className="flex items-center justify-between cursor-pointer list-none [&::-webkit-details-marker]:hidden">
-        <div className="flex flex-col">
-          <h2 className="text-lg font-semibold">Estimated Deck Price</h2>
-          <span className="text-2xl font-bold text-brown-900 leading-tight">${deckPrice.toFixed(2)}</span>
+        <h2 className="text-lg font-semibold">Estimated Deck Price</h2>
+        <div className="flex items-center gap-3 shrink-0">
+          <span className="text-lg font-bold text-brown-900">${deckPrice.toFixed(2)}</span>
+          <svg
+            className="w-4 h-4 text-brown-400 transition-transform group-open:rotate-180"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth={2}
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+          </svg>
         </div>
-        <svg
-          className="w-4 h-4 text-brown-400 transition-transform group-open:rotate-180 flex-shrink-0"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-          strokeWidth={2}
-        >
-          <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-        </svg>
       </summary>
 
       {/* Alert form — visible when expanded */}
