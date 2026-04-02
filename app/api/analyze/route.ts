@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import cardData from "@/data/cards-standard.json";
 import shopListingsData from "@/data/shop-listings.json";
+import metaArchetypesData from "@/data/meta-archetypes.json";
 
 /* ─── Shop Listings ──────────────────────────────────────────── */
 
@@ -235,26 +236,9 @@ function lookupCard(name: string): CardDataEntry | null {
   return entries?.[0] ?? null;
 }
 
-/* ─── Meta Archetypes (optional, fails gracefully) ───────────── */
+/* ─── Meta Archetypes (static, bundled at build time) ────────── */
 
-async function fetchMetaArchetypes(): Promise<MetaArchetype[]> {
-  try {
-    const res = await fetch("http://100.80.110.45:8789/v1/meta/archetypes", {
-      cache: "no-store",
-      signal: AbortSignal.timeout(3000),
-    });
-    if (!res.ok) return [];
-    const data = await res.json();
-    const list: MetaArchetype[] = Array.isArray(data)
-      ? data
-      : (data.data ?? data.archetypes ?? data.results ?? []);
-    return list
-      .sort((a, b) => b.representation_pct - a.representation_pct)
-      .slice(0, 40);
-  } catch {
-    return [];
-  }
-}
+const STATIC_META_ARCHETYPES: MetaArchetype[] = metaArchetypesData as MetaArchetype[];
 
 /* ─── Route Handler ──────────────────────────────────────────── */
 
@@ -309,13 +293,8 @@ export async function POST(req: NextRequest) {
     const uniquePokemonNames = Array.from(new Set(pokemonCards.map((c) => c.name)));
     const totalPokemonCards = pokemonCards.reduce((s, c) => s + c.qty, 0);
 
-    // Fetch meta archetypes gracefully (may fail if daemon unreachable)
-    let metaArchetypes: MetaArchetype[] = [];
-    try {
-      metaArchetypes = await fetchMetaArchetypes();
-    } catch {
-      // Daemon unreachable — metaMatch will fall back to { matched: false }
-    }
+    // Use bundled static archetypes (exported from daemon, always available)
+    const metaArchetypes: MetaArchetype[] = STATIC_META_ARCHETYPES;
 
     const abilities: PokemonAbility[] = [];
     const attacks: PokemonAttack[] = [];
