@@ -380,24 +380,19 @@ export default async function SharedDeckPage({
                     </div>
                     <div className="divide-y divide-blue-100">
                       {match.listings.map((listing) => (
-                        <div key={listing.itemId} className="px-4 py-3 flex items-center gap-3 flex-wrap">
+                        <div key={listing.itemId} className="px-4 py-3 flex items-center gap-4">
                           {listing.imageUrl && (
-                            <img src={listing.imageUrl} alt={listing.title} className="w-10 h-10 object-contain rounded flex-shrink-0" />
+                            <img src={listing.imageUrl} alt={listing.title} className="w-16 h-16 object-contain rounded flex-shrink-0" />
                           )}
-                          <span className="text-sm font-semibold text-brown-900">
-                            ${listing.price.toFixed(2)}
-                          </span>
-                          <span className="text-xs text-brown-500">{listing.condition}</span>
-                          {listing.bestOffer && (
-                            <span className="inline-flex items-center rounded-full border border-green-200 bg-green-50 px-2 py-0.5 text-xs font-medium text-green-700">
-                              Best Offer
-                            </span>
-                          )}
+                          <div className="flex flex-col flex-1 min-w-0">
+                            <span className="text-sm font-semibold text-brown-900">${listing.price.toFixed(2)}</span>
+                            <span className="text-xs text-brown-500 mt-0.5 truncate">{listing.title}</span>
+                          </div>
                           <a
                             href={listing.listingUrl}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="ml-auto inline-flex items-center gap-1 rounded-md border border-blue-200 bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-700 hover:bg-blue-100 transition-colors"
+                            className="flex-shrink-0 inline-flex items-center gap-1 rounded-md border border-blue-200 bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-700 hover:bg-blue-100 transition-colors"
                           >
                             View
                             <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
