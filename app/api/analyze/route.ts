@@ -114,6 +114,8 @@ interface AnalysisResult {
     matched: boolean;
     archetypeName: string | null;
     matchPct: number | null;
+    rank: number | null;
+    conversionRate: number | null;
   };
   deckPrice: number;
   cards: Card[];
@@ -137,6 +139,7 @@ interface MetaArchetype {
   name: string;
   representation_pct: number;
   top_cut_entries?: number;
+  conversion_rate?: number;
 }
 
 /* ─── Parser ─────────────────────────────────────────────────── */
@@ -338,35 +341,45 @@ export async function POST(req: NextRequest) {
     }
 
     // ── Meta Match ─────────────────────────────────────────────
-    // Match against daemon archetypes by checking if Pokémon names in the deck
-    // appear in any archetype name — no hardcoded rules needed.
     let metaMatch: AnalysisResult["metaMatch"] = {
       matched: false,
       archetypeName: null,
       matchPct: null,
+      rank: null,
+      conversionRate: null,
     };
 
     const pokemonNames = cards
       .filter((c) => c.section === "pokemon")
       .map((c) => c.name.toLowerCase()
-        // Strip suffixes like "ex", "VSTAR", "VMAX", "V", "Mega" for matching
         .replace(/\s+(ex|vstar|vmax|v|gx)$/i, "")
         .replace(/^mega\s+/i, "")
         .trim()
       );
 
     if (metaArchetypes.length > 0) {
-      const metaEntry = metaArchetypes.find((m) => {
+      let matchedIndex = -1;
+      const metaEntry = metaArchetypes.find((m, i) => {
         const archWords = m.name.toLowerCase().split(/\s+/);
-        return archWords.some((word) =>
+        const hit = archWords.some((word) =>
           word.length > 3 && pokemonNames.some((pName) => pName.includes(word) || word.includes(pName))
         );
+        if (hit) matchedIndex = i;
+        return hit;
       });
       if (metaEntry) {
+        // Compute % match: how many archetype name words appear in the deck
+        const archWords = metaEntry.name.toLowerCase().split(/\s+/).filter(w => w.length > 3);
+        const matchedWords = archWords.filter(word =>
+          pokemonNames.some(pName => pName.includes(word) || word.includes(pName))
+        );
+        const deckMatchPct = archWords.length > 0 ? matchedWords.length / archWords.length : 1;
         metaMatch = {
           matched: true,
           archetypeName: metaEntry.name,
-          matchPct: metaEntry.representation_pct,
+          matchPct: deckMatchPct,
+          rank: matchedIndex + 1,
+          conversionRate: metaEntry.conversion_rate ?? null,
         };
       }
     }

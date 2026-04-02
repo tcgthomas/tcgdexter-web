@@ -82,6 +82,8 @@ interface AnalysisResult {
     matched: boolean;
     archetypeName: string | null;
     matchPct: number | null;
+    rank: number | null;
+    conversionRate: number | null;
   };
   deckScore: {
     total: number;
@@ -474,31 +476,44 @@ export default function DeckProfilerPage() {
               })()}
 
               {/* ── Meta Match ────────────────────────────── */}
-              {result.metaMatch.matched && (
-                <div className="rounded-xl border border-green-200 bg-green-50 p-5">
-                  <div className="flex items-start justify-between gap-3">
-                    <div>
-                      <span className="inline-flex items-center rounded-full border border-green-200 bg-green-100 px-2.5 py-0.5 text-xs font-semibold text-green-700 mb-2">
-                        Top Meta Deck
-                      </span>
-                      <h2 className="text-xl font-bold text-green-900">
-                        {result.metaMatch.archetypeName}
-                      </h2>
-                    </div>
-                    {result.metaMatch.matchPct !== null && (
-                      <div className="text-right shrink-0">
-                        <p className="text-2xl font-black text-green-700 leading-none">
-                          {(result.metaMatch.matchPct * 100).toFixed(1)}%
-                        </p>
-                        <p className="text-xs text-green-600 mt-0.5">meta share</p>
+              {result.metaMatch.matched && (() => {
+                const { archetypeName, matchPct, rank, conversionRate } = result.metaMatch;
+                const pct = (conversionRate ?? 0) * 100;
+                const presenceNote = (matchPct ?? 0) >= 0.1
+                  ? "High meta presence — expect to see this at locals."
+                  : (matchPct ?? 0) >= 0.05
+                  ? "Solid meta share — a real threat at any table."
+                  : "Niche presence — skilled pilots only.";
+                const convNote = pct >= 30
+                  ? "Exceptional conversion rate — the pilots who run it are winning."
+                  : pct >= 15
+                  ? "Good conversion — the deck delivers when it gets there."
+                  : "Low conversion rate — entries outpace top cuts.";
+                return (
+                  <div className="rounded-xl border border-green-200 bg-green-50 p-5">
+                    <div className="flex items-start justify-between gap-3 mb-3">
+                      <div>
+                        <span className="inline-flex items-center rounded-full border border-green-200 bg-green-100 px-2.5 py-0.5 text-xs font-semibold text-green-700 mb-2">
+                          Top Meta Deck
+                        </span>
+                        <h2 className="text-xl font-bold text-green-900">{archetypeName}</h2>
                       </div>
+                      <div className="text-right shrink-0">
+                        {rank !== null && (
+                          <p className="text-2xl font-black text-green-700 leading-none">#{rank}</p>
+                        )}
+                        <p className="text-xs text-green-600 mt-0.5">in Standard</p>
+                      </div>
+                    </div>
+                    {matchPct !== null && (
+                      <p className="text-xs text-green-700 mb-2 font-medium">
+                        {(matchPct * 100).toFixed(0)}% match to known deck list
+                      </p>
                     )}
+                    <p className="text-sm text-green-700">{presenceNote} {convNote}</p>
                   </div>
-                  <p className="text-sm text-green-700 mt-2">
-                    This deck matches a recognized archetype in the current top 40 meta.
-                  </p>
-                </div>
-              )}
+                );
+              })()}
 
               {/* ── Rotation Banner (blocked only) ─────────── */}
               {!result.rotation.ready && (

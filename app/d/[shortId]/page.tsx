@@ -83,6 +83,8 @@ interface AnalysisResult {
     matched: boolean;
     archetypeName: string | null;
     matchPct: number | null;
+    rank: number | null;
+    conversionRate: number | null;
   };
   cards: Array<{ qty: number; name: string; section: string }>;
   warnings: string[];
