@@ -359,23 +359,34 @@ export async function POST(req: NextRequest) {
     }
 
     // ── Meta Match ─────────────────────────────────────────────
-    const archetypeName = detectArchetypeName(cards);
+    // Match against daemon archetypes by checking if Pokémon names in the deck
+    // appear in any archetype name — no hardcoded rules needed.
     let metaMatch: AnalysisResult["metaMatch"] = {
       matched: false,
       archetypeName: null,
       matchPct: null,
     };
 
-    if (archetypeName && metaArchetypes.length > 0) {
-      const archLower = archetypeName.toLowerCase();
-      const metaEntry = metaArchetypes.find((m) =>
-        m.name.toLowerCase().includes(archLower) ||
-        archLower.includes(m.name.toLowerCase())
+    const pokemonNames = cards
+      .filter((c) => c.section === "pokemon")
+      .map((c) => c.name.toLowerCase()
+        // Strip suffixes like "ex", "VSTAR", "VMAX", "V", "Mega" for matching
+        .replace(/\s+(ex|vstar|vmax|v|gx)$/i, "")
+        .replace(/^mega\s+/i, "")
+        .trim()
       );
+
+    if (metaArchetypes.length > 0) {
+      const metaEntry = metaArchetypes.find((m) => {
+        const archWords = m.name.toLowerCase().split(/\s+/);
+        return archWords.some((word) =>
+          word.length > 3 && pokemonNames.some((pName) => pName.includes(word) || word.includes(pName))
+        );
+      });
       if (metaEntry) {
         metaMatch = {
           matched: true,
-          archetypeName,
+          archetypeName: metaEntry.name,
           matchPct: metaEntry.representation_pct,
         };
       }
