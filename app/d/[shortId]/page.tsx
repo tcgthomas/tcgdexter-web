@@ -381,6 +381,9 @@ export default async function SharedDeckPage({
                     <div className="divide-y divide-blue-100">
                       {match.listings.map((listing) => (
                         <div key={listing.itemId} className="px-4 py-3 flex items-center gap-3 flex-wrap">
+                          {listing.imageUrl && (
+                            <img src={listing.imageUrl} alt={listing.title} className="w-10 h-10 object-contain rounded flex-shrink-0" />
+                          )}
                           <span className="text-sm font-semibold text-brown-900">
                             ${listing.price.toFixed(2)}
                           </span>
