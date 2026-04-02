@@ -458,23 +458,35 @@ export default function DeckProfilerPage() {
                 );
               })()}
 
-              {/* ── Deck Price + Alert ──────────────────────── */}
-              <DeckPriceModule deckPrice={result.deckPrice} deckList={deckList} />
-
-              {/* ── Rotation Status ────────────────────────── */}
-              {result.rotation.ready ? (
-                <div className="rounded-xl border border-green-200 bg-green-50 px-5 py-4">
-                  <div className="flex items-center gap-3">
-                    <svg className="w-4 h-4 text-green-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                    </svg>
+              {/* ── Meta Match ────────────────────────────── */}
+              {result.metaMatch.matched && (
+                <div className="rounded-xl border border-green-200 bg-green-50 p-5">
+                  <div className="flex items-start justify-between gap-3">
                     <div>
-                      <p className="text-sm font-semibold text-green-900">Rotation Ready</p>
-                      <p className="text-xs text-green-700 mt-0.5">All cards H-mark and later</p>
+                      <span className="inline-flex items-center rounded-full border border-green-200 bg-green-100 px-2.5 py-0.5 text-xs font-semibold text-green-700 mb-2">
+                        Top Meta Deck
+                      </span>
+                      <h2 className="text-xl font-bold text-green-900">
+                        {result.metaMatch.archetypeName}
+                      </h2>
                     </div>
+                    {result.metaMatch.matchPct !== null && (
+                      <div className="text-right shrink-0">
+                        <p className="text-2xl font-black text-green-700 leading-none">
+                          {(result.metaMatch.matchPct * 100).toFixed(1)}%
+                        </p>
+                        <p className="text-xs text-green-600 mt-0.5">meta share</p>
+                      </div>
+                    )}
                   </div>
+                  <p className="text-sm text-green-700 mt-2">
+                    This deck matches a recognized archetype in the current top 40 meta.
+                  </p>
                 </div>
-              ) : (
+              )}
+
+              {/* ── Rotation Banner (blocked only) ─────────── */}
+              {!result.rotation.ready && (
                 <div className="rounded-xl border border-amber-200 bg-amber-50 px-5 py-4">
                   <div className="flex items-center gap-3 mb-3">
                     <svg className="w-4 h-4 text-amber-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -494,53 +506,6 @@ export default function DeckProfilerPage() {
                     ))}
                   </div>
                 </div>
-              )}
-
-              {/* ── Shop Matches ─────────────────────────────── */}
-              {result.shopMatches.length > 0 && (
-                <details className="rounded-xl border border-blue-200 bg-blue-50 p-5 group">
-                  <summary className="flex items-center justify-between cursor-pointer list-none [&::-webkit-details-marker]:hidden">
-                    <div>
-                      <h2 className="text-lg font-semibold text-brown-900">Available in the Shop</h2>
-                      <p className="text-xs text-brown-400 mt-0.5">Check out cards from this deck on eBay</p>
-                    </div>
-                    <svg
-                      className="w-4 h-4 text-brown-400 transition-transform group-open:rotate-180"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                      strokeWidth={2}
-                    >
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-                    </svg>
-                  </summary>
-                  <div className="divide-y divide-tan-200 mt-4">
-                    {result.shopMatches.flatMap((match) =>
-                      match.listings.map((listing) => (
-                        <div key={listing.itemId} className="py-3 flex items-center gap-4">
-                          {listing.imageUrl && (
-                            <img src={listing.imageUrl} alt={listing.title} className="w-12 h-12 object-contain rounded flex-shrink-0" />
-                          )}
-                          <div className="flex flex-col flex-1 min-w-0">
-                            <span className="text-sm font-semibold text-brown-900">{match.cardName}</span>
-                            <span className="text-sm text-brown-500">${listing.price.toFixed(2)}</span>
-                          </div>
-                          <a
-                            href={listing.listingUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="flex-shrink-0 inline-flex items-center gap-1 rounded-md border border-blue-200 bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-700 hover:bg-blue-100 transition-colors"
-                          >
-                            View
-                            <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                              <path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                            </svg>
-                          </a>
-                        </div>
-                      ))
-                    )}
-                  </div>
-                </details>
               )}
 
               {/* ── 1. Overview ─────────────────────────────── */}
@@ -790,31 +755,54 @@ export default function DeckProfilerPage() {
                 )}
               </CollapsibleSection>
 
-              {/* ── Meta Match ────────────────────────────── */}
-              {result.metaMatch.matched && (
-                <div className="rounded-xl border border-green-200 bg-green-50 p-5">
-                  <div className="flex items-start justify-between gap-3">
+              {/* ── Deck Price + Alert ──────────────────────── */}
+              <DeckPriceModule deckPrice={result.deckPrice} deckList={deckList} />
+
+              {/* ── Shop Matches ─────────────────────────────── */}
+              {result.shopMatches.length > 0 && (
+                <details className="rounded-xl border border-blue-200 bg-blue-50 p-5 group">
+                  <summary className="flex items-center justify-between cursor-pointer list-none [&::-webkit-details-marker]:hidden">
                     <div>
-                      <span className="inline-flex items-center rounded-full border border-green-200 bg-green-100 px-2.5 py-0.5 text-xs font-semibold text-green-700 mb-2">
-                        Top Meta Deck
-                      </span>
-                      <h2 className="text-xl font-bold text-green-900">
-                        {result.metaMatch.archetypeName}
-                      </h2>
+                      <h2 className="text-lg font-semibold text-brown-900">Available in the Shop</h2>
+                      <p className="text-xs text-brown-400 mt-0.5">Check out cards from this deck on eBay</p>
                     </div>
-                    {result.metaMatch.matchPct !== null && (
-                      <div className="text-right shrink-0">
-                        <p className="text-2xl font-black text-green-700 leading-none">
-                          {(result.metaMatch.matchPct * 100).toFixed(1)}%
-                        </p>
-                        <p className="text-xs text-green-600 mt-0.5">meta share</p>
-                      </div>
+                    <svg
+                      className="w-4 h-4 text-brown-400 transition-transform group-open:rotate-180"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      strokeWidth={2}
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </summary>
+                  <div className="divide-y divide-tan-200 mt-4">
+                    {result.shopMatches.flatMap((match) =>
+                      match.listings.map((listing) => (
+                        <div key={listing.itemId} className="py-3 flex items-center gap-4">
+                          {listing.imageUrl && (
+                            <img src={listing.imageUrl} alt={listing.title} className="w-12 h-12 object-contain rounded flex-shrink-0" />
+                          )}
+                          <div className="flex flex-col flex-1 min-w-0">
+                            <span className="text-sm font-semibold text-brown-900">{match.cardName}</span>
+                            <span className="text-sm text-brown-500">${listing.price.toFixed(2)}</span>
+                          </div>
+                          <a
+                            href={listing.listingUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex-shrink-0 inline-flex items-center gap-1 rounded-md border border-blue-200 bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-700 hover:bg-blue-100 transition-colors"
+                          >
+                            View
+                            <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                            </svg>
+                          </a>
+                        </div>
+                      ))
                     )}
                   </div>
-                  <p className="text-sm text-green-700 mt-2">
-                    This deck matches a recognized archetype in the current top 40 meta.
-                  </p>
-                </div>
+                </details>
               )}
 
               {/* ── Warnings ──────────────────────────────── */}
