@@ -132,34 +132,36 @@ const ENERGY_LETTER: Record<string, string> = {
 /* ─── Example deck list ──────────────────────────────────────── */
 
 const EXAMPLE_DECK = `Pokémon: 18
-2 Mega Gardevoir ex MEG 159
-2 Mega Latias ex MEG 100
-2 Mega Manectric ex MEG 50
-2 Ralts ASC 84
-2 Kirlia ASC 84
-2 Gardevoir ex SVI 228
-2 Budew PRE 4
-2 Elgyem BLK 40
-2 Beheeyem BLK 41
+3 Riolu MEG 76
+3 Mega Lucario ex MEG 77
+1 Lucario SVI 114
+2 Makuhita MEG 72
+2 Hariyama MEG 73
+2 Lunatone MEG 74
+2 Solrock MEG 75
+1 Fezandipiti ex ASC 142
+1 Squawkabilly ex PAL 169
+1 Psyduck ASC 39
 
-Trainer: 30
+Trainer: 33
 4 Iono PAL 185
-4 Ultra Ball SVI 196
-4 Nest Ball SVI 181
-3 Arven OBF 186
-2 Boss's Orders MEG 114
-2 Professor's Research SVI 189
-2 Rare Candy MEG 175
-2 Night Stretcher MEG 173
-2 Switch MEG 170
-1 Super Rod PAL 188
-1 Secret Box TWM 163
-1 Pal Pad SVI 182
-2 Lillie's Determination MEG 119
+3 Lillie's Determination MEG 119
+2 Professor Turo's Scenario PAR 171
+4 Fighting Gong MEG 116
+4 Premium Power Pro MEG 124
+3 Ultra Ball MEG 131
+2 Nest Ball SVI 181
+2 Night Stretcher ASC 196
+2 Poké Pad ASC 198
+1 Switch MEG 130
+1 Tool Scrapper ASC 212
+2 Air Balloon ASC 181
+1 Maximum Belt TEF 154
+1 Gravity Mountain SSP 177
+1 Team Rocket's Watchtower DRI 180
 
-Energy: 12
-8 Basic Psychic Energy SVE 5
-4 Luminous Energy PAL 191`;
+Energy: 9
+9 Basic {F} Energy MEE 6`;
 
 /* ─── Energy cost pill ───────────────────────────────────────── */
 
@@ -243,7 +245,20 @@ export default function DeckProfilerPage() {
       });
       const data = await res.json();
       if (res.ok && data.url) {
-        await navigator.clipboard.writeText(data.url);
+        // Try modern clipboard API first, fall back to execCommand
+        try {
+          await navigator.clipboard.writeText(data.url);
+        } catch {
+          const ta = document.createElement("textarea");
+          ta.value = data.url;
+          ta.style.position = "fixed";
+          ta.style.opacity = "0";
+          document.body.appendChild(ta);
+          ta.focus();
+          ta.select();
+          document.execCommand("copy");
+          document.body.removeChild(ta);
+        }
         setShareToast(true);
         setTimeout(() => setShareToast(false), 2000);
       }
