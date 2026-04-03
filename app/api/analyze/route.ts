@@ -358,28 +358,33 @@ export async function POST(req: NextRequest) {
       );
 
     if (metaArchetypes.length > 0) {
-      let matchedIndex = -1;
-      const metaEntry = metaArchetypes.find((m, i) => {
-        const archWords = m.name.toLowerCase().split(/\s+/);
-        const hit = archWords.some((word) =>
-          word.length > 3 && pokemonNames.some((pName) => pName.includes(word) || word.includes(pName))
-        );
-        if (hit) matchedIndex = i;
-        return hit;
-      });
-      if (metaEntry) {
-        // Compute % match: how many archetype name words appear in the deck
-        const archWords = metaEntry.name.toLowerCase().split(/\s+/).filter(w => w.length > 3);
+      // Score every archetype — pick the best match above threshold
+      let bestScore = 0;
+      let bestIndex = -1;
+      let bestEntry: MetaArchetype | null = null;
+
+      metaArchetypes.forEach((m, i) => {
+        const archWords = m.name.toLowerCase().split(/\s+/).filter(w => w.length > 3);
+        if (archWords.length === 0) return;
         const matchedWords = archWords.filter(word =>
-          pokemonNames.some(pName => pName.includes(word) || word.includes(pName))
+          pokemonNames.some(pName => pName === word || pName.startsWith(word) || word.startsWith(pName))
         );
-        const deckMatchPct = archWords.length > 0 ? matchedWords.length / archWords.length : 1;
+        const score = matchedWords.length / archWords.length;
+        if (score > bestScore) {
+          bestScore = score;
+          bestIndex = i;
+          bestEntry = m;
+        }
+      });
+
+      // Require at least 50% of archetype name words to match
+      if (bestEntry && bestScore >= 0.5) {
         metaMatch = {
           matched: true,
-          archetypeName: metaEntry.name,
-          matchPct: deckMatchPct,
-          rank: matchedIndex + 1,
-          conversionRate: metaEntry.conversion_rate ?? null,
+          archetypeName: (bestEntry as MetaArchetype).name,
+          matchPct: bestScore,
+          rank: bestIndex + 1,
+          conversionRate: (bestEntry as MetaArchetype).conversion_rate ?? null,
         };
       }
     }
