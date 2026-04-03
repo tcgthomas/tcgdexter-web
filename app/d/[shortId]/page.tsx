@@ -712,7 +712,7 @@ export default async function SharedDeckPage({
 
           {/* Meta Match */}
           {result.metaMatch.matched && (
-            <div className="rounded-xl border border-green-500/40 bg-surface p-5">
+            <div className="rounded-xl border border-green-500/40 bg-green-500/20 p-5">
               <div className="flex items-start justify-between gap-3">
                 <div>
                   <span className="inline-flex items-center rounded-full border border-green-500/50 bg-green-500/10 px-2.5 py-0.5 text-xs font-semibold text-green-600 mb-2">
