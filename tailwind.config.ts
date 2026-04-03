@@ -5,9 +5,22 @@ const config: Config = {
     "./app/**/*.{ts,tsx}",
     "./components/**/*.{ts,tsx}",
   ],
+  darkMode: "class",
   theme: {
     extend: {
       colors: {
+        // Semantic design tokens (mapped to CSS custom properties)
+        bg:      "var(--bg)",
+        surface: { DEFAULT: "var(--surface)", 2: "var(--surface-2)" },
+        border:  "var(--border)",
+        "text-primary":   "var(--text-primary)",
+        "text-secondary": "var(--text-secondary)",
+        "text-muted":     "var(--text-muted)",
+        accent: {
+          DEFAULT: "var(--accent)",
+          light:   "var(--accent-light)",
+          dark:    "var(--accent-dark)",
+        },
         // Warm tan backgrounds
         tan: {
           50:  "#fdf8f2",

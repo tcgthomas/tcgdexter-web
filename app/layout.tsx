@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
+import ThemeProvider from "./components/ThemeProvider";
+import ThemeMenu from "./components/ThemeMenu";
 
 /* Geist Sans — clean, modern typeface from Vercel */
 const geistSans = localFont({
@@ -41,11 +43,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body
         className={`${geistSans.variable} ${geistMono.variable} font-sans antialiased bg-tan-50 text-brown-900`}
       >
-        {children}
+        <ThemeProvider>
+          <div className="fixed top-4 right-4 z-50">
+            <ThemeMenu />
+          </div>
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   );

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import DeckPriceModule from "@/app/components/DeckPriceModule";
 
@@ -131,6 +131,22 @@ const ENERGY_LETTER: Record<string, string> = {
   Colorless: "C",
 };
 
+/* ─── Energy hex colors (for gradient accent) ────────────────── */
+
+const ENERGY_HEX: Record<string, string> = {
+  Fire:       "#e74c3c",
+  Water:      "#3498db",
+  Grass:      "#27ae60",
+  Lightning:  "#f1c40f",
+  Psychic:    "#9b59b6",
+  Fighting:   "#e67e22",
+  Darkness:   "#2c3e50",
+  Metal:      "#95a5a6",
+  Dragon:     "#1a5276",
+  Fairy:      "#fd79a8",
+  Colorless:  "#b2bec3",
+};
+
 /* ─── Example deck list ──────────────────────────────────────── */
 
 const EXAMPLE_DECK = `Pokémon: 18
@@ -236,6 +252,26 @@ export default function DeckProfilerPage() {
   const [sharing, setSharing] = useState(false);
   const [shareToast, setShareToast] = useState(false);
 
+  /* ── Dominant energy color for background gradient ────────── */
+  const dominantColor = useMemo(() => {
+    if (!result) return null;
+    const entries = Object.entries(result.energy.basicByType);
+    if (entries.length === 0) return null;
+    const [topType] = entries.reduce((a, b) => (b[1] > a[1] ? b : a));
+    return ENERGY_HEX[topType] ?? null;
+  }, [result]);
+
+  useEffect(() => {
+    if (dominantColor) {
+      document.documentElement.style.setProperty("--energy-gradient", dominantColor + "22");
+    } else {
+      document.documentElement.style.removeProperty("--energy-gradient");
+    }
+    return () => {
+      document.documentElement.style.removeProperty("--energy-gradient");
+    };
+  }, [dominantColor]);
+
   async function handleShare() {
     if (!result || sharing) return;
     setSharing(true);
@@ -311,7 +347,10 @@ export default function DeckProfilerPage() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div
+      className="min-h-screen flex flex-col profiler-bg"
+      style={dominantColor ? { "--energy-accent": dominantColor } as React.CSSProperties : undefined}
+    >
       {/* ── Header ───────────────────────────────────────────── */}
       <header className="flex-shrink-0 pt-12 pb-8 px-6 text-center">
         <div className="text-left mb-6">

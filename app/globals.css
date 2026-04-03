@@ -2,6 +2,34 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ─── Design tokens ───────────────────────────────────────────── */
+
+:root {
+  --bg:             #fdf8f2;
+  --surface:        #f5ede0;
+  --surface-2:      #ecdcc8;
+  --border:         #d9c4a8;
+  --text-primary:   #2c1f0e;
+  --text-secondary: #5c3d1e;
+  --text-muted:     #b89d7e;
+  --accent:         #c0392b;
+  --accent-light:   #e74c3c;
+  --accent-dark:    #922b21;
+}
+
+[data-theme="dark"] {
+  --bg:             #18130f;
+  --surface:        #221c16;
+  --surface-2:      #2c2318;
+  --border:         #3d3228;
+  --text-primary:   #f0e6d6;
+  --text-secondary: #c4a882;
+  --text-muted:     #7a6654;
+  --accent:         #e05a4a;
+  --accent-light:   #f07060;
+  --accent-dark:    #b84030;
+}
+
 @layer base {
   /* Smooth scrolling */
   html {
@@ -33,6 +61,20 @@
   /* Toast fade-in then out */
   .animate-fade-toast {
     animation: fadeToast 2s ease forwards;
+  }
+
+  /* Subtle upward fade on surface cells */
+  .cell-gradient {
+    background: linear-gradient(
+      to top,
+      color-mix(in srgb, var(--surface) 100%, transparent 0%) 0%,
+      color-mix(in srgb, var(--surface) 70%, transparent 30%) 100%
+    );
+  }
+
+  /* Energy radial glow for deck profiler */
+  .profiler-bg {
+    background: radial-gradient(ellipse at 50% 100%, var(--energy-gradient, transparent) 0%, transparent 60%), var(--bg);
   }
 }
 
