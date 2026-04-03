@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { put } from "@vercel/blob";
 import cardData from "@/data/cards-standard.json";
 import shopListingsData from "@/data/shop-listings.json";
 import metaArchetypesData from "@/data/meta-archetypes.json";
@@ -598,6 +599,31 @@ export async function POST(req: NextRequest) {
       warnings,
       shopMatches,
     };
+
+    // ── Capture submission (fire-and-forget, never blocks response) ──
+    const submissionId = crypto.randomUUID();
+    const locale = req.headers.get("accept-language")?.split(",")[0] ?? null;
+    const userAgent = req.headers.get("user-agent") ?? null;
+    const capture = {
+      id: submissionId,
+      timestamp: new Date().toISOString(),
+      locale,
+      userAgent,
+      deckList,
+      analysis: {
+        deckSize: result.deckSize,
+        sections: result.sections,
+        rotation: result.rotation,
+        metaMatch: result.metaMatch,
+        deckScore: result.deckScore,
+        warnings: result.warnings,
+      },
+    };
+    put(
+      `submissions/${new Date().toISOString().slice(0, 10)}/${submissionId}.json`,
+      JSON.stringify(capture),
+      { access: "public", contentType: "application/json" }
+    ).catch(() => { /* swallow — never fail a user request over logging */ });
 
     return NextResponse.json(result);
   } catch {
