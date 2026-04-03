@@ -31,9 +31,10 @@
 }
 
 @layer base {
-  /* Extend background into iOS status bar / notch area */
+  /* Extend background into iOS status bar / notch area.
+     Falls back to --bg when no energy gradient is active. */
   html {
-    background-color: var(--bg);
+    background-color: var(--energy-gradient, var(--bg));
     scroll-behavior: smooth;
   }
 
