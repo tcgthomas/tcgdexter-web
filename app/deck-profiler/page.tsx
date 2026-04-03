@@ -3,6 +3,7 @@
 import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import DeckPriceModule from "@/app/components/DeckPriceModule";
+import ThemeColor from "@/app/components/ThemeColor";
 
 /* ─── Types (mirrors API response) ───────────────────────────── */
 
@@ -354,6 +355,7 @@ export default function DeckProfilerPage() {
       className={`min-h-screen flex flex-col profiler-bg${dominantColor ? " profiler-active" : ""}`}
       style={dominantColor ? { "--energy-accent": dominantColor } as React.CSSProperties : undefined}
     >
+      {dominantColor && <ThemeColor color={dominantColor} />}
       {/* ── Header ───────────────────────────────────────────── */}
       <header className="flex-shrink-0 pt-12 pb-8 px-6 text-center">
         <div className="text-left mb-6">

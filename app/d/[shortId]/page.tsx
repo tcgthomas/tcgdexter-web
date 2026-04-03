@@ -2,6 +2,21 @@ import { list } from "@vercel/blob";
 import { Metadata } from "next";
 import Link from "next/link";
 import DeckPriceModule from "@/app/components/DeckPriceModule";
+import ThemeColor from "@/app/components/ThemeColor";
+
+const ENERGY_HEX: Record<string, string> = {
+  Fire:       "#e74c3c",
+  Water:      "#3498db",
+  Grass:      "#27ae60",
+  Lightning:  "#f1c40f",
+  Psychic:    "#9b59b6",
+  Fighting:   "#e67e22",
+  Darkness:   "#2c3e50",
+  Metal:      "#95a5a6",
+  Dragon:     "#1a5276",
+  Fairy:      "#fd79a8",
+  Colorless:  "#b2bec3",
+};
 
 /* ─── Types (same as profiler) ─────────────────────────────── */
 
@@ -292,8 +307,19 @@ export default async function SharedDeckPage({
     year: "numeric",
   });
 
+  // Compute dominant energy color server-side
+  const energyEntries = Object.entries(result.energy.basicByType ?? {});
+  const dominantEnergyType = energyEntries.length > 0
+    ? energyEntries.reduce((a, b) => (b[1] > a[1] ? b : a))[0]
+    : null;
+  const dominantColor = dominantEnergyType ? (ENERGY_HEX[dominantEnergyType] ?? null) : null;
+
   return (
-    <div className="min-h-screen flex flex-col">
+    <div
+      className={`min-h-screen flex flex-col profiler-bg${dominantColor ? " profiler-active" : ""}`}
+      style={dominantColor ? { "--energy-gradient": dominantColor + "55", "--energy-accent": dominantColor } as React.CSSProperties : undefined}
+    >
+      {dominantColor && <ThemeColor color={dominantColor} />}
       {/* ── Header ─────────────────────────────────────────── */}
       <header className="flex-shrink-0 pt-12 pb-8 px-6 text-center">
         <div className="text-left mb-6">
