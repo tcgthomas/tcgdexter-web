@@ -262,19 +262,32 @@ export default function DeckProfilerPage() {
     return ENERGY_HEX[topType] ?? null;
   }, [result]);
 
+  // Blend energy hex with the page bg so gradient top + status bar are always opaque
+  const blendedTop = useMemo(() => {
+    if (!dominantColor) return null;
+    // Parse energy hex, blend at 35% over #fdf8f2 (--bg light) or #18130f (dark)
+    const isDark = document.documentElement.getAttribute("data-theme") === "dark";
+    const bg = isDark ? [24, 19, 15] : [253, 248, 242];
+    const r = parseInt(dominantColor.slice(1, 3), 16);
+    const g = parseInt(dominantColor.slice(3, 5), 16);
+    const b = parseInt(dominantColor.slice(5, 7), 16);
+    const alpha = 0.35;
+    const br = Math.round(r * alpha + bg[0] * (1 - alpha));
+    const bg2 = Math.round(g * alpha + bg[1] * (1 - alpha));
+    const bb = Math.round(b * alpha + bg[2] * (1 - alpha));
+    return `rgb(${br},${bg2},${bb})`;
+  }, [dominantColor]);
+
   useEffect(() => {
-    if (dominantColor) {
-      document.documentElement.style.setProperty("--energy-gradient", dominantColor + "55");
-      document.documentElement.style.setProperty("--energy-bar", dominantColor);
+    if (dominantColor && blendedTop) {
+      document.documentElement.style.setProperty("--energy-gradient", blendedTop);
     } else {
       document.documentElement.style.removeProperty("--energy-gradient");
-      document.documentElement.style.removeProperty("--energy-bar");
     }
     return () => {
       document.documentElement.style.removeProperty("--energy-gradient");
-      document.documentElement.style.removeProperty("--energy-bar");
     };
-  }, [dominantColor]);
+  }, [dominantColor, blendedTop]);
 
   async function handleShare() {
     if (!result || sharing) return;
@@ -355,7 +368,7 @@ export default function DeckProfilerPage() {
       className={`min-h-screen flex flex-col profiler-bg${dominantColor ? " profiler-active" : ""}`}
       style={dominantColor ? { "--energy-accent": dominantColor } as React.CSSProperties : undefined}
     >
-      {dominantColor && <ThemeColor color={dominantColor} />}
+      {blendedTop && <ThemeColor color={blendedTop} />}
       {/* ── Header ───────────────────────────────────────────── */}
       <header className="flex-shrink-0 pb-8 px-6 text-center" style={{ paddingTop: "calc(env(safe-area-inset-top) + 3rem)" }}>
         <div className="text-left mb-6">

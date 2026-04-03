@@ -314,12 +314,26 @@ export default async function SharedDeckPage({
     : null;
   const dominantColor = dominantEnergyType ? (ENERGY_HEX[dominantEnergyType] ?? null) : null;
 
+  // Pre-blend energy color with light bg so gradient top is always opaque
+  const blendedTop = (() => {
+    if (!dominantColor) return null;
+    const bg = [253, 248, 242]; // --bg light
+    const r = parseInt(dominantColor.slice(1, 3), 16);
+    const g = parseInt(dominantColor.slice(3, 5), 16);
+    const b = parseInt(dominantColor.slice(5, 7), 16);
+    const alpha = 0.35;
+    const br = Math.round(r * alpha + bg[0] * (1 - alpha));
+    const bg2 = Math.round(g * alpha + bg[1] * (1 - alpha));
+    const bb = Math.round(b * alpha + bg[2] * (1 - alpha));
+    return `rgb(${br},${bg2},${bb})`;
+  })();
+
   return (
     <div
       className={`min-h-screen flex flex-col profiler-bg${dominantColor ? " profiler-active" : ""}`}
-      style={dominantColor ? { "--energy-gradient": dominantColor + "55", "--energy-accent": dominantColor } as React.CSSProperties : undefined}
+      style={blendedTop ? { "--energy-gradient": blendedTop, "--energy-accent": dominantColor } as React.CSSProperties : undefined}
     >
-      {dominantColor && <ThemeColor color={dominantColor} />}
+      {blendedTop && <ThemeColor color={blendedTop} />}
       {/* ── Header ─────────────────────────────────────────── */}
       <header className="flex-shrink-0 pb-8 px-6 text-center" style={{ paddingTop: "calc(env(safe-area-inset-top) + 3rem)" }}>
         <div className="text-left mb-6">
