@@ -314,12 +314,23 @@ export default async function SharedDeckPage({
     : null;
   const dominantColor = dominantEnergyType ? (ENERGY_HEX[dominantEnergyType] ?? null) : null;
 
+  // Muted tint: blend at 20% over light bg
+  const mutedColor = (() => {
+    if (!dominantColor) return null;
+    const bg = [253, 248, 242];
+    const r = parseInt(dominantColor.slice(1, 3), 16);
+    const g = parseInt(dominantColor.slice(3, 5), 16);
+    const b = parseInt(dominantColor.slice(5, 7), 16);
+    const a = 0.20;
+    return `rgb(${Math.round(r*a + bg[0]*(1-a))},${Math.round(g*a + bg[1]*(1-a))},${Math.round(b*a + bg[2]*(1-a))})`;
+  })();
+
 
 
   return (
     <div
       className={`min-h-screen flex flex-col profiler-bg${dominantColor ? " profiler-active" : ""}`}
-      style={dominantColor ? { "--energy-color": dominantColor, "--energy-accent": dominantColor } as React.CSSProperties : undefined}
+      style={mutedColor ? { "--energy-color": mutedColor, "--energy-accent": dominantColor } as React.CSSProperties : undefined}
     >
       {dominantColor && <ThemeColor color={dominantColor} />}
       {/* ── Header ─────────────────────────────────────────── */}

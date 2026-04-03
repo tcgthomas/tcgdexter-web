@@ -262,16 +262,28 @@ export default function DeckProfilerPage() {
     return ENERGY_HEX[topType] ?? null;
   }, [result]);
 
+  const mutedColor = useMemo(() => {
+    if (!dominantColor) return null;
+    // 20% energy over page bg — opaque tint for status bar + gradient top
+    const isDark = typeof document !== "undefined" && document.documentElement.getAttribute("data-theme") === "dark";
+    const bg = isDark ? [24, 19, 15] : [253, 248, 242];
+    const r = parseInt(dominantColor.slice(1, 3), 16);
+    const g = parseInt(dominantColor.slice(3, 5), 16);
+    const b = parseInt(dominantColor.slice(5, 7), 16);
+    const a = 0.20;
+    return `rgb(${Math.round(r*a + bg[0]*(1-a))},${Math.round(g*a + bg[1]*(1-a))},${Math.round(b*a + bg[2]*(1-a))})`;
+  }, [dominantColor]);
+
   useEffect(() => {
-    if (dominantColor) {
-      document.documentElement.style.setProperty("--energy-color", dominantColor);
+    if (mutedColor) {
+      document.documentElement.style.setProperty("--energy-color", mutedColor);
     } else {
       document.documentElement.style.removeProperty("--energy-color");
     }
     return () => {
       document.documentElement.style.removeProperty("--energy-color");
     };
-  }, [dominantColor]);
+  }, [mutedColor]);
 
   async function handleShare() {
     if (!result || sharing) return;
@@ -352,7 +364,7 @@ export default function DeckProfilerPage() {
       className={`min-h-screen flex flex-col profiler-bg${dominantColor ? " profiler-active" : ""}`}
       style={dominantColor ? { "--energy-accent": dominantColor } as React.CSSProperties : undefined}
     >
-      {dominantColor && <ThemeColor color={dominantColor} />}
+      {mutedColor && <ThemeColor color={mutedColor} />}
       {/* ── Header ───────────────────────────────────────────── */}
       <header className="flex-shrink-0 pb-8 px-6 text-center" style={{ paddingTop: "calc(env(safe-area-inset-top) + 3rem)" }}>
         <div className="text-left mb-6">
