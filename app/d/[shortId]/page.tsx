@@ -452,7 +452,7 @@ export default async function SharedDeckPage({
               <summary className="flex items-center justify-between cursor-pointer list-none [&::-webkit-details-marker]:hidden">
                 <div>
                   <h2 className="text-lg font-semibold text-text-primary">Available in the Shop</h2>
-                  <p className="text-xs text-text-muted mt-0.5">Check out cards from this deck on eBay</p>
+                  <p className="text-xs text-text-secondary mt-0.5">Check out cards from this deck on eBay</p>
                 </div>
                 <svg
                   className="w-4 h-4 text-text-muted transition-transform group-open:rotate-180"
