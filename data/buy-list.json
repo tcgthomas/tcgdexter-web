@@ -2,7 +2,7 @@
   "items": [
     {
       "card_label": "Umbreon ex - 161/131 PRE",
-      "market_price": 1000
+      "market_price": 1020
     },
     {
       "card_label": "Mega Gengar ex - 284/217 SV14",
@@ -14,7 +14,7 @@
     },
     {
       "card_label": "Mew ex - 232/091 PAF",
-      "market_price": 510
+      "market_price": 520
     },
     {
       "card_label": "Mega Dragonite ex - 290/217 SV14",
@@ -22,7 +22,7 @@
     },
     {
       "card_label": "Pikachu ex - 276/217 SV14",
-      "market_price": 460
+      "market_price": 470
     },
     {
       "card_label": "Team Rocket's Mewtwo ex - 231/182 DRI",
@@ -30,7 +30,7 @@
     },
     {
       "card_label": "Mega Charizard Y ex - 294/217 SV14",
-      "market_price": 310
+      "market_price": 320
     },
     {
       "card_label": "Victini - 171/086 SV10",
@@ -73,12 +73,20 @@
       "market_price": 230
     },
     {
+      "card_label": "Team Rocket's Mewtwo ex - 281/217 SV14",
+      "market_price": 220
+    },
+    {
       "card_label": "Mega Dragonite ex - 295/217 SV14",
       "market_price": 210
     },
     {
-      "card_label": "Team Rocket's Mewtwo ex - 281/217 SV14",
-      "market_price": 210
+      "card_label": "Leafeon ex - 144/131 PRE",
+      "market_price": 200
+    },
+    {
+      "card_label": "Charizard ex - 234/091 PAF",
+      "market_price": 200
     },
     {
       "card_label": "Pikachu ex - 238/191 SSP",
@@ -89,18 +97,10 @@
       "market_price": 190
     },
     {
-      "card_label": "Leafeon ex - 144/131 PRE",
-      "market_price": 190
-    },
-    {
-      "card_label": "Charizard ex - 234/091 PAF",
-      "market_price": 190
-    },
-    {
       "card_label": "Espeon ex - 155/131 PRE",
-      "market_price": 180
+      "market_price": 190
     }
   ],
-  "updated_at": "2026-04-02T10:12:51Z",
+  "updated_at": "2026-04-03T10:36:22Z",
   "count": 25
 }
