@@ -15,7 +15,7 @@ export default function BuyListPage() {
   const updated_at = (buyListData as { items: BuyListItem[]; updated_at: string }).updated_at;
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-dvh flex flex-col">
       {/* ── Header ───────────────────────────────────────────── */}
       <header className="flex-shrink-0 pt-12 pb-8 px-6 text-center">
         <div className="text-left mb-6">

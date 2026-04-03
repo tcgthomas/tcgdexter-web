@@ -361,7 +361,7 @@ export default function DeckProfilerPage() {
 
   return (
     <div
-      className={`min-h-screen flex flex-col profiler-bg${dominantColor ? " profiler-active" : ""}`}
+      className={`min-h-dvh flex flex-col profiler-bg${dominantColor ? " profiler-active" : ""}`}
       style={dominantColor ? { "--energy-accent": dominantColor } as React.CSSProperties : undefined}
     >
       {mutedColor && <ThemeColor color={mutedColor} />}

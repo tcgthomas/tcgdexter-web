@@ -329,7 +329,7 @@ export default async function SharedDeckPage({
 
   return (
     <div
-      className={`min-h-screen flex flex-col profiler-bg${dominantColor ? " profiler-active" : ""}`}
+      className={`min-h-dvh flex flex-col profiler-bg${dominantColor ? " profiler-active" : ""}`}
       style={mutedColor ? { "--energy-color": mutedColor, "--energy-accent": dominantColor } as React.CSSProperties : undefined}
     >
       {dominantColor && <ThemeColor color={dominantColor} />}

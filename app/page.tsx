@@ -61,7 +61,7 @@ const links = [
 
 export default function Home() {
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-dvh flex flex-col">
       {/* ── Hero ─────────────────────────────────────────────── */}
       <header className="flex-shrink-0 pt-20 pb-16 px-6 text-center">
         <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight">
