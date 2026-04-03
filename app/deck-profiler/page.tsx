@@ -543,27 +543,27 @@ export default function DeckProfilerPage() {
                   ? "Good conversion — the deck delivers when it gets there."
                   : "Low conversion rate — entries outpace top cuts.";
                 return (
-                  <div className="rounded-xl border border-green-200 bg-green-50 p-5">
+                  <div className="rounded-xl border border-green-500/40 bg-surface p-5">
                     <div className="flex items-start justify-between gap-3 mb-3">
                       <div>
-                        <span className="inline-flex items-center rounded-full border border-green-200 bg-green-100 px-2.5 py-0.5 text-xs font-semibold text-green-700 mb-2">
+                        <span className="inline-flex items-center rounded-full border border-green-500/50 bg-green-500/10 px-2.5 py-0.5 text-xs font-semibold text-green-600 mb-2">
                           Top Meta Deck
                         </span>
-                        <h2 className="text-xl font-bold text-green-900">{archetypeName}</h2>
+                        <h2 className="text-xl font-bold text-text-primary">{archetypeName}</h2>
                       </div>
                       <div className="text-right shrink-0">
                         {rank !== null && (
-                          <p className="text-2xl font-black text-green-700 leading-none">#{rank}</p>
+                          <p className="text-2xl font-black text-green-600 leading-none">#{rank}</p>
                         )}
-                        <p className="text-xs text-green-600 mt-0.5">in Standard</p>
+                        <p className="text-xs text-text-muted mt-0.5">in Standard</p>
                       </div>
                     </div>
                     {matchPct !== null && (
-                      <p className="text-xs text-green-700 mb-2 font-medium">
+                      <p className="text-xs text-text-secondary mb-2 font-medium">
                         {(matchPct * 100).toFixed(0)}% match to known deck list
                       </p>
                     )}
-                    <p className="text-sm text-green-700">{presenceNote} {convNote}</p>
+                    <p className="text-sm text-text-secondary">{presenceNote} {convNote}</p>
                   </div>
                 );
               })()}
