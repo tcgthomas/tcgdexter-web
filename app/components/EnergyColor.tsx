@@ -6,8 +6,9 @@ import { useEffect } from "react";
 // (matches the profiler's mutedColor logic, but runs client-side so dark mode is correct)
 export default function EnergyColor({ hex }: { hex: string }) {
   useEffect(() => {
-    const isDark = document.documentElement.getAttribute("data-theme") === "dark";
-    const bg = isDark ? [24, 19, 15] : [253, 248, 242];
+    // Site is locked to dark mode — use dark bg values directly.
+    // (Light values: [253, 248, 242] — restore if theme switcher re-enabled)
+    const bg = [24, 19, 15];
     const r = parseInt(hex.slice(1, 3), 16);
     const g = parseInt(hex.slice(3, 5), 16);
     const b = parseInt(hex.slice(5, 7), 16);
