@@ -49,10 +49,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning data-theme="dark">
       <body
         className={`${geistSans.variable} ${geistMono.variable} font-sans antialiased text-text-primary`}
         style={{ backgroundColor: "transparent" }}
+        suppressHydrationWarning
       >
         <ThemeProvider>
           {/* ThemeMenu hidden for now — toggle to re-enable */}
