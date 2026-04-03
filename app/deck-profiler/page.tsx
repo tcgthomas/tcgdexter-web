@@ -483,6 +483,112 @@ export default function DeckProfilerPage() {
           {result && (
             <div className="flex flex-col gap-4">
 
+              {/* ── Meta Match ────────────────────────────── */}
+              {result.metaMatch.matched && (() => {
+                const { archetypeName, matchPct, rank, conversionRate } = result.metaMatch;
+                const pct = (conversionRate ?? 0) * 100;
+                const presenceNote = (matchPct ?? 0) >= 0.1
+                  ? "High meta presence — expect to see this at locals."
+                  : (matchPct ?? 0) >= 0.05
+                  ? "Solid meta share — a real threat at any table."
+                  : "Niche presence — skilled pilots only.";
+                const convNote = pct >= 30
+                  ? "Exceptional conversion rate — the pilots who run it are winning."
+                  : pct >= 15
+                  ? "Good conversion — the deck delivers when it gets there."
+                  : "Low conversion rate — entries outpace top cuts.";
+                return (
+                  <div className="rounded-xl border border-green-500/40 bg-green-500/10 p-5">
+                    <div className="flex items-start justify-between gap-3 mb-3">
+                      <div>
+                        <span className="inline-flex items-center rounded-full border border-green-500/50 bg-green-500/10 px-2.5 py-0.5 text-xs font-semibold text-green-600 mb-2">
+                          Top Meta Deck
+                        </span>
+                        <h2 className="text-xl font-bold text-text-primary">{archetypeName}</h2>
+                      </div>
+                      <div className="text-right shrink-0">
+                        {rank !== null && (
+                          <p className="text-2xl font-black text-green-600 leading-none">#{rank}</p>
+                        )}
+                        <p className="text-xs text-text-muted mt-0.5">in Standard</p>
+                      </div>
+                    </div>
+                    {matchPct !== null && (
+                      <p className="text-xs text-text-secondary mb-2 font-medium">
+                        {(matchPct * 100).toFixed(0)}% match to known deck list
+                      </p>
+                    )}
+                    <p className="text-sm text-text-secondary">{presenceNote} {convNote}</p>
+                  </div>
+                );
+              })()}
+
+
+              {/* ── Rotation Banner (blocked only) ─────────── */}
+              {!result.rotation.ready && (
+                <div className="rounded-xl border border-yellow-500/40 bg-yellow-500/10 px-5 py-4">
+                  <div className="flex items-center gap-3 mb-3">
+                    <svg className="w-4 h-4 text-yellow-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
+                    </svg>
+                    <div>
+                      <p className="text-sm font-semibold text-text-primary">Rotation Blocked</p>
+                      <p className="text-xs text-text-muted mt-0.5">{result.rotation.rotatingCount} card{result.rotation.rotatingCount !== 1 ? "s" : ""} not legal after April 10</p>
+                    </div>
+                  </div>
+                  <div className="flex flex-wrap gap-2 pl-7">
+                    {result.rotation.rotatingCards.map((c) => (
+                      <span key={c.name} className="inline-flex items-center gap-1 rounded-full border border-yellow-500/50 bg-yellow-500/10 px-2.5 py-0.5 text-xs text-text-secondary">
+                        <span className="font-semibold">{c.qty}</span>
+                        <span>{c.name}</span>
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+
+              {/* ── 1. Overview ─────────────────────────────── */}
+              <div className="rounded-xl border border-border bg-surface p-5 backdrop-blur-sm">
+                <div className="flex items-baseline justify-between mb-4">
+                  <h2 className="text-lg font-semibold">Overview</h2>
+                  <span className="text-xs text-text-muted">{result.deckSize} cards</span>
+                </div>
+
+                {/* Segmented bar */}
+                <div className="flex h-1.5 rounded-full overflow-hidden bg-surface-2 mb-4">
+                  {result.sections.pokemon > 0 && (
+                    <div className="bg-blue-400 transition-all" style={{ width: `${(result.sections.pokemon / result.deckSize) * 100}%` }} />
+                  )}
+                  {result.sections.trainer > 0 && (
+                    <div className="bg-stone-400 transition-all" style={{ width: `${(result.sections.trainer / result.deckSize) * 100}%` }} />
+                  )}
+                  {result.sections.energy > 0 && (
+                    <div className="bg-yellow-400 transition-all" style={{ width: `${(result.sections.energy / result.deckSize) * 100}%` }} />
+                  )}
+                </div>
+
+                {/* Stat row */}
+                <div className="grid grid-cols-3 divide-x divide-border">
+                  <div className="pr-4">
+                    <p className="text-xs text-text-muted uppercase tracking-wide mb-1">Pokémon</p>
+                    <p className="text-2xl font-bold text-text-primary">{result.sections.pokemon}</p>
+                    <p className="text-xs text-text-muted mt-0.5">{result.sections.pokemonRatio}</p>
+                  </div>
+                  <div className="px-4">
+                    <p className="text-xs text-text-muted uppercase tracking-wide mb-1">Trainers</p>
+                    <p className="text-2xl font-bold text-text-primary">{result.sections.trainer}</p>
+                    <p className="text-xs text-text-muted mt-0.5">{result.sections.trainerRatio}</p>
+                  </div>
+                  <div className="pl-4">
+                    <p className="text-xs text-text-muted uppercase tracking-wide mb-1">Energy</p>
+                    <p className="text-2xl font-bold text-text-primary">{result.sections.energy}</p>
+                    <p className="text-xs text-text-muted mt-0.5">{result.sections.energyRatio}</p>
+                  </div>
+                </div>
+              </div>
+
+
               {/* ── Deck Score ─────────────────────────────── */}
               {(() => {
                 const { grade, rotation, consistency, evolution, energyFit } = result.deckScore;
@@ -527,109 +633,6 @@ export default function DeckProfilerPage() {
                   </div>
                 );
               })()}
-
-              {/* ── Meta Match ────────────────────────────── */}
-              {result.metaMatch.matched && (() => {
-                const { archetypeName, matchPct, rank, conversionRate } = result.metaMatch;
-                const pct = (conversionRate ?? 0) * 100;
-                const presenceNote = (matchPct ?? 0) >= 0.1
-                  ? "High meta presence — expect to see this at locals."
-                  : (matchPct ?? 0) >= 0.05
-                  ? "Solid meta share — a real threat at any table."
-                  : "Niche presence — skilled pilots only.";
-                const convNote = pct >= 30
-                  ? "Exceptional conversion rate — the pilots who run it are winning."
-                  : pct >= 15
-                  ? "Good conversion — the deck delivers when it gets there."
-                  : "Low conversion rate — entries outpace top cuts.";
-                return (
-                  <div className="rounded-xl border border-green-500/40 bg-green-500/10 p-5">
-                    <div className="flex items-start justify-between gap-3 mb-3">
-                      <div>
-                        <span className="inline-flex items-center rounded-full border border-green-500/50 bg-green-500/10 px-2.5 py-0.5 text-xs font-semibold text-green-600 mb-2">
-                          Top Meta Deck
-                        </span>
-                        <h2 className="text-xl font-bold text-text-primary">{archetypeName}</h2>
-                      </div>
-                      <div className="text-right shrink-0">
-                        {rank !== null && (
-                          <p className="text-2xl font-black text-green-600 leading-none">#{rank}</p>
-                        )}
-                        <p className="text-xs text-text-muted mt-0.5">in Standard</p>
-                      </div>
-                    </div>
-                    {matchPct !== null && (
-                      <p className="text-xs text-text-secondary mb-2 font-medium">
-                        {(matchPct * 100).toFixed(0)}% match to known deck list
-                      </p>
-                    )}
-                    <p className="text-sm text-text-secondary">{presenceNote} {convNote}</p>
-                  </div>
-                );
-              })()}
-
-              {/* ── Rotation Banner (blocked only) ─────────── */}
-              {!result.rotation.ready && (
-                <div className="rounded-xl border border-yellow-500/40 bg-yellow-500/10 px-5 py-4">
-                  <div className="flex items-center gap-3 mb-3">
-                    <svg className="w-4 h-4 text-yellow-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
-                    </svg>
-                    <div>
-                      <p className="text-sm font-semibold text-text-primary">Rotation Blocked</p>
-                      <p className="text-xs text-text-muted mt-0.5">{result.rotation.rotatingCount} card{result.rotation.rotatingCount !== 1 ? "s" : ""} not legal after April 10</p>
-                    </div>
-                  </div>
-                  <div className="flex flex-wrap gap-2 pl-7">
-                    {result.rotation.rotatingCards.map((c) => (
-                      <span key={c.name} className="inline-flex items-center gap-1 rounded-full border border-yellow-500/50 bg-yellow-500/10 px-2.5 py-0.5 text-xs text-text-secondary">
-                        <span className="font-semibold">{c.qty}</span>
-                        <span>{c.name}</span>
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* ── 1. Overview ─────────────────────────────── */}
-              <div className="rounded-xl border border-border bg-surface p-5 backdrop-blur-sm">
-                <div className="flex items-baseline justify-between mb-4">
-                  <h2 className="text-lg font-semibold">Overview</h2>
-                  <span className="text-xs text-text-muted">{result.deckSize} cards</span>
-                </div>
-
-                {/* Segmented bar */}
-                <div className="flex h-1.5 rounded-full overflow-hidden bg-surface-2 mb-4">
-                  {result.sections.pokemon > 0 && (
-                    <div className="bg-blue-400 transition-all" style={{ width: `${(result.sections.pokemon / result.deckSize) * 100}%` }} />
-                  )}
-                  {result.sections.trainer > 0 && (
-                    <div className="bg-stone-400 transition-all" style={{ width: `${(result.sections.trainer / result.deckSize) * 100}%` }} />
-                  )}
-                  {result.sections.energy > 0 && (
-                    <div className="bg-yellow-400 transition-all" style={{ width: `${(result.sections.energy / result.deckSize) * 100}%` }} />
-                  )}
-                </div>
-
-                {/* Stat row */}
-                <div className="grid grid-cols-3 divide-x divide-border">
-                  <div className="pr-4">
-                    <p className="text-xs text-text-muted uppercase tracking-wide mb-1">Pokémon</p>
-                    <p className="text-2xl font-bold text-text-primary">{result.sections.pokemon}</p>
-                    <p className="text-xs text-text-muted mt-0.5">{result.sections.pokemonRatio}</p>
-                  </div>
-                  <div className="px-4">
-                    <p className="text-xs text-text-muted uppercase tracking-wide mb-1">Trainers</p>
-                    <p className="text-2xl font-bold text-text-primary">{result.sections.trainer}</p>
-                    <p className="text-xs text-text-muted mt-0.5">{result.sections.trainerRatio}</p>
-                  </div>
-                  <div className="pl-4">
-                    <p className="text-xs text-text-muted uppercase tracking-wide mb-1">Energy</p>
-                    <p className="text-2xl font-bold text-text-primary">{result.sections.energy}</p>
-                    <p className="text-xs text-text-muted mt-0.5">{result.sections.energyRatio}</p>
-                  </div>
-                </div>
-              </div>
 
               {/* ── Share Button ──────────────────────────── */}
               <button
