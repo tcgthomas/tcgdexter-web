@@ -317,7 +317,7 @@ export default async function SharedDeckPage({
   return (
     <div
       className={`min-h-screen flex flex-col profiler-bg${dominantColor ? " profiler-active" : ""}`}
-      style={dominantColor ? { "--energy-gradient": dominantColor + "55", "--energy-accent": dominantColor } as React.CSSProperties : undefined}
+      style={dominantColor ? { "--energy-solid": dominantColor, "--energy-gradient": dominantColor + "55", "--energy-accent": dominantColor } as React.CSSProperties : undefined}
     >
       {dominantColor && <ThemeColor color={dominantColor} />}
       {/* ── Header ─────────────────────────────────────────── */}

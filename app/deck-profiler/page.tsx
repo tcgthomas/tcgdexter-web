@@ -264,15 +264,15 @@ export default function DeckProfilerPage() {
 
   useEffect(() => {
     if (dominantColor) {
+      document.documentElement.style.setProperty("--energy-solid", dominantColor);
       document.documentElement.style.setProperty("--energy-gradient", dominantColor + "55");
-      document.documentElement.style.setProperty("--energy-bar", dominantColor);
     } else {
+      document.documentElement.style.removeProperty("--energy-solid");
       document.documentElement.style.removeProperty("--energy-gradient");
-      document.documentElement.style.removeProperty("--energy-bar");
     }
     return () => {
+      document.documentElement.style.removeProperty("--energy-solid");
       document.documentElement.style.removeProperty("--energy-gradient");
-      document.documentElement.style.removeProperty("--energy-bar");
     };
   }, [dominantColor]);
 

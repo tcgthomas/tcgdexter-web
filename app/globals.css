@@ -72,7 +72,7 @@
     );
   }
 
-  /* Energy gradient for deck profiler — energy color top, dark base bottom */
+  /* Energy gradient for deck profiler — energy color top, fades to bg */
   .profiler-bg {
     background: var(--bg);
     transition: background 0.6s ease;
@@ -80,8 +80,9 @@
   .profiler-bg.profiler-active {
     background: linear-gradient(
       to bottom,
-      var(--energy-gradient, var(--bg)) 0%,
-      var(--surface) 35%,
+      var(--energy-solid, var(--bg)) 0%,
+      var(--energy-gradient, var(--bg)) 12%,
+      var(--surface) 40%,
       var(--bg) 100%
     );
   }
