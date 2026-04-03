@@ -18,6 +18,12 @@ const geistMono = localFont({
   weight: "100 900",
 });
 
+export const viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+};
+
 export const metadata: Metadata = {
   title: "TCG Dexter | Pokémon TCG",
   description:
@@ -46,9 +52,10 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body
         className={`${geistSans.variable} ${geistMono.variable} font-sans antialiased bg-bg text-text-primary`}
+        style={{ paddingTop: "env(safe-area-inset-top)", paddingBottom: "env(safe-area-inset-bottom)" }}
       >
         <ThemeProvider>
-          <div className="fixed top-4 right-4 z-50">
+          <div className="fixed right-4 z-50" style={{ top: "calc(env(safe-area-inset-top) + 1rem)" }}>
             <ThemeMenu />
           </div>
           {children}

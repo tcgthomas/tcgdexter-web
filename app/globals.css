@@ -31,8 +31,9 @@
 }
 
 @layer base {
-  /* Smooth scrolling */
+  /* Extend background into iOS status bar / notch area */
   html {
+    background-color: var(--bg);
     scroll-behavior: smooth;
   }
 
