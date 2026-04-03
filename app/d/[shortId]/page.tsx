@@ -3,6 +3,7 @@ import { Metadata } from "next";
 import Link from "next/link";
 import DeckPriceModule from "@/app/components/DeckPriceModule";
 import ThemeColor from "@/app/components/ThemeColor";
+import EnergyColor from "@/app/components/EnergyColor";
 
 const ENERGY_HEX: Record<string, string> = {
   Fire:       "#e74c3c",
@@ -330,8 +331,9 @@ export default async function SharedDeckPage({
   return (
     <div
       className={`min-h-dvh flex flex-col profiler-bg${dominantColor ? " profiler-active" : ""}`}
-      style={mutedColor ? { "--energy-color": mutedColor, "--energy-accent": dominantColor } as React.CSSProperties : undefined}
+      style={dominantColor ? { "--energy-accent": dominantColor } as React.CSSProperties : undefined}
     >
+      {mutedColor && <EnergyColor color={mutedColor} />}
       {dominantColor && <ThemeColor color={dominantColor} />}
       {/* ── Header ─────────────────────────────────────────── */}
       <header className="flex-shrink-0 pb-8 px-6 text-center" style={{ paddingTop: "calc(env(safe-area-inset-top) + 3rem)" }}>
@@ -446,7 +448,7 @@ export default async function SharedDeckPage({
 
           {/* Shop Matches */}
           {result.shopMatches.length > 0 && (
-            <details className="rounded-xl border border-blue-200 bg-blue-50 p-5 group">
+            <details className="rounded-xl border border-blue-500/40 bg-blue-500/10 p-5 group">
               <summary className="flex items-center justify-between cursor-pointer list-none [&::-webkit-details-marker]:hidden">
                 <div>
                   <h2 className="text-lg font-semibold text-text-primary">Available in the Shop</h2>
@@ -477,7 +479,7 @@ export default async function SharedDeckPage({
                         href={listing.listingUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex-shrink-0 inline-flex items-center gap-1 rounded-md border border-blue-200 bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-700 hover:bg-blue-100 transition-colors"
+                        className="flex-shrink-0 inline-flex items-center gap-1 rounded-md border border-blue-500/50 bg-blue-500/10 px-3 py-1 text-xs font-semibold text-blue-400 hover:bg-blue-500/20 transition-colors"
                       >
                         View
                         <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
