@@ -31,10 +31,8 @@
 }
 
 @layer base {
-  /* Extend background into iOS status bar / notch area.
-     --energy-bar is the solid energy hex (no opacity) set on submit. */
   html {
-    background-color: var(--energy-bar, var(--bg));
+    background-color: var(--bg);
     scroll-behavior: smooth;
   }
 

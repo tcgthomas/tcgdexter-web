@@ -269,7 +269,7 @@ export default async function SharedDeckPage({
   if (!deck) {
     return (
       <div className="min-h-screen flex flex-col">
-        <header className="flex-shrink-0 pt-12 pb-8 px-6 text-center">
+        <header className="flex-shrink-0 pb-8 px-6 text-center" style={{ paddingTop: "calc(env(safe-area-inset-top) + 3rem)" }}>
           <div className="text-left mb-6">
             <Link
               href="/"
@@ -321,7 +321,7 @@ export default async function SharedDeckPage({
     >
       {dominantColor && <ThemeColor color={dominantColor} />}
       {/* ── Header ─────────────────────────────────────────── */}
-      <header className="flex-shrink-0 pt-12 pb-8 px-6 text-center">
+      <header className="flex-shrink-0 pb-8 px-6 text-center" style={{ paddingTop: "calc(env(safe-area-inset-top) + 3rem)" }}>
         <div className="text-left mb-6">
           <Link
             href="/"
