@@ -31,15 +31,9 @@
 }
 
 @layer base {
-  /* Status bar reads the very top of html's background.
-     Energy color only for the status bar strip, --bg immediately after. */
+  /* Status bar reads html background-color — must be solid energy color */
   html {
-    background: linear-gradient(
-      to bottom,
-      var(--energy-color, var(--bg)) 0px,
-      var(--energy-color, var(--bg)) env(safe-area-inset-top),
-      var(--bg) calc(env(safe-area-inset-top) + 1px)
-    );
+    background-color: var(--energy-color, var(--bg));
     scroll-behavior: smooth;
   }
 
