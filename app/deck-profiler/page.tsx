@@ -846,7 +846,7 @@ export default function DeckProfilerPage() {
 
               {/* ── Shop Matches ─────────────────────────────── */}
               {result.shopMatches.length > 0 && (
-                <details className="rounded-xl border border-border bg-surface p-5 group">
+                <details className="rounded-xl border border-blue-500/40 bg-blue-500/10 p-5 group">
                   <summary className="flex items-center justify-between cursor-pointer list-none [&::-webkit-details-marker]:hidden">
                     <div>
                       <h2 className="text-lg font-semibold text-text-primary">Available in the Shop</h2>
@@ -877,7 +877,7 @@ export default function DeckProfilerPage() {
                             href={listing.listingUrl}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="flex-shrink-0 inline-flex items-center gap-1 rounded-md border border-border bg-surface-2 px-3 py-1 text-xs font-semibold text-text-secondary hover:text-text-primary hover:bg-surface-2 transition-colors"
+                            className="flex-shrink-0 inline-flex items-center gap-1 rounded-md border border-blue-500/50 bg-blue-500/10 px-3 py-1 text-xs font-semibold text-blue-400 hover:bg-blue-500/20 transition-colors"
                           >
                             View
                             <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
