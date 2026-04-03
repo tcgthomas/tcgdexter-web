@@ -40,7 +40,7 @@ export default function ThemeProvider({
 }: {
   children: React.ReactNode;
 }) {
-  const [theme, setThemeState] = useState<Theme>("system");
+  const [theme, setThemeState] = useState<Theme>("dark");
 
   const resolve = useCallback(
     (t: Theme): "light" | "dark" => (t === "system" ? resolveSystem() : t),
@@ -53,7 +53,7 @@ export default function ThemeProvider({
     const initial: Theme =
       stored === "light" || stored === "dark" || stored === "system"
         ? stored
-        : "system";
+        : "dark";
     setThemeState(initial);
     applyTheme(resolve(initial));
   }, [resolve]);

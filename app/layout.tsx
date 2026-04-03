@@ -55,9 +55,10 @@ export default function RootLayout({
         style={{ backgroundColor: "transparent" }}
       >
         <ThemeProvider>
-          <div className="fixed right-4 z-50" style={{ top: "calc(env(safe-area-inset-top) + 1rem)" }}>
+          {/* ThemeMenu hidden for now — toggle to re-enable */}
+          {/* <div className="fixed right-4 z-50" style={{ top: "calc(env(safe-area-inset-top) + 1rem)" }}>
             <ThemeMenu />
-          </div>
+          </div> */}
           {children}
         </ThemeProvider>
       </body>
