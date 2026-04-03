@@ -352,6 +352,106 @@ export default async function SharedDeckPage({
       <main className="flex-1 px-6 pb-20">
         <div className="mx-auto max-w-2xl flex flex-col gap-4">
 
+          {/* Meta Match */}
+          {result.metaMatch.matched && (
+            <div className="rounded-xl border border-green-500/40 bg-green-500/10 p-5">
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <span className="inline-flex items-center rounded-full border border-green-500/50 bg-green-500/10 px-2.5 py-0.5 text-xs font-semibold text-green-600 mb-2">
+                    Top Meta Deck
+                  </span>
+                  <h2 className="text-xl font-bold text-text-primary">
+                    {result.metaMatch.archetypeName}
+                  </h2>
+                </div>
+                {result.metaMatch.matchPct !== null && (
+                  <div className="text-right shrink-0">
+                    <p className="text-2xl font-black text-green-600 leading-none">
+                      {(result.metaMatch.matchPct * 100).toFixed(1)}%
+                    </p>
+                    <p className="text-xs text-text-muted mt-0.5">meta share</p>
+                  </div>
+                )}
+              </div>
+              <p className="text-sm text-text-secondary mt-2">
+                This deck matches a recognized archetype in the current top 20 meta.
+              </p>
+            </div>
+          )}
+
+          {/* Rotation Status */}
+          {result.rotation.ready ? (
+            <div className="rounded-xl border border-green-200 bg-green-50 px-5 py-4">
+              <div className="flex items-center gap-3">
+                <svg className="w-4 h-4 text-green-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                </svg>
+                <div>
+                  <p className="text-sm font-semibold text-green-900">Rotation Ready</p>
+                  <p className="text-xs text-green-700 mt-0.5">All cards H-mark and later</p>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="rounded-xl border border-yellow-500/40 bg-yellow-500/10 px-5 py-4">
+              <div className="flex items-center gap-3 mb-3">
+                <svg className="w-4 h-4 text-yellow-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
+                </svg>
+                <div>
+                  <p className="text-sm font-semibold text-text-primary">Rotation Blocked</p>
+                  <p className="text-xs text-text-muted mt-0.5">
+                    {result.rotation.rotatingCount} card{result.rotation.rotatingCount !== 1 ? "s" : ""} not legal after April 10
+                  </p>
+                </div>
+              </div>
+              <div className="flex flex-wrap gap-2 pl-7">
+                {result.rotation.rotatingCards.map((c) => (
+                  <span key={c.name} className="inline-flex items-center gap-1 rounded-full border border-yellow-500/50 bg-yellow-500/10 px-2.5 py-0.5 text-xs text-text-secondary">
+                    <span className="font-semibold">{c.qty}</span>
+                    <span>{c.name}</span>
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Overview */}
+          <div className="rounded-xl border border-border bg-surface p-5 backdrop-blur-sm">
+            <div className="flex items-baseline justify-between mb-4">
+              <h2 className="text-lg font-semibold">Overview</h2>
+              <span className="text-xs text-text-muted">{result.deckSize} cards</span>
+            </div>
+            <div className="flex h-1.5 rounded-full overflow-hidden bg-surface-2 mb-4">
+              {result.sections.pokemon > 0 && (
+                <div className="bg-blue-400 transition-all" style={{ width: `${(result.sections.pokemon / result.deckSize) * 100}%` }} />
+              )}
+              {result.sections.trainer > 0 && (
+                <div className="bg-stone-400 transition-all" style={{ width: `${(result.sections.trainer / result.deckSize) * 100}%` }} />
+              )}
+              {result.sections.energy > 0 && (
+                <div className="bg-yellow-400 transition-all" style={{ width: `${(result.sections.energy / result.deckSize) * 100}%` }} />
+              )}
+            </div>
+            <div className="grid grid-cols-3 divide-x divide-border">
+              <div className="pr-4">
+                <p className="text-xs text-text-muted uppercase tracking-wide mb-1">Pok&eacute;mon</p>
+                <p className="text-2xl font-bold text-text-primary">{result.sections.pokemon}</p>
+                <p className="text-xs text-text-muted mt-0.5">{result.sections.pokemonRatio}</p>
+              </div>
+              <div className="px-4">
+                <p className="text-xs text-text-muted uppercase tracking-wide mb-1">Trainers</p>
+                <p className="text-2xl font-bold text-text-primary">{result.sections.trainer}</p>
+                <p className="text-xs text-text-muted mt-0.5">{result.sections.trainerRatio}</p>
+              </div>
+              <div className="pl-4">
+                <p className="text-xs text-text-muted uppercase tracking-wide mb-1">Energy</p>
+                <p className="text-2xl font-bold text-text-primary">{result.sections.energy}</p>
+                <p className="text-xs text-text-muted mt-0.5">{result.sections.energyRatio}</p>
+              </div>
+            </div>
+          </div>
+
           {/* Deck Score */}
           {result.deckScore && (() => {
             const { grade, rotation, consistency, evolution, energyFit } = result.deckScore;
@@ -399,126 +499,6 @@ export default async function SharedDeckPage({
 
           {/* Estimated Deck Price + Alert */}
           <DeckPriceModule deckPrice={result.deckPrice} />
-
-          {/* Rotation Status */}
-          {result.rotation.ready ? (
-            <div className="rounded-xl border border-green-200 bg-green-50 px-5 py-4">
-              <div className="flex items-center gap-3">
-                <svg className="w-4 h-4 text-green-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                </svg>
-                <div>
-                  <p className="text-sm font-semibold text-green-900">Rotation Ready</p>
-                  <p className="text-xs text-green-700 mt-0.5">All cards H-mark and later</p>
-                </div>
-              </div>
-            </div>
-          ) : (
-            <div className="rounded-xl border border-yellow-500/40 bg-yellow-500/10 px-5 py-4">
-              <div className="flex items-center gap-3 mb-3">
-                <svg className="w-4 h-4 text-yellow-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
-                </svg>
-                <div>
-                  <p className="text-sm font-semibold text-text-primary">Rotation Blocked</p>
-                  <p className="text-xs text-text-muted mt-0.5">
-                    {result.rotation.rotatingCount} card{result.rotation.rotatingCount !== 1 ? "s" : ""} not legal after April 10
-                  </p>
-                </div>
-              </div>
-              <div className="flex flex-wrap gap-2 pl-7">
-                {result.rotation.rotatingCards.map((c) => (
-                  <span key={c.name} className="inline-flex items-center gap-1 rounded-full border border-yellow-500/50 bg-yellow-500/10 px-2.5 py-0.5 text-xs text-text-secondary">
-                    <span className="font-semibold">{c.qty}</span>
-                    <span>{c.name}</span>
-                  </span>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Shop Matches */}
-          {result.shopMatches.length > 0 && (
-            <details className="rounded-xl border border-blue-500/40 bg-blue-500/10 p-5 group">
-              <summary className="flex items-center justify-between cursor-pointer list-none [&::-webkit-details-marker]:hidden">
-                <div>
-                  <h2 className="text-lg font-semibold text-text-primary">Available in the Shop</h2>
-                  <p className="text-xs text-text-secondary mt-0.5">Check out cards from this deck on eBay</p>
-                </div>
-                <svg
-                  className="w-4 h-4 text-text-muted transition-transform group-open:rotate-180"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  strokeWidth={2}
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-                </svg>
-              </summary>
-              <div className="divide-y divide-border mt-4">
-                {result.shopMatches.flatMap((match) =>
-                  match.listings.map((listing) => (
-                    <div key={listing.itemId} className="py-3 flex items-center gap-4">
-                      {listing.imageUrl && (
-                        <img src={listing.imageUrl} alt={listing.title} className="w-12 h-12 object-contain rounded flex-shrink-0" />
-                      )}
-                      <div className="flex flex-col flex-1 min-w-0">
-                        <span className="text-sm font-semibold text-text-primary">{match.cardName}</span>
-                        <span className="text-sm text-text-secondary">${listing.price.toFixed(2)}</span>
-                      </div>
-                      <a
-                        href={listing.listingUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex-shrink-0 inline-flex items-center gap-1 rounded-md border border-blue-500/50 bg-blue-500/10 px-3 py-1 text-xs font-semibold text-blue-400 hover:bg-blue-500/20 transition-colors"
-                      >
-                        View
-                        <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                        </svg>
-                      </a>
-                    </div>
-                  ))
-                )}
-              </div>
-            </details>
-          )}
-
-          {/* Overview */}
-          <div className="rounded-xl border border-border bg-surface p-5 backdrop-blur-sm">
-            <div className="flex items-baseline justify-between mb-4">
-              <h2 className="text-lg font-semibold">Overview</h2>
-              <span className="text-xs text-text-muted">{result.deckSize} cards</span>
-            </div>
-            <div className="flex h-1.5 rounded-full overflow-hidden bg-surface-2 mb-4">
-              {result.sections.pokemon > 0 && (
-                <div className="bg-blue-400 transition-all" style={{ width: `${(result.sections.pokemon / result.deckSize) * 100}%` }} />
-              )}
-              {result.sections.trainer > 0 && (
-                <div className="bg-stone-400 transition-all" style={{ width: `${(result.sections.trainer / result.deckSize) * 100}%` }} />
-              )}
-              {result.sections.energy > 0 && (
-                <div className="bg-yellow-400 transition-all" style={{ width: `${(result.sections.energy / result.deckSize) * 100}%` }} />
-              )}
-            </div>
-            <div className="grid grid-cols-3 divide-x divide-border">
-              <div className="pr-4">
-                <p className="text-xs text-text-muted uppercase tracking-wide mb-1">Pok&eacute;mon</p>
-                <p className="text-2xl font-bold text-text-primary">{result.sections.pokemon}</p>
-                <p className="text-xs text-text-muted mt-0.5">{result.sections.pokemonRatio}</p>
-              </div>
-              <div className="px-4">
-                <p className="text-xs text-text-muted uppercase tracking-wide mb-1">Trainers</p>
-                <p className="text-2xl font-bold text-text-primary">{result.sections.trainer}</p>
-                <p className="text-xs text-text-muted mt-0.5">{result.sections.trainerRatio}</p>
-              </div>
-              <div className="pl-4">
-                <p className="text-xs text-text-muted uppercase tracking-wide mb-1">Energy</p>
-                <p className="text-2xl font-bold text-text-primary">{result.sections.energy}</p>
-                <p className="text-xs text-text-muted mt-0.5">{result.sections.energyRatio}</p>
-              </div>
-            </div>
-          </div>
 
           {/* Pokemon */}
           <CollapsibleSection
@@ -703,31 +683,51 @@ export default async function SharedDeckPage({
             )}
           </CollapsibleSection>
 
-          {/* Meta Match */}
-          {result.metaMatch.matched && (
-            <div className="rounded-xl border border-green-500/40 bg-green-500/10 p-5">
-              <div className="flex items-start justify-between gap-3">
+          {/* Shop Matches */}
+          {result.shopMatches.length > 0 && (
+            <details className="rounded-xl border border-blue-500/40 bg-blue-500/10 p-5 group">
+              <summary className="flex items-center justify-between cursor-pointer list-none [&::-webkit-details-marker]:hidden">
                 <div>
-                  <span className="inline-flex items-center rounded-full border border-green-500/50 bg-green-500/10 px-2.5 py-0.5 text-xs font-semibold text-green-600 mb-2">
-                    Top Meta Deck
-                  </span>
-                  <h2 className="text-xl font-bold text-text-primary">
-                    {result.metaMatch.archetypeName}
-                  </h2>
+                  <h2 className="text-lg font-semibold text-text-primary">Available in the Shop</h2>
+                  <p className="text-xs text-text-secondary mt-0.5">Check out cards from this deck on eBay</p>
                 </div>
-                {result.metaMatch.matchPct !== null && (
-                  <div className="text-right shrink-0">
-                    <p className="text-2xl font-black text-green-600 leading-none">
-                      {(result.metaMatch.matchPct * 100).toFixed(1)}%
-                    </p>
-                    <p className="text-xs text-text-muted mt-0.5">meta share</p>
-                  </div>
+                <svg
+                  className="w-4 h-4 text-text-muted transition-transform group-open:rotate-180"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth={2}
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                </svg>
+              </summary>
+              <div className="divide-y divide-border mt-4">
+                {result.shopMatches.flatMap((match) =>
+                  match.listings.map((listing) => (
+                    <div key={listing.itemId} className="py-3 flex items-center gap-4">
+                      {listing.imageUrl && (
+                        <img src={listing.imageUrl} alt={listing.title} className="w-12 h-12 object-contain rounded flex-shrink-0" />
+                      )}
+                      <div className="flex flex-col flex-1 min-w-0">
+                        <span className="text-sm font-semibold text-text-primary">{match.cardName}</span>
+                        <span className="text-sm text-text-secondary">${listing.price.toFixed(2)}</span>
+                      </div>
+                      <a
+                        href={listing.listingUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex-shrink-0 inline-flex items-center gap-1 rounded-md border border-blue-500/50 bg-blue-500/10 px-3 py-1 text-xs font-semibold text-blue-400 hover:bg-blue-500/20 transition-colors"
+                      >
+                        View
+                        <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                        </svg>
+                      </a>
+                    </div>
+                  ))
                 )}
               </div>
-              <p className="text-sm text-text-secondary mt-2">
-                This deck matches a recognized archetype in the current top 20 meta.
-              </p>
-            </div>
+            </details>
           )}
 
           {/* Warnings */}
