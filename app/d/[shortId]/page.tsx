@@ -768,7 +768,7 @@ export default async function SharedDeckPage({
       </main>
 
       {/* ── Footer ─────────────────────────────────────────── */}
-      <footer className="flex-shrink-0 py-8 px-6 text-center text-sm text-text-muted">
+      <footer className="flex-shrink-0 pt-8 px-6 text-center text-sm text-text-muted" style={{ paddingBottom: "calc(env(safe-area-inset-bottom) + 2rem)" }}>
         <p>&copy; 2026 TCG Dexter &middot; tcgdexter.com</p>
         <p className="mt-3 max-w-lg mx-auto text-xs text-text-muted/70 leading-relaxed">
           TCG Dexter is an independent organization. The information presented on this website about the Pok&eacute;mon Trading Card Game, including images and text, is intellectual property of The Pokémon Company, Nintendo, Game Freak, Creatures and/or Wizards of the Coast. TCG Dexter is not produced by, endorsed by, supported by, or affiliated with any of these companies.

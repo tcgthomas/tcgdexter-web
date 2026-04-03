@@ -31,9 +31,10 @@
 }
 
 @layer base {
-  /* Status bar inherits html background — set to energy color on submit */
+  /* html background: energy color at top (status bar), bg color at bottom */
   html {
-    background-color: var(--energy-color, var(--bg));
+    background-color: var(--bg);
+    background-image: linear-gradient(to bottom, var(--energy-color, var(--bg)) 0%, var(--bg) 30%);
     scroll-behavior: smooth;
   }
 
