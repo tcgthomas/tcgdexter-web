@@ -846,7 +846,7 @@ export default function DeckProfilerPage() {
 
               {/* ── Shop Matches ─────────────────────────────── */}
               {result.shopMatches.length > 0 && (
-                <details className="rounded-xl border border-blue-200 bg-blue-50 p-5 group">
+                <details className="rounded-xl border border-border bg-surface p-5 group">
                   <summary className="flex items-center justify-between cursor-pointer list-none [&::-webkit-details-marker]:hidden">
                     <div>
                       <h2 className="text-lg font-semibold text-text-primary">Available in the Shop</h2>
@@ -877,7 +877,7 @@ export default function DeckProfilerPage() {
                             href={listing.listingUrl}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="flex-shrink-0 inline-flex items-center gap-1 rounded-md border border-blue-200 bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-700 hover:bg-blue-100 transition-colors"
+                            className="flex-shrink-0 inline-flex items-center gap-1 rounded-md border border-border bg-surface-2 px-3 py-1 text-xs font-semibold text-text-secondary hover:text-text-primary hover:bg-surface-2 transition-colors"
                           >
                             View
                             <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -893,10 +893,10 @@ export default function DeckProfilerPage() {
 
               {/* ── Warnings ──────────────────────────────── */}
               {result.warnings.length > 0 && (
-                <div className="rounded-xl border border-amber-600/30 bg-amber-50 p-4">
-                  <h3 className="text-sm font-semibold text-amber-800 mb-2 flex items-center gap-2">
+                <div className="rounded-xl border border-yellow-500/40 bg-yellow-500/10 p-4">
+                  <h3 className="text-sm font-semibold text-text-primary mb-2 flex items-center gap-2">
                     <svg
-                      className="w-4 h-4"
+                      className="w-4 h-4 text-yellow-500"
                       fill="none"
                       viewBox="0 0 24 24"
                       stroke="currentColor"
@@ -912,7 +912,7 @@ export default function DeckProfilerPage() {
                   </h3>
                   <ul className="space-y-1">
                     {result.warnings.map((w, i) => (
-                      <li key={i} className="text-sm text-amber-700">
+                      <li key={i} className="text-sm text-text-secondary">
                         {w}
                       </li>
                     ))}
