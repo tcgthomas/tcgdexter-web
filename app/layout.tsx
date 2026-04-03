@@ -52,7 +52,7 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body
         className={`${geistSans.variable} ${geistMono.variable} font-sans antialiased text-text-primary`}
-        style={{ backgroundColor: "transparent" }}
+        style={{ backgroundColor: "var(--bg)" }}
       >
         <ThemeProvider>
           <div className="fixed right-4 z-50" style={{ top: "calc(env(safe-area-inset-top) + 1rem)" }}>
