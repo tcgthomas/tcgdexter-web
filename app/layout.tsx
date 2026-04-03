@@ -45,7 +45,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} font-sans antialiased bg-tan-50 text-brown-900`}
+        className={`${geistSans.variable} ${geistMono.variable} font-sans antialiased bg-bg text-text-primary`}
       >
         <ThemeProvider>
           <div className="fixed top-4 right-4 z-50">

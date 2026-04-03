@@ -68,7 +68,7 @@ export default function Home() {
           Dexter
         </h1>
 
-        <p className="mt-4 text-lg sm:text-xl text-brown-500 max-w-md mx-auto leading-relaxed">
+        <p className="mt-4 text-lg sm:text-xl text-text-secondary max-w-md mx-auto leading-relaxed">
           Collect. Compete.
         </p>
       </header>
@@ -82,33 +82,33 @@ export default function Home() {
               href={link.href}
               target={link.external ? "_blank" : undefined}
               rel={link.external ? "noopener noreferrer" : undefined}
-              className="card-lift group relative flex items-center gap-4 rounded-xl border border-tan-200 bg-tan-100 px-5 py-4 backdrop-blur-sm transition-colors hover:border-energy/30 hover:bg-tan-200"
+              className="card-lift group relative flex items-center gap-4 rounded-xl border border-border bg-surface px-5 py-4 backdrop-blur-sm transition-colors hover:border-accent/30 hover:bg-surface-2"
             >
               {/* Icon */}
-              <span className="flex-shrink-0 flex items-center justify-center w-10 h-10 rounded-lg bg-tan-50 text-brown-500 group-hover:text-energy transition-colors">
+              <span className="flex-shrink-0 flex items-center justify-center w-10 h-10 rounded-lg bg-bg text-text-secondary group-hover:text-accent transition-colors">
                 {link.icon}
               </span>
 
               {/* Text */}
               <span className="flex-1 min-w-0">
                 <span className="flex items-center gap-2">
-                  <span className="font-semibold text-brown-900 text-sm sm:text-base">
+                  <span className="font-semibold text-text-primary text-sm sm:text-base">
                     {link.title}
                   </span>
                   {link.badge && (
-                    <span className="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-energy/10 text-energy border border-energy/20">
+                    <span className="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-accent/10 text-accent border border-accent/20">
                       {link.badge}
                     </span>
                   )}
                 </span>
-                <span className="block text-sm text-brown-500 mt-0.5 truncate">
+                <span className="block text-sm text-text-secondary mt-0.5 truncate">
                   {link.description}
                 </span>
               </span>
 
               {/* Arrow */}
               <svg
-                className="flex-shrink-0 w-4 h-4 text-brown-500 group-hover:text-energy group-hover:translate-x-0.5 transition-all"
+                className="flex-shrink-0 w-4 h-4 text-text-secondary group-hover:text-accent group-hover:translate-x-0.5 transition-all"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -122,9 +122,9 @@ export default function Home() {
       </main>
 
       {/* ── Footer ───────────────────────────────────────────── */}
-      <footer className="flex-shrink-0 py-8 px-6 text-center text-sm text-brown-300">
+      <footer className="flex-shrink-0 py-8 px-6 text-center text-sm text-text-muted">
         <p>&copy; 2026 TCG Dexter &middot; tcgdexter.com</p>
-        <p className="mt-3 max-w-lg mx-auto text-xs text-brown-300/70 leading-relaxed">
+        <p className="mt-3 max-w-lg mx-auto text-xs text-text-muted/70 leading-relaxed">
           TCG Dexter is an independent organization. The information presented on this website about the Pokémon Trading Card Game, including images and text, is intellectual property of The Pokémon Company, Nintendo, Game Freak, Creatures and/or Wizards of the Coast. TCG Dexter is not produced by, endorsed by, supported by, or affiliated with any of these companies.
         </p>
       </footer>

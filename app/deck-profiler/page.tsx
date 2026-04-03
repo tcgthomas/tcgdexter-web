@@ -209,11 +209,11 @@ function CollapsibleSection({
   badge?: React.ReactNode;
 }) {
   return (
-    <details className="rounded-xl border border-tan-200 bg-tan-100 p-5 backdrop-blur-sm group">
+    <details className="rounded-xl border border-border bg-surface p-5 backdrop-blur-sm group">
       <summary className="flex items-center justify-between cursor-pointer list-none [&::-webkit-details-marker]:hidden">
         <h2 className="text-lg font-semibold">{title}</h2>
         <svg
-          className="w-4 h-4 text-brown-400 transition-transform group-open:rotate-180"
+          className="w-4 h-4 text-text-muted transition-transform group-open:rotate-180"
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
@@ -234,7 +234,7 @@ function CollapsibleSection({
 
 function StatPill({ count, label }: { count: number; label: string }) {
   return (
-    <span className="inline-flex items-center gap-1 rounded-full border border-tan-300 bg-tan-50 px-3 py-1 text-sm text-brown-700">
+    <span className="inline-flex items-center gap-1 rounded-full border border-border bg-bg px-3 py-1 text-sm text-text-secondary">
       <span className="font-semibold">{count}</span>
       <span className="font-normal">{label}</span>
     </span>
@@ -356,7 +356,7 @@ export default function DeckProfilerPage() {
         <div className="text-left mb-6">
         <Link
           href="/"
-          className="inline-flex items-center gap-2 text-brown-500 hover:text-brown-900 text-sm transition-colors"
+          className="inline-flex items-center gap-2 text-text-secondary hover:text-text-primary text-sm transition-colors"
         >
           <svg
             className="w-4 h-4"
@@ -378,9 +378,9 @@ export default function DeckProfilerPage() {
         <h1 className="text-3xl sm:text-4xl font-bold tracking-tight">
           Deck Profiler
         </h1>
-        <p className="mt-3 text-xs text-brown-400 max-w-md mx-auto">
+        <p className="mt-3 text-xs text-text-muted max-w-md mx-auto">
           This feature is in beta. Please share your thoughts to{' '}
-          <a href="mailto:feedback@tcgdexter.com" className="underline hover:text-brown-600">feedback@tcgdexter.com</a>
+          <a href="mailto:feedback@tcgdexter.com" className="underline hover:text-text-secondary">feedback@tcgdexter.com</a>
         </p>
 
       </header>
@@ -389,17 +389,17 @@ export default function DeckProfilerPage() {
       <main className="flex-1 px-6 pb-20">
         <div className="mx-auto max-w-2xl flex flex-col gap-6">
           {/* Input section */}
-          <div className="rounded-xl border border-tan-200 bg-tan-100 p-5 backdrop-blur-sm">
+          <div className="rounded-xl border border-border bg-surface p-5 backdrop-blur-sm">
             <div className="flex items-center justify-between mb-3">
               <label
                 htmlFor="deck-input"
-                className="text-sm font-medium text-brown-500"
+                className="text-sm font-medium text-text-secondary"
               >
                 Paste your Deck List
               </label>
               <button
                 onClick={handleLoadExample}
-                className="text-xs text-energy hover:text-energy-light transition-colors"
+                className="text-xs text-accent hover:text-accent-light transition-colors"
               >
                 Load example
               </button>
@@ -411,7 +411,7 @@ export default function DeckProfilerPage() {
               onChange={(e) => setDeckList(e.target.value)}
               placeholder={`Pokémon: 12\n4 Charizard ex OBF 125\n2 Charmander OBF 26\n...\n\nTrainer: 18\n4 Arven OBF 186\n...\n\nEnergy: 10\n10 Basic Fire Energy SVE 2`}
               rows={12}
-              className="w-full rounded-lg border border-tan-200 bg-tan-50 px-4 py-3 text-sm font-mono text-brown-900 placeholder:text-brown-300 focus:outline-none focus:border-energy/40 focus:ring-1 focus:ring-energy/20 resize-y [font-size:16px] sm:text-sm"
+              className="w-full rounded-lg border border-border bg-bg px-4 py-3 text-sm font-mono text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent/40 focus:ring-1 focus:ring-accent/20 resize-y [font-size:16px] sm:text-sm"
             />
 
             <div className="mt-4 flex flex-col gap-2">
@@ -419,14 +419,14 @@ export default function DeckProfilerPage() {
                 <button
                   onClick={() => { setDeckList(""); setResult(null); setError(null); }}
                   disabled={loading}
-                  className="flex-1 rounded-lg border border-tan-300 bg-tan-50 px-5 py-2.5 text-sm font-semibold text-brown-700 transition-all hover:bg-tan-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="flex-1 rounded-lg border border-border bg-bg px-5 py-2.5 text-sm font-semibold text-text-secondary transition-all hover:bg-surface-2 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Clear
                 </button>
                 <button
                   onClick={handleAnalyze}
                   disabled={loading}
-                  className="flex-1 inline-flex items-center justify-center gap-2 rounded-lg bg-energy px-5 py-2.5 text-sm font-semibold text-white transition-all hover:bg-energy-light disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="flex-1 inline-flex items-center justify-center gap-2 rounded-lg bg-accent px-5 py-2.5 text-sm font-semibold text-white transition-all hover:bg-accent-light disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {loading ? (
                     <>
@@ -455,11 +455,11 @@ export default function DeckProfilerPage() {
             const daysLeft = Math.ceil((rotationDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
             if (daysLeft <= 0) return null;
             return (
-              <div className="rounded-xl border border-tan-200 bg-tan-100 px-6 py-5 flex items-center justify-center gap-5">
-                <div className="text-6xl font-black text-brown-900 leading-none">{daysLeft}</div>
+              <div className="rounded-xl border border-border bg-surface px-6 py-5 flex items-center justify-center gap-5">
+                <div className="text-6xl font-black text-text-primary leading-none">{daysLeft}</div>
                 <div className="flex flex-col">
-                  <div className="text-sm text-brown-500 uppercase tracking-widest">Days Until Rotation</div>
-                  <div className="text-xs text-brown-400 mt-1">April 10, 2026</div>
+                  <div className="text-sm text-text-secondary uppercase tracking-widest">Days Until Rotation</div>
+                  <div className="text-xs text-text-muted mt-1">April 10, 2026</div>
                 </div>
               </div>
             );
@@ -501,11 +501,11 @@ export default function DeckProfilerPage() {
                   : "Energy count may be too high or too low for consistent attachment.";
 
                 return (
-                  <div className="rounded-xl border border-tan-200 bg-tan-100 p-5 backdrop-blur-sm">
-                    <h2 className="text-lg font-semibold text-brown-900 mb-3">Deck Notes</h2>
+                  <div className="rounded-xl border border-border bg-surface p-5 backdrop-blur-sm">
+                    <h2 className="text-lg font-semibold text-text-primary mb-3">Deck Notes</h2>
                     <ul className="flex flex-col gap-2 list-disc list-inside">
                       {[rotationStr, consistencyStr, evolutionStr, energyStr].map((str, i) => (
-                        <li key={i} className="text-sm text-brown-700">
+                        <li key={i} className="text-sm text-text-secondary">
                           {str}
                         </li>
                       ))}
@@ -578,14 +578,14 @@ export default function DeckProfilerPage() {
               )}
 
               {/* ── 1. Overview ─────────────────────────────── */}
-              <div className="rounded-xl border border-tan-200 bg-tan-100 p-5 backdrop-blur-sm">
+              <div className="rounded-xl border border-border bg-surface p-5 backdrop-blur-sm">
                 <div className="flex items-baseline justify-between mb-4">
                   <h2 className="text-lg font-semibold">Overview</h2>
-                  <span className="text-xs text-brown-400">{result.deckSize} cards</span>
+                  <span className="text-xs text-text-muted">{result.deckSize} cards</span>
                 </div>
 
                 {/* Segmented bar */}
-                <div className="flex h-1.5 rounded-full overflow-hidden bg-tan-200 mb-4">
+                <div className="flex h-1.5 rounded-full overflow-hidden bg-surface-2 mb-4">
                   {result.sections.pokemon > 0 && (
                     <div className="bg-blue-400 transition-all" style={{ width: `${(result.sections.pokemon / result.deckSize) * 100}%` }} />
                   )}
@@ -598,21 +598,21 @@ export default function DeckProfilerPage() {
                 </div>
 
                 {/* Stat row */}
-                <div className="grid grid-cols-3 divide-x divide-tan-200">
+                <div className="grid grid-cols-3 divide-x divide-border">
                   <div className="pr-4">
-                    <p className="text-xs text-brown-400 uppercase tracking-wide mb-1">Pokémon</p>
-                    <p className="text-2xl font-bold text-brown-900">{result.sections.pokemon}</p>
-                    <p className="text-xs text-brown-400 mt-0.5">{result.sections.pokemonRatio}</p>
+                    <p className="text-xs text-text-muted uppercase tracking-wide mb-1">Pokémon</p>
+                    <p className="text-2xl font-bold text-text-primary">{result.sections.pokemon}</p>
+                    <p className="text-xs text-text-muted mt-0.5">{result.sections.pokemonRatio}</p>
                   </div>
                   <div className="px-4">
-                    <p className="text-xs text-brown-400 uppercase tracking-wide mb-1">Trainers</p>
-                    <p className="text-2xl font-bold text-brown-900">{result.sections.trainer}</p>
-                    <p className="text-xs text-brown-400 mt-0.5">{result.sections.trainerRatio}</p>
+                    <p className="text-xs text-text-muted uppercase tracking-wide mb-1">Trainers</p>
+                    <p className="text-2xl font-bold text-text-primary">{result.sections.trainer}</p>
+                    <p className="text-xs text-text-muted mt-0.5">{result.sections.trainerRatio}</p>
                   </div>
                   <div className="pl-4">
-                    <p className="text-xs text-brown-400 uppercase tracking-wide mb-1">Energy</p>
-                    <p className="text-2xl font-bold text-brown-900">{result.sections.energy}</p>
-                    <p className="text-xs text-brown-400 mt-0.5">{result.sections.energyRatio}</p>
+                    <p className="text-xs text-text-muted uppercase tracking-wide mb-1">Energy</p>
+                    <p className="text-2xl font-bold text-text-primary">{result.sections.energy}</p>
+                    <p className="text-xs text-text-muted mt-0.5">{result.sections.energyRatio}</p>
                   </div>
                 </div>
               </div>
@@ -621,7 +621,7 @@ export default function DeckProfilerPage() {
               <button
                 onClick={handleShare}
                 disabled={sharing}
-                className="inline-flex items-center justify-center gap-2 rounded-lg bg-energy px-5 py-2.5 text-sm font-semibold text-white transition-all hover:bg-energy-light disabled:opacity-50 disabled:cursor-not-allowed"
+                className="inline-flex items-center justify-center gap-2 rounded-lg bg-accent px-5 py-2.5 text-sm font-semibold text-white transition-all hover:bg-accent-light disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {sharing ? (
                   <>
@@ -661,7 +661,7 @@ export default function DeckProfilerPage() {
                 {/* Abilities */}
                 {result.pokemon.abilities.length > 0 && (
                   <div className="mb-5">
-                    <h3 className="text-sm font-semibold text-brown-700 mb-2">Abilities</h3>
+                    <h3 className="text-sm font-semibold text-text-secondary mb-2">Abilities</h3>
                     <div className="flex flex-col gap-3">
                       {(() => {
                         const grouped = result.pokemon.abilities.reduce<Record<string, PokemonAbility[]>>(
@@ -673,16 +673,16 @@ export default function DeckProfilerPage() {
                           {}
                         );
                         return Object.entries(grouped).map(([pokemonName, abilities]) => (
-                          <div key={pokemonName} className="border border-tan-200 rounded-xl overflow-hidden">
-                            <div className="bg-tan-200 px-4 py-2">
-                              <span className="text-sm font-semibold text-brown-800">{pokemonName}</span>
+                          <div key={pokemonName} className="border border-border rounded-xl overflow-hidden">
+                            <div className="bg-surface-2 px-4 py-2">
+                              <span className="text-sm font-semibold text-text-primary">{pokemonName}</span>
                             </div>
-                            <div className="divide-y divide-tan-100">
+                            <div className="divide-y divide-border">
                               {abilities.map((ab, i) => (
-                                <div key={i} className="bg-tan-50 px-4 py-3">
-                                  <span className="font-semibold text-sm text-energy">{ab.abilityName}</span>
+                                <div key={i} className="bg-bg px-4 py-3">
+                                  <span className="font-semibold text-sm text-accent">{ab.abilityName}</span>
                                   {ab.description && (
-                                    <p className="mt-1.5 text-xs text-brown-500 leading-relaxed">{ab.description}</p>
+                                    <p className="mt-1.5 text-xs text-text-secondary leading-relaxed">{ab.description}</p>
                                   )}
                                 </div>
                               ))}
@@ -697,7 +697,7 @@ export default function DeckProfilerPage() {
                 {/* Attacks */}
                 {result.pokemon.attacks.length > 0 && (
                   <div>
-                    <h3 className="text-sm font-semibold text-brown-700 mb-2">Attacks</h3>
+                    <h3 className="text-sm font-semibold text-text-secondary mb-2">Attacks</h3>
                     <div className="flex flex-col gap-3">
                       {(() => {
                         const grouped = result.pokemon.attacks.reduce<Record<string, PokemonAttack[]>>(
@@ -709,15 +709,15 @@ export default function DeckProfilerPage() {
                           {}
                         );
                         return Object.entries(grouped).map(([pokemonName, attacks]) => (
-                          <div key={pokemonName} className="border border-tan-200 rounded-xl overflow-hidden">
-                            <div className="bg-tan-200 px-4 py-2">
-                              <span className="text-sm font-semibold text-brown-800">{pokemonName}</span>
+                          <div key={pokemonName} className="border border-border rounded-xl overflow-hidden">
+                            <div className="bg-surface-2 px-4 py-2">
+                              <span className="text-sm font-semibold text-text-primary">{pokemonName}</span>
                             </div>
-                            <div className="divide-y divide-tan-100">
+                            <div className="divide-y divide-border">
                               {attacks.map((atk, i) => (
-                                <div key={i} className="bg-tan-50 px-4 py-3">
+                                <div key={i} className="bg-bg px-4 py-3">
                                   <div className="flex items-center gap-3 flex-wrap">
-                                    <span className="font-semibold text-brown-900 text-sm">{atk.attackName}</span>
+                                    <span className="font-semibold text-text-primary text-sm">{atk.attackName}</span>
                                     {atk.cost.length > 0 && (
                                       <div className="flex flex-wrap gap-1">
                                         {atk.cost.map((type, j) => (
@@ -726,11 +726,11 @@ export default function DeckProfilerPage() {
                                       </div>
                                     )}
                                     {atk.damage && (
-                                      <span className="ml-auto font-bold text-brown-900 text-sm">{atk.damage}</span>
+                                      <span className="ml-auto font-bold text-text-primary text-sm">{atk.damage}</span>
                                     )}
                                   </div>
                                   {atk.description && (
-                                    <p className="mt-1.5 text-xs text-brown-500 leading-relaxed">{atk.description}</p>
+                                    <p className="mt-1.5 text-xs text-text-secondary leading-relaxed">{atk.description}</p>
                                   )}
                                 </div>
                               ))}
@@ -743,7 +743,7 @@ export default function DeckProfilerPage() {
                 )}
 
                 {result.pokemon.abilities.length === 0 && result.pokemon.attacks.length === 0 && (
-                  <p className="text-sm text-brown-400 italic">
+                  <p className="text-sm text-text-muted italic">
                     No ability or attack data found.
                   </p>
                 )}
@@ -770,18 +770,18 @@ export default function DeckProfilerPage() {
                 {result.trainer.details.length > 0 ? (
                   <div className="flex flex-col gap-3">
                     {result.trainer.details.map((t) => (
-                      <div key={t.name} className="border border-tan-200 rounded-xl overflow-hidden">
-                        <div className="bg-tan-200 px-4 py-2">
-                          <span className="text-sm font-semibold text-brown-800">{t.name}</span>
+                      <div key={t.name} className="border border-border rounded-xl overflow-hidden">
+                        <div className="bg-surface-2 px-4 py-2">
+                          <span className="text-sm font-semibold text-text-primary">{t.name}</span>
                         </div>
-                        <div className="bg-tan-50 px-4 py-3">
-                          <p className="text-xs text-brown-500 leading-relaxed">{t.description}</p>
+                        <div className="bg-bg px-4 py-3">
+                          <p className="text-xs text-text-secondary leading-relaxed">{t.description}</p>
                         </div>
                       </div>
                     ))}
                   </div>
                 ) : (
-                  <p className="text-sm text-brown-400 italic">No trainer details available.</p>
+                  <p className="text-sm text-text-muted italic">No trainer details available.</p>
                 )}
               </CollapsibleSection>
 
@@ -806,21 +806,21 @@ export default function DeckProfilerPage() {
                 {result.energy.specialDetails.length > 0 ? (
                   <div className="flex flex-col gap-3">
                     {result.energy.specialDetails.map((e) => (
-                      <div key={e.name} className="border border-tan-200 rounded-xl overflow-hidden">
-                        <div className="bg-tan-200 px-4 py-2 flex items-center justify-between">
-                          <span className="text-sm font-semibold text-brown-800">{e.name}</span>
-                          <span className="text-xs text-brown-500">&times;{e.qty}</span>
+                      <div key={e.name} className="border border-border rounded-xl overflow-hidden">
+                        <div className="bg-surface-2 px-4 py-2 flex items-center justify-between">
+                          <span className="text-sm font-semibold text-text-primary">{e.name}</span>
+                          <span className="text-xs text-text-secondary">&times;{e.qty}</span>
                         </div>
                         {e.description && (
-                          <div className="bg-tan-50 px-4 py-3">
-                            <p className="text-xs text-brown-500 leading-relaxed">{e.description}</p>
+                          <div className="bg-bg px-4 py-3">
+                            <p className="text-xs text-text-secondary leading-relaxed">{e.description}</p>
                           </div>
                         )}
                       </div>
                     ))}
                   </div>
                 ) : (
-                  <p className="text-sm text-brown-400 italic">No special energy details.</p>
+                  <p className="text-sm text-text-muted italic">No special energy details.</p>
                 )}
               </CollapsibleSection>
 
@@ -832,11 +832,11 @@ export default function DeckProfilerPage() {
                 <details className="rounded-xl border border-blue-200 bg-blue-50 p-5 group">
                   <summary className="flex items-center justify-between cursor-pointer list-none [&::-webkit-details-marker]:hidden">
                     <div>
-                      <h2 className="text-lg font-semibold text-brown-900">Available in the Shop</h2>
-                      <p className="text-xs text-brown-400 mt-0.5">Check out cards from this deck on eBay</p>
+                      <h2 className="text-lg font-semibold text-text-primary">Available in the Shop</h2>
+                      <p className="text-xs text-text-muted mt-0.5">Check out cards from this deck on eBay</p>
                     </div>
                     <svg
-                      className="w-4 h-4 text-brown-400 transition-transform group-open:rotate-180"
+                      className="w-4 h-4 text-text-muted transition-transform group-open:rotate-180"
                       fill="none"
                       viewBox="0 0 24 24"
                       stroke="currentColor"
@@ -845,7 +845,7 @@ export default function DeckProfilerPage() {
                       <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
                     </svg>
                   </summary>
-                  <div className="divide-y divide-tan-200 mt-4">
+                  <div className="divide-y divide-border mt-4">
                     {result.shopMatches.flatMap((match) =>
                       match.listings.map((listing) => (
                         <div key={listing.itemId} className="py-3 flex items-center gap-4">
@@ -853,8 +853,8 @@ export default function DeckProfilerPage() {
                             <img src={listing.imageUrl} alt={listing.title} className="w-12 h-12 object-contain rounded flex-shrink-0" />
                           )}
                           <div className="flex flex-col flex-1 min-w-0">
-                            <span className="text-sm font-semibold text-brown-900">{match.cardName}</span>
-                            <span className="text-sm text-brown-500">${listing.price.toFixed(2)}</span>
+                            <span className="text-sm font-semibold text-text-primary">{match.cardName}</span>
+                            <span className="text-sm text-text-secondary">${listing.price.toFixed(2)}</span>
                           </div>
                           <a
                             href={listing.listingUrl}
@@ -910,15 +910,15 @@ export default function DeckProfilerPage() {
 
       {/* ── Share Toast ─────────────────────────────────────── */}
       {shareToast && (
-        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 rounded-lg bg-energy px-5 py-2.5 text-sm font-semibold text-white shadow-lg animate-fade-toast">
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 rounded-lg bg-accent px-5 py-2.5 text-sm font-semibold text-white shadow-lg animate-fade-toast">
           Link copied!
         </div>
       )}
 
       {/* ── Footer ───────────────────────────────────────────── */}
-      <footer className="flex-shrink-0 py-8 px-6 text-center text-sm text-brown-300">
+      <footer className="flex-shrink-0 py-8 px-6 text-center text-sm text-text-muted">
         <p>&copy; 2026 TCG Dexter &middot; tcgdexter.com</p>
-        <p className="mt-3 max-w-lg mx-auto text-xs text-brown-300/70 leading-relaxed">
+        <p className="mt-3 max-w-lg mx-auto text-xs text-text-muted/70 leading-relaxed">
           TCG Dexter is an independent organization. The information presented on this website about the Pokémon Trading Card Game, including images and text, is intellectual property of The Pokémon Company, Nintendo, Game Freak, Creatures and/or Wizards of the Coast. TCG Dexter is not produced by, endorsed by, supported by, or affiliated with any of these companies.
         </p>
       </footer>
@@ -932,7 +932,7 @@ function Stat({
   label,
   value,
   sub,
-  color = "text-brown-900",
+  color = "text-text-primary",
 }: {
   label: string;
   value: number;
@@ -942,8 +942,8 @@ function Stat({
   return (
     <div className="text-center">
       <p className={`text-2xl font-bold ${color}`}>{value}</p>
-      {sub && <p className="text-xs text-brown-400 mt-0">{sub}</p>}
-      <p className="text-xs text-brown-500 mt-0.5">{label}</p>
+      {sub && <p className="text-xs text-text-muted mt-0">{sub}</p>}
+      <p className="text-xs text-text-secondary mt-0.5">{label}</p>
     </div>
   );
 }

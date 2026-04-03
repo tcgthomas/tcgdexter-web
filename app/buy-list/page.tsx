@@ -21,7 +21,7 @@ export default function BuyListPage() {
         <div className="text-left mb-6">
           <Link
             href="/"
-            className="inline-flex items-center gap-2 text-brown-500 hover:text-brown-900 text-sm transition-colors"
+            className="inline-flex items-center gap-2 text-text-secondary hover:text-text-primary text-sm transition-colors"
           >
             <svg
               className="w-4 h-4"
@@ -43,8 +43,8 @@ export default function BuyListPage() {
         <h1 className="text-3xl sm:text-4xl font-bold tracking-tight">
           Buy List
         </h1>
-        <p className="mt-3 text-sm sm:text-base text-brown-500 max-w-md mx-auto leading-relaxed">
-          Sell your collection: <a href="mailto:trade@tcgdexter.com" className="underline hover:text-brown-700">trade@tcgdexter.com</a>
+        <p className="mt-3 text-sm sm:text-base text-text-secondary max-w-md mx-auto leading-relaxed">
+          Sell your collection: <a href="mailto:trade@tcgdexter.com" className="underline hover:text-text-secondary">trade@tcgdexter.com</a>
         </p>
       </header>
 
@@ -52,22 +52,22 @@ export default function BuyListPage() {
       <main className="flex-1 px-6 pb-20">
         <div className="mx-auto max-w-lg">
           {items.length === 0 ? (
-            <div className="text-center py-12 text-brown-500">
+            <div className="text-center py-12 text-text-secondary">
               Check back soon &mdash; list updating.
             </div>
           ) : (
-            <div className="rounded-xl border border-tan-200 bg-tan-100 overflow-hidden">
+            <div className="rounded-xl border border-border bg-surface overflow-hidden">
               {items.map((item, i) => (
                 <div
                   key={i}
-                  className={`flex items-center justify-between px-5 py-3 transition-colors hover:bg-tan-200 ${
-                    i < items.length - 1 ? "border-b border-tan-200" : ""
+                  className={`flex items-center justify-between px-5 py-3 transition-colors hover:bg-surface-2 ${
+                    i < items.length - 1 ? "border-b border-border" : ""
                   }`}
                 >
-                  <span className="font-semibold text-brown-900 text-sm">
+                  <span className="font-semibold text-text-primary text-sm">
                     {item.card_label}
                   </span>
-                  <span className="text-energy font-medium text-sm ml-4 flex-shrink-0">
+                  <span className="text-accent font-medium text-sm ml-4 flex-shrink-0">
                     ${item.market_price.toFixed(2)}
                   </span>
                 </div>
@@ -76,7 +76,7 @@ export default function BuyListPage() {
           )}
 
           {updated_at && (
-            <p className="mt-2 text-xs text-brown-300 text-center">
+            <p className="mt-2 text-xs text-text-muted text-center">
               Last updated:{" "}
               {new Date(updated_at).toLocaleDateString("en-US", {
                 month: "short",
@@ -91,7 +91,7 @@ export default function BuyListPage() {
       </main>
 
       {/* ── Footer ───────────────────────────────────────────── */}
-      <footer className="flex-shrink-0 py-8 px-6 text-center text-sm text-brown-300">
+      <footer className="flex-shrink-0 py-8 px-6 text-center text-sm text-text-muted">
         <p>&copy; 2026 TCG Dexter &middot; tcgdexter.com</p>
       </footer>
     </div>
