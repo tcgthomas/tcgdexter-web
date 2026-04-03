@@ -263,7 +263,7 @@ export default function DeckProfilerPage() {
 
   useEffect(() => {
     if (dominantColor) {
-      document.documentElement.style.setProperty("--energy-gradient", dominantColor + "22");
+      document.documentElement.style.setProperty("--energy-gradient", dominantColor + "55");
     } else {
       document.documentElement.style.removeProperty("--energy-gradient");
     }
@@ -348,7 +348,7 @@ export default function DeckProfilerPage() {
 
   return (
     <div
-      className="min-h-screen flex flex-col profiler-bg"
+      className={`min-h-screen flex flex-col profiler-bg${dominantColor ? " profiler-active" : ""}`}
       style={dominantColor ? { "--energy-accent": dominantColor } as React.CSSProperties : undefined}
     >
       {/* ── Header ───────────────────────────────────────────── */}

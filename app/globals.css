@@ -72,9 +72,18 @@
     );
   }
 
-  /* Energy radial glow for deck profiler */
+  /* Energy gradient for deck profiler — energy color top, dark base bottom */
   .profiler-bg {
-    background: radial-gradient(ellipse at 50% 100%, var(--energy-gradient, transparent) 0%, transparent 60%), var(--bg);
+    background: var(--bg);
+    transition: background 0.6s ease;
+  }
+  .profiler-bg.profiler-active {
+    background: linear-gradient(
+      to bottom,
+      var(--energy-gradient, var(--bg)) 0%,
+      var(--surface) 35%,
+      var(--bg) 100%
+    );
   }
 }
 
