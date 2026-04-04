@@ -350,6 +350,11 @@ export default async function MetaDeckDetailPage({
             </section>
           )}
 
+          {/* ── Deck Price ───────────────────────────────────── */}
+          {deckPrice > 0 && (
+            <DeckPriceModule deckPrice={deckPrice} />
+          )}
+
           {/* ── Sample Deck List ─────────────────────────────── */}
           <section>
             <h3 className="text-sm font-semibold text-text-primary mb-3">
@@ -359,11 +364,6 @@ export default async function MetaDeckDetailPage({
               <DeckListClient cards={cards} />
             </div>
           </section>
-
-          {/* ── Deck Price ───────────────────────────────────── */}
-          {deckPrice > 0 && (
-            <DeckPriceModule deckPrice={deckPrice} />
-          )}
 
           {/* ── Shop Listings ────────────────────────────────── */}
           <section>
