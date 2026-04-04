@@ -6,6 +6,7 @@ import shopListingsRaw from "@/data/shop-listings.json";
 import cardsRaw from "@/data/cards-standard.json";
 import DeckListClient from "./DeckListClient";
 import DeckPriceModule from "@/app/components/DeckPriceModule";
+import RotationBanner from "@/app/components/RotationBanner";
 
 /* ─── Types ────────────────────────────────────────────────────── */
 
@@ -152,7 +153,6 @@ function findShopListings(cards: DeckCard[]): { title: string; price: number; li
 }
 
 const ROTATING_MARKS = new Set(["A", "B", "C", "D", "E", "F", "G"]);
-const ROTATION_DATE = "April 10, 2026";
 
 interface CardPrinting {
   name: string;
@@ -332,23 +332,7 @@ export default async function MetaDeckDetailPage({
           </section>
 
           {/* ── Rotation Warning ─────────────────────────────── */}
-          {cards.length > 0 && !isRotationReady && (
-            <section className="rounded-xl border border-yellow-500/30 bg-yellow-500/5 p-4">
-              <div className="flex items-start gap-3">
-                <svg className="w-5 h-5 text-yellow-500 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
-                </svg>
-                <div>
-                  <p className="text-sm font-semibold text-yellow-500">
-                    {rotatingCards.length} card{rotatingCards.length !== 1 ? "s" : ""} rotate{rotatingCards.length === 1 ? "s" : ""} out {ROTATION_DATE}
-                  </p>
-                  <p className="text-xs text-text-muted mt-1">
-                    {rotatingCards.map((c) => `${c.qty}× ${c.name}`).join(", ")}
-                  </p>
-                </div>
-              </div>
-            </section>
-          )}
+          {cards.length > 0 && <RotationBanner rotatingCards={rotatingCards} />}
 
           {/* ── Deck Price ───────────────────────────────────── */}
           {deckPrice > 0 && (
