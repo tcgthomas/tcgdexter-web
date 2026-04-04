@@ -75,7 +75,7 @@ export default function DeckListClient({ cards }: DeckListClientProps) {
 
   return (
     <div>
-      <div className="flex justify-end mb-3">
+      <div className="flex justify-start mb-3">
         <button
           onClick={handleCopy}
           className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border border-border bg-surface-2 text-xs font-medium text-text-secondary hover:text-text-primary hover:border-accent/30 transition-colors"
