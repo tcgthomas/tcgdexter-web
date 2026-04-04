@@ -10,7 +10,8 @@
     "wins": 162,
     "losses": 208,
     "ties": 3,
-    "last_updated": "2026-04-04"
+    "last_updated": "2026-04-04",
+    "velocity": 0.05076
   },
   {
     "id": "alakazam-dudunsparce",
@@ -23,7 +24,8 @@
     "wins": 114,
     "losses": 143,
     "ties": 1,
-    "last_updated": "2026-04-04"
+    "last_updated": "2026-04-04",
+    "velocity": 0.03704
   },
   {
     "id": "dragapult-dusknoir",
@@ -36,7 +38,8 @@
     "wins": 84,
     "losses": 149,
     "ties": 0,
-    "last_updated": "2026-04-04"
+    "last_updated": "2026-04-04",
+    "velocity": 0.036519
   },
   {
     "id": "dragapult-ex",
@@ -49,7 +52,8 @@
     "wins": 140,
     "losses": 142,
     "ties": 1,
-    "last_updated": "2026-04-04"
+    "last_updated": "2026-04-04",
+    "velocity": 0.031514
   },
   {
     "id": "dragapult-blaziken",
@@ -62,7 +66,8 @@
     "wins": 127,
     "losses": 131,
     "ties": 2,
-    "last_updated": "2026-04-04"
+    "last_updated": "2026-04-04",
+    "velocity": 0.027701
   },
   {
     "id": "rocket-mewtwo-ex",
@@ -75,7 +80,8 @@
     "wins": 140,
     "losses": 130,
     "ties": 1,
-    "last_updated": "2026-04-04"
+    "last_updated": "2026-04-04",
+    "velocity": 0.027947
   },
   {
     "id": "starmie-froslass",
@@ -88,7 +94,8 @@
     "wins": 101,
     "losses": 110,
     "ties": 1,
-    "last_updated": "2026-04-04"
+    "last_updated": "2026-04-04",
+    "velocity": 0.026424
   },
   {
     "id": "n-zoroark",
@@ -101,7 +108,8 @@
     "wins": 95,
     "losses": 96,
     "ties": 1,
-    "last_updated": "2026-04-04"
+    "last_updated": "2026-04-04",
+    "velocity": 0.027701
   },
   {
     "id": "ogerpon-meganium",
@@ -114,7 +122,8 @@
     "wins": 86,
     "losses": 81,
     "ties": 2,
-    "last_updated": "2026-04-04"
+    "last_updated": "2026-04-04",
+    "velocity": 0.019317
   },
   {
     "id": "grimmsnarl-froslass",
@@ -127,7 +136,8 @@
     "wins": 60,
     "losses": 61,
     "ties": 1,
-    "last_updated": "2026-04-04"
+    "last_updated": "2026-04-04",
+    "velocity": 0.016403
   },
   {
     "id": "cynthia-garchomp-ex",
@@ -140,7 +150,8 @@
     "wins": 60,
     "losses": 66,
     "ties": 0,
-    "last_updated": "2026-04-04"
+    "last_updated": "2026-04-04",
+    "velocity": 0.018505
   },
   {
     "id": "festival-lead",
@@ -153,7 +164,8 @@
     "wins": 43,
     "losses": 39,
     "ties": 0,
-    "last_updated": "2026-04-04"
+    "last_updated": "2026-04-04",
+    "velocity": 0.012994
   },
   {
     "id": "mega-venusaur-ex",
@@ -166,7 +178,8 @@
     "wins": 34,
     "losses": 58,
     "ties": 1,
-    "last_updated": "2026-04-04"
+    "last_updated": "2026-04-04",
+    "velocity": 0.011559
   },
   {
     "id": "raging-bolt-ogerpon",
@@ -179,7 +192,8 @@
     "wins": 32,
     "losses": 43,
     "ties": 0,
-    "last_updated": "2026-04-04"
+    "last_updated": "2026-04-04",
+    "velocity": 0.013182
   },
   {
     "id": "okidogi-twm",
@@ -192,7 +206,8 @@
     "wins": 76,
     "losses": 44,
     "ties": 1,
-    "last_updated": "2026-04-04"
+    "last_updated": "2026-04-04",
+    "velocity": 0.012009
   },
   {
     "id": "mega-absol-box",
@@ -205,7 +220,8 @@
     "wins": 35,
     "losses": 59,
     "ties": 1,
-    "last_updated": "2026-04-04"
+    "last_updated": "2026-04-04",
+    "velocity": 0.011095
   },
   {
     "id": "mega-lucario-ex",
@@ -218,7 +234,8 @@
     "wins": 39,
     "losses": 41,
     "ties": 0,
-    "last_updated": "2026-04-04"
+    "last_updated": "2026-04-04",
+    "velocity": 0.012588
   },
   {
     "id": "rockets-honchkrow",
@@ -231,7 +248,8 @@
     "wins": 33,
     "losses": 28,
     "ties": 0,
-    "last_updated": "2026-04-04"
+    "last_updated": "2026-04-04",
+    "velocity": 0.009847
   },
   {
     "id": "slowking-scr",
@@ -244,7 +262,8 @@
     "wins": 36,
     "losses": 19,
     "ties": 0,
-    "last_updated": "2026-04-04"
+    "last_updated": "2026-04-04",
+    "velocity": 0.007455
   },
   {
     "id": "clefairy-ogerpon",
@@ -257,7 +276,8 @@
     "wins": 29,
     "losses": 32,
     "ties": 0,
-    "last_updated": "2026-04-04"
+    "last_updated": "2026-04-04",
+    "velocity": 0.009253
   },
   {
     "id": "stevens-metagross",
@@ -270,7 +290,8 @@
     "wins": 30,
     "losses": 33,
     "ties": 0,
-    "last_updated": "2026-04-04"
+    "last_updated": "2026-04-04",
+    "velocity": 0.007455
   },
   {
     "id": "greninja-ex",
@@ -283,7 +304,8 @@
     "wins": 37,
     "losses": 52,
     "ties": 0,
-    "last_updated": "2026-04-04"
+    "last_updated": "2026-04-04",
+    "velocity": 0.008179
   },
   {
     "id": "flareon-noctowl",
@@ -296,7 +318,8 @@
     "wins": 26,
     "losses": 25,
     "ties": 1,
-    "last_updated": "2026-04-04"
+    "last_updated": "2026-04-04",
+    "velocity": 0.007658
   },
   {
     "id": "ceruledge-ex",
@@ -309,7 +332,8 @@
     "wins": 22,
     "losses": 29,
     "ties": 0,
-    "last_updated": "2026-04-04"
+    "last_updated": "2026-04-04",
+    "velocity": 0.007962
   },
   {
     "id": "crustle-dri",
@@ -322,7 +346,8 @@
     "wins": 20,
     "losses": 12,
     "ties": 0,
-    "last_updated": "2026-04-04"
+    "last_updated": "2026-04-04",
+    "velocity": 0.006251
   },
   {
     "id": "mega-kangaskhan-ex",
@@ -335,7 +360,8 @@
     "wins": 23,
     "losses": 26,
     "ties": 1,
-    "last_updated": "2026-04-04"
+    "last_updated": "2026-04-04",
+    "velocity": 0.00628
   },
   {
     "id": "froslass-munkidori",
@@ -348,7 +374,8 @@
     "wins": 23,
     "losses": 30,
     "ties": 0,
-    "last_updated": "2026-04-04"
+    "last_updated": "2026-04-04",
+    "velocity": 0.005453
   },
   {
     "id": "mega-starmie-ex",
@@ -361,7 +388,8 @@
     "wins": 32,
     "losses": 38,
     "ties": 0,
-    "last_updated": "2026-04-04"
+    "last_updated": "2026-04-04",
+    "velocity": 0.005511
   },
   {
     "id": "hops-trevenant",
@@ -374,7 +402,8 @@
     "wins": 11,
     "losses": 11,
     "ties": 0,
-    "last_updated": "2026-04-04"
+    "last_updated": "2026-04-04",
+    "velocity": 0.004075
   },
   {
     "id": "tera-box",
@@ -387,7 +416,8 @@
     "wins": 15,
     "losses": 23,
     "ties": 0,
-    "last_updated": "2026-04-04"
+    "last_updated": "2026-04-04",
+    "velocity": 0.003219
   },
   {
     "id": "diancie-dusknoir",
