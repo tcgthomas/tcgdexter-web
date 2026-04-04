@@ -108,8 +108,28 @@ def parse_deck_list(html: str) -> list[dict]:
     return cards
 
 
+STANDARD_SETS = {
+    "SVI", "PAL", "OBF", "MEW", "PAR", "TEF", "TWM", "SFA", "SCR", "SSP", "PRE", "DRI",
+    "JTG", "MEG", "MEP", "ASC", "WHT", "SVP", "MEE", "PH",
+    "PAF", "PFL", "ME03", "BLK",
+    "POR",   # Perfect Order
+    "SVE",   # SV Basic Energies
+}
+
+
+def is_standard_legal(cards: list[dict]) -> bool:
+    """Return True if all cards in the list are from current Standard sets."""
+    if not cards:
+        return False
+    set_codes = {c["setCode"] for c in cards}
+    return set_codes.issubset(STANDARD_SETS)
+
+
 def scrape_deck_for_archetype(name: str) -> list[dict]:
-    """Try to find and parse a deck list for a given archetype name."""
+    """Try to find and parse a Standard-legal deck list for a given archetype name.
+    Mirrors the Swift LimitlessDeckService logic: iterate all archetype IDs and up
+    to 8 list IDs per archetype until a Standard-legal list is found.
+    """
     keyword = name.split()[0]
     print(f"  Searching for '{keyword}'...")
 
@@ -125,36 +145,39 @@ def scrape_deck_for_archetype(name: str) -> list[dict]:
 
     time.sleep(DELAY)
 
-    # Try the first archetype
-    arch_id = arch_ids[0]
-    try:
-        list_ids = find_list_ids(arch_id)
-    except Exception as e:
-        print(f"  ⚠ Archetype page failed: {e}")
-        return []
+    for arch_id in arch_ids:
+        try:
+            list_ids = find_list_ids(arch_id)
+        except Exception as e:
+            print(f"  ⚠ Archetype {arch_id} page failed: {e}")
+            time.sleep(DELAY)
+            continue
 
-    if not list_ids:
-        print(f"  ⚠ No list IDs found for archetype {arch_id}")
-        return []
+        if not list_ids:
+            continue
 
-    time.sleep(DELAY)
+        time.sleep(DELAY)
 
-    # Fetch the first deck list
-    list_id = list_ids[0]
-    try:
-        html = fetch(f"https://limitlesstcg.com/decks/list/{list_id}")
-    except Exception as e:
-        print(f"  ⚠ Deck list page failed: {e}")
-        return []
+        for list_id in list_ids[:8]:
+            try:
+                html = fetch(f"https://limitlesstcg.com/decks/list/{list_id}")
+            except Exception as e:
+                print(f"  ⚠ List {list_id} fetch failed: {e}")
+                time.sleep(DELAY)
+                continue
 
-    cards = parse_deck_list(html)
-    if cards:
-        total = sum(c["qty"] for c in cards)
-        print(f"  ✓ Found {len(cards)} unique cards ({total} total)")
-    else:
-        print(f"  ⚠ Could not parse any cards from list {list_id}")
+            cards = parse_deck_list(html)
+            if is_standard_legal(cards):
+                total = sum(c["qty"] for c in cards)
+                print(f"  ✓ Standard-legal list {list_id}: {len(cards)} unique cards ({total} total)")
+                return cards
+            else:
+                non_standard = {c["setCode"] for c in cards} - STANDARD_SETS
+                print(f"  · List {list_id} not Standard (sets: {non_standard}) — trying next...")
+            time.sleep(DELAY)
 
-    return cards
+    print(f"  ⚠ No Standard-legal list found after exhausting all options")
+    return []
 
 
 def main() -> None:
