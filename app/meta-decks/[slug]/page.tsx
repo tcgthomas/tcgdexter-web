@@ -18,6 +18,7 @@ interface Archetype {
   losses: number;
   ties: number;
   last_updated: string;
+  velocity?: number;
 }
 
 interface DeckCard {
@@ -64,25 +65,61 @@ function getWinRate(a: Archetype): number {
 }
 
 function getScoutingNote(a: Archetype): string {
-  let s1: string;
+  const winRate = getWinRate(a);
+  const hasWinData = a.wins + a.losses + a.ties > 0;
+  const velocity = a.velocity ?? 0;
+  const notes: string[] = [];
+
+  // 1. Meta presence + trend
   if (a.representation_pct >= 0.1) {
-    s1 = "High meta presence — expect to see this at locals.";
+    if (velocity > 0.01) {
+      notes.push("Dominant and rising — the deck to beat right now.");
+    } else if (velocity < -0.01) {
+      notes.push("High meta presence but fading — pilots may be adapting away.");
+    } else {
+      notes.push("Firmly established — expect to face this at every locals.");
+    }
   } else if (a.representation_pct >= 0.05) {
-    s1 = "Solid meta share — a real threat at any table.";
+    if (velocity > 0.005) {
+      notes.push("Gaining momentum — a rising threat in the current meta.");
+    } else if (velocity < -0.005) {
+      notes.push("Solid meta share, but trending down from recent peaks.");
+    } else {
+      notes.push("Consistent meta presence — a real threat at any table.");
+    }
   } else {
-    s1 = "Niche presence — skilled pilots only.";
+    if (velocity > 0.003) {
+      notes.push("Emerging archetype — entry numbers are climbing fast.");
+    } else {
+      notes.push("Niche presence — expect skilled, dedicated pilots.");
+    }
   }
 
-  let s2: string;
-  if (a.conversion_rate >= 0.3) {
-    s2 = "Exceptional conversion rate — the pilots who run it are winning.";
+  // 2. Conversion efficiency (top cut relative to entries)
+  if (a.conversion_rate >= 0.25) {
+    notes.push("Elite conversion — the players running it are reaching top cut at an exceptional rate.");
   } else if (a.conversion_rate >= 0.15) {
-    s2 = "Good conversion — the deck delivers when it gets there.";
+    notes.push("Strong conversion — the deck delivers when it gets into the right hands.");
+  } else if (a.conversion_rate >= 0.08) {
+    notes.push("Average conversion — entries and top cuts are roughly in proportion.");
   } else {
-    s2 = "Low conversion rate — entries outpace top cuts.";
+    notes.push("Low conversion — popular but underperforming in top cut finishes.");
   }
 
-  return `${s1} ${s2}`;
+  // 3. Win rate signal (only if we have meaningful data)
+  if (hasWinData) {
+    if (winRate >= 0.55) {
+      notes.push("Win rate is well above 50% — positive matchup spread across the field.");
+    } else if (winRate >= 0.50) {
+      notes.push("Win rate is slightly above breakeven — holds its own across matchups.");
+    } else if (winRate >= 0.45) {
+      notes.push("Win rate is just under 50% — may struggle against the current top decks.");
+    } else {
+      notes.push("Win rate is below 45% — the field is finding answers to this deck.");
+    }
+  }
+
+  return notes.join(" ");
 }
 
 function findShopListings(cards: DeckCard[]): { title: string; price: number; listingUrl: string }[] {
