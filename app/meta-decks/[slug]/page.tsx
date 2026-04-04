@@ -7,6 +7,8 @@ import cardsRaw from "@/data/cards-standard.json";
 import DeckListClient from "./DeckListClient";
 import DeckPriceModule from "@/app/components/DeckPriceModule";
 import RotationBanner from "@/app/components/RotationBanner";
+import EnergyColor from "@/app/components/EnergyColor";
+import ThemeColor from "@/app/components/ThemeColor";
 
 /* ─── Types ────────────────────────────────────────────────────── */
 
@@ -154,6 +156,44 @@ function findShopListings(cards: DeckCard[]): { title: string; price: number; li
 
 const ROTATING_MARKS = new Set(["A", "B", "C", "D", "E", "F", "G"]);
 
+const ENERGY_HEX: Record<string, string> = {
+  Fire:       "#e74c3c",
+  Water:      "#3498db",
+  Grass:      "#27ae60",
+  Lightning:  "#f1c40f",
+  Psychic:    "#9b59b6",
+  Fighting:   "#e67e22",
+  Darkness:   "#2c3e50",
+  Metal:      "#95a5a6",
+  Dragon:     "#1a5276",
+  Fairy:      "#fd79a8",
+  Colorless:  "#b2bec3",
+};
+
+const ENERGY_NAME_MAP: Record<string, string> = {
+  fire: "Fire", water: "Water", grass: "Grass", lightning: "Lightning",
+  psychic: "Psychic", fighting: "Fighting", darkness: "Darkness", dark: "Darkness",
+  metal: "Metal", steel: "Metal", dragon: "Dragon", fairy: "Fairy",
+};
+
+function getDominantEnergyColor(cards: DeckCard[]): string | null {
+  const counts: Record<string, number> = {};
+  for (const card of cards) {
+    if (card.category !== "energy") continue;
+    const nameLower = card.name.toLowerCase();
+    for (const [keyword, type] of Object.entries(ENERGY_NAME_MAP)) {
+      if (nameLower.includes(keyword)) {
+        counts[type] = (counts[type] ?? 0) + card.qty;
+        break;
+      }
+    }
+  }
+  const entries = Object.entries(counts);
+  if (entries.length === 0) return null;
+  const dominant = entries.reduce((a, b) => (b[1] > a[1] ? b : a))[0];
+  return ENERGY_HEX[dominant] ?? null;
+}
+
 interface CardPrinting {
   name: string;
   set_id: string;
@@ -224,9 +264,15 @@ export default async function MetaDeckDetailPage({
   const deckPrice = cards.length > 0 ? computeDeckPrice(cards) : 0;
   const rotatingCards = cards.length > 0 ? getRotatingCards(cards) : [];
   const isRotationReady = rotatingCards.length === 0;
+  const dominantColor = getDominantEnergyColor(cards);
 
   return (
-    <div className="min-h-dvh flex flex-col">
+    <div
+      className={`min-h-dvh flex flex-col profiler-bg${dominantColor ? " profiler-active" : ""}`}
+      style={dominantColor ? { "--energy-accent": dominantColor } as React.CSSProperties : undefined}
+    >
+      {dominantColor && <EnergyColor hex={dominantColor} />}
+      {dominantColor && <ThemeColor color={dominantColor} />}
       {/* ── Header ───────────────────────────────────────────── */}
       <header className="flex-shrink-0 pt-12 pb-6 px-6">
         <div className="text-left mb-6">
