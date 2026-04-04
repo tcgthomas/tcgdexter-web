@@ -114,6 +114,7 @@ interface AnalysisResult {
   metaMatch: {
     matched: boolean;
     archetypeName: string | null;
+    archetypeId: string | null;
     matchPct: number | null;
     rank: number | null;
     conversionRate: number | null;
@@ -345,6 +346,7 @@ export async function POST(req: NextRequest) {
     let metaMatch: AnalysisResult["metaMatch"] = {
       matched: false,
       archetypeName: null,
+      archetypeId: null,
       matchPct: null,
       rank: null,
       conversionRate: null,
@@ -383,6 +385,7 @@ export async function POST(req: NextRequest) {
         metaMatch = {
           matched: true,
           archetypeName: (bestEntry as MetaArchetype).name,
+          archetypeId: String((bestEntry as MetaArchetype).id) ?? null,
           matchPct: bestScore,
           rank: bestIndex + 1,
           conversionRate: (bestEntry as MetaArchetype).conversion_rate ?? null,

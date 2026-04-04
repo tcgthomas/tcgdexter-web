@@ -83,6 +83,7 @@ interface AnalysisResult {
   metaMatch: {
     matched: boolean;
     archetypeName: string | null;
+    archetypeId: string | null;
     matchPct: number | null;
     rank: number | null;
     conversionRate: number | null;
@@ -486,7 +487,7 @@ export default function DeckProfilerPage() {
 
               {/* ── Meta Match ────────────────────────────── */}
               {result.metaMatch.matched && (() => {
-                const { archetypeName, matchPct, rank, conversionRate } = result.metaMatch;
+                const { archetypeName, archetypeId, matchPct, rank, conversionRate } = result.metaMatch;
                 const pct = (conversionRate ?? 0) * 100;
                 const presenceNote = (matchPct ?? 0) >= 0.1
                   ? "High meta presence — expect to see this at locals."
@@ -498,8 +499,17 @@ export default function DeckProfilerPage() {
                   : pct >= 15
                   ? "Good conversion — the deck delivers when it gets there."
                   : "Low conversion rate — entries outpace top cuts.";
+                const Wrapper = archetypeId
+                  ? ({ children }: { children: React.ReactNode }) => (
+                      <Link href={`/meta-decks/${archetypeId}`} className="block rounded-xl border border-green-500/40 bg-green-500/10 p-5 transition-colors hover:bg-green-500/15 hover:border-green-500/60">
+                        {children}
+                      </Link>
+                    )
+                  : ({ children }: { children: React.ReactNode }) => (
+                      <div className="rounded-xl border border-green-500/40 bg-green-500/10 p-5">{children}</div>
+                    );
                 return (
-                  <div className="rounded-xl border border-green-500/40 bg-green-500/10 p-5">
+                  <Wrapper>
                     <div className="flex items-start justify-between gap-3 mb-3">
                       <div>
                         <span className="inline-flex items-center rounded-full border border-green-500/50 bg-green-500/10 px-2.5 py-0.5 text-xs font-semibold text-green-600 mb-2">
@@ -520,7 +530,10 @@ export default function DeckProfilerPage() {
                       </p>
                     )}
                     <p className="text-sm text-text-secondary">{presenceNote} {convNote}</p>
-                  </div>
+                    {archetypeId && (
+                      <p className="text-xs text-green-600 font-medium mt-3">View full meta breakdown →</p>
+                    )}
+                  </Wrapper>
                 );
               })()}
 
