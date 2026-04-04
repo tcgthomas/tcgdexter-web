@@ -3,7 +3,9 @@ import { notFound } from "next/navigation";
 import archetypesRaw from "@/data/meta-archetypes.json";
 import metaDecksRaw from "@/data/meta-decks.json";
 import shopListingsRaw from "@/data/shop-listings.json";
+import cardsRaw from "@/data/cards-standard.json";
 import DeckListClient from "./DeckListClient";
+import DeckPriceModule from "@/app/components/DeckPriceModule";
 
 /* ─── Types ────────────────────────────────────────────────────── */
 
@@ -149,6 +151,57 @@ function findShopListings(cards: DeckCard[]): { title: string; price: number; li
   return results;
 }
 
+const ROTATING_MARKS = new Set(["A", "B", "C", "D", "E", "F", "G"]);
+const ROTATION_DATE = "April 10, 2026";
+
+interface CardPrinting {
+  name: string;
+  set_id: string;
+  number: string;
+  regulation_mark: string | null;
+  market_price: number;
+}
+
+type CardsDb = Record<string, CardPrinting[]>;
+
+function computeDeckPrice(cards: DeckCard[]): number {
+  const db = cardsRaw as CardsDb;
+  let total = 0;
+  for (const card of cards) {
+    const printings = db[card.name];
+    if (!printings) continue;
+    // Match by set code + number, fall back to cheapest printing
+    const match =
+      printings.find(
+        (p) =>
+          p.set_id.toUpperCase() === card.setCode.toUpperCase() &&
+          p.number === card.number
+      ) ?? printings.reduce((a, b) => (a.market_price < b.market_price ? a : b));
+    total += (match.market_price ?? 0) * card.qty;
+  }
+  return Math.round(total * 100) / 100;
+}
+
+function getRotatingCards(cards: DeckCard[]): Array<{ name: string; qty: number }> {
+  const db = cardsRaw as CardsDb;
+  const rotating: Array<{ name: string; qty: number }> = [];
+  for (const card of cards) {
+    const printings = db[card.name];
+    if (!printings) continue;
+    const match =
+      printings.find(
+        (p) =>
+          p.set_id.toUpperCase() === card.setCode.toUpperCase() &&
+          p.number === card.number
+      ) ?? printings[0];
+    const mark = match?.regulation_mark?.toUpperCase();
+    if (mark && ROTATING_MARKS.has(mark)) {
+      rotating.push({ name: card.name, qty: card.qty });
+    }
+  }
+  return rotating;
+}
+
 /* ─── Page ─────────────────────────────────────────────────────── */
 
 export default async function MetaDeckDetailPage({
@@ -168,6 +221,9 @@ export default async function MetaDeckDetailPage({
   const cards = deckData?.cards ?? [];
 
   const shopResults = findShopListings(cards);
+  const deckPrice = cards.length > 0 ? computeDeckPrice(cards) : 0;
+  const rotatingCards = cards.length > 0 ? getRotatingCards(cards) : [];
+  const isRotationReady = rotatingCards.length === 0;
 
   return (
     <div className="min-h-dvh flex flex-col">
@@ -275,6 +331,25 @@ export default async function MetaDeckDetailPage({
             </p>
           </section>
 
+          {/* ── Rotation Warning ─────────────────────────────── */}
+          {cards.length > 0 && !isRotationReady && (
+            <section className="rounded-xl border border-yellow-500/30 bg-yellow-500/5 p-4">
+              <div className="flex items-start gap-3">
+                <svg className="w-5 h-5 text-yellow-500 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
+                </svg>
+                <div>
+                  <p className="text-sm font-semibold text-yellow-500">
+                    {rotatingCards.length} card{rotatingCards.length !== 1 ? "s" : ""} rotate{rotatingCards.length === 1 ? "s" : ""} out {ROTATION_DATE}
+                  </p>
+                  <p className="text-xs text-text-muted mt-1">
+                    {rotatingCards.map((c) => `${c.qty}× ${c.name}`).join(", ")}
+                  </p>
+                </div>
+              </div>
+            </section>
+          )}
+
           {/* ── Sample Deck List ─────────────────────────────── */}
           <section>
             <h3 className="text-sm font-semibold text-text-primary mb-3">
@@ -284,6 +359,11 @@ export default async function MetaDeckDetailPage({
               <DeckListClient cards={cards} />
             </div>
           </section>
+
+          {/* ── Deck Price ───────────────────────────────────── */}
+          {deckPrice > 0 && (
+            <DeckPriceModule deckPrice={deckPrice} />
+          )}
 
           {/* ── Shop Listings ────────────────────────────────── */}
           <section>
