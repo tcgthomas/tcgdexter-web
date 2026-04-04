@@ -201,7 +201,7 @@ export default async function MetaDeckDetailPage({
               }
               value={`${(winRate * 100).toFixed(0)}%`}
               label="Win Rate"
-              color={winRate >= 0.55 ? "text-orange-400" : "text-text-muted"}
+              color={winRate >= 0.55 ? "text-orange-400" : "text-text-secondary"}
             />
           </div>
 
