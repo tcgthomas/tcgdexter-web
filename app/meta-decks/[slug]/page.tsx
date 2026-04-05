@@ -288,7 +288,7 @@ export default async function MetaDeckDetailPage({
         </div>
 
         <div className="max-w-lg mx-auto">
-          <p className="text-xs font-semibold uppercase tracking-widest mb-1" style={{ color: "rgba(240,230,214,0.6)" }}>
+          <p className="text-xs font-semibold uppercase tracking-widest mb-1 text-on-gradient-muted">
             #{rank} in Standard
           </p>
           <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-on-gradient">

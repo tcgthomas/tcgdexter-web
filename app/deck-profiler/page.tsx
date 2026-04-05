@@ -5,6 +5,7 @@ import Link from "next/link";
 import DeckPriceModule from "@/app/components/DeckPriceModule";
 import RotationBanner from "@/app/components/RotationBanner";
 import ThemeColor from "@/app/components/ThemeColor";
+import { useTheme } from "@/app/components/ThemeProvider";
 
 /* ─── Types (mirrors API response) ───────────────────────────── */
 
@@ -247,6 +248,7 @@ function StatPill({ count, label }: { count: number; label: string }) {
 /* ─── Page Component ─────────────────────────────────────────── */
 
 export default function DeckProfilerPage() {
+  const { theme } = useTheme();
   const [deckList, setDeckList] = useState("");
   const [result, setResult] = useState<AnalysisResult | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -284,7 +286,7 @@ export default function DeckProfilerPage() {
       document.documentElement.style.removeProperty("--energy-color");
       document.documentElement.classList.remove("gradient-active");
     };
-  }, [dominantColor]);
+  }, [dominantColor, theme]);
 
   async function handleShare() {
     if (!result || sharing) return;
@@ -393,16 +395,9 @@ export default function DeckProfilerPage() {
         <h1 className={`text-3xl sm:text-4xl font-bold tracking-tight ${dominantColor ? "text-on-gradient" : "text-text-primary"}`}>
           Deck Profiler
         </h1>
-        <p
-          className={`mt-3 text-xs max-w-md mx-auto transition-colors ${dominantColor ? "" : "text-text-muted"}`}
-          style={dominantColor ? { color: "rgba(240,230,214,0.6)" } : undefined}
-        >
+        <p className={`mt-3 text-xs max-w-md mx-auto transition-colors ${dominantColor ? "text-on-gradient-muted" : "text-text-muted"}`}>
           This feature is in beta. Please share your thoughts to{' '}
-          <a
-            href="mailto:feedback@tcgdexter.com"
-            className={`underline ${dominantColor ? "" : "hover:text-text-secondary"}`}
-            style={dominantColor ? { color: "rgba(240,230,214,0.8)" } : undefined}
-          >feedback@tcgdexter.com</a>
+          <a href="mailto:feedback@tcgdexter.com" className="underline hover:opacity-80">feedback@tcgdexter.com</a>
         </p>
 
       </header>

@@ -73,16 +73,31 @@
     );
   }
 
-  /* Always-light text for use against gradient/energy-color backdrops */
+  /* Text on gradient — dark in light mode, cream in dark mode */
   .text-on-gradient {
+    color: var(--text-primary);
+  }
+  [data-theme="dark"] .text-on-gradient {
     color: #f0e6d6;
   }
+  .text-on-gradient-muted {
+    color: var(--text-secondary);
+  }
+  [data-theme="dark"] .text-on-gradient-muted {
+    color: rgba(240, 230, 214, 0.6);
+  }
 
-  /* Hamburger bars flip to cream when the gradient is active */
+  /* Hamburger bars — follow text-on-gradient logic when gradient is active */
   html.gradient-active .theme-menu-bar {
+    background-color: var(--text-secondary);
+  }
+  [data-theme="dark"] html.gradient-active .theme-menu-bar {
     background-color: rgba(240, 230, 214, 0.7);
   }
   html.gradient-active .theme-menu-btn:hover {
+    background-color: var(--surface-2) !important;
+  }
+  [data-theme="dark"] html.gradient-active .theme-menu-btn:hover {
     background-color: rgba(255, 255, 255, 0.1) !important;
   }
 
