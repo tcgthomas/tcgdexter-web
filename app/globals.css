@@ -78,6 +78,14 @@
     color: #f0e6d6;
   }
 
+  /* Hamburger bars flip to cream when the gradient is active */
+  html.gradient-active .theme-menu-bar {
+    background-color: rgba(240, 230, 214, 0.7);
+  }
+  html.gradient-active .theme-menu-btn:hover {
+    background-color: rgba(255, 255, 255, 0.1) !important;
+  }
+
   /* Energy gradient — solid energy at top, transitions to dark bg */
   .profiler-bg {
     background: var(--bg);

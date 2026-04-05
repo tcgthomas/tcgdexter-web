@@ -279,11 +279,14 @@ export default function DeckProfilerPage() {
   useEffect(() => {
     if (mutedColor) {
       document.documentElement.style.setProperty("--energy-color", mutedColor);
+      document.documentElement.classList.add("gradient-active");
     } else {
       document.documentElement.style.removeProperty("--energy-color");
+      document.documentElement.classList.remove("gradient-active");
     }
     return () => {
       document.documentElement.style.removeProperty("--energy-color");
+      document.documentElement.classList.remove("gradient-active");
     };
   }, [mutedColor]);
 
@@ -372,7 +375,7 @@ export default function DeckProfilerPage() {
         <div className="text-left mb-6">
         <Link
           href="/"
-          className="inline-flex items-center gap-2 text-sm transition-colors text-on-gradient opacity-70 hover:opacity-100"
+          className={`inline-flex items-center gap-2 text-sm transition-colors ${dominantColor ? "text-on-gradient opacity-70 hover:opacity-100" : "text-text-secondary hover:text-text-primary"}`}
         >
           <svg
             className="w-4 h-4"
@@ -391,12 +394,19 @@ export default function DeckProfilerPage() {
         </Link>
         </div>
 
-        <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-on-gradient">
+        <h1 className={`text-3xl sm:text-4xl font-bold tracking-tight ${dominantColor ? "text-on-gradient" : "text-text-primary"}`}>
           Deck Profiler
         </h1>
-        <p className="mt-3 text-xs max-w-md mx-auto" style={{ color: "rgba(240,230,214,0.6)" }}>
+        <p
+          className={`mt-3 text-xs max-w-md mx-auto transition-colors ${dominantColor ? "" : "text-text-muted"}`}
+          style={dominantColor ? { color: "rgba(240,230,214,0.6)" } : undefined}
+        >
           This feature is in beta. Please share your thoughts to{' '}
-          <a href="mailto:feedback@tcgdexter.com" className="underline" style={{ color: "rgba(240,230,214,0.8)" }}>feedback@tcgdexter.com</a>
+          <a
+            href="mailto:feedback@tcgdexter.com"
+            className={`underline ${dominantColor ? "" : "hover:text-text-secondary"}`}
+            style={dominantColor ? { color: "rgba(240,230,214,0.8)" } : undefined}
+          >feedback@tcgdexter.com</a>
         </p>
 
       </header>

@@ -34,11 +34,11 @@ export default function ThemeMenu() {
       <button
         onClick={() => setOpen((o) => !o)}
         aria-label="Theme menu"
-        className="flex flex-col justify-center items-center gap-[4px] w-8 h-8 rounded-md hover:bg-white/10 transition-colors"
+        className="theme-menu-btn flex flex-col justify-center items-center gap-[4px] w-8 h-8 rounded-md transition-colors hover:bg-surface-2"
       >
-        <span className="block w-5 h-[2px] rounded-full" style={{ backgroundColor: "rgba(240,230,214,0.7)" }} />
-        <span className="block w-5 h-[2px] rounded-full" style={{ backgroundColor: "rgba(240,230,214,0.7)" }} />
-        <span className="block w-5 h-[2px] rounded-full" style={{ backgroundColor: "rgba(240,230,214,0.7)" }} />
+        <span className="theme-menu-bar block w-5 h-[2px] rounded-full bg-text-secondary" />
+        <span className="theme-menu-bar block w-5 h-[2px] rounded-full bg-text-secondary" />
+        <span className="theme-menu-bar block w-5 h-[2px] rounded-full bg-text-secondary" />
       </button>
 
       {/* Floating panel */}
