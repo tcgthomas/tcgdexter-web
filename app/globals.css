@@ -40,7 +40,7 @@
   /* Custom selection color */
   ::selection {
     background-color: rgba(192, 57, 43, 0.2);
-    color: #2c1f0e;
+    color: var(--text-primary);
   }
 }
 

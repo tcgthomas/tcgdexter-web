@@ -49,17 +49,24 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning data-theme="dark">
+    <html lang="en" suppressHydrationWarning data-theme="light">
+      <head>
+        {/* FOUC prevention: apply stored theme before first paint */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var t=localStorage.getItem('tcgd-theme');var valid=['light','dark','system'];if(valid.indexOf(t)<0)t='light';var resolved=t==='system'?(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'):t;document.documentElement.setAttribute('data-theme',resolved);}catch(e){}})();`,
+          }}
+        />
+      </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} font-sans antialiased text-text-primary`}
+        className={`${geistSans.variable} ${geistMono.variable} font-sans antialiased text-[var(--text-primary)]`}
         style={{ backgroundColor: "transparent" }}
         suppressHydrationWarning
       >
         <ThemeProvider>
-          {/* ThemeMenu hidden for now — toggle to re-enable */}
-          {/* <div className="fixed right-4 z-50" style={{ top: "calc(env(safe-area-inset-top) + 1rem)" }}>
+          <div className="fixed right-4 z-50" style={{ top: "calc(env(safe-area-inset-top) + 1rem)" }}>
             <ThemeMenu />
-          </div> */}
+          </div>
           {children}
         </ThemeProvider>
       </body>
