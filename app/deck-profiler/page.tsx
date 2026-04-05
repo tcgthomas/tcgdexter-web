@@ -372,7 +372,7 @@ export default function DeckProfilerPage() {
         <div className="text-left mb-6">
         <Link
           href="/"
-          className="inline-flex items-center gap-2 text-text-secondary hover:text-text-primary text-sm transition-colors"
+          className="inline-flex items-center gap-2 text-sm transition-colors text-on-gradient opacity-70 hover:opacity-100"
         >
           <svg
             className="w-4 h-4"
