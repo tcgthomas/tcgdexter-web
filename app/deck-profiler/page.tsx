@@ -391,12 +391,12 @@ export default function DeckProfilerPage() {
         </Link>
         </div>
 
-        <h1 className="text-3xl sm:text-4xl font-bold tracking-tight">
+        <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-on-gradient">
           Deck Profiler
         </h1>
-        <p className="mt-3 text-xs text-text-muted max-w-md mx-auto">
+        <p className="mt-3 text-xs max-w-md mx-auto" style={{ color: "rgba(240,230,214,0.6)" }}>
           This feature is in beta. Please share your thoughts to{' '}
-          <a href="mailto:feedback@tcgdexter.com" className="underline hover:text-text-secondary">feedback@tcgdexter.com</a>
+          <a href="mailto:feedback@tcgdexter.com" className="underline" style={{ color: "rgba(240,230,214,0.8)" }}>feedback@tcgdexter.com</a>
         </p>
 
       </header>

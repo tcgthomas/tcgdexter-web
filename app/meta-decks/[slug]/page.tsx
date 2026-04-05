@@ -288,10 +288,10 @@ export default async function MetaDeckDetailPage({
         </div>
 
         <div className="max-w-lg mx-auto">
-          <p className="text-xs font-semibold uppercase tracking-widest text-text-muted mb-1">
+          <p className="text-xs font-semibold uppercase tracking-widest mb-1" style={{ color: "rgba(240,230,214,0.6)" }}>
             #{rank} in Standard
           </p>
-          <h1 className="text-3xl sm:text-4xl font-bold tracking-tight">
+          <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-on-gradient">
             {arch.name}
           </h1>
         </div>
@@ -362,7 +362,7 @@ export default async function MetaDeckDetailPage({
                 </span>
               )}
             </div>
-            <p className="mt-2 text-xs text-text-muted">
+            <p className="mt-2 text-xs text-text-primary">
               {arch.total_entries} total entries across recent Standard tournaments
             </p>
           </section>

@@ -73,6 +73,11 @@
     );
   }
 
+  /* Always-light text for use against gradient/energy-color backdrops */
+  .text-on-gradient {
+    color: #f0e6d6;
+  }
+
   /* Energy gradient — solid energy at top, transitions to dark bg */
   .profiler-bg {
     background: var(--bg);
