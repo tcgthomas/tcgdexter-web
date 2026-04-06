@@ -370,6 +370,13 @@ export default function DeckProfilerPage() {
       {dominantColor && <ThemeColor color={dominantColor} />}
       {/* ── Header ───────────────────────────────────────────── */}
       <header className="flex-shrink-0 pb-8 px-6 text-center" style={{ paddingTop: "calc(env(safe-area-inset-top) + 3rem)" }}>
+        <div className="flex justify-center mb-4">
+          <img
+            src="/logo.png"
+            alt="TCG Dexter"
+            className="w-24 h-24 object-contain"
+          />
+        </div>
         <h1 className={`text-3xl sm:text-4xl font-bold tracking-tight ${dominantColor ? "text-on-gradient" : "text-text-primary"}`}>
           Deck Profiler
         </h1>
