@@ -374,7 +374,7 @@ export default function DeckProfilerPage() {
           <img
             src="/logo.png"
             alt="TCG Dexter"
-            className="w-24 h-24 object-contain"
+            className="w-[300px] h-[300px] object-contain"
           />
         </div>
         <h1 className={`text-3xl sm:text-4xl font-bold tracking-tight ${dominantColor ? "text-on-gradient" : "text-text-primary"}`}>
