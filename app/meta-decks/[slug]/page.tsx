@@ -275,17 +275,6 @@ export default async function MetaDeckDetailPage({
       {dominantColor && <ThemeColor color={dominantColor} />}
       {/* ── Header ───────────────────────────────────────────── */}
       <header className="flex-shrink-0 pt-12 pb-6 px-6">
-        <div className="text-left mb-6">
-          <Link
-            href="/meta-decks"
-            className="inline-flex items-center gap-2 text-sm transition-colors text-on-gradient opacity-70 hover:opacity-100"
-          >
-            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
-            </svg>
-            Meta Decks
-          </Link>
-        </div>
 
         <div className="max-w-lg mx-auto">
           <p className="text-xs font-semibold uppercase tracking-widest mb-1 text-on-gradient-muted">
