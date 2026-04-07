@@ -24,7 +24,7 @@ export default function MetaDecksPage() {
   return (
     <div className="min-h-dvh flex flex-col">
       {/* ── Header ───────────────────────────────────────────── */}
-      <header className="flex-shrink-0 pt-12 pb-8 px-6 text-center">
+      <header className="flex-shrink-0 pb-8 px-6 text-center" style={{ paddingTop: "calc(env(safe-area-inset-top) + 4rem)" }}>
         <h1 className="text-3xl sm:text-4xl font-bold tracking-tight">
           Meta Decks
         </h1>

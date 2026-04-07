@@ -274,7 +274,7 @@ export default async function MetaDeckDetailPage({
       {dominantColor && <EnergyColor hex={dominantColor} />}
       {dominantColor && <ThemeColor color={dominantColor} />}
       {/* ── Header ───────────────────────────────────────────── */}
-      <header className="flex-shrink-0 pt-12 pb-6 px-6">
+      <header className="flex-shrink-0 pb-6 px-6" style={{ paddingTop: "calc(env(safe-area-inset-top) + 4rem)" }}>
 
         <div className="max-w-lg mx-auto">
           <p className="text-xs font-semibold uppercase tracking-widest mb-1 text-on-gradient-muted">
