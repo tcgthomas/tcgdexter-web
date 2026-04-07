@@ -271,17 +271,6 @@ export default async function SharedDeckPage({
     return (
       <div className="min-h-screen flex flex-col">
         <header className="flex-shrink-0 pb-8 px-6 text-center" style={{ paddingTop: "calc(env(safe-area-inset-top) + 3rem)" }}>
-          <div className="text-left mb-6">
-            <Link
-              href="/"
-              className="inline-flex items-center gap-2 text-text-secondary hover:text-text-primary text-sm transition-colors"
-            >
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
-              </svg>
-              Home
-            </Link>
-          </div>
           <h1 className="text-3xl sm:text-4xl font-bold tracking-tight">
             Deck Not Found
           </h1>
@@ -328,18 +317,14 @@ export default async function SharedDeckPage({
       {dominantColor && <ThemeColor color={dominantColor} />}
       {/* ── Header ─────────────────────────────────────────── */}
       <header className="flex-shrink-0 pb-8 px-6 text-center" style={{ paddingTop: "calc(env(safe-area-inset-top) + 3rem)" }}>
-        <div className="text-left mb-6">
-          <Link
-            href="/"
-            className="inline-flex items-center gap-2 text-on-gradient text-sm transition-colors opacity-70 hover:opacity-100"
-          >
-            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
-            </svg>
-            Home
-          </Link>
+        <div className="flex justify-center mb-4">
+          <img
+            src="/logo-dark.png"
+            alt="TCG Dexter"
+            className="max-w-full"
+            style={{ width: "450px", height: "auto" }}
+          />
         </div>
-
         <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-on-gradient">
           {pageTitle}
         </h1>

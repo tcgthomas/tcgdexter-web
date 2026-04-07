@@ -18,28 +18,6 @@ export default function BuyListPage() {
     <div className="min-h-dvh flex flex-col">
       {/* ── Header ───────────────────────────────────────────── */}
       <header className="flex-shrink-0 pt-12 pb-8 px-6 text-center">
-        <div className="text-left mb-6">
-          <Link
-            href="/"
-            className="inline-flex items-center gap-2 text-text-secondary hover:text-text-primary text-sm transition-colors"
-          >
-            <svg
-              className="w-4 h-4"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              strokeWidth={2}
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M15.75 19.5L8.25 12l7.5-7.5"
-              />
-            </svg>
-            Home
-          </Link>
-        </div>
-
         <h1 className="text-3xl sm:text-4xl font-bold tracking-tight">
           Buy List
         </h1>

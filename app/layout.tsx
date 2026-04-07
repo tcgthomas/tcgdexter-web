@@ -64,7 +64,7 @@ export default function RootLayout({
         suppressHydrationWarning
       >
         <ThemeProvider>
-          <div className="fixed right-4 z-50" style={{ top: "calc(env(safe-area-inset-top) + 1rem)" }}>
+          <div className="fixed left-4 z-50" style={{ top: "calc(env(safe-area-inset-top) + 1rem)" }}>
             <ThemeMenu />
           </div>
           {children}

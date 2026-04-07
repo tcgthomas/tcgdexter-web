@@ -93,7 +93,7 @@ export default function ThemeMenu() {
       {/* Navigation drawer */}
       {open && (
         <div
-          className="absolute right-0 top-10 z-50 rounded-xl border border-border bg-surface shadow-xl"
+          className="absolute left-0 top-10 z-50 rounded-xl border border-border bg-surface shadow-xl"
           style={{ width: "260px" }}
         >
           {/* ── Section 1: Navigation ── */}

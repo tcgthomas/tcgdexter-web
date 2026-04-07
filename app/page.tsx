@@ -372,11 +372,7 @@ export default function DeckProfilerPage() {
       <header className="flex-shrink-0 pb-8 px-6 text-center" style={{ paddingTop: "calc(env(safe-area-inset-top) + 3rem)" }}>
         <div className="flex justify-center mb-4">
           <img
-            src={dominantColor
-              ? "/logo-dark.png"
-              : theme === "light"
-                ? "/logo-light.png"
-                : "/logo-dark.png"}
+            src={theme === "light" ? "/logo-light.png" : "/logo-dark.png"}
             alt="TCG Dexter"
             className="max-w-full"
             style={{ width: "450px", height: "auto" }}
