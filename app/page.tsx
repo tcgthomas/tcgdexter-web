@@ -378,8 +378,8 @@ export default function DeckProfilerPage() {
                 ? "/logo-light.png"
                 : "/logo-dark.png"}
             alt="TCG Dexter"
-            className="w-[300px] object-contain"
-            style={{ height: "auto" }}
+            className="object-contain"
+            style={{ width: "450px", height: "180px" }}
           />
         </div>
         <h1 className={`text-3xl sm:text-4xl font-bold tracking-tight ${dominantColor ? "text-on-gradient" : "text-text-primary"}`}>
