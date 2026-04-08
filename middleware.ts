@@ -15,12 +15,13 @@ export const config = {
   matcher: [
     /*
      * Match all request paths except for the ones starting with:
+     * - api (API routes — middleware doesn't need to refresh sessions for these)
      * - _next/static (static files)
      * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     * - public assets (images, fonts, etc.)
-     * Feel free to modify this pattern to include more paths.
+     * - favicon.ico
+     * The remaining paths (pages, /d/, /account, /sign-in, etc.) will run
+     * the middleware and get session refresh.
      */
-    "/((?!_next/static|_next/image|favicon.ico|logo-light.png|logo-dark.png|.*\\.(?:svg|png|jpg|jpeg|gif|webp|woff|woff2)$).*)",
+    "/((?!api|_next/static|_next/image|favicon.ico).*)",
   ],
 };
