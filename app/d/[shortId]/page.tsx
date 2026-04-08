@@ -1,6 +1,7 @@
 import { Metadata } from "next";
 import Link from "next/link";
 import DeckPriceModule from "@/app/components/DeckPriceModule";
+import SaveDeckButton from "@/app/components/SaveDeckButton";
 import ThemeColor from "@/app/components/ThemeColor";
 import EnergyColor from "@/app/components/EnergyColor";
 import { createClient } from "@/lib/supabase/server";
@@ -493,6 +494,15 @@ export default async function SharedDeckPage({
 
           {/* Estimated Deck Price + Alert */}
           <DeckPriceModule deckPrice={result.deckPrice} />
+
+          {/* Save Deck button — adds the shared deck to the viewer's
+              personal "My Decks" collection. Signed-out users get a
+              sign-in prompt modal. */}
+          <SaveDeckButton
+            deckList={deck.deckList}
+            analysis={result}
+            className="inline-flex w-full items-center justify-center gap-2 rounded-lg border border-border bg-bg px-5 py-2.5 text-sm font-semibold text-text-primary transition-all hover:bg-surface-2 disabled:opacity-50 disabled:cursor-not-allowed"
+          />
 
           {/* Pokemon */}
           <CollapsibleSection
