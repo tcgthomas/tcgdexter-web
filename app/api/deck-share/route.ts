@@ -61,8 +61,17 @@ export async function POST(req: Request) {
     );
   }
 
+  // Build the share URL from the request origin so preview deploys return
+  // preview URLs and prod returns https://tcgdexter.com. Respects Vercel's
+  // x-forwarded-* headers for correct scheme/host resolution.
+  const forwardedHost = req.headers.get("x-forwarded-host");
+  const forwardedProto = req.headers.get("x-forwarded-proto") ?? "https";
+  const origin = forwardedHost
+    ? `${forwardedProto}://${forwardedHost}`
+    : new URL(req.url).origin;
+
   return NextResponse.json({
     shortId,
-    url: `https://tcgdexter.com/d/${shortId}`,
+    url: `${origin}/d/${shortId}`,
   });
 }
