@@ -1,9 +1,9 @@
-import { list } from "@vercel/blob";
 import { Metadata } from "next";
 import Link from "next/link";
 import DeckPriceModule from "@/app/components/DeckPriceModule";
 import ThemeColor from "@/app/components/ThemeColor";
 import EnergyColor from "@/app/components/EnergyColor";
+import { createClient } from "@/lib/supabase/server";
 
 const ENERGY_HEX: Record<string, string> = {
   Fire:       "#e74c3c",
@@ -110,7 +110,7 @@ interface AnalysisResult {
   }>;
 }
 
-interface DeckBlob {
+interface DeckRecord {
   deckList: string;
   profiledAt: string;
   analysis: AnalysisResult;
@@ -160,15 +160,24 @@ function EnergyCostPill({ type }: { type: string }) {
   );
 }
 
-/* ─── Blob fetch helper ────────────────────────────────────── */
+/* ─── Supabase fetch helper ────────────────────────────────── */
 
-async function fetchDeck(shortId: string): Promise<DeckBlob | null> {
+async function fetchDeck(shortId: string): Promise<DeckRecord | null> {
   try {
-    const { blobs } = await list({ prefix: `decks/${shortId}` });
-    if (blobs.length === 0) return null;
-    const res = await fetch(blobs[0].url);
-    if (!res.ok) return null;
-    return res.json();
+    const supabase = await createClient();
+    const { data, error } = await supabase
+      .from("deck_shares")
+      .select("deck_list, analysis, created_at")
+      .eq("id", shortId)
+      .maybeSingle();
+
+    if (error || !data) return null;
+
+    return {
+      deckList: data.deck_list,
+      analysis: data.analysis as AnalysisResult,
+      profiledAt: data.created_at,
+    };
   } catch {
     return null;
   }

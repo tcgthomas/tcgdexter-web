@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
-import { put } from "@vercel/blob";
 import cardData from "@/data/cards-standard.json";
 import shopListingsData from "@/data/shop-listings.json";
 import metaArchetypesData from "@/data/meta-archetypes.json";
+import { createAdminClient } from "@/lib/supabase/admin";
+import { createClient } from "@/lib/supabase/server";
 
 /* ─── Shop Listings ──────────────────────────────────────────── */
 
@@ -604,29 +605,51 @@ export async function POST(req: NextRequest) {
     };
 
     // ── Capture submission (fire-and-forget, never blocks response) ──
-    const submissionId = crypto.randomUUID();
+    // Phase 2: writes to Postgres instead of public Vercel Blob.
+    // Uses the admin client (service role) because analysis_submissions
+    // has no user-level RLS and anonymous users need to be able to submit.
     const locale = req.headers.get("accept-language")?.split(",")[0] ?? null;
     const userAgent = req.headers.get("user-agent") ?? null;
-    const capture = {
-      id: submissionId,
-      timestamp: new Date().toISOString(),
-      locale,
-      userAgent,
-      deckList,
-      analysis: {
-        deckSize: result.deckSize,
-        sections: result.sections,
-        rotation: result.rotation,
-        metaMatch: result.metaMatch,
-        deckScore: result.deckScore,
-        warnings: result.warnings,
-      },
-    };
-    put(
-      `submissions/${new Date().toISOString().slice(0, 10)}/${submissionId}.json`,
-      JSON.stringify(capture),
-      { access: "public", contentType: "application/json" }
-    ).catch(() => { /* swallow — never fail a user request over logging */ });
+
+    // Attach user_id if signed in (non-blocking — if this fails, still capture anonymously)
+    let userId: string | null = null;
+    try {
+      const userClient = await createClient();
+      const {
+        data: { user },
+      } = await userClient.auth.getUser();
+      userId = user?.id ?? null;
+    } catch {
+      // Swallow — capture still happens anonymously.
+    }
+
+    try {
+      const admin = createAdminClient();
+      admin
+        .from("analysis_submissions")
+        .insert({
+          user_id: userId,
+          deck_list: deckList,
+          analysis_summary: {
+            deckSize: result.deckSize,
+            sections: result.sections,
+            rotation: result.rotation,
+            metaMatch: result.metaMatch,
+            deckScore: result.deckScore,
+            warnings: result.warnings,
+          },
+          locale,
+          user_agent: userAgent,
+        })
+        .then(({ error }) => {
+          if (error) {
+            console.error("[analyze] submission capture failed:", error);
+          }
+        });
+    } catch (err) {
+      // Swallow — never fail a user request over logging.
+      console.error("[analyze] admin client init failed:", err);
+    }
 
     return NextResponse.json(result);
   } catch {

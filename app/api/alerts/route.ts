@@ -1,65 +1,80 @@
 import { NextRequest, NextResponse } from "next/server";
-import { randomUUID } from "crypto";
-import { put } from "@vercel/blob";
+import { createClient } from "@/lib/supabase/server";
 
-interface AlertEntry {
-  id: string;
-  email: string;
-  threshold: number;
-  deckList: string;
-  deckPriceAtSubscription: number;
-  lastCheckedPrice: number;
-  lastNotified: string | null;
-  createdAt: string;
-  status: "active" | "paused" | "triggered";
-}
-
+/**
+ * POST /api/alerts
+ *
+ * Creates a price-drop alert subscription. SIGN-IN REQUIRED as of Phase 2.
+ *
+ * Phase 2 changes:
+ *   - Now requires an authenticated user; email is read from the session,
+ *     not the request body.
+ *   - Writes to public.price_alerts (Supabase Postgres) instead of a
+ *     public Vercel Blob key.
+ *   - RLS enforces that users can only create alerts for themselves.
+ */
 export async function POST(req: NextRequest) {
-  let body: { email?: string; threshold?: number; deckList?: string; deckPrice?: number };
+  let body: { threshold?: number; deckList?: string; deckPrice?: number };
   try {
     body = await req.json();
   } catch {
     return NextResponse.json({ error: "Invalid JSON." }, { status: 400 });
   }
 
-  const { email, threshold, deckList, deckPrice } = body;
+  const { threshold, deckList, deckPrice } = body;
 
-  if (!email || typeof email !== "string" || !email.includes("@")) {
-    return NextResponse.json({ error: "Valid email is required." }, { status: 400 });
-  }
   if (typeof threshold !== "number" || threshold <= 0) {
-    return NextResponse.json({ error: "Threshold must be a positive number." }, { status: 400 });
+    return NextResponse.json(
+      { error: "Threshold must be a positive number." },
+      { status: 400 }
+    );
   }
   if (!deckList || typeof deckList !== "string" || !deckList.trim()) {
-    return NextResponse.json({ error: "Deck list is required." }, { status: 400 });
+    return NextResponse.json(
+      { error: "Deck list is required." },
+      { status: 400 }
+    );
   }
   if (typeof deckPrice !== "number" || deckPrice <= 0) {
-    return NextResponse.json({ error: "Deck price is required." }, { status: 400 });
+    return NextResponse.json(
+      { error: "Deck price is required." },
+      { status: 400 }
+    );
   }
 
-  const id = randomUUID();
+  const supabase = await createClient();
 
-  const alert: AlertEntry = {
-    id,
-    email: email.trim().toLowerCase(),
-    threshold,
-    deckList: deckList.trim(),
-    deckPriceAtSubscription: deckPrice,
-    lastCheckedPrice: deckPrice,
-    lastNotified: null,
-    createdAt: new Date().toISOString(),
-    status: "active",
-  };
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
-  try {
-    await put(`alerts/${id}.json`, JSON.stringify(alert), {
-      access: "public",
-      contentType: "application/json",
-    });
-  } catch (err) {
-    console.error("Vercel Blob put failed:", err);
-    return NextResponse.json({ error: "Failed to save alert." }, { status: 500 });
+  if (!user) {
+    return NextResponse.json(
+      { error: "Sign in required to create price alerts." },
+      { status: 401 }
+    );
   }
 
-  return NextResponse.json({ success: true, id });
+  const { data, error } = await supabase
+    .from("price_alerts")
+    .insert({
+      user_id: user.id,
+      threshold,
+      deck_list: deckList.trim(),
+      deck_price_at_subscription: deckPrice,
+      last_checked_price: deckPrice,
+      status: "active",
+    })
+    .select("id")
+    .single();
+
+  if (error) {
+    console.error("[alerts] insert failed:", error);
+    return NextResponse.json(
+      { error: "Failed to save alert." },
+      { status: 500 }
+    );
+  }
+
+  return NextResponse.json({ success: true, id: data.id });
 }
