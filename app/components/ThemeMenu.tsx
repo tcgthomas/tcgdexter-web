@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { useTheme } from "./ThemeProvider";
+import { createClient } from "@/lib/supabase/client";
 
 const THEME_OPTIONS = ["Light", "Dark", "System"] as const;
 type ThemeOptionLabel = (typeof THEME_OPTIONS)[number];
@@ -49,7 +50,32 @@ function ChevronRight() {
 export default function ThemeMenu() {
   const { theme, setTheme } = useTheme();
   const [open, setOpen] = useState(false);
+  const [signedIn, setSignedIn] = useState<boolean | null>(null);
+  const [displayName, setDisplayName] = useState<string | null>(null);
   const panelRef = useRef<HTMLDivElement>(null);
+
+  /* Check auth state on mount and subscribe to changes */
+  useEffect(() => {
+    const supabase = createClient();
+
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      setSignedIn(!!user);
+      if (user?.email) {
+        setDisplayName(user.email.split("@")[0]);
+      }
+    });
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSignedIn(!!session?.user);
+      if (session?.user?.email) {
+        setDisplayName(session.user.email.split("@")[0]);
+      } else {
+        setDisplayName(null);
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
 
   /* Close on outside click */
   useEffect(() => {
@@ -132,7 +158,39 @@ export default function ThemeMenu() {
           {/* ── Divider ── */}
           <div className="mx-4 my-1 border-t border-border" />
 
-          {/* ── Section 2: Theme ── */}
+          {/* ── Section 2: Account ── */}
+          <div className="px-4 pt-2 pb-2">
+            <p className="text-[10px] font-semibold uppercase tracking-widest text-text-muted mb-2">
+              Account
+            </p>
+            {signedIn === null ? (
+              // Placeholder while auth state loads — prevents layout flicker
+              <div className="min-h-[44px]" />
+            ) : signedIn ? (
+              <Link
+                href="/account"
+                onClick={close}
+                className="flex items-center justify-between w-full min-h-[44px] px-2 py-2 rounded-lg text-sm font-medium text-text-primary hover:bg-surface-2 transition-colors"
+              >
+                <span className="truncate">{displayName ?? "Account"}</span>
+                <ChevronRight />
+              </Link>
+            ) : (
+              <Link
+                href="/sign-in"
+                onClick={close}
+                className="flex items-center justify-between w-full min-h-[44px] px-2 py-2 rounded-lg text-sm font-medium text-text-primary hover:bg-surface-2 transition-colors"
+              >
+                <span>Sign in</span>
+                <ChevronRight />
+              </Link>
+            )}
+          </div>
+
+          {/* ── Divider ── */}
+          <div className="mx-4 my-1 border-t border-border" />
+
+          {/* ── Section 3: Theme ── */}
           <div className="px-4 pt-2 pb-4">
             <p className="text-[10px] font-semibold uppercase tracking-widest text-text-muted mb-2">
               Theme
