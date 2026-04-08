@@ -1,19 +1,46 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import Link from "next/link";
+import { createClient } from "@/lib/supabase/client";
 
 interface Props {
   deckPrice: number;
   deckList?: string; // needed to register the alert
 }
 
+/**
+ * Estimated deck price + alert subscription.
+ *
+ * Phase 2 change: subscribing to a price alert now requires sign-in.
+ * Signed-out users see a "Sign in to receive price drop alerts" CTA
+ * that deep-links to /sign-in. Signed-in users see the threshold form.
+ */
 export default function DeckPriceModule({ deckPrice, deckList }: Props) {
-  const [alertEmail, setAlertEmail] = useState("");
   const [alertThreshold, setAlertThreshold] = useState("");
-  const [alertStatus, setAlertStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+  const [alertStatus, setAlertStatus] = useState<
+    "idle" | "loading" | "success" | "error"
+  >("idle");
+  const [signedIn, setSignedIn] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    const supabase = createClient();
+
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      setSignedIn(!!user);
+    });
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSignedIn(!!session?.user);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
 
   async function handleAlertSubmit() {
-    if (!alertEmail.includes("@") || !alertThreshold || !deckList) return;
+    if (!alertThreshold || !deckList) return;
     setAlertStatus("loading");
     try {
       const res = await fetch("/api/alerts", {
@@ -21,8 +48,8 @@ export default function DeckPriceModule({ deckPrice, deckList }: Props) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           deckList,
-          email: alertEmail,
           threshold: parseFloat(alertThreshold),
+          deckPrice,
         }),
       });
       if (res.ok) {
@@ -57,43 +84,53 @@ export default function DeckPriceModule({ deckPrice, deckList }: Props) {
 
       {/* Alert form — visible when expanded */}
       <div className="mt-4 border-t border-border pt-4">
-        {alertStatus === "success" ? (
-          <p className="text-sm text-green-700 font-medium">&#10003; We&apos;ll let you know!</p>
-        ) : (
-          <>
-            <p className="text-xs text-text-muted mb-3">Alert me when this deck drops below</p>
-            <div className="flex flex-col sm:flex-row gap-2">
-              <div className="relative flex-shrink-0">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-text-muted">$</span>
-                <input
-                  type="number"
-                  min="1"
-                  step="0.01"
-                  value={alertThreshold || Math.round(deckPrice * 0.85)}
-                  onChange={(e) => setAlertThreshold(e.target.value)}
-                  onFocus={() => { if (!alertThreshold) setAlertThreshold(String(Math.round(deckPrice * 0.85))); }}
-                  className="w-full sm:w-28 rounded-lg border border-border bg-bg pl-7 pr-3 py-2 text-sm text-text-primary focus:outline-none focus:border-accent/40 focus:ring-1 focus:ring-accent/20 [font-size:16px] sm:text-sm"
-                />
+        {signedIn === null ? (
+          // Placeholder while auth state loads
+          <div className="h-16" />
+        ) : signedIn ? (
+          alertStatus === "success" ? (
+            <p className="text-sm text-green-700 font-medium">&#10003; We&apos;ll let you know!</p>
+          ) : (
+            <>
+              <p className="text-xs text-text-muted mb-3">Alert me when this deck drops below</p>
+              <div className="flex flex-col sm:flex-row gap-2">
+                <div className="relative flex-shrink-0">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-text-muted">$</span>
+                  <input
+                    type="number"
+                    min="1"
+                    step="0.01"
+                    value={alertThreshold || Math.round(deckPrice * 0.85)}
+                    onChange={(e) => setAlertThreshold(e.target.value)}
+                    onFocus={() => { if (!alertThreshold) setAlertThreshold(String(Math.round(deckPrice * 0.85))); }}
+                    className="w-full sm:w-28 rounded-lg border border-border bg-bg pl-7 pr-3 py-2 text-sm text-text-primary focus:outline-none focus:border-accent/40 focus:ring-1 focus:ring-accent/20 [font-size:16px] sm:text-sm"
+                  />
+                </div>
+                <button
+                  onClick={handleAlertSubmit}
+                  disabled={alertStatus === "loading" || !deckList}
+                  className="flex-shrink-0 rounded-lg bg-accent px-4 py-2 text-sm font-semibold text-white transition-all hover:bg-accent-light disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {alertStatus === "loading" ? "Saving…" : "Notify Me"}
+                </button>
               </div>
-              <input
-                type="email"
-                placeholder="your@email.com"
-                value={alertEmail}
-                onChange={(e) => setAlertEmail(e.target.value)}
-                className="flex-1 rounded-lg border border-border bg-bg px-3 py-2 text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent/40 focus:ring-1 focus:ring-accent/20 [font-size:16px] sm:text-sm"
-              />
-              <button
-                onClick={handleAlertSubmit}
-                disabled={alertStatus === "loading" || !alertEmail.includes("@") || !deckList}
-                className="flex-shrink-0 rounded-lg bg-accent px-4 py-2 text-sm font-semibold text-white transition-all hover:bg-accent-light disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {alertStatus === "loading" ? "Saving…" : "Notify Me"}
-              </button>
-            </div>
-            {alertStatus === "error" && (
-              <p className="text-xs text-red-600 mt-2">Something went wrong, try again.</p>
-            )}
-          </>
+              {alertStatus === "error" && (
+                <p className="text-xs text-red-600 mt-2">Something went wrong, try again.</p>
+              )}
+            </>
+          )
+        ) : (
+          <div className="text-center">
+            <p className="text-xs text-text-muted mb-3">
+              Get notified when this deck drops below your target price.
+            </p>
+            <Link
+              href="/sign-in"
+              className="inline-flex items-center justify-center rounded-lg bg-accent px-4 py-2 text-sm font-semibold text-white transition-all hover:bg-accent-light"
+            >
+              Sign in to receive alerts
+            </Link>
+          </div>
         )}
       </div>
     </details>

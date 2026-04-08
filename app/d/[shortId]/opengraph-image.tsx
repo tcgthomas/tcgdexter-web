@@ -1,5 +1,4 @@
 import { ImageResponse } from "@vercel/og";
-import { list } from "@vercel/blob";
 
 export const runtime = "edge";
 export const alt = "Deck Profile — TCG Dexter";
@@ -16,18 +15,45 @@ interface AnalysisResult {
   };
 }
 
-interface DeckBlob {
+interface DeckRecord {
   profiledAt: string;
   analysis: AnalysisResult;
 }
 
-async function fetchDeck(shortId: string): Promise<DeckBlob | null> {
+/**
+ * Fetch a deck share from Supabase using a direct REST call. We don't use
+ * @supabase/ssr here because this component runs on Edge runtime without
+ * access to Next's cookies() API, and we only need a public read. The
+ * RLS policy `deck_shares_public_read` allows anon reads.
+ */
+async function fetchDeck(shortId: string): Promise<DeckRecord | null> {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  if (!url || !key) return null;
+
   try {
-    const { blobs } = await list({ prefix: `decks/${shortId}` });
-    if (blobs.length === 0) return null;
-    const res = await fetch(blobs[0].url);
+    const res = await fetch(
+      `${url}/rest/v1/deck_shares?id=eq.${encodeURIComponent(shortId)}&select=analysis,created_at`,
+      {
+        headers: {
+          apikey: key,
+          Authorization: `Bearer ${key}`,
+          Accept: "application/json",
+        },
+        // Cache the OG image fetch for a minute — these are deterministic once written
+        next: { revalidate: 60 },
+      }
+    );
     if (!res.ok) return null;
-    return res.json();
+    const rows = (await res.json()) as Array<{
+      analysis: AnalysisResult;
+      created_at: string;
+    }>;
+    if (!rows.length) return null;
+    return {
+      analysis: rows[0].analysis,
+      profiledAt: rows[0].created_at,
+    };
   } catch {
     return null;
   }
