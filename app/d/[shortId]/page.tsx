@@ -2,6 +2,7 @@ import { Metadata } from "next";
 import Link from "next/link";
 import DeckPriceModule from "@/app/components/DeckPriceModule";
 import SaveDeckButton from "@/app/components/SaveDeckButton";
+import StandardFormatInfo from "@/app/components/StandardFormatInfo";
 import ThemeColor from "@/app/components/ThemeColor";
 import EnergyColor from "@/app/components/EnergyColor";
 import { createClient } from "@/lib/supabase/server";
@@ -204,8 +205,8 @@ export async function generateMetadata({
     : "Deck Analysis — TCG Dexter";
 
   const rotationStatus = analysis.rotation.ready
-    ? "Rotation Ready"
-    : "Rotation Blocked";
+    ? "Standard Legal"
+    : "Not Standard Legal";
   const pricePart =
     analysis.deckPrice > 0 ? `$${analysis.deckPrice.toFixed(2)} deck` : "";
   const archPart = analysis.metaMatch.archetypeName ?? "";
@@ -374,29 +375,20 @@ export default async function SharedDeckPage({
             </div>
           )}
 
-          {/* Rotation Status */}
-          {result.rotation.ready ? (
-            <div className="rounded-xl border border-green-200 bg-green-50 px-5 py-4">
-              <div className="flex items-center gap-3">
-                <svg className="w-4 h-4 text-green-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                </svg>
-                <div>
-                  <p className="text-sm font-semibold text-green-900">Rotation Ready</p>
-                  <p className="text-xs text-green-700 mt-0.5">All cards H-mark and later</p>
-                </div>
-              </div>
-            </div>
-          ) : (
+          {/* Standard Format legality warning (only when not legal) */}
+          {!result.rotation.ready && (
             <div className="rounded-xl border border-yellow-500/40 bg-yellow-500/10 px-5 py-4">
               <div className="flex items-center gap-3 mb-3">
                 <svg className="w-4 h-4 text-yellow-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
                 </svg>
-                <div>
-                  <p className="text-sm font-semibold text-text-primary">Rotation Blocked</p>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-1.5">
+                    <p className="text-sm font-semibold text-text-primary">Not legal in Standard Format</p>
+                    <StandardFormatInfo />
+                  </div>
                   <p className="text-xs text-text-muted mt-0.5">
-                    {result.rotation.rotatingCount} card{result.rotation.rotatingCount !== 1 ? "s" : ""} not legal after April 10
+                    {result.rotation.rotatingCount} card{result.rotation.rotatingCount !== 1 ? "s" : ""} no longer legal
                   </p>
                 </div>
               </div>
@@ -453,10 +445,10 @@ export default async function SharedDeckPage({
             const rotatingCount = result.rotation.rotatingCards.length;
 
             const rotationStr = rotatingCount === 0
-              ? "Rotation Ready — all cards legal after April 10."
+              ? "All cards legal in 2026 Standard Format."
               : rotatingCount <= 2
-              ? `${rotatingCount} card${rotatingCount > 1 ? "s" : ""} rotate${rotatingCount === 1 ? "s" : ""} out April 10 — minor updates needed.`
-              : "This deck does not survive 2026 Standard Format Rotation as-is.";
+              ? `${rotatingCount} card${rotatingCount > 1 ? "s" : ""} no longer legal in Standard — minor updates needed.`
+              : "Several cards in this deck are no longer legal in Standard Format.";
 
             const consistencyStr = consistency >= 22
               ? "Strong draw engine with key supporters and search cards."
@@ -482,7 +474,13 @@ export default async function SharedDeckPage({
               <div className="rounded-xl border border-border bg-surface p-5 backdrop-blur-sm">
                 <h2 className="text-lg font-semibold text-text-primary mb-3">Deck Notes</h2>
                 <ul className="flex flex-col gap-2 list-disc list-inside">
-                  {[rotationStr, consistencyStr, evolutionStr, energyStr].map((str, i) => (
+                  <li className="text-sm text-text-secondary">
+                    <span>{rotationStr}</span>
+                    <span className="inline-flex align-middle ml-1">
+                      <StandardFormatInfo />
+                    </span>
+                  </li>
+                  {[consistencyStr, evolutionStr, energyStr].map((str, i) => (
                     <li key={i} className="text-sm text-text-secondary">
                       {str}
                     </li>

@@ -1,7 +1,20 @@
+import StandardFormatInfo from "./StandardFormatInfo";
+
 interface Props {
   rotatingCards: Array<{ name: string; qty: number }>;
 }
 
+/**
+ * Standard Format legality warning.
+ *
+ * Renders only when there are cards in the deck that are no longer legal
+ * in the current Standard Format. Lists the offending cards and offers an
+ * (i) info button explaining the rotation.
+ *
+ * (Component name is historical — kept as RotationBanner for now to avoid
+ * a wide rename. The phrasing inside has moved away from "rotation" toward
+ * "Standard Format legality.")
+ */
 export default function RotationBanner({ rotatingCards }: Props) {
   if (rotatingCards.length === 0) return null;
 
@@ -23,10 +36,15 @@ export default function RotationBanner({ rotatingCards }: Props) {
             d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z"
           />
         </svg>
-        <div>
-          <p className="text-sm font-semibold text-text-primary">Rotation Blocked</p>
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-1.5">
+            <p className="text-sm font-semibold text-text-primary">
+              Not legal in Standard Format
+            </p>
+            <StandardFormatInfo />
+          </div>
           <p className="text-xs text-text-muted mt-0.5">
-            {count} card{count !== 1 ? "s" : ""} not legal after April 10
+            {count} card{count !== 1 ? "s" : ""} no longer legal
           </p>
         </div>
       </div>

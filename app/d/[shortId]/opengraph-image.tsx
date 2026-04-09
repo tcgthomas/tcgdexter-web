@@ -127,9 +127,9 @@ export default async function Image({
     year: "numeric",
   });
 
-  // Rotation pill
+  // Standard Format legality pill
   const rotationReady = analysis.rotation.ready;
-  const rotationLabel = rotationReady ? "✓ Rotation Ready" : "⚠ Rotation Blocked";
+  const rotationLabel = rotationReady ? "✓ Standard Legal" : "⚠ Not Standard Legal";
   const rotationBg = rotationReady ? "#dcfce7" : "#fef3c7";
   const rotationBorder = rotationReady ? "#bbf7d0" : "#fde68a";
   const rotationColor = rotationReady ? "#166534" : "#92400e";

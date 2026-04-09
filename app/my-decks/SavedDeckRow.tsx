@@ -140,12 +140,8 @@ export default function SavedDeckRow({ deck, isLast }: Props) {
             {typeof price === "number" && price > 0 && (
               <span>${price.toFixed(2)}</span>
             )}
-            {rotationReady !== undefined && (
-              <span
-                className={rotationReady ? "text-green-700" : "text-amber-700"}
-              >
-                {rotationReady ? "Rotation ready" : "Rotation blocked"}
-              </span>
+            {rotationReady === false && (
+              <span className="text-amber-700">Not Standard legal</span>
             )}
           </span>
         </span>

@@ -4,6 +4,7 @@ import { useState, useEffect, useMemo } from "react";
 import DeckPriceModule from "@/app/components/DeckPriceModule";
 import RotationBanner from "@/app/components/RotationBanner";
 import SaveDeckButton from "@/app/components/SaveDeckButton";
+import StandardFormatInfo from "@/app/components/StandardFormatInfo";
 import ThemeColor from "@/app/components/ThemeColor";
 import { useTheme } from "@/app/components/ThemeProvider";
 import Link from "next/link";
@@ -436,11 +437,8 @@ export default function DeckProfilerPage() {
             style={{ width: "450px", height: "auto" }}
           />
         </div>
-        <h1 className={`text-3xl sm:text-4xl font-bold tracking-tight ${dominantColor ? "text-on-gradient" : "text-text-primary"}`}>
-          Deck Profiler
-        </h1>
-        <p className={`mt-3 text-sm max-w-md mx-auto transition-colors leading-relaxed ${dominantColor ? "text-on-gradient-muted" : "text-text-secondary"}`}>
-          Paste a Pokémon TCG deck list below for an instant rotation check, price estimate, archetype match, and card-level breakdown.
+        <p className={`text-sm max-w-md mx-auto transition-colors leading-relaxed ${dominantColor ? "text-on-gradient-muted" : "text-text-secondary"}`}>
+          Paste a Pokémon TCG deck list below for an instant Standard legality check, price estimate, archetype match, and card-level breakdown.
         </p>
         <p className={`mt-2 text-xs max-w-md mx-auto transition-colors ${dominantColor ? "text-on-gradient-muted" : "text-text-muted"}`}>
           Still in beta — share thoughts at{' '}
@@ -512,23 +510,6 @@ export default function DeckProfilerPage() {
             </div>
           </div>
 
-          {/* Rotation Countdown */}
-          {result === null && (() => {
-            const rotationDate = new Date("2026-04-10T00:00:00");
-            const now = new Date();
-            const daysLeft = Math.ceil((rotationDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
-            if (daysLeft <= 0) return null;
-            return (
-              <div className="rounded-xl border border-border bg-surface px-6 py-5 flex items-center justify-center gap-5">
-                <div className="text-6xl font-black text-text-primary leading-none">{daysLeft}</div>
-                <div className="flex flex-col">
-                  <div className="text-sm text-text-secondary uppercase tracking-widest">Days Until Rotation</div>
-                  <div className="text-xs text-text-muted mt-1">April 10, 2026</div>
-                </div>
-              </div>
-            );
-          })()}
-
           {/* Results */}
           {result && (
             <div className="flex flex-col gap-4">
@@ -586,7 +567,7 @@ export default function DeckProfilerPage() {
               })()}
 
 
-              {/* ── Rotation Banner (blocked only) ─────────── */}
+              {/* ── Standard Format legality (warning only) ── */}
               <RotationBanner rotatingCards={result.rotation.rotatingCards} />
 
 
@@ -637,10 +618,10 @@ export default function DeckProfilerPage() {
                 const rotatingCount = result.rotation.rotatingCards.length;
 
                 const rotationStr = rotatingCount === 0
-                  ? "Rotation Ready — all cards legal after April 10."
+                  ? "All cards legal in 2026 Standard Format."
                   : rotatingCount <= 2
-                  ? `${rotatingCount} card${rotatingCount > 1 ? "s" : ""} rotate${rotatingCount === 1 ? "s" : ""} out April 10 — minor updates needed.`
-                  : "This deck does not survive 2026 Standard Format Rotation as-is.";
+                  ? `${rotatingCount} card${rotatingCount > 1 ? "s" : ""} no longer legal in Standard — minor updates needed.`
+                  : "Several cards in this deck are no longer legal in Standard Format.";
 
                 const consistencyStr = consistency >= 22
                   ? "Strong draw engine with key supporters and search cards."
@@ -666,7 +647,13 @@ export default function DeckProfilerPage() {
                   <div className="rounded-xl border border-border bg-surface p-5 backdrop-blur-sm">
                     <h2 className="text-lg font-semibold text-text-primary mb-3">Deck Notes</h2>
                     <ul className="flex flex-col gap-2 list-disc list-inside">
-                      {[rotationStr, consistencyStr, evolutionStr, energyStr].map((str, i) => (
+                      <li className="text-sm text-text-secondary">
+                        <span>{rotationStr}</span>
+                        <span className="inline-flex align-middle ml-1">
+                          <StandardFormatInfo />
+                        </span>
+                      </li>
+                      {[consistencyStr, evolutionStr, energyStr].map((str, i) => (
                         <li key={i} className="text-sm text-text-secondary">
                           {str}
                         </li>
