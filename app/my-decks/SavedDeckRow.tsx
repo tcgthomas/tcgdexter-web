@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 interface SavedDeck {
@@ -43,11 +44,6 @@ export default function SavedDeckRow({ deck, isLast }: Props) {
   const archetype = deck.analysis?.metaMatch?.archetypeName ?? null;
   const price = deck.analysis?.deckPrice;
   const rotationReady = deck.analysis?.rotation?.ready;
-  const updatedStr = new Date(deck.updated_at).toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-  });
 
   async function handleRename() {
     const trimmed = renameInput.trim();
@@ -110,22 +106,6 @@ export default function SavedDeckRow({ deck, isLast }: Props) {
     }
   }
 
-  function handleViewProfile() {
-    // Hand off the deck list to the home page via sessionStorage. The home
-    // page picks it up on mount, populates the textarea, and triggers
-    // analysis automatically so the user lands on a fresh profile view.
-    try {
-      sessionStorage.setItem(
-        "tcgd-load-deck",
-        JSON.stringify({ deckList: deck.deck_list, name }),
-      );
-    } catch {
-      // sessionStorage unavailable — the home page will just stay empty
-      // and the user can paste manually. No-op here.
-    }
-    router.push("/");
-  }
-
   if (deleted) return null;
 
   return (
@@ -145,9 +125,6 @@ export default function SavedDeckRow({ deck, isLast }: Props) {
             )}
           </span>
         </span>
-        <span className="flex-shrink-0 text-xs text-text-muted">
-          {updatedStr}
-        </span>
         <svg
           className="flex-shrink-0 w-4 h-4 text-text-muted group-open:rotate-180 transition-transform"
           fill="none"
@@ -165,17 +142,16 @@ export default function SavedDeckRow({ deck, isLast }: Props) {
 
       <div className="px-5 pb-4 pt-1 border-t border-border/50">
         {/* ── Primary action: View Deck Profile ───────────── */}
-        <button
-          onClick={handleViewProfile}
-          disabled={busy}
-          className="mt-3 w-full inline-flex items-center justify-center gap-2 rounded-lg bg-text-primary px-4 py-2.5 text-sm font-semibold text-bg transition-all hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
+        <Link
+          href={`/my-decks/${deck.id}`}
+          className="mt-3 w-full inline-flex items-center justify-center gap-2 rounded-lg bg-text-primary px-4 py-2.5 text-sm font-semibold text-bg transition-all hover:opacity-90"
         >
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
             <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
           </svg>
           View Deck Profile
-        </button>
+        </Link>
 
         {/* ── Deck list (always shown) with Copy action ──── */}
         <div className="mt-3">

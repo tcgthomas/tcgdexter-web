@@ -261,30 +261,6 @@ export default function DeckProfilerPage() {
   const [shareUrl, setShareUrl] = useState<string | null>(null);
   const [shareError, setShareError] = useState<string | null>(null);
 
-  /* ── Auto-load a saved deck handed off via sessionStorage ──
-     Triggered when a user clicks "View Deck Profile" from /my-decks.
-     We read the deck list from sessionStorage, populate the textarea,
-     and kick off analysis automatically so the user lands on a fresh
-     profile view. The pending key is cleared after consumption. */
-  useEffect(() => {
-    try {
-      const raw = sessionStorage.getItem("tcgd-load-deck");
-      if (!raw) return;
-      sessionStorage.removeItem("tcgd-load-deck");
-      const parsed = JSON.parse(raw) as { deckList?: string };
-      if (parsed?.deckList && typeof parsed.deckList === "string") {
-        setDeckList(parsed.deckList);
-        // Defer the analyze call so React has time to commit the deckList
-        // state update before handleAnalyze reads it.
-        setTimeout(() => {
-          void handleAnalyze(parsed.deckList!);
-        }, 0);
-      }
-    } catch {
-      // sessionStorage unavailable or invalid payload — ignore silently.
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   /* ── Dominant energy color for background gradient ────────── */
   const dominantColor = useMemo(() => {
@@ -380,12 +356,8 @@ export default function DeckProfilerPage() {
 
 
 
-  async function handleAnalyze(override?: string) {
-    // Accept an optional override so callers that have the deck list in
-    // hand (e.g. the sessionStorage auto-load) don't have to wait for a
-    // React state commit before analyzing.
-    const listToAnalyze = (override ?? deckList).trim();
-    if (!listToAnalyze) {
+  async function handleAnalyze() {
+    if (!deckList.trim()) {
       setError("Paste your deck list first.");
       return;
     }
@@ -398,7 +370,7 @@ export default function DeckProfilerPage() {
       const res = await fetch("/api/analyze", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ deckList: listToAnalyze }),
+        body: JSON.stringify({ deckList }),
       });
 
       const data = await res.json();
@@ -439,10 +411,6 @@ export default function DeckProfilerPage() {
         </div>
         <p className={`text-sm max-w-md mx-auto transition-colors leading-relaxed ${dominantColor ? "text-on-gradient-muted" : "text-text-secondary"}`}>
           Paste a Pokémon TCG deck list below for an instant Standard legality check, price estimate, archetype match, and card-level breakdown.
-        </p>
-        <p className={`mt-2 text-xs max-w-md mx-auto transition-colors ${dominantColor ? "text-on-gradient-muted" : "text-text-muted"}`}>
-          Still in beta — share thoughts at{' '}
-          <a href="mailto:feedback@tcgdexter.com" className="underline hover:opacity-80">feedback@tcgdexter.com</a>
         </p>
 
       </header>
@@ -486,7 +454,7 @@ export default function DeckProfilerPage() {
                   Clear
                 </button>
                 <button
-                  onClick={() => handleAnalyze()}
+                  onClick={handleAnalyze}
                   disabled={loading}
                   className="flex-1 inline-flex items-center justify-center gap-2 rounded-lg bg-accent px-5 py-2.5 text-sm font-semibold text-white transition-all hover:bg-accent-light disabled:opacity-50 disabled:cursor-not-allowed"
                 >
@@ -509,6 +477,12 @@ export default function DeckProfilerPage() {
               )}
             </div>
           </div>
+
+          {/* ── Beta notice ─────────────────────────────────── */}
+          <p className={`text-xs max-w-md mx-auto text-center transition-colors ${dominantColor ? "text-on-gradient-muted" : "text-text-muted"}`}>
+            Deck Profiler in beta. Share your thoughts with{' '}
+            <a href="mailto:feedback@tcgdexter.com" className="underline hover:opacity-80">feedback@tcgdexter.com</a>
+          </p>
 
           {/* Results */}
           {result && (
