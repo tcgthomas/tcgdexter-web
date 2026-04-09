@@ -21,7 +21,7 @@ function SignInForm() {
   >("idle");
   const [errorMsg, setErrorMsg] = useState<string | null>(
     errorParam === "auth_callback_failed"
-      ? "Magic link expired or already used. Try again below."
+      ? "That link expired or was already used. Try again below."
       : null
   );
 
@@ -59,7 +59,7 @@ function SignInForm() {
           Sign in
         </h1>
         <p className="mt-3 text-sm text-text-secondary max-w-md mx-auto leading-relaxed">
-          We&apos;ll email you a magic link. No password needed.
+          We&apos;ll send you a link to sign in. No password needed.
         </p>
       </header>
 
@@ -80,7 +80,7 @@ function SignInForm() {
                 Check your email
               </h2>
               <p className="text-sm text-text-secondary">
-                We sent a magic link to <span className="font-semibold">{email}</span>.
+                We sent a link to <span className="font-semibold">{email}</span>.
                 Click the link to sign in.
               </p>
               <button
@@ -133,7 +133,7 @@ function SignInForm() {
                     Sending…
                   </>
                 ) : (
-                  "Send magic link"
+                  "Sign In"
                 )}
               </button>
             </form>
