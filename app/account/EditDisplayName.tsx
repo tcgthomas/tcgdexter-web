@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { validateDisplayName } from "@/lib/display-name-rules";
 
 interface Props {
   initialName: string;
@@ -22,12 +23,14 @@ export default function EditDisplayName({ initialName }: Props) {
 
   async function handleSave() {
     const trimmed = input.trim();
-    if (!trimmed) {
-      setError("Name can't be empty.");
-      return;
-    }
     if (trimmed === name) {
       setEditing(false);
+      return;
+    }
+    // Client-side validation (same rules as server — fast feedback)
+    const check = validateDisplayName(trimmed);
+    if (!check.valid) {
+      setError(check.error);
       return;
     }
     setBusy(true);
