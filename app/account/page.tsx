@@ -1,13 +1,11 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { TRAINER_TIERS, getTierByTitle, getNextTier } from "@/lib/trainer-tiers";
 import SignOutButton from "./SignOutButton";
 
 /**
- * Account page — shows the signed-in user's email and display name.
- * Redirects to /sign-in if the user is not authenticated.
- *
- * Server component — reads the user from the session cookie directly,
- * no client-side auth check needed.
+ * Account page — shows the signed-in user's profile, trainer progression,
+ * and a sign-out button. Redirects to /sign-in if not authenticated.
  */
 export default async function AccountPage() {
   const supabase = await createClient();
@@ -20,16 +18,23 @@ export default async function AccountPage() {
     redirect("/sign-in");
   }
 
-  // Fetch the profile row (created by the handle_new_user trigger on signup).
   const { data: profile } = await supabase
     .from("profiles")
-    .select("display_name, tier, created_at")
+    .select("display_name, tier, trainer_title, highest_deck_count, created_at")
     .eq("id", user.id)
     .single();
 
+  const currentTitle = profile?.trainer_title ?? "Rookie Trainer";
+  const highWaterMark = profile?.highest_deck_count ?? 0;
+  const currentTier = getTierByTitle(currentTitle);
+  const nextTier = getNextTier(highWaterMark);
+
   return (
     <div className="min-h-dvh flex flex-col">
-      <header className="flex-shrink-0 pb-8 px-6 text-center" style={{ paddingTop: "calc(env(safe-area-inset-top) + 4rem)" }}>
+      <header
+        className="flex-shrink-0 pb-8 px-6 text-center"
+        style={{ paddingTop: "calc(env(safe-area-inset-top) + 4rem)" }}
+      >
         <h1 className="text-3xl sm:text-4xl font-bold tracking-tight">
           Account
         </h1>
@@ -37,15 +42,10 @@ export default async function AccountPage() {
 
       <main className="flex-1 px-6 pb-20">
         <div className="mx-auto max-w-sm">
+          {/* ── User info ────────────────────────────────────── */}
           <div className="rounded-xl border border-border bg-surface overflow-hidden">
             <Row label="Display name" value={profile?.display_name ?? "—"} />
             <Row label="Email" value={user.email ?? "—"} />
-            <Row
-              label="Tier"
-              value={
-                <span className="capitalize">{profile?.tier ?? "free"}</span>
-              }
-            />
             <Row
               label="Joined"
               value={
@@ -61,6 +61,137 @@ export default async function AccountPage() {
             />
           </div>
 
+          {/* ── Current trainer title ────────────────────────── */}
+          <div className="mt-6 rounded-xl border border-border bg-surface p-5">
+            <div className="flex items-center gap-4">
+              <img
+                src={`/badges/${currentTier.slug}.svg`}
+                alt={currentTier.title}
+                className="w-14 h-14 flex-shrink-0"
+              />
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-widest text-text-muted">
+                  Trainer Title
+                </p>
+                <p className={`text-lg font-bold ${currentTier.color}`}>
+                  {currentTier.title}
+                </p>
+                <p className="text-xs text-text-muted mt-0.5">
+                  {highWaterMark} deck{highWaterMark !== 1 ? "s" : ""} saved
+                </p>
+              </div>
+            </div>
+
+            {/* Progress to next tier */}
+            {nextTier && (
+              <div className="mt-4 pt-4 border-t border-border">
+                <div className="flex items-center justify-between text-xs text-text-muted mb-2">
+                  <span>Next: {nextTier.title}</span>
+                  <span>
+                    {highWaterMark} / {nextTier.threshold}
+                  </span>
+                </div>
+                <div className="h-2 rounded-full bg-surface-2 overflow-hidden">
+                  <div
+                    className="h-full rounded-full bg-accent transition-all"
+                    style={{
+                      width: `${Math.min(
+                        (highWaterMark / nextTier.threshold) * 100,
+                        100,
+                      )}%`,
+                    }}
+                  />
+                </div>
+                <p className="text-xs text-text-muted mt-1.5">
+                  {nextTier.threshold - highWaterMark} more deck
+                  {nextTier.threshold - highWaterMark !== 1 ? "s" : ""} to
+                  unlock
+                </p>
+              </div>
+            )}
+          </div>
+
+          {/* ── Tier progression ladder ──────────────────────── */}
+          <div className="mt-6 rounded-xl border border-border bg-surface p-5">
+            <h2 className="text-sm font-semibold text-text-primary mb-4">
+              Trainer Progression
+            </h2>
+            <div className="flex flex-col gap-1">
+              {TRAINER_TIERS.map((tier, i) => {
+                const earned = highWaterMark >= tier.threshold;
+                const isCurrent = tier.title === currentTitle;
+                return (
+                  <div
+                    key={tier.slug}
+                    className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors ${
+                      isCurrent
+                        ? `${tier.bgColor} border ${tier.borderColor}`
+                        : earned
+                          ? "bg-surface-2"
+                          : ""
+                    }`}
+                  >
+                    <img
+                      src={`/badges/${tier.slug}.svg`}
+                      alt={tier.title}
+                      className={`w-8 h-8 flex-shrink-0 transition-opacity ${
+                        earned ? "opacity-100" : "opacity-25 grayscale"
+                      }`}
+                    />
+                    <div className="flex-1 min-w-0">
+                      <p
+                        className={`text-sm font-semibold ${
+                          earned ? tier.color : "text-text-muted"
+                        }`}
+                      >
+                        {tier.title}
+                      </p>
+                      <p className="text-xs text-text-muted">
+                        {tier.threshold} deck{tier.threshold !== 1 ? "s" : ""}
+                      </p>
+                    </div>
+                    {isCurrent && (
+                      <span className="flex-shrink-0 text-xs font-semibold uppercase tracking-wider text-accent">
+                        Current
+                      </span>
+                    )}
+                    {earned && !isCurrent && (
+                      <svg
+                        className="w-4 h-4 text-green-600 flex-shrink-0"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        strokeWidth={2.5}
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M4.5 12.75l6 6 9-13.5"
+                        />
+                      </svg>
+                    )}
+                    {!earned && (
+                      <svg
+                        className="w-4 h-4 text-text-muted/30 flex-shrink-0"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        strokeWidth={2}
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z"
+                        />
+                      </svg>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* ── Sign out ─────────────────────────────────────── */}
           <div className="mt-6">
             <SignOutButton />
           </div>

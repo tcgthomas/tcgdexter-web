@@ -2,8 +2,11 @@ import { Metadata } from "next";
 import Link from "next/link";
 import DeckProfileView, {
   type AnalysisResult,
+  type DeckCreator,
 } from "@/app/components/DeckProfileView";
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
+import { getTierByTitle } from "@/lib/trainer-tiers";
 
 /* ─── Types ──────────────────────────────────────────────────── */
 
@@ -11,6 +14,7 @@ interface DeckRecord {
   deckList: string;
   profiledAt: string;
   analysis: AnalysisResult;
+  userId: string | null;
 }
 
 /* ─── Supabase fetch helper ──────────────────────────────────── */
@@ -20,7 +24,7 @@ async function fetchDeck(shortId: string): Promise<DeckRecord | null> {
     const supabase = await createClient();
     const { data, error } = await supabase
       .from("deck_shares")
-      .select("deck_list, analysis, created_at")
+      .select("deck_list, analysis, created_at, user_id")
       .eq("id", shortId)
       .maybeSingle();
 
@@ -30,6 +34,36 @@ async function fetchDeck(shortId: string): Promise<DeckRecord | null> {
       deckList: data.deck_list,
       analysis: data.analysis as AnalysisResult,
       profiledAt: data.created_at,
+      userId: data.user_id,
+    };
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Look up the creator's display name and trainer title via the service-role
+ * client (bypasses RLS since profiles are owner-only select). Returns null
+ * for anonymous shares (user_id is null) or if the lookup fails.
+ */
+async function fetchCreator(userId: string | null): Promise<DeckCreator | null> {
+  if (!userId) return null;
+  try {
+    const admin = createAdminClient();
+    const { data } = await admin
+      .from("profiles")
+      .select("display_name, trainer_title")
+      .eq("id", userId)
+      .maybeSingle();
+
+    if (!data) return null;
+
+    const tier = getTierByTitle(data.trainer_title ?? "Rookie Trainer");
+    return {
+      displayName: data.display_name ?? "Trainer",
+      trainerTitle: tier.title,
+      badgeSlug: tier.slug,
+      tierColor: tier.color,
     };
   } catch {
     return null;
@@ -115,11 +149,14 @@ export default async function SharedDeckPage({
     );
   }
 
+  const creator = await fetchCreator(deck.userId);
+
   return (
     <DeckProfileView
       deckList={deck.deckList}
       analysis={deck.analysis}
       profiledAt={deck.profiledAt}
+      creator={creator ?? undefined}
     />
   );
 }

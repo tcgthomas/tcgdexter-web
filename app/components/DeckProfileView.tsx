@@ -198,6 +198,14 @@ function StatPill({ count, label }: { count: number; label: string }) {
 
 /* ─── DeckProfileView ────────────────────────────────────────── */
 
+export interface DeckCreator {
+  displayName: string;
+  trainerTitle: string;
+  badgeSlug: string;
+  /** Tailwind text-color class for the tier. */
+  tierColor: string;
+}
+
 interface Props {
   deckList: string;
   analysis: AnalysisResult;
@@ -208,6 +216,8 @@ interface Props {
   subtitle?: string;
   /** Footer CTA content; defaults to a "Profile your own deck" link. */
   footerCta?: React.ReactNode;
+  /** Optional creator info — shown as a badge card below the header. */
+  creator?: DeckCreator;
 }
 
 /**
@@ -224,6 +234,7 @@ export default function DeckProfileView({
   pageTitle = "Deck Profile",
   subtitle,
   footerCta,
+  creator,
 }: Props) {
   const result = analysis;
   const dateStr = new Date(profiledAt).toLocaleDateString("en-US", {
@@ -287,6 +298,26 @@ export default function DeckProfileView({
       {/* ── Results ────────────────────────────────────────── */}
       <main className="flex-1 px-6 pb-20">
         <div className="mx-auto max-w-2xl flex flex-col gap-4">
+
+          {/* Creator badge card */}
+          {creator && (
+            <div className="flex items-center gap-3 rounded-xl border border-border bg-surface px-4 py-3">
+              <img
+                src={`/badges/${creator.badgeSlug}.svg`}
+                alt={creator.trainerTitle}
+                className="w-10 h-10 flex-shrink-0"
+              />
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-semibold text-text-primary truncate">
+                  {creator.displayName}
+                </p>
+                <p className={`text-xs font-medium ${creator.tierColor}`}>
+                  {creator.trainerTitle}
+                </p>
+              </div>
+            </div>
+          )}
+
           {/* Meta Match */}
           {result.metaMatch.matched && (
             <div className="rounded-xl border border-green-500/40 bg-green-500/10 p-5">
