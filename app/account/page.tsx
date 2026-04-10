@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { TRAINER_TIERS, getTierByTitle, getNextTier } from "@/lib/trainer-tiers";
+import EditDisplayName from "./EditDisplayName";
 import SignOutButton from "./SignOutButton";
 
 /**
@@ -44,7 +45,7 @@ export default async function AccountPage() {
         <div className="mx-auto max-w-sm">
           {/* ── User info ────────────────────────────────────── */}
           <div className="rounded-xl border border-border bg-surface overflow-hidden">
-            <Row label="Display name" value={profile?.display_name ?? "—"} />
+            <EditDisplayName initialName={profile?.display_name ?? "—"} />
             <Row label="Email" value={user.email ?? "—"} />
             <Row
               label="Joined"
