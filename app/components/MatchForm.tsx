@@ -141,7 +141,7 @@ export default function MatchForm({
   }
 
   return (
-    <div className="border border-border rounded-lg p-4">
+    <div className="pt-2">
       {/* Result buttons */}
       <div className="flex gap-2 mb-3">
         {(["win", "loss", "draw"] as const).map((r) => {
