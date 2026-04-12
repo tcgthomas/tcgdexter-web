@@ -3,11 +3,10 @@ import { createClient } from "@/lib/supabase/server";
 
 /**
  * DELETE /api/saved-decks/[id]
- * PATCH  /api/saved-decks/[id]   body: { name: string }
+ * PATCH  /api/saved-decks/[id]   body: { name?: string, notes?: string }
  *
  * Both require authentication. RLS on public.saved_decks ensures users
- * can only modify their own rows; this route relies on that rather than
- * checking ownership in application code.
+ * can only modify their own rows.
  */
 
 export async function DELETE(
@@ -59,33 +58,50 @@ export async function PATCH(
     );
   }
 
-  let body: { name?: string };
+  let body: { name?: string; notes?: string };
   try {
     body = await req.json();
   } catch {
     return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
   }
 
-  const name = body.name?.trim();
-  if (!name) {
+  // Build the update payload — only include provided fields
+  const updates: Record<string, string> = {};
+
+  if (typeof body.name === "string") {
+    const name = body.name.trim();
+    if (!name) {
+      return NextResponse.json(
+        { error: "name cannot be empty" },
+        { status: 400 }
+      );
+    }
+    updates.name = name;
+  }
+
+  if (typeof body.notes === "string") {
+    updates.notes = body.notes;
+  }
+
+  if (Object.keys(updates).length === 0) {
     return NextResponse.json(
-      { error: "name is required" },
+      { error: "Nothing to update" },
       { status: 400 }
     );
   }
 
   const { error } = await supabase
     .from("saved_decks")
-    .update({ name })
+    .update(updates)
     .eq("id", id);
 
   if (error) {
     console.error("[saved-decks] update failed:", error);
     return NextResponse.json(
-      { error: "Failed to rename deck." },
+      { error: "Failed to update deck." },
       { status: 500 }
     );
   }
 
-  return NextResponse.json({ success: true, name });
+  return NextResponse.json({ success: true, ...updates });
 }

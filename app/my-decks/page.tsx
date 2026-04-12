@@ -19,6 +19,7 @@ interface SavedDeck {
     metaMatch?: { archetypeName?: string | null };
     rotation?: { ready?: boolean };
   } | null;
+  notes?: string;
   created_at: string;
   updated_at: string;
 }
@@ -36,11 +37,33 @@ export default async function MyDecksPage() {
 
   const { data: decks, error } = await supabase
     .from("saved_decks")
-    .select("id, name, deck_list, analysis, created_at, updated_at")
+    .select("id, name, deck_list, analysis, notes, created_at, updated_at")
     .order("updated_at", { ascending: false });
 
   if (error) {
     console.error("[my-decks] fetch failed:", error);
+  }
+
+  // Fetch match counts per deck for inline W-L display + last played
+  const { data: matchRows } = await supabase
+    .from("matches")
+    .select("saved_deck_id, result, played_at")
+    .order("played_at", { ascending: false });
+
+  // Aggregate per deck
+  const deckMatchStats = new Map<
+    string,
+    { wins: number; losses: number; draws: number; lastPlayed: string | null }
+  >();
+  for (const m of matchRows ?? []) {
+    const existing = deckMatchStats.get(m.saved_deck_id) ?? {
+      wins: 0, losses: 0, draws: 0, lastPlayed: null,
+    };
+    if (m.result === "win") existing.wins++;
+    else if (m.result === "loss") existing.losses++;
+    else if (m.result === "draw") existing.draws++;
+    if (!existing.lastPlayed) existing.lastPlayed = m.played_at;
+    deckMatchStats.set(m.saved_deck_id, existing);
   }
 
   const savedDecks = (decks ?? []) as SavedDeck[];
@@ -92,13 +115,18 @@ export default async function MyDecksPage() {
             </div>
           ) : (
             <div className="rounded-xl border border-border bg-surface overflow-hidden">
-              {savedDecks.map((deck, i) => (
-                <SavedDeckRow
-                  key={deck.id}
-                  deck={deck}
-                  isLast={i === savedDecks.length - 1}
-                />
-              ))}
+              {savedDecks.map((deck, i) => {
+                const stats = deckMatchStats.get(deck.id);
+                return (
+                  <SavedDeckRow
+                    key={deck.id}
+                    deck={deck}
+                    isLast={i === savedDecks.length - 1}
+                    matchStats={stats ?? null}
+                    hasNotes={!!deck.notes && deck.notes.trim().length > 0}
+                  />
+                );
+              })}
             </div>
           )}
         </div>

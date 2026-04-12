@@ -17,20 +17,27 @@ interface SavedDeck {
   updated_at: string;
 }
 
+interface MatchStats {
+  wins: number;
+  losses: number;
+  draws: number;
+  lastPlayed: string | null;
+}
+
 interface Props {
   deck: SavedDeck;
   isLast: boolean;
+  matchStats: MatchStats | null;
+  hasNotes: boolean;
 }
 
 /**
  * Single row in the My Decks list.
  *
- * Collapsed: deck name, archetype, price, rotation status, updated date.
- * Expanded: the full deck list (always shown), a Copy button for the list,
- * a View Deck Profile button that loads the deck into the profiler, and
- * Rename / Delete actions.
+ * Collapsed: deck name, archetype, price, legality, W-L record, has-notes indicator.
+ * Expanded: View Deck Profile link, deck list with Copy, rename/delete actions.
  */
-export default function SavedDeckRow({ deck, isLast }: Props) {
+export default function SavedDeckRow({ deck, isLast, matchStats, hasNotes }: Props) {
   const router = useRouter();
 
   const [name, setName] = useState(deck.name);
@@ -115,13 +122,31 @@ export default function SavedDeckRow({ deck, isLast }: Props) {
           <span className="block font-semibold text-text-primary text-sm truncate">
             {name}
           </span>
-          <span className="flex items-center gap-3 mt-0.5 text-xs text-text-muted">
+          <span className="flex items-center gap-3 mt-0.5 text-xs text-text-muted flex-wrap">
             {archetype && <span className="truncate">{archetype}</span>}
             {typeof price === "number" && price > 0 && (
               <span>${price.toFixed(2)}</span>
             )}
+            {matchStats && (matchStats.wins + matchStats.losses + matchStats.draws) > 0 && (
+              <span>
+                <span className="text-green-700">{matchStats.wins}W</span>
+                {"-"}
+                <span className="text-red-700">{matchStats.losses}L</span>
+                {matchStats.draws > 0 && <>-<span className="text-stone-600">{matchStats.draws}D</span></>}
+              </span>
+            )}
+            {matchStats?.lastPlayed && (
+              <span>Last played {new Date(matchStats.lastPlayed).toLocaleDateString("en-US", { month: "short", day: "numeric" })}</span>
+            )}
             {rotationReady === false && (
               <span className="text-amber-700">Not Standard legal</span>
+            )}
+            {hasNotes && (
+              <span title="Has notes">
+                <svg className="w-3.5 h-3.5 inline" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
+                </svg>
+              </span>
             )}
           </span>
         </span>

@@ -30,6 +30,17 @@ export default async function AccountPage() {
   const currentTier = getTierByTitle(currentTitle);
   const nextTier = getNextTier(highWaterMark);
 
+  // Global match record
+  const { data: matchStats } = await supabase
+    .from("matches")
+    .select("result");
+
+  const globalWins = matchStats?.filter((m) => m.result === "win").length ?? 0;
+  const globalLosses = matchStats?.filter((m) => m.result === "loss").length ?? 0;
+  const globalDraws = matchStats?.filter((m) => m.result === "draw").length ?? 0;
+  const globalTotal = globalWins + globalLosses + globalDraws;
+  const globalWinRate = globalTotal > 0 ? ((globalWins / globalTotal) * 100).toFixed(1) : null;
+
   return (
     <div className="min-h-dvh flex flex-col">
       <header
@@ -191,6 +202,36 @@ export default async function AccountPage() {
               })}
             </div>
           </div>
+
+          {/* ── Global match record ─────────────────────────── */}
+          {globalTotal > 0 && (
+            <div className="mt-6 rounded-xl border border-border bg-surface p-5">
+              <h2 className="text-sm font-semibold text-text-primary mb-3">
+                Overall Record
+              </h2>
+              <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2 text-lg">
+                  <span className="font-bold text-green-700">{globalWins}W</span>
+                  <span className="text-text-muted">-</span>
+                  <span className="font-bold text-red-700">{globalLosses}L</span>
+                  {globalDraws > 0 && (
+                    <>
+                      <span className="text-text-muted">-</span>
+                      <span className="font-bold text-stone-600">{globalDraws}D</span>
+                    </>
+                  )}
+                </div>
+                {globalWinRate && (
+                  <span className="text-sm text-text-muted">
+                    {globalWinRate}% win rate
+                  </span>
+                )}
+              </div>
+              <p className="text-xs text-text-muted mt-2">
+                {globalTotal} match{globalTotal !== 1 ? "es" : ""} across all decks
+              </p>
+            </div>
+          )}
 
           {/* ── Sign out ─────────────────────────────────────── */}
           <div className="mt-6">

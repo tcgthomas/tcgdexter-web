@@ -5,15 +5,14 @@ import DeckProfileView, {
   type AnalysisResult,
 } from "@/app/components/DeckProfileView";
 import { getTierByTitle } from "@/lib/trainer-tiers";
+import DeckNotes from "./DeckNotes";
+import MatchLog from "./MatchLog";
 
 /**
- * Private saved-deck profile view.
+ * Private saved-deck detail view.
  *
- * Renders a user's saved deck in the same layout as the public shared-deck
- * page (/d/[shortId]), but pulls the row from public.saved_decks. RLS
- * enforces owner-only access — if the caller doesn't own the deck, the
- * select returns no rows and we 404. Unauthenticated users get redirected
- * to /sign-in.
+ * Renders the full deck profile, plus owner-only sections: Notes (auto-save
+ * textarea) and Match Log (structured match history with inline logging).
  */
 export default async function MyDeckDetailPage({
   params,
@@ -34,7 +33,7 @@ export default async function MyDeckDetailPage({
 
   const { data: deck } = await supabase
     .from("saved_decks")
-    .select("id, name, deck_list, analysis, updated_at")
+    .select("id, name, deck_list, analysis, notes, updated_at")
     .eq("id", id)
     .maybeSingle();
 
@@ -44,11 +43,25 @@ export default async function MyDeckDetailPage({
 
   const analysis = deck.analysis as AnalysisResult | null;
   if (!analysis) {
-    // Defensive: a saved deck without analysis shouldn't exist, but if one
-    // slips through (e.g. from a future import path), route back to My Decks
-    // rather than crashing in the renderer.
     redirect("/my-decks");
   }
+
+  // Fetch match history for this deck
+  const { data: matchRows } = await supabase
+    .from("matches")
+    .select("id, result, opponent_name, opponent_archetype, opponent_deck_list, notes, played_at")
+    .eq("saved_deck_id", id)
+    .order("played_at", { ascending: false });
+
+  const matches = (matchRows ?? []) as Array<{
+    id: string;
+    result: "win" | "loss" | "draw";
+    opponent_name: string | null;
+    opponent_archetype: string | null;
+    opponent_deck_list: string | null;
+    notes: string | null;
+    played_at: string;
+  }>;
 
   const updatedStr = new Date(deck.updated_at).toLocaleDateString("en-US", {
     month: "long",
@@ -80,12 +93,23 @@ export default async function MyDeckDetailPage({
       subtitle={`Saved · Last updated ${updatedStr}`}
       creator={creator}
       footerCta={
-        <Link
-          href="/my-decks"
-          className="inline-flex items-center justify-center gap-2 rounded-lg border border-border bg-bg px-6 py-3 text-sm font-semibold text-text-primary transition-all hover:bg-surface-2"
-        >
-          Back to My Decks
-        </Link>
+        <div className="flex flex-col gap-4 w-full max-w-2xl mx-auto">
+          {/* ── Notes ─────────────────────────────────────── */}
+          <DeckNotes savedDeckId={deck.id} initialNotes={deck.notes ?? ""} />
+
+          {/* ── Match Log ─────────────────────────────────── */}
+          <MatchLog savedDeckId={deck.id} initialMatches={matches} />
+
+          {/* ── Back to My Decks ──────────────────────────── */}
+          <div className="text-center">
+            <Link
+              href="/my-decks"
+              className="inline-flex items-center justify-center gap-2 rounded-lg border border-border bg-bg px-6 py-3 text-sm font-semibold text-text-primary transition-all hover:bg-surface-2"
+            >
+              Back to My Decks
+            </Link>
+          </div>
+        </div>
       }
     />
   );
