@@ -273,25 +273,6 @@ export default function MatchLog({ savedDeckId, initialMatches }: Props) {
             )}
           </div>
 
-          {/* Optional opponent deck list toggle */}
-          {!showDeckListField ? (
-            <button
-              type="button"
-              onClick={() => setShowDeckListField(true)}
-              className="text-xs text-accent hover:text-accent-light transition-colors mb-2"
-            >
-              + Add opponent deck list
-            </button>
-          ) : (
-            <textarea
-              value={opponentDeckList}
-              onChange={(e) => setOpponentDeckList(e.target.value)}
-              placeholder="Paste opponent's deck list (optional)"
-              rows={4}
-              className="w-full mb-2 rounded-lg border border-border bg-bg px-3 py-2 text-xs font-mono text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent/40 focus:ring-1 focus:ring-accent/20 resize-y [font-size:16px] sm:text-xs"
-            />
-          )}
-
           {/* Match notes */}
           <input
             type="text"
@@ -301,32 +282,63 @@ export default function MatchLog({ savedDeckId, initialMatches }: Props) {
             className="w-full mb-2 rounded-lg border border-border bg-bg px-3 py-2 text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent/40 focus:ring-1 focus:ring-accent/20 [font-size:16px] sm:text-sm"
           />
 
-          {/* Optional date */}
-          {!showDateField ? (
-            <button
-              type="button"
-              onClick={() => setShowDateField(true)}
-              className="text-xs text-accent hover:text-accent-light transition-colors mb-3"
-            >
-              + Add match date
-            </button>
-          ) : (
-            <div className="flex items-center gap-2 mb-3">
-              <input
-                type="date"
-                value={matchDate}
-                onChange={(e) => setMatchDate(e.target.value)}
-                className="flex-1 rounded-lg border border-border bg-bg px-3 py-2 text-sm text-text-primary focus:outline-none focus:border-accent/40 focus:ring-1 focus:ring-accent/20 [font-size:16px] sm:text-sm"
-              />
+          {/* Optional toggles — left-aligned */}
+          <div className="flex flex-col items-start gap-1 mb-3">
+            {/* Optional opponent deck list */}
+            {!showDeckListField ? (
               <button
                 type="button"
-                onClick={() => setShowDateField(false)}
-                className="text-xs text-text-muted hover:text-text-secondary transition-colors"
+                onClick={() => setShowDeckListField(true)}
+                className="text-xs text-accent hover:text-accent-light transition-colors"
               >
-                Remove
+                + Add opponent deck list
               </button>
-            </div>
-          )}
+            ) : (
+              <div className="w-full">
+                <textarea
+                  value={opponentDeckList}
+                  onChange={(e) => setOpponentDeckList(e.target.value)}
+                  placeholder="Paste opponent's deck list (optional)"
+                  rows={4}
+                  className="w-full mb-1 rounded-lg border border-border bg-bg px-3 py-2 text-xs font-mono text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent/40 focus:ring-1 focus:ring-accent/20 resize-y [font-size:16px] sm:text-xs"
+                />
+                <button
+                  type="button"
+                  onClick={() => { setShowDeckListField(false); setOpponentDeckList(""); }}
+                  className="text-xs text-text-muted hover:text-text-secondary transition-colors"
+                >
+                  Remove deck list
+                </button>
+              </div>
+            )}
+
+            {/* Optional date */}
+            {!showDateField ? (
+              <button
+                type="button"
+                onClick={() => setShowDateField(true)}
+                className="text-xs text-accent hover:text-accent-light transition-colors"
+              >
+                + Add match date
+              </button>
+            ) : (
+              <div className="flex items-center gap-2 w-full">
+                <input
+                  type="date"
+                  value={matchDate}
+                  onChange={(e) => setMatchDate(e.target.value)}
+                  className="flex-1 rounded-lg border border-border bg-bg px-3 py-2 text-sm text-text-primary focus:outline-none focus:border-accent/40 focus:ring-1 focus:ring-accent/20 [font-size:16px] sm:text-sm"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowDateField(false)}
+                  className="text-xs text-text-muted hover:text-text-secondary transition-colors"
+                >
+                  Remove
+                </button>
+              </div>
+            )}
+          </div>
 
           {error && <p className="text-xs text-red-600 mb-2">{error}</p>}
 
