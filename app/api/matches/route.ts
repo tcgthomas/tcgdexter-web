@@ -80,7 +80,8 @@ export async function POST(req: Request) {
       opponent_archetype: opponent_archetype?.trim() || null,
       opponent_deck_list: opponent_deck_list?.trim() || null,
       notes: notes?.trim() || null,
-      played_at: played_at || new Date().toISOString(),
+      // played_at is optional — null means the user chose not to record a date.
+      played_at: played_at || null,
     })
     .select("id, result, opponent_archetype, played_at, created_at")
     .single();

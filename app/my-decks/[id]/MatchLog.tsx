@@ -55,6 +55,11 @@ export default function MatchLog({ savedDeckId, initialMatches }: Props) {
   const [opponentDeckList, setOpponentDeckList] = useState("");
   const [showDeckListField, setShowDeckListField] = useState(false);
   const [matchNotes, setMatchNotes] = useState("");
+  const [showDateField, setShowDateField] = useState(false);
+  const [matchDate, setMatchDate] = useState(() => {
+    const d = new Date();
+    return d.toISOString().slice(0, 10); // YYYY-MM-DD for date input default
+  });
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -126,6 +131,7 @@ export default function MatchLog({ savedDeckId, initialMatches }: Props) {
           opponent_archetype: opponentArchetype.trim() || null,
           opponent_deck_list: showDeckListField ? opponentDeckList.trim() || null : null,
           notes: matchNotes.trim() || null,
+          played_at: showDateField ? new Date(matchDate + "T12:00:00").toISOString() : null,
         }),
       });
       if (res.ok) {
@@ -136,6 +142,7 @@ export default function MatchLog({ savedDeckId, initialMatches }: Props) {
         setOpponentDeckList("");
         setShowDeckListField(false);
         setMatchNotes("");
+        setShowDateField(false);
         setFormOpen(false);
         // Refresh server component to get updated match list
         router.refresh();
@@ -291,8 +298,35 @@ export default function MatchLog({ savedDeckId, initialMatches }: Props) {
             value={matchNotes}
             onChange={(e) => setMatchNotes(e.target.value)}
             placeholder="Notes (optional)"
-            className="w-full mb-3 rounded-lg border border-border bg-bg px-3 py-2 text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent/40 focus:ring-1 focus:ring-accent/20 [font-size:16px] sm:text-sm"
+            className="w-full mb-2 rounded-lg border border-border bg-bg px-3 py-2 text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent/40 focus:ring-1 focus:ring-accent/20 [font-size:16px] sm:text-sm"
           />
+
+          {/* Optional date */}
+          {!showDateField ? (
+            <button
+              type="button"
+              onClick={() => setShowDateField(true)}
+              className="text-xs text-accent hover:text-accent-light transition-colors mb-3"
+            >
+              + Add match date
+            </button>
+          ) : (
+            <div className="flex items-center gap-2 mb-3">
+              <input
+                type="date"
+                value={matchDate}
+                onChange={(e) => setMatchDate(e.target.value)}
+                className="flex-1 rounded-lg border border-border bg-bg px-3 py-2 text-sm text-text-primary focus:outline-none focus:border-accent/40 focus:ring-1 focus:ring-accent/20 [font-size:16px] sm:text-sm"
+              />
+              <button
+                type="button"
+                onClick={() => setShowDateField(false)}
+                className="text-xs text-text-muted hover:text-text-secondary transition-colors"
+              >
+                Remove
+              </button>
+            </div>
+          )}
 
           {error && <p className="text-xs text-red-600 mb-2">{error}</p>}
 
@@ -329,10 +363,12 @@ export default function MatchLog({ savedDeckId, initialMatches }: Props) {
         <div className="mt-4 flex flex-col">
           {matches.map((match, i) => {
             const s = RESULT_STYLE[match.result];
-            const dateStr = new Date(match.played_at).toLocaleDateString("en-US", {
-              month: "short",
-              day: "numeric",
-            });
+            const dateStr = match.played_at
+              ? new Date(match.played_at).toLocaleDateString("en-US", {
+                  month: "short",
+                  day: "numeric",
+                })
+              : null;
             return (
               <div
                 key={match.id}
@@ -373,7 +409,7 @@ export default function MatchLog({ savedDeckId, initialMatches }: Props) {
                   )}
                 </div>
                 <div className="flex items-center gap-2 flex-shrink-0">
-                  <span className="text-xs text-text-muted">{dateStr}</span>
+                  {dateStr && <span className="text-xs text-text-muted">{dateStr}</span>}
                   <button
                     onClick={() => handleDelete(match.id)}
                     className="text-text-muted/50 hover:text-red-600 transition-colors"

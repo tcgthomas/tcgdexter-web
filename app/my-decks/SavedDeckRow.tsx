@@ -135,7 +135,7 @@ export default function SavedDeckRow({ deck, isLast, matchStats, hasNotes }: Pro
                 {matchStats.draws > 0 && <>-<span className="text-stone-600">{matchStats.draws}D</span></>}
               </span>
             )}
-            {matchStats?.lastPlayed && (
+            {matchStats?.lastPlayed !== undefined && matchStats.lastPlayed !== null && (
               <span>Last played {new Date(matchStats.lastPlayed).toLocaleDateString("en-US", { month: "short", day: "numeric" })}</span>
             )}
             {rotationReady === false && (

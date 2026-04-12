@@ -62,7 +62,8 @@ export default async function MyDecksPage() {
     if (m.result === "win") existing.wins++;
     else if (m.result === "loss") existing.losses++;
     else if (m.result === "draw") existing.draws++;
-    if (!existing.lastPlayed) existing.lastPlayed = m.played_at;
+    // Only track lastPlayed from matches that have a user-provided date
+    if (m.played_at && !existing.lastPlayed) existing.lastPlayed = m.played_at;
     deckMatchStats.set(m.saved_deck_id, existing);
   }
 
