@@ -78,9 +78,6 @@ export default async function MyDecksPage() {
         <h1 className="text-3xl sm:text-4xl font-bold tracking-tight">
           My Decks
         </h1>
-        <p className="mt-3 text-sm sm:text-base text-text-secondary max-w-md mx-auto leading-relaxed">
-          Your personal collection of saved deck profiles.
-        </p>
       </header>
 
       <main className="flex-1 px-6 pb-20">
