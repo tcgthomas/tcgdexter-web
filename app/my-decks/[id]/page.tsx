@@ -92,24 +92,20 @@ export default async function MyDeckDetailPage({
       pageTitle={deck.name}
       subtitle={`Saved · Last updated ${updatedStr}`}
       creator={creator}
-      footerCta={
-        <div className="flex flex-col gap-4 w-full max-w-2xl mx-auto">
-          {/* ── Notes ─────────────────────────────────────── */}
-          <DeckNotes savedDeckId={deck.id} initialNotes={deck.notes ?? ""} />
-
-          {/* ── Match Log ─────────────────────────────────── */}
+      hideSave
+      topSlot={
+        <>
           <MatchLog savedDeckId={deck.id} initialMatches={matches} />
-
-          {/* ── Back to My Decks ──────────────────────────── */}
-          <div className="text-center">
-            <Link
-              href="/my-decks"
-              className="inline-flex items-center justify-center gap-2 rounded-lg border border-border bg-bg px-6 py-3 text-sm font-semibold text-text-primary transition-all hover:bg-surface-2"
-            >
-              Back to My Decks
-            </Link>
-          </div>
-        </div>
+          <DeckNotes savedDeckId={deck.id} initialNotes={deck.notes ?? ""} />
+        </>
+      }
+      footerCta={
+        <Link
+          href="/my-decks"
+          className="inline-flex items-center justify-center gap-2 rounded-lg border border-border bg-bg px-6 py-3 text-sm font-semibold text-text-primary transition-all hover:bg-surface-2"
+        >
+          Back to My Decks
+        </Link>
       }
     />
   );
