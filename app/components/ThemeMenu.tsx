@@ -42,6 +42,7 @@ export default function ThemeMenu() {
   const [open, setOpen] = useState(false);
   const [signedIn, setSignedIn] = useState<boolean | null>(null);
   const [displayName, setDisplayName] = useState<string | null>(null);
+  const [emailFallback, setEmailFallback] = useState<string | null>(null);
   const panelRef = useRef<HTMLDivElement>(null);
 
   /* Check auth state on mount and subscribe to changes */
@@ -52,6 +53,7 @@ export default function ThemeMenu() {
       const { data: { user } } = await supabase.auth.getUser();
       setSignedIn(!!user);
       if (user) {
+        if (user.email) setEmailFallback(user.email.split("@")[0]);
         const { data: profile } = await supabase
           .from("profiles")
           .select("display_name")
@@ -66,6 +68,7 @@ export default function ThemeMenu() {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
       setSignedIn(!!session?.user);
       if (session?.user) {
+        if (session.user.email) setEmailFallback(session.user.email.split("@")[0]);
         const { data: profile } = await supabase
           .from("profiles")
           .select("display_name")
@@ -74,6 +77,7 @@ export default function ThemeMenu() {
         setDisplayName(profile?.display_name ?? null);
       } else {
         setDisplayName(null);
+        setEmailFallback(null);
       }
     });
 
@@ -135,7 +139,7 @@ export default function ThemeMenu() {
                 onClick={close}
                 className="flex items-center justify-between w-full min-h-[44px] px-2 py-2 rounded-lg text-sm font-medium text-text-primary hover:bg-surface-2 transition-colors"
               >
-                <span className="truncate">{displayName ?? "Profile"}</span>
+                <span className="truncate">{displayName ?? emailFallback ?? "Profile"}</span>
                 <ChevronRight />
               </Link>
             ) : (
