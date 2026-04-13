@@ -44,18 +44,28 @@ export default async function AccountPage() {
   return (
     <div className="min-h-dvh flex flex-col">
       <header
-        className="flex-shrink-0 pb-8 px-6 text-center"
-        style={{ paddingTop: "calc(env(safe-area-inset-top) + 4rem)" }}
+        className="flex-shrink-0 pb-8 px-6"
+        style={{ paddingTop: "calc(env(safe-area-inset-top) + 3rem)" }}
       >
-        <h1 className="text-3xl sm:text-4xl font-bold tracking-tight">
-          Account
-        </h1>
+        <div className="flex justify-center mb-4">
+          <img
+            src="/logo-light.png"
+            alt="TCG Dexter"
+            className="max-w-full"
+            style={{ width: "450px", height: "auto" }}
+          />
+        </div>
+        <div className="mx-auto max-w-sm">
+          <h1 className="text-3xl sm:text-4xl font-bold tracking-tight">
+            Account
+          </h1>
+        </div>
       </header>
 
       <main className="flex-1 px-6 pb-20">
         <div className="mx-auto max-w-sm">
           {/* ── User info ────────────────────────────────────── */}
-          <div className="rounded-xl border border-border bg-surface overflow-hidden">
+          <div className="rounded-xl bg-surface overflow-hidden">
             <EditDisplayName initialName={profile?.display_name ?? "—"} />
             <Row label="Email" value={user.email ?? "—"} />
             <Row
@@ -74,7 +84,7 @@ export default async function AccountPage() {
           </div>
 
           {/* ── Current trainer title ────────────────────────── */}
-          <div className="mt-6 rounded-xl border border-border bg-surface p-5">
+          <div className="mt-6 rounded-xl bg-white p-5">
             <div className="flex items-center gap-4">
               <img
                 src={`/badges/${currentTier.slug}.svg`}
@@ -96,7 +106,7 @@ export default async function AccountPage() {
 
             {/* Progress to next tier */}
             {nextTier && (
-              <div className="mt-4 pt-4 border-t border-border">
+              <div className="mt-4 pt-4 border-t border-border/50">
                 <div className="flex items-center justify-between text-xs text-text-muted mb-2">
                   <span>Next: {nextTier.title}</span>
                   <span>
@@ -124,8 +134,8 @@ export default async function AccountPage() {
           </div>
 
           {/* ── Tier progression ladder ──────────────────────── */}
-          <div className="mt-6 rounded-xl border border-border bg-surface p-5">
-            <h2 className="text-sm font-semibold text-text-primary mb-4">
+          <div className="mt-6 rounded-xl bg-white p-5">
+            <h2 className="text-lg font-semibold text-text-primary mb-4">
               Trainer Progression
             </h2>
             <div className="flex flex-col gap-1">
@@ -205,8 +215,8 @@ export default async function AccountPage() {
 
           {/* ── Global match record ─────────────────────────── */}
           {globalTotal > 0 && (
-            <div className="mt-6 rounded-xl border border-border bg-surface p-5">
-              <h2 className="text-sm font-semibold text-text-primary mb-3">
+            <div className="mt-6 rounded-xl bg-white p-5">
+              <h2 className="text-lg font-semibold text-text-primary mb-3">
                 Overall Record
               </h2>
               <div className="flex items-center gap-3">
@@ -258,11 +268,11 @@ function Row({
 }) {
   return (
     <div
-      className={`flex items-center justify-between px-5 py-3.5 ${
-        last ? "" : "border-b border-border"
+      className={`flex items-center justify-between px-5 py-3.5 bg-white ${
+        last ? "" : "border-b border-bg"
       }`}
     >
-      <span className="text-xs font-medium uppercase tracking-widest text-text-muted">
+      <span className="text-xs font-semibold uppercase tracking-widest text-text-muted">
         {label}
       </span>
       <span className="text-sm font-semibold text-text-primary">{value}</span>

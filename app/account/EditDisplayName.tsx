@@ -62,7 +62,7 @@ export default function EditDisplayName({ initialName }: Props) {
   }
 
   return (
-    <div className="flex items-center justify-between px-5 py-3.5 border-b border-border">
+    <div className="flex items-center justify-between px-5 py-3.5 border-b border-bg bg-white">
       <span className="text-xs font-medium uppercase tracking-widest text-text-muted">
         Display name
       </span>
