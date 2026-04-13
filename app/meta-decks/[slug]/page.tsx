@@ -7,6 +7,8 @@ import cardsRaw from "@/data/cards-standard.json";
 import DeckListClient from "./DeckListClient";
 import DeckPriceModule from "@/app/components/DeckPriceModule";
 import RotationBanner from "@/app/components/RotationBanner";
+import SaveDeckButton from "@/app/components/SaveDeckButton";
+import ShareButton from "@/app/components/ShareButton";
 
 /* ─── Types ────────────────────────────────────────────────────── */
 
@@ -57,6 +59,23 @@ export function generateStaticParams() {
 }
 
 /* ─── Helpers ──────────────────────────────────────────────────── */
+
+function buildDeckList(cards: DeckCard[]): string {
+  const groups: Record<string, DeckCard[]> = { pokemon: [], trainer: [], energy: [] };
+  for (const card of cards) groups[card.category]?.push(card);
+  const lines: string[] = [];
+  for (const [label, group] of [
+    ["Pokémon", groups.pokemon],
+    ["Trainer", groups.trainer],
+    ["Energy", groups.energy],
+  ] as [string, DeckCard[]][]) {
+    if (group.length === 0) continue;
+    if (lines.length > 0) lines.push("");
+    lines.push(`${label}: ${group.reduce((s, c) => s + c.qty, 0)}`);
+    for (const c of group) lines.push(`${c.qty} ${c.name} ${c.setCode} ${c.number}`);
+  }
+  return lines.join("\n");
+}
 
 function getRank(id: string): number {
   return top30.findIndex((a) => a.id === id) + 1;
@@ -339,6 +358,22 @@ export default async function MetaDeckDetailPage({
               {scoutingNote}
             </p>
           </section>
+
+          {/* ── Save + Share ─────────────────────────────────── */}
+          {cards.length > 0 && (
+            <div className="flex flex-col sm:flex-row gap-3">
+              <SaveDeckButton
+                deckList={buildDeckList(cards)}
+                analysis={{ metaMatch: { archetypeName: arch.name } }}
+                className="flex-1 inline-flex items-center justify-center gap-2 rounded-lg bg-text-primary px-5 py-2.5 text-sm font-semibold text-bg transition-all hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
+              />
+              <ShareButton
+                deckList={buildDeckList(cards)}
+                analysis={{ metaMatch: { archetypeName: arch.name } }}
+                className="flex-1 inline-flex items-center justify-center gap-2 rounded-lg bg-accent px-5 py-2.5 text-sm font-semibold text-white transition-all hover:bg-accent-light disabled:opacity-50 disabled:cursor-not-allowed"
+              />
+            </div>
+          )}
 
           {/* ── Rotation Warning ─────────────────────────────── */}
           {cards.length > 0 && <RotationBanner rotatingCards={rotatingCards} />}

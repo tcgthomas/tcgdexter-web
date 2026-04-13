@@ -370,36 +370,6 @@ export default function DeckProfileView({
             </div>
           )}
 
-          {/* Meta Match */}
-          {result.metaMatch.matched && (
-            <div className="rounded-xl border border-[#29a5f2]/40 bg-[#29a5f2]/10 p-5">
-              <div className="flex items-start justify-between gap-3">
-                <div>
-                  <span className="inline-flex items-center rounded-full border border-[#29a5f2]/50 bg-[#29a5f2]/10 px-2.5 py-0.5 text-xs font-semibold text-[#29a5f2] mb-2">
-                    Top Meta Deck
-                  </span>
-                  <h2 className="text-xl font-bold text-text-primary">
-                    {result.metaMatch.archetypeName}
-                  </h2>
-                </div>
-                {result.metaMatch.matchPct !== null && (
-                  <div className="text-right shrink-0">
-                    <p className="text-2xl font-black text-[#29a5f2] leading-none">
-                      {(result.metaMatch.matchPct * 100).toFixed(1)}%
-                    </p>
-                    <p className="text-xs text-text-muted mt-0.5">
-                      meta share
-                    </p>
-                  </div>
-                )}
-              </div>
-              <p className="text-sm text-text-secondary mt-2">
-                This deck matches a recognized archetype in the current top 20
-                meta.
-              </p>
-            </div>
-          )}
-
           {/* Overview */}
           <div className="rounded-xl bg-white p-5 backdrop-blur-sm">
             <div className="flex items-baseline justify-between mb-4">
