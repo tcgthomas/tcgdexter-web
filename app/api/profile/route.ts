@@ -3,6 +3,32 @@ import { createClient } from "@/lib/supabase/server";
 import { validateDisplayName } from "@/lib/display-name-rules";
 
 /**
+ * GET /api/profile
+ *
+ * Returns the authenticated user's display_name. Used by client components
+ * that can't reliably query Supabase directly due to RLS policies.
+ */
+export async function GET() {
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return NextResponse.json({ error: "Sign in required." }, { status: 401 });
+  }
+
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("display_name")
+    .eq("id", user.id)
+    .single();
+
+  return NextResponse.json({ display_name: profile?.display_name ?? null });
+}
+
+/**
  * PATCH /api/profile
  *
  * Updates the authenticated user's profile. Currently supports:

@@ -54,12 +54,11 @@ export default function ThemeMenu() {
       setSignedIn(!!user);
       if (user) {
         if (user.email) setEmailFallback(user.email.split("@")[0]);
-        const { data: profile } = await supabase
-          .from("profiles")
-          .select("display_name")
-          .eq("id", user.id)
-          .single();
-        setDisplayName(profile?.display_name ?? null);
+        const res = await fetch("/api/profile");
+        if (res.ok) {
+          const data = await res.json();
+          setDisplayName(data.display_name ?? null);
+        }
       }
     }
 
@@ -69,12 +68,11 @@ export default function ThemeMenu() {
       setSignedIn(!!session?.user);
       if (session?.user) {
         if (session.user.email) setEmailFallback(session.user.email.split("@")[0]);
-        const { data: profile } = await supabase
-          .from("profiles")
-          .select("display_name")
-          .eq("id", session.user.id)
-          .single();
-        setDisplayName(profile?.display_name ?? null);
+        const res = await fetch("/api/profile");
+        if (res.ok) {
+          const data = await res.json();
+          setDisplayName(data.display_name ?? null);
+        }
       } else {
         setDisplayName(null);
         setEmailFallback(null);
