@@ -271,7 +271,7 @@ export default function DeckProfileView({
       >
         <div className="flex justify-center mb-4">
           <img
-            src="/logo-dark.png"
+            src="/logo-light.png"
             alt="TCG Dexter"
             className="max-w-full"
             style={{ width: "450px", height: "auto" }}

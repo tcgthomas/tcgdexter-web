@@ -1,12 +1,10 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState } from "react";
 import DeckPriceModule from "@/app/components/DeckPriceModule";
 import RotationBanner from "@/app/components/RotationBanner";
 import SaveDeckButton from "@/app/components/SaveDeckButton";
 import StandardFormatInfo from "@/app/components/StandardFormatInfo";
-import ThemeColor from "@/app/components/ThemeColor";
-import { useTheme } from "@/app/components/ThemeProvider";
 import Link from "next/link";
 
 /* ─── Types (mirrors API response) ───────────────────────────── */
@@ -250,7 +248,6 @@ function StatPill({ count, label }: { count: number; label: string }) {
 /* ─── Page Component ─────────────────────────────────────────── */
 
 export default function DeckProfilerPage() {
-  const { theme } = useTheme();
   const [deckList, setDeckList] = useState("");
   const [result, setResult] = useState<AnalysisResult | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -262,36 +259,6 @@ export default function DeckProfilerPage() {
   const [shareError, setShareError] = useState<string | null>(null);
 
 
-  /* ── Dominant energy color for background gradient ────────── */
-  const dominantColor = useMemo(() => {
-    if (!result) return null;
-    const entries = Object.entries(result.energy.basicByType);
-    if (entries.length === 0) return null;
-    const [topType] = entries.reduce((a, b) => (b[1] > a[1] ? b : a));
-    return ENERGY_HEX[topType] ?? null;
-  }, [result]);
-
-  useEffect(() => {
-    if (!dominantColor) {
-      document.documentElement.style.removeProperty("--energy-color");
-      document.documentElement.classList.remove("gradient-active");
-      return;
-    }
-    // Read theme fresh inside the effect so light/dark switches are respected
-    const isDark = document.documentElement.getAttribute("data-theme") === "dark";
-    const bg = isDark ? [24, 19, 15] : [253, 248, 242];
-    const r = parseInt(dominantColor.slice(1, 3), 16);
-    const g = parseInt(dominantColor.slice(3, 5), 16);
-    const b = parseInt(dominantColor.slice(5, 7), 16);
-    const a = 0.20;
-    const muted = `rgb(${Math.round(r*a + bg[0]*(1-a))},${Math.round(g*a + bg[1]*(1-a))},${Math.round(b*a + bg[2]*(1-a))})`;
-    document.documentElement.style.setProperty("--energy-color", muted);
-    document.documentElement.classList.add("gradient-active");
-    return () => {
-      document.documentElement.style.removeProperty("--energy-color");
-      document.documentElement.classList.remove("gradient-active");
-    };
-  }, [dominantColor, theme]);
 
   async function handleShare() {
     if (!result || sharing) return;
@@ -394,22 +361,18 @@ export default function DeckProfilerPage() {
   }
 
   return (
-    <div
-      className={`min-h-dvh flex flex-col profiler-bg${dominantColor ? " profiler-active" : ""}`}
-      style={dominantColor ? { "--energy-accent": dominantColor } as React.CSSProperties : undefined}
-    >
-      {dominantColor && <ThemeColor color={dominantColor} />}
+    <div className="min-h-dvh flex flex-col bg-bg">
       {/* ── Header ───────────────────────────────────────────── */}
       <header className="flex-shrink-0 pb-8 px-6 text-center" style={{ paddingTop: "calc(env(safe-area-inset-top) + 3rem)" }}>
         <div className="flex justify-center mb-4">
           <img
-            src={theme === "light" ? "/logo-light.png" : "/logo-dark.png"}
+            src="/logo-light.png"
             alt="TCG Dexter"
             className="max-w-full"
             style={{ width: "450px", height: "auto" }}
           />
         </div>
-        <p className={`text-sm max-w-md mx-auto transition-colors leading-relaxed ${dominantColor ? "text-on-gradient-muted" : "text-text-secondary"}`}>
+        <p className="text-sm max-w-md mx-auto leading-relaxed text-text-secondary">
           Paste a Pokémon TCG deck list below for an instant Standard legality check, price estimate, archetype match, and card-level breakdown.
         </p>
 
@@ -479,7 +442,7 @@ export default function DeckProfilerPage() {
           </div>
 
           {/* ── Beta notice ─────────────────────────────────── */}
-          <p className={`text-xs max-w-md mx-auto text-center transition-colors ${dominantColor ? "text-on-gradient-muted" : "text-text-muted"}`}>
+          <p className="text-xs max-w-md mx-auto text-center text-text-muted">
             Deck Profiler in beta. Share your thoughts with{' '}
             <a href="mailto:feedback@tcgdexter.com" className="underline hover:opacity-80">feedback@tcgdexter.com</a>
           </p>
