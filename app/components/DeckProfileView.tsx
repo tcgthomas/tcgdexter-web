@@ -266,7 +266,7 @@ export default function DeckProfileView({
 
       {/* ── Header ─────────────────────────────────────────── */}
       <header
-        className="flex-shrink-0 pb-8 px-6 text-center"
+        className="flex-shrink-0 pb-8 px-6"
         style={{ paddingTop: "calc(env(safe-area-inset-top) + 3rem)" }}
       >
         <div className="flex justify-center mb-4">
@@ -277,11 +277,13 @@ export default function DeckProfileView({
             style={{ width: "450px", height: "auto" }}
           />
         </div>
-        <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-on-gradient">
-          {pageTitle}
-        </h1>
-        <div className="mt-2 text-sm text-on-gradient-muted">
-          {effectiveSubtitle}
+        <div className="mx-auto max-w-2xl flex items-end justify-between gap-4">
+          <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-on-gradient">
+            {pageTitle}
+          </h1>
+          <div className="flex-shrink-0 text-sm text-on-gradient-muted">
+            {effectiveSubtitle}
+          </div>
         </div>
       </header>
 
