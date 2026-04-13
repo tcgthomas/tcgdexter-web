@@ -50,7 +50,7 @@ export default async function MyDeckDetailPage({
   // Meta decks are saved with a partial stub (only metaMatch, no deckSize).
   // DeckProfileView requires a full AnalysisResult — redirect to the meta deck
   // page instead of crashing.
-  const analysisAny = analysis as Record<string, unknown>;
+  const analysisAny = analysis as unknown as Record<string, unknown>;
   if (!("deckSize" in analysisAny)) {
     const metaMatch = analysisAny.metaMatch as
       | { archetypeId?: string; archetypeName?: string }
