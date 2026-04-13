@@ -10,14 +10,14 @@ import { createClient } from "@/lib/supabase/server";
  *
  * Flow:
  *   1. User submits email on /sign-in → Supabase emails magic link
- *   2. User clicks magic link → browser lands here with ?code=...&next=/account
+ *   2. User clicks magic link → browser lands here with ?code=...&next=/profile
  *   3. We exchange the code for a session → cookie set
  *   4. Redirect to ?next (default /account)
  */
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url);
   const code = searchParams.get("code");
-  const next = searchParams.get("next") ?? "/account";
+  const next = searchParams.get("next") ?? "/profile";
 
   if (code) {
     const supabase = await createClient();

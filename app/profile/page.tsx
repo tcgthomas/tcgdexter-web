@@ -4,11 +4,7 @@ import { TRAINER_TIERS, getTierByTitle, getNextTier } from "@/lib/trainer-tiers"
 import EditDisplayName from "./EditDisplayName";
 import SignOutButton from "./SignOutButton";
 
-/**
- * Account page — shows the signed-in user's profile, trainer progression,
- * and a sign-out button. Redirects to /sign-in if not authenticated.
- */
-export default async function AccountPage() {
+export default async function ProfilePage() {
   const supabase = await createClient();
 
   const {
@@ -43,27 +39,18 @@ export default async function AccountPage() {
 
   return (
     <div className="min-h-dvh flex flex-col">
-      <header
-        className="flex-shrink-0 pb-8 px-6"
-        style={{ paddingTop: "calc(env(safe-area-inset-top) + 3rem)" }}
-      >
-        <div className="flex justify-center mb-4">
-          <img
-            src="/logo-light.png"
-            alt="TCG Dexter"
-            className="max-w-full"
-            style={{ width: "450px", height: "auto" }}
-          />
-        </div>
-        <div className="mx-auto max-w-sm">
-          <h1 className="text-3xl sm:text-4xl font-bold tracking-tight">
-            Account
-          </h1>
-        </div>
-      </header>
+      <main className="flex-1 px-6 pb-20" style={{ paddingTop: "calc(env(safe-area-inset-top) + 3rem)" }}>
+        <div className="mx-auto max-w-lg">
+          {/* ── Logo ─────────────────────────────────────────── */}
+          <div className="flex justify-center mb-8">
+            <img
+              src="/logo-light.png"
+              alt="TCG Dexter"
+              className="max-w-full"
+              style={{ width: "450px", height: "auto" }}
+            />
+          </div>
 
-      <main className="flex-1 px-6 pb-20">
-        <div className="mx-auto max-w-sm">
           {/* ── User info ────────────────────────────────────── */}
           <div className="rounded-xl bg-surface overflow-hidden">
             <EditDisplayName initialName={profile?.display_name ?? "—"} />

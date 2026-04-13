@@ -48,17 +48,30 @@ export default function ThemeMenu() {
   useEffect(() => {
     const supabase = createClient();
 
-    supabase.auth.getUser().then(({ data: { user } }) => {
+    async function loadUser() {
+      const { data: { user } } = await supabase.auth.getUser();
       setSignedIn(!!user);
-      if (user?.email) {
-        setDisplayName(user.email.split("@")[0]);
+      if (user) {
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("display_name")
+          .eq("id", user.id)
+          .single();
+        setDisplayName(profile?.display_name ?? null);
       }
-    });
+    }
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    loadUser();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
       setSignedIn(!!session?.user);
-      if (session?.user?.email) {
-        setDisplayName(session.user.email.split("@")[0]);
+      if (session?.user) {
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("display_name")
+          .eq("id", session.user.id)
+          .single();
+        setDisplayName(profile?.display_name ?? null);
       } else {
         setDisplayName(null);
       }
@@ -95,7 +108,7 @@ export default function ThemeMenu() {
 
   return (
     <div ref={panelRef} className="relative">
-      {/* Hamburger button — unchanged */}
+      {/* Hamburger button */}
       <button
         onClick={() => setOpen((o) => !o)}
         aria-label="Navigation menu"
@@ -112,12 +125,36 @@ export default function ThemeMenu() {
           className="absolute left-0 top-10 z-50 rounded-xl bg-surface shadow-xl"
           style={{ width: "260px" }}
         >
-          {/* ── Section 1: Navigation ── */}
-          <div className="px-4 pt-4 pb-2">
-            <p className="text-[10px] font-semibold uppercase tracking-widest text-text-muted mb-2">
-              Navigation
-            </p>
+          {/* ── Section 1: Profile / Sign in ── */}
+          <div className="px-4 pt-3 pb-2">
+            {signedIn === null ? (
+              <div className="min-h-[44px]" />
+            ) : signedIn ? (
+              <Link
+                href="/profile"
+                onClick={close}
+                className="flex items-center justify-between w-full min-h-[44px] px-2 py-2 rounded-lg text-sm font-medium text-text-primary hover:bg-surface-2 transition-colors"
+              >
+                <span className="truncate">{displayName ?? "Profile"}</span>
+                <ChevronRight />
+              </Link>
+            ) : (
+              <Link
+                href="/sign-in"
+                onClick={close}
+                className="flex items-center justify-between w-full min-h-[44px] px-2 py-2 rounded-lg text-sm font-medium text-text-primary hover:bg-surface-2 transition-colors"
+              >
+                <span>Sign in</span>
+                <ChevronRight />
+              </Link>
+            )}
+          </div>
 
+          {/* ── Divider ── */}
+          <div className="mx-4 my-1 border-t border-border" />
+
+          {/* ── Section 2: Navigation ── */}
+          <div className="px-4 pt-2 pb-3">
             {internalLinks.map(({ label, href }) => (
               <Link
                 key={href}
@@ -144,40 +181,6 @@ export default function ThemeMenu() {
               </a>
             ))}
           </div>
-
-          {/* ── Divider ── */}
-          <div className="mx-4 my-1 border-t border-border" />
-
-          {/* ── Section 2: Account ── */}
-          <div className="px-4 pt-2 pb-2">
-            <p className="text-[10px] font-semibold uppercase tracking-widest text-text-muted mb-2">
-              Account
-            </p>
-            {signedIn === null ? (
-              // Placeholder while auth state loads — prevents layout flicker
-              <div className="min-h-[44px]" />
-            ) : signedIn ? (
-              <Link
-                href="/account"
-                onClick={close}
-                className="flex items-center justify-between w-full min-h-[44px] px-2 py-2 rounded-lg text-sm font-medium text-text-primary hover:bg-surface-2 transition-colors"
-              >
-                <span className="truncate">{displayName ?? "Account"}</span>
-                <ChevronRight />
-              </Link>
-            ) : (
-              <Link
-                href="/sign-in"
-                onClick={close}
-                className="flex items-center justify-between w-full min-h-[44px] px-2 py-2 rounded-lg text-sm font-medium text-text-primary hover:bg-surface-2 transition-colors"
-              >
-                <span>Sign in</span>
-                <ChevronRight />
-              </Link>
-            )}
-          </div>
-
-          <div className="pb-2" />
         </div>
       )}
     </div>
