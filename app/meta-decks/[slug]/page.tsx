@@ -350,10 +350,7 @@ export default async function MetaDeckDetailPage({
 
           {/* ── Sample Deck List ─────────────────────────────── */}
           <section>
-            <h3 className="text-sm font-semibold text-text-primary mb-3">
-              Sample Deck List
-            </h3>
-            <div className="rounded-xl border border-border bg-white p-4">
+            <div className="rounded-xl bg-white p-4">
               <DeckListClient cards={cards} />
             </div>
           </section>
@@ -368,7 +365,7 @@ export default async function MetaDeckDetailPage({
                 No cards from this deck in the shop right now.
               </p>
             ) : (
-              <div className="rounded-xl border border-border bg-white overflow-hidden">
+              <div className="rounded-xl bg-white overflow-hidden">
                 {shopResults.map((item, i) => (
                   <a
                     key={i}
@@ -376,7 +373,7 @@ export default async function MetaDeckDetailPage({
                     target="_blank"
                     rel="noopener noreferrer"
                     className={`flex items-center justify-between px-4 py-3 transition-colors hover:bg-surface-2 ${
-                      i < shopResults.length - 1 ? "border-b border-border" : ""
+                      i < shopResults.length - 1 ? "border-b border-bg" : ""
                     }`}
                   >
                     <span className="text-sm text-text-primary truncate mr-3">
@@ -415,7 +412,7 @@ function StatCard({
   color: string;
 }) {
   return (
-    <div className="rounded-xl border border-border bg-white p-4">
+    <div className="rounded-xl bg-white p-4">
       <div className={`mb-2 ${color}`}>{icon}</div>
       <p className={`text-2xl font-bold ${color}`}>{value}</p>
       <p className="text-xs text-text-muted mt-0.5">{label}</p>

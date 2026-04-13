@@ -51,8 +51,8 @@ export default function MetaDecksPage() {
               <Link
                 key={arch.id}
                 href={`/meta-decks/${arch.id}`}
-                className={`group flex items-center gap-3 px-5 py-3.5 transition-colors hover:bg-surface-2 ${
-                  i < archetypes.length - 1 ? "border-b border-text-muted/30" : ""
+                className={`group flex items-center gap-3 px-5 py-3.5 bg-white transition-colors hover:bg-surface-2 ${
+                  i < archetypes.length - 1 ? "border-b border-bg" : ""
                 }`}
               >
                 {/* Rank */}

@@ -75,7 +75,8 @@ export default function DeckListClient({ cards }: DeckListClientProps) {
 
   return (
     <div>
-      <div className="flex justify-start mb-3">
+      <div className="flex items-center justify-between mb-3">
+        <h3 className="text-sm font-semibold text-text-primary">Sample Deck List</h3>
         <button
           onClick={handleCopy}
           className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-black text-xs font-medium text-white transition-colors"

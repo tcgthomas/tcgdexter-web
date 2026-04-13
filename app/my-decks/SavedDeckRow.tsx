@@ -150,7 +150,7 @@ export default function SavedDeckRow({
   if (deleted) return null;
 
   return (
-    <div className={isLast ? "" : "border-b border-text-muted/30"}>
+    <div className={`bg-white${isLast ? "" : " border-b border-bg"}`}>
       {/* ── Collapsed row ──────────────────────────────────── */}
       <div className="flex items-center gap-2 px-5 py-3.5">
         {/* Clickable cell: deck name + W-L — toggles manage panel */}
