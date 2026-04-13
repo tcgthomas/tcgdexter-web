@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import DeckProfileView, {
   type AnalysisResult,
 } from "@/app/components/DeckProfileView";
+import archetypesRaw from "@/data/meta-archetypes.json";
 import CopyDeckListButton from "@/app/components/CopyDeckListButton";
 import DeckNotes from "./DeckNotes";
 import MatchLog from "./MatchLog";
@@ -44,6 +45,22 @@ export default async function MyDeckDetailPage({
   const analysis = deck.analysis as AnalysisResult | null;
   if (!analysis) {
     redirect("/my-decks");
+  }
+
+  // Meta decks are saved with a partial stub (only metaMatch, no deckSize).
+  // DeckProfileView requires a full AnalysisResult — redirect to the meta deck
+  // page instead of crashing.
+  const analysisAny = analysis as Record<string, unknown>;
+  if (!("deckSize" in analysisAny)) {
+    const metaMatch = analysisAny.metaMatch as
+      | { archetypeId?: string; archetypeName?: string }
+      | undefined;
+    const slug =
+      metaMatch?.archetypeId ??
+      (archetypesRaw as { id: string; name: string }[]).find(
+        (a) => a.name === metaMatch?.archetypeName
+      )?.id;
+    redirect(slug ? `/meta-decks/${slug}` : "/my-decks");
   }
 
   // Fetch match history for this deck
