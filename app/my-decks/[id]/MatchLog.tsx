@@ -33,7 +33,7 @@ const RESULT_STYLE = {
 
 export default function MatchLog({ savedDeckId, initialMatches }: Props) {
   const router = useRouter();
-  const [matches] = useState<Match[]>(initialMatches);
+  const [matches, setMatches] = useState<Match[]>(initialMatches);
   const [formOpen, setFormOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
 
@@ -64,10 +64,20 @@ export default function MatchLog({ savedDeckId, initialMatches }: Props) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ saved_deck_id: savedDeckId, ...data }),
     });
+    const json = await res.json();
     if (!res.ok) {
-      const err = await res.json();
-      throw new Error(err.error ?? "Failed to log match.");
+      throw new Error(json.error ?? "Failed to log match.");
     }
+    const newMatch: Match = {
+      id: json.id,
+      result: data.result,
+      opponent_name: data.opponent_name ?? null,
+      opponent_archetype: data.opponent_archetype ?? null,
+      opponent_deck_list: data.opponent_deck_list ?? null,
+      notes: data.notes ?? null,
+      played_at: data.played_at ?? null,
+    };
+    setMatches((prev) => [newMatch, ...prev]);
     setFormOpen(false);
     router.refresh();
   }
@@ -82,6 +92,21 @@ export default function MatchLog({ savedDeckId, initialMatches }: Props) {
       const err = await res.json();
       throw new Error(err.error ?? "Failed to update match.");
     }
+    setMatches((prev) =>
+      prev.map((m) =>
+        m.id === matchId
+          ? {
+              ...m,
+              result: data.result,
+              opponent_name: data.opponent_name ?? null,
+              opponent_archetype: data.opponent_archetype ?? null,
+              opponent_deck_list: data.opponent_deck_list ?? null,
+              notes: data.notes ?? null,
+              played_at: data.played_at ?? null,
+            }
+          : m
+      )
+    );
     setEditingId(null);
     router.refresh();
   }
@@ -90,7 +115,10 @@ export default function MatchLog({ savedDeckId, initialMatches }: Props) {
     if (!confirm("Delete this match?")) return;
     try {
       const res = await fetch(`/api/matches/${matchId}`, { method: "DELETE" });
-      if (res.ok) router.refresh();
+      if (res.ok) {
+        setMatches((prev) => prev.filter((m) => m.id !== matchId));
+        router.refresh();
+      }
     } catch {
       // silent
     }
