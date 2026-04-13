@@ -263,7 +263,7 @@ export default function SavedDeckRow({
               <button
                 onClick={handleCopy}
                 disabled={busy}
-                className="inline-flex items-center gap-1.5 rounded-md border border-border bg-bg px-2.5 py-1 text-xs font-semibold text-text-secondary hover:bg-surface-2 disabled:opacity-50 transition-colors"
+                className="inline-flex items-center gap-1.5 rounded-md bg-black px-2.5 py-1 text-xs font-semibold text-white disabled:opacity-50 transition-colors"
               >
                 {copied ? (
                   <>

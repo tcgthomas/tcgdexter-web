@@ -2,8 +2,6 @@ import Link from "next/link";
 import DeckPriceModule from "@/app/components/DeckPriceModule";
 import SaveDeckButton from "@/app/components/SaveDeckButton";
 import StandardFormatInfo from "@/app/components/StandardFormatInfo";
-import ThemeColor from "@/app/components/ThemeColor";
-import EnergyColor from "@/app/components/EnergyColor";
 
 /* ─── Types ──────────────────────────────────────────────────── */
 
@@ -99,16 +97,16 @@ export interface AnalysisResult {
 /* ─── Energy styling ─────────────────────────────────────────── */
 
 export const ENERGY_HEX: Record<string, string> = {
-  Fire: "#e74c3c",
-  Water: "#3498db",
-  Grass: "#27ae60",
-  Lightning: "#f1c40f",
-  Psychic: "#9b59b6",
-  Fighting: "#e67e22",
-  Darkness: "#2c3e50",
-  Metal: "#95a5a6",
-  Dragon: "#1a5276",
-  Fairy: "#fd79a8",
+  Fire:      "#d93232",
+  Water:     "#0096d3",
+  Grass:     "#64bf4b",
+  Lightning: "#f2b90c",
+  Psychic:   "#9263a6",
+  Fighting:  "#c56928",
+  Darkness:  "#245B64",
+  Metal:     "#7e949a",
+  Dragon:    "#1a5276",
+  Fairy:     "#fd79a8",
   Colorless: "#b2bec3",
 };
 
@@ -164,7 +162,7 @@ function CollapsibleSection({
   badge?: React.ReactNode;
 }) {
   return (
-    <details className="rounded-xl border border-border bg-surface p-5 backdrop-blur-sm group">
+    <details className="rounded-xl border border-border bg-white p-5 backdrop-blur-sm group">
       <summary className="flex items-center justify-between cursor-pointer list-none [&::-webkit-details-marker]:hidden">
         <h2 className="text-lg font-semibold">{title}</h2>
         <svg
@@ -254,15 +252,6 @@ export default function DeckProfileView({
   });
   const effectiveSubtitle = subtitle ?? `Created on ${dateStr}`;
 
-  const energyEntries = Object.entries(result.energy.basicByType ?? {});
-  const dominantEnergyType =
-    energyEntries.length > 0
-      ? energyEntries.reduce((a, b) => (b[1] > a[1] ? b : a))[0]
-      : null;
-  const dominantColor = dominantEnergyType
-    ? ENERGY_HEX[dominantEnergyType] ?? null
-    : null;
-
   const defaultFooterCta = (
     <Link
       href="/"
@@ -273,16 +262,7 @@ export default function DeckProfileView({
   );
 
   return (
-    <div
-      className={`min-h-dvh flex flex-col profiler-bg${dominantColor ? " profiler-active" : ""}`}
-      style={
-        dominantColor
-          ? ({ "--energy-accent": dominantColor } as React.CSSProperties)
-          : undefined
-      }
-    >
-      {dominantColor && <EnergyColor hex={dominantColor} />}
-      {dominantColor && <ThemeColor color={dominantColor} />}
+    <div className="min-h-dvh flex flex-col bg-bg">
 
       {/* ── Header ─────────────────────────────────────────── */}
       <header
@@ -311,7 +291,7 @@ export default function DeckProfileView({
 
           {/* Creator badge card */}
           {creator && (
-            <div className="flex items-center gap-3 rounded-xl border border-border bg-surface px-4 py-3">
+            <div className="flex items-center gap-3 rounded-xl border border-border bg-white px-4 py-3">
               <img
                 src={`/badges/${creator.badgeSlug}.svg`}
                 alt={creator.trainerTitle}
@@ -390,10 +370,10 @@ export default function DeckProfileView({
 
           {/* Meta Match */}
           {result.metaMatch.matched && (
-            <div className="rounded-xl border border-green-500/40 bg-green-500/10 p-5">
+            <div className="rounded-xl border border-[#29a5f2]/40 bg-[#29a5f2]/10 p-5">
               <div className="flex items-start justify-between gap-3">
                 <div>
-                  <span className="inline-flex items-center rounded-full border border-green-500/50 bg-green-500/10 px-2.5 py-0.5 text-xs font-semibold text-green-600 mb-2">
+                  <span className="inline-flex items-center rounded-full border border-[#29a5f2]/50 bg-[#29a5f2]/10 px-2.5 py-0.5 text-xs font-semibold text-[#29a5f2] mb-2">
                     Top Meta Deck
                   </span>
                   <h2 className="text-xl font-bold text-text-primary">
@@ -402,7 +382,7 @@ export default function DeckProfileView({
                 </div>
                 {result.metaMatch.matchPct !== null && (
                   <div className="text-right shrink-0">
-                    <p className="text-2xl font-black text-green-600 leading-none">
+                    <p className="text-2xl font-black text-[#29a5f2] leading-none">
                       {(result.metaMatch.matchPct * 100).toFixed(1)}%
                     </p>
                     <p className="text-xs text-text-muted mt-0.5">
@@ -419,7 +399,7 @@ export default function DeckProfileView({
           )}
 
           {/* Overview */}
-          <div className="rounded-xl border border-border bg-surface p-5 backdrop-blur-sm">
+          <div className="rounded-xl border border-border bg-white p-5 backdrop-blur-sm">
             <div className="flex items-baseline justify-between mb-4">
               <h2 className="text-lg font-semibold">Overview</h2>
               <span className="text-xs text-text-muted">
@@ -526,7 +506,7 @@ export default function DeckProfileView({
                     : "Energy count may be too high or too low for consistent attachment.";
 
               return (
-                <div className="rounded-xl border border-border bg-surface p-5 backdrop-blur-sm">
+                <div className="rounded-xl border border-border bg-white p-5 backdrop-blur-sm">
                   <h2 className="text-lg font-semibold text-text-primary mb-3">
                     Deck Notes
                   </h2>
@@ -812,7 +792,7 @@ export default function DeckProfileView({
 
           {/* Shop Matches */}
           {result.shopMatches.length > 0 && (
-            <details className="rounded-xl border border-blue-500/40 bg-blue-500/10 p-5 group">
+            <details className="rounded-xl border border-[#d8b460]/40 bg-[#d8b460]/10 p-5 group">
               <summary className="flex items-center justify-between cursor-pointer list-none [&::-webkit-details-marker]:hidden">
                 <div>
                   <h2 className="text-lg font-semibold text-text-primary">
@@ -862,7 +842,7 @@ export default function DeckProfileView({
                         href={listing.listingUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex-shrink-0 inline-flex items-center gap-1 rounded-md border border-blue-500/50 bg-blue-500/10 px-3 py-1 text-xs font-semibold text-blue-400 hover:bg-blue-500/20 transition-colors"
+                        className="flex-shrink-0 inline-flex items-center gap-1 rounded-md border border-[#d8b460]/50 bg-[#d8b460]/10 px-3 py-1 text-xs font-semibold text-[#d8b460] hover:bg-[#d8b460]/20 transition-colors"
                       >
                         View
                         <svg

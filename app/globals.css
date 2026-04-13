@@ -5,41 +5,27 @@
 /* ─── Design tokens ───────────────────────────────────────────── */
 
 :root {
-  --bg:             #fdf8f2;
-  --surface:        #f5ede0;
-  --surface-2:      #ecdcc8;
-  --border:         #d9c4a8;
-  --text-primary:   #2c1f0e;
-  --text-secondary: #5c3d1e;
-  --text-muted:     #b89d7e;
-  --accent:         #c0392b;
-  --accent-light:   #e74c3c;
-  --accent-dark:    #922b21;
-}
-
-[data-theme="dark"] {
-  --bg:             #18130f;
-  --surface:        #221c16;
-  --surface-2:      #2c2318;
-  --border:         #3d3228;
-  --text-primary:   #f0e6d6;
-  --text-secondary: #c4a882;
-  --text-muted:     #7a6654;
-  --accent:         #e05a4a;
-  --accent-light:   #f07060;
-  --accent-dark:    #b84030;
+  --bg:             #f2f2f2;
+  --surface:        #e8e8e8;
+  --surface-2:      #d8d8d8;
+  --border:         #d95555;
+  --text-primary:   #1a1a1a;
+  --text-secondary: #4a4a4a;
+  --text-muted:     #888888;
+  --accent:         #f23030;
+  --accent-light:   #f55050;
+  --accent-dark:    #c02020;
 }
 
 @layer base {
-  /* Status bar reads html background-color — must be solid energy color */
   html {
-    background-color: var(--energy-color, var(--bg));
+    background-color: var(--bg);
     scroll-behavior: smooth;
   }
 
   /* Custom selection color */
   ::selection {
-    background-color: rgba(192, 57, 43, 0.2);
+    background-color: rgba(242, 48, 48, 0.2);
     color: var(--text-primary);
   }
 }
@@ -73,47 +59,14 @@
     );
   }
 
-  /* Text on gradient — dark in light mode, cream in dark mode */
+  /* Text on gradient */
   .text-on-gradient {
     color: var(--text-primary);
-  }
-  [data-theme="dark"] .text-on-gradient {
-    color: #f0e6d6;
   }
   .text-on-gradient-muted {
     color: var(--text-secondary);
   }
-  [data-theme="dark"] .text-on-gradient-muted {
-    color: rgba(240, 230, 214, 0.6);
-  }
 
-  /* Hamburger bars — follow text-on-gradient logic when gradient is active */
-  html.gradient-active .theme-menu-bar {
-    background-color: var(--text-secondary);
-  }
-  [data-theme="dark"] html.gradient-active .theme-menu-bar {
-    background-color: rgba(240, 230, 214, 0.7);
-  }
-  html.gradient-active .theme-menu-btn:hover {
-    background-color: var(--surface-2) !important;
-  }
-  [data-theme="dark"] html.gradient-active .theme-menu-btn:hover {
-    background-color: rgba(255, 255, 255, 0.1) !important;
-  }
-
-  /* Energy gradient — solid energy at top, transitions to dark bg */
-  .profiler-bg {
-    background: var(--bg);
-    transition: background 0.6s ease;
-  }
-  .profiler-bg.profiler-active {
-    background: linear-gradient(
-      to bottom,
-      var(--energy-color, var(--bg)) 0%,
-      var(--surface) 35%,
-      var(--bg) 100%
-    );
-  }
 }
 
 @keyframes fadeToast {

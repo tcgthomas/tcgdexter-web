@@ -34,7 +34,7 @@ export default function BuyListPage() {
               Check back soon &mdash; list updating.
             </div>
           ) : (
-            <div className="rounded-xl border border-border bg-surface overflow-hidden">
+            <div className="rounded-xl bg-surface overflow-hidden">
               {items.map((item, i) => (
                 <div
                   key={i}

@@ -2,16 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
-import { useTheme } from "./ThemeProvider";
 import { createClient } from "@/lib/supabase/client";
-
-const THEME_OPTIONS = ["Light", "Dark", "System"] as const;
-type ThemeOptionLabel = (typeof THEME_OPTIONS)[number];
-const LABEL_TO_VALUE: Record<ThemeOptionLabel, "light" | "dark" | "system"> = {
-  Light: "light",
-  Dark: "dark",
-  System: "system",
-};
 
 /* ─── External link arrow icon ───────────────────────────────── */
 function ExternalIcon() {
@@ -48,7 +39,6 @@ function ChevronRight() {
 }
 
 export default function ThemeMenu() {
-  const { theme, setTheme } = useTheme();
   const [open, setOpen] = useState(false);
   const [signedIn, setSignedIn] = useState<boolean | null>(null);
   const [displayName, setDisplayName] = useState<string | null>(null);
@@ -95,13 +85,12 @@ export default function ThemeMenu() {
     { label: "Deck Profiler", href: "/" },
     { label: "Meta Decks", href: "/meta-decks" },
     { label: "My Decks", href: "/my-decks" },
-    { label: "Buy List", href: "/buy-list" },
   ];
 
   const externalLinks = [
-    { label: "Shop the Collection", href: "https://www.ebay.com/usr/tcgdexter" },
     { label: "TCG News", href: "https://tcgdexter.beehiiv.com/" },
-    { label: "Watch on TikTok", href: "https://www.tiktok.com/@tcgdexter" },
+    { label: "TCG Dexter on TikTok", href: "https://www.tiktok.com/@tcgdexter" },
+    { label: "Card Shop", href: "https://www.ebay.com/usr/tcgdexter" },
   ];
 
   return (
@@ -120,7 +109,7 @@ export default function ThemeMenu() {
       {/* Navigation drawer */}
       {open && (
         <div
-          className="absolute left-0 top-10 z-50 rounded-xl border border-border bg-surface shadow-xl"
+          className="absolute left-0 top-10 z-50 rounded-xl bg-surface shadow-xl"
           style={{ width: "260px" }}
         >
           {/* ── Section 1: Navigation ── */}
@@ -188,34 +177,7 @@ export default function ThemeMenu() {
             )}
           </div>
 
-          {/* ── Divider ── */}
-          <div className="mx-4 my-1 border-t border-border" />
-
-          {/* ── Section 3: Theme ── */}
-          <div className="px-4 pt-2 pb-4">
-            <p className="text-[10px] font-semibold uppercase tracking-widest text-text-muted mb-2">
-              Theme
-            </p>
-            <div className="flex rounded-lg border border-border bg-bg p-1 gap-1">
-              {THEME_OPTIONS.map((label) => {
-                const value = LABEL_TO_VALUE[label];
-                const active = theme === value;
-                return (
-                  <button
-                    key={label}
-                    onClick={() => setTheme(value)}
-                    className={`flex-1 rounded-md py-1.5 text-xs font-semibold transition-colors ${
-                      active
-                        ? "bg-accent text-white"
-                        : "text-text-secondary hover:bg-surface-2"
-                    }`}
-                  >
-                    {label}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
+          <div className="pb-2" />
         </div>
       )}
     </div>

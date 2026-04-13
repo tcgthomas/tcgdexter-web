@@ -36,7 +36,7 @@ export default function MetaDecksPage() {
       {/* ── Main ─────────────────────────────────────────────── */}
       <main className="flex-1 px-6 pb-20">
         <div className="mx-auto max-w-lg">
-          <div className="rounded-xl border border-border bg-surface overflow-hidden">
+          <div className="rounded-xl bg-surface overflow-hidden">
             {archetypes.map((arch, i) => (
               <Link
                 key={arch.id}

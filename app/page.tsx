@@ -419,7 +419,7 @@ export default function DeckProfilerPage() {
       <main className="flex-1 px-6 pb-20">
         <div className="mx-auto max-w-2xl flex flex-col gap-6">
           {/* Input section */}
-          <div className="rounded-xl border border-border bg-surface p-5 backdrop-blur-sm">
+          <div className="rounded-xl bg-surface p-5 backdrop-blur-sm">
             <div className="flex items-center justify-between mb-3">
               <label
                 htmlFor="deck-input"
