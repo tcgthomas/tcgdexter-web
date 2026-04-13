@@ -221,7 +221,6 @@ export default function SavedDeckRow({
           <MatchForm
             onSubmit={handleQuickLog}
             onCancel={() => setExpandMode(null)}
-            compact
           />
         </div>
       )}
