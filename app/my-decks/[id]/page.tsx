@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import DeckProfileView, {
   type AnalysisResult,
 } from "@/app/components/DeckProfileView";
+import CopyDeckListButton from "@/app/components/CopyDeckListButton";
 import DeckNotes from "./DeckNotes";
 import MatchLog from "./MatchLog";
 
@@ -74,7 +75,7 @@ export default async function MyDeckDetailPage({
       analysis={analysis}
       profiledAt={deck.updated_at}
       pageTitle={deck.name}
-      subtitle={`Saved · Last updated ${updatedStr}`}
+      subtitle={<CopyDeckListButton deckList={deck.deck_list} />}
       hideSave
       topSlot={
         <>
