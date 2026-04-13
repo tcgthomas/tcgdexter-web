@@ -75,7 +75,7 @@ export default function DeckPriceModule({ deckPrice }: Props) {
   if (deckPrice <= 0) return null;
 
   return (
-    <div className="rounded-xl border border-border bg-white p-5 backdrop-blur-sm">
+    <div className="rounded-xl bg-white p-5 backdrop-blur-sm">
       <div className="flex items-center justify-between">
         <h2 className="text-lg font-semibold">Estimated Deck Price</h2>
         <span className="text-lg font-bold text-text-primary">

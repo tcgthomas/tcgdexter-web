@@ -112,7 +112,7 @@ export default async function MyDecksPage() {
               </Link>
             </div>
           ) : (
-            <div className="rounded-xl border border-border bg-surface overflow-hidden">
+            <div className="rounded-xl bg-surface overflow-hidden">
               {savedDecks.map((deck, i) => {
                 const stats = deckMatchStats.get(deck.id);
                 return (

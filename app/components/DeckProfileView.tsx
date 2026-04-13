@@ -162,7 +162,7 @@ function CollapsibleSection({
   badge?: React.ReactNode;
 }) {
   return (
-    <details className="rounded-xl border border-border bg-white p-5 backdrop-blur-sm group">
+    <details className="rounded-xl bg-white p-5 backdrop-blur-sm group">
       <summary className="flex items-center justify-between cursor-pointer list-none [&::-webkit-details-marker]:hidden">
         <h2 className="text-lg font-semibold">{title}</h2>
         <svg
@@ -291,7 +291,7 @@ export default function DeckProfileView({
 
           {/* Creator badge card */}
           {creator && (
-            <div className="flex items-center gap-3 rounded-xl border border-border bg-white px-4 py-3">
+            <div className="flex items-center gap-3 rounded-xl bg-white px-4 py-3">
               <img
                 src={`/badges/${creator.badgeSlug}.svg`}
                 alt={creator.trainerTitle}
@@ -399,7 +399,7 @@ export default function DeckProfileView({
           )}
 
           {/* Overview */}
-          <div className="rounded-xl border border-border bg-white p-5 backdrop-blur-sm">
+          <div className="rounded-xl bg-white p-5 backdrop-blur-sm">
             <div className="flex items-baseline justify-between mb-4">
               <h2 className="text-lg font-semibold">Overview</h2>
               <span className="text-xs text-text-muted">
@@ -506,7 +506,7 @@ export default function DeckProfileView({
                     : "Energy count may be too high or too low for consistent attachment.";
 
               return (
-                <div className="rounded-xl border border-border bg-white p-5 backdrop-blur-sm">
+                <div className="rounded-xl bg-white p-5 backdrop-blur-sm">
                   <h2 className="text-lg font-semibold text-text-primary mb-3">
                     Deck Notes
                   </h2>
