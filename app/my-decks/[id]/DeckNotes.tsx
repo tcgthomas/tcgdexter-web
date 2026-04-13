@@ -54,7 +54,7 @@ export default function DeckNotes({ savedDeckId, initialNotes }: Props) {
   }
 
   return (
-    <div className="rounded-xl border border-border bg-surface p-5">
+    <div className="rounded-xl bg-surface p-5">
       <div className="flex items-center justify-between mb-3">
         <h2 className="text-lg font-semibold text-text-primary">Notes</h2>
         <span className="text-xs text-text-muted">

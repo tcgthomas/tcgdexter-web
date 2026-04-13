@@ -97,7 +97,7 @@ export default function MatchLog({ savedDeckId, initialMatches }: Props) {
   }
 
   return (
-    <div className="rounded-xl border border-border bg-surface p-5">
+    <div className="rounded-xl bg-surface p-5">
       {/* ── Header + Stats ────────────────────────────────── */}
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-lg font-semibold text-text-primary">Match Log</h2>
