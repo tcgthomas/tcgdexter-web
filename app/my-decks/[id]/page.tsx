@@ -4,7 +4,6 @@ import { createClient } from "@/lib/supabase/server";
 import DeckProfileView, {
   type AnalysisResult,
 } from "@/app/components/DeckProfileView";
-import { getTierByTitle } from "@/lib/trainer-tiers";
 import DeckNotes from "./DeckNotes";
 import MatchLog from "./MatchLog";
 
@@ -69,21 +68,6 @@ export default async function MyDeckDetailPage({
     year: "numeric",
   });
 
-  // Fetch the current user's profile for the creator card
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("display_name, trainer_title")
-    .eq("id", user.id)
-    .single();
-
-  const tier = getTierByTitle(profile?.trainer_title ?? "Rookie Trainer");
-  const creator = {
-    displayName: profile?.display_name ?? "Trainer",
-    trainerTitle: tier.title,
-    badgeSlug: tier.slug,
-    tierColor: tier.color,
-  };
-
   return (
     <DeckProfileView
       deckList={deck.deck_list}
@@ -91,7 +75,6 @@ export default async function MyDeckDetailPage({
       profiledAt={deck.updated_at}
       pageTitle={deck.name}
       subtitle={`Saved · Last updated ${updatedStr}`}
-      creator={creator}
       hideSave
       topSlot={
         <>
