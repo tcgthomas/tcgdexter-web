@@ -24,13 +24,23 @@ export default function MetaDecksPage() {
   return (
     <div className="min-h-dvh flex flex-col">
       {/* ── Header ───────────────────────────────────────────── */}
-      <header className="flex-shrink-0 pb-8 px-6 text-center" style={{ paddingTop: "calc(env(safe-area-inset-top) + 4rem)" }}>
-        <h1 className="text-3xl sm:text-4xl font-bold tracking-tight">
-          Meta Decks
-        </h1>
-        <p className="mt-3 text-sm sm:text-base text-text-secondary max-w-md mx-auto leading-relaxed">
-          Standard · Top 30
-        </p>
+      <header className="flex-shrink-0 pb-8 px-6" style={{ paddingTop: "calc(env(safe-area-inset-top) + 3rem)" }}>
+        <div className="flex justify-center mb-4">
+          <img
+            src="/logo-light.png"
+            alt="TCG Dexter"
+            className="max-w-full"
+            style={{ width: "450px", height: "auto" }}
+          />
+        </div>
+        <div className="mx-auto max-w-lg">
+          <h1 className="text-3xl sm:text-4xl font-bold tracking-tight">
+            Meta Decks
+          </h1>
+          <p className="mt-1 text-sm text-text-secondary">
+            Standard · Top 30
+          </p>
+        </div>
       </header>
 
       {/* ── Main ─────────────────────────────────────────────── */}
@@ -42,7 +52,7 @@ export default function MetaDecksPage() {
                 key={arch.id}
                 href={`/meta-decks/${arch.id}`}
                 className={`group flex items-center gap-3 px-5 py-3.5 transition-colors hover:bg-surface-2 ${
-                  i < archetypes.length - 1 ? "border-b border-border" : ""
+                  i < archetypes.length - 1 ? "border-b border-text-muted/30" : ""
                 }`}
               >
                 {/* Rank */}

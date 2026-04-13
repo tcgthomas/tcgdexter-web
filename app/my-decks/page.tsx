@@ -72,12 +72,22 @@ export default async function MyDecksPage() {
   return (
     <div className="min-h-dvh flex flex-col">
       <header
-        className="flex-shrink-0 pb-8 px-6 text-center"
-        style={{ paddingTop: "calc(env(safe-area-inset-top) + 4rem)" }}
+        className="flex-shrink-0 pb-8 px-6"
+        style={{ paddingTop: "calc(env(safe-area-inset-top) + 3rem)" }}
       >
-        <h1 className="text-3xl sm:text-4xl font-bold tracking-tight">
-          My Decks
-        </h1>
+        <div className="flex justify-center mb-4">
+          <img
+            src="/logo-light.png"
+            alt="TCG Dexter"
+            className="max-w-full"
+            style={{ width: "450px", height: "auto" }}
+          />
+        </div>
+        <div className="mx-auto max-w-lg">
+          <h1 className="text-3xl sm:text-4xl font-bold tracking-tight">
+            My Decks
+          </h1>
+        </div>
       </header>
 
       <main className="flex-1 px-6 pb-20">
