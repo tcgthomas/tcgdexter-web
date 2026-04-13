@@ -67,7 +67,7 @@ export default function DeckNotes({ savedDeckId, initialNotes }: Props) {
         onBlur={handleBlur}
         placeholder="Strategy notes, matchup observations, card swap ideas..."
         rows={4}
-        className="w-full rounded-lg border border-border bg-bg px-3 py-2 text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent/40 focus:ring-1 focus:ring-accent/20 resize-y [font-size:16px] sm:text-sm"
+        className="w-full rounded-lg bg-bg px-3 py-2 text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-1 focus:ring-accent/20 resize-y [font-size:16px] sm:text-sm"
       />
     </div>
   );

@@ -169,7 +169,7 @@ export default function MatchForm({
         value={opponentName}
         onChange={(e) => setOpponentName(e.target.value)}
         placeholder="Opponent name (optional)"
-        className="w-full mb-2 rounded-lg border border-border bg-bg px-3 py-2 text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent/40 focus:ring-1 focus:ring-accent/20 [font-size:16px] sm:text-sm"
+        className="w-full mb-2 rounded-lg bg-bg px-3 py-2 text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent/40 focus:ring-1 focus:ring-accent/20 [font-size:16px] sm:text-sm"
       />
 
       {/* Opponent archetype with autocomplete */}
@@ -185,7 +185,7 @@ export default function MatchForm({
             setShowSuggestions(true);
           }}
           placeholder="Opponent deck / archetype (optional)"
-          className="w-full rounded-lg border border-border bg-bg px-3 py-2 text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent/40 focus:ring-1 focus:ring-accent/20 [font-size:16px] sm:text-sm"
+          className="w-full rounded-lg bg-bg px-3 py-2 text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent/40 focus:ring-1 focus:ring-accent/20 [font-size:16px] sm:text-sm"
         />
         {showSuggestions && suggestions.length > 0 && (
           <div className="absolute left-0 right-0 top-full mt-1 z-30 rounded-lg border border-border bg-surface shadow-lg max-h-48 overflow-auto">
@@ -213,7 +213,7 @@ export default function MatchForm({
         value={matchNotes}
         onChange={(e) => setMatchNotes(e.target.value)}
         placeholder="Notes (optional)"
-        className="w-full mb-2 rounded-lg border border-border bg-bg px-3 py-2 text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent/40 focus:ring-1 focus:ring-accent/20 [font-size:16px] sm:text-sm"
+        className="w-full mb-2 rounded-lg bg-bg px-3 py-2 text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent/40 focus:ring-1 focus:ring-accent/20 [font-size:16px] sm:text-sm"
       />
 
       {/* Optional toggles — left-aligned */}
@@ -235,7 +235,7 @@ export default function MatchForm({
                   onChange={(e) => setOpponentDeckList(e.target.value)}
                   placeholder="Paste opponent's deck list (optional)"
                   rows={4}
-                  className="w-full mb-1 rounded-lg border border-border bg-bg px-3 py-2 text-xs font-mono text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent/40 focus:ring-1 focus:ring-accent/20 resize-y [font-size:16px] sm:text-xs"
+                  className="w-full mb-1 rounded-lg bg-bg px-3 py-2 text-xs font-mono text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent/40 focus:ring-1 focus:ring-accent/20 resize-y [font-size:16px] sm:text-xs"
                 />
                 <button
                   type="button"
@@ -266,7 +266,7 @@ export default function MatchForm({
               type="date"
               value={matchDate}
               onChange={(e) => setMatchDate(e.target.value)}
-              className="flex-1 rounded-lg border border-border bg-bg px-3 py-2 text-sm text-text-primary focus:outline-none focus:border-accent/40 focus:ring-1 focus:ring-accent/20 [font-size:16px] sm:text-sm"
+              className="flex-1 rounded-lg bg-bg px-3 py-2 text-sm text-text-primary focus:outline-none focus:border-accent/40 focus:ring-1 focus:ring-accent/20 [font-size:16px] sm:text-sm"
             />
             <button
               type="button"
