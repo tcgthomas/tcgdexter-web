@@ -66,10 +66,25 @@ export default function SaveDeckButton({
     setStatus("loading");
     setErrorMsg(null);
     try {
+      // If no full analysis is provided (e.g. saving from a meta deck page),
+      // run the deck list through the analyzer first so the saved profile is complete.
+      const analysisObj = analysis as Record<string, unknown> | null;
+      let resolvedAnalysis = analysis;
+      if (!analysisObj || !("deckSize" in analysisObj)) {
+        const analyzeRes = await fetch("/api/analyze", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ deckList }),
+        });
+        if (analyzeRes.ok) {
+          resolvedAnalysis = await analyzeRes.json();
+        }
+      }
+
       const res = await fetch("/api/saved-decks", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ deckList, analysis }),
+        body: JSON.stringify({ deckList, analysis: resolvedAnalysis }),
       });
       const data = await res.json();
       if (res.ok) {
