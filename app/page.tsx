@@ -6,6 +6,8 @@ import RotationBanner from "@/app/components/RotationBanner";
 import SaveDeckButton from "@/app/components/SaveDeckButton";
 import ShareButton from "@/app/components/ShareButton";
 import StandardFormatInfo from "@/app/components/StandardFormatInfo";
+import QRCodeButton from "@/app/components/QRCodeButton";
+import CopyDeckListButton from "@/app/components/CopyDeckListButton";
 import Link from "next/link";
 
 /* ─── Types (mirrors API response) ───────────────────────────── */
@@ -383,6 +385,12 @@ export default function DeckProfilerPage() {
           {/* Results */}
           {result && (
             <div className="flex flex-col gap-4">
+
+              {/* ── QR + Copy buttons ─────────────────────── */}
+              <div className="flex items-center gap-2">
+                <QRCodeButton deckList={deckList} analysis={result} />
+                <CopyDeckListButton deckList={deckList} />
+              </div>
 
               {/* ── Meta Match ────────────────────────────── */}
               {result.metaMatch.matched && (() => {

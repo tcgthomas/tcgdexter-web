@@ -9,6 +9,8 @@ import DeckPriceModule from "@/app/components/DeckPriceModule";
 import RotationBanner from "@/app/components/RotationBanner";
 import SaveDeckButton from "@/app/components/SaveDeckButton";
 import ShareButton from "@/app/components/ShareButton";
+import QRCodeButton from "@/app/components/QRCodeButton";
+import CopyDeckListButton from "@/app/components/CopyDeckListButton";
 
 /* ─── Types ────────────────────────────────────────────────────── */
 
@@ -276,6 +278,15 @@ export default async function MetaDeckDetailPage({
           <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-on-gradient">
             {arch.name}
           </h1>
+          {cards.length > 0 && (
+            <div className="flex items-center gap-2 mt-2">
+              <QRCodeButton
+                deckList={buildDeckList(cards)}
+                analysis={{ metaMatch: { archetypeName: arch.name, archetypeId: arch.id } }}
+              />
+              <CopyDeckListButton deckList={buildDeckList(cards)} />
+            </div>
+          )}
         </div>
       </header>
 

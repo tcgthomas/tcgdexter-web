@@ -124,7 +124,6 @@ export default function QRCodeButton({ shareUrl, deckList, analysis }: Props) {
             <path d="M6.75 6.75h.75v.75h-.75v-.75ZM6.75 16.5h.75v.75h-.75V16.5ZM16.5 6.75h.75v.75h-.75v-.75ZM13.5 13.5h.75v.75h-.75V13.5ZM13.5 19.5h.75v.75h-.75V19.5ZM19.5 13.5h.75v.75h-.75V13.5ZM19.5 19.5h.75v.75h-.75V19.5ZM16.5 13.5h.75v.75h-.75V13.5ZM16.5 19.5h.75v.75h-.75V19.5Z" />
           </svg>
         )}
-        QR
       </button>
 
       {/* ── Modal overlay ─────────────────────────────────────────── */}

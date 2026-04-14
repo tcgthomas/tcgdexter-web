@@ -277,11 +277,11 @@ export default function DeckProfileView({
             style={{ width: "450px", height: "auto" }}
           />
         </div>
-        <div className="mx-auto max-w-2xl flex items-end justify-between gap-4">
+        <div className="mx-auto max-w-2xl">
           <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-on-gradient">
             {pageTitle}
           </h1>
-          <div className="flex-shrink-0 text-sm text-on-gradient-muted">
+          <div className="mt-2 text-sm text-on-gradient-muted">
             {effectiveSubtitle}
           </div>
         </div>
