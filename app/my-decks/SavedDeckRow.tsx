@@ -172,14 +172,6 @@ export default function SavedDeckRow({
           {winRate !== null ? `${winRate}%` : "—"}
         </span>
 
-        {/* QR share button */}
-        <div className="flex-shrink-0" onClick={(e) => e.stopPropagation()}>
-          <QRCodeButton
-            deckList={deck.deck_list}
-            analysis={deck.analysis as unknown}
-          />
-        </div>
-
         {/* Log Match button */}
         <button
           onClick={(e) => {
@@ -207,6 +199,14 @@ export default function SavedDeckRow({
           </svg>
           Log Match
         </button>
+
+        {/* QR share button */}
+        <div className="flex-shrink-0" onClick={(e) => e.stopPropagation()}>
+          <QRCodeButton
+            deckList={deck.deck_list}
+            analysis={deck.analysis as unknown}
+          />
+        </div>
       </div>
 
       {/* ── Quick-log expand ────────────────────────────────── */}

@@ -95,8 +95,8 @@ export default async function MyDeckDetailPage({
       pageTitle={deck.name}
       subtitle={
         <div className="flex items-center gap-2">
-          <QRCodeButton deckList={deck.deck_list} analysis={analysis} />
           <CopyDeckListButton deckList={deck.deck_list} />
+          <QRCodeButton deckList={deck.deck_list} analysis={analysis} />
         </div>
       }
       hideSave
