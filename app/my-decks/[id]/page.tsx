@@ -83,7 +83,27 @@ export default async function MyDeckDetailPage({
       initialMatches={matches}
       initialNotes={deck.notes ?? ""}
       pageTitle={deck.name}
-      profiledAt={deck.updated_at}
+      subtitle={
+        <div className="flex items-center gap-2">
+          <CopyDeckListButton deckList={deck.deck_list} />
+          <QRCodeButton deckList={deck.deck_list} analysis={analysis} />
+        </div>
+      }
+      hideSave
+      topSlot={
+        <>
+          <MatchLog savedDeckId={deck.id} initialMatches={matches} />
+          <DeckNotes savedDeckId={deck.id} initialNotes={deck.notes ?? ""} />
+        </>
+      }
+      footerCta={
+        <Link
+          href="/my-decks"
+          className="inline-flex items-center justify-center gap-2 rounded-lg border border-border bg-bg px-6 py-3 text-sm font-semibold text-text-primary transition-all hover:bg-surface-2"
+        >
+          Back to My Decks
+        </Link>
+      }
     />
   );
 }
