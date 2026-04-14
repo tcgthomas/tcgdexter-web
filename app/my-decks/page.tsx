@@ -131,7 +131,6 @@ export default async function MyDecksPage() {
                     deck={deck}
                     isLast={i === savedDecks.length - 1}
                     matchStats={stats ?? null}
-                    hasNotes={!!deck.notes && deck.notes.trim().length > 0}
                   />
                 );
               })}

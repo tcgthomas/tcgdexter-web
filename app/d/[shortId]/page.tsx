@@ -1,4 +1,5 @@
 import { Metadata } from "next";
+import { headers } from "next/headers";
 import Link from "next/link";
 import DeckProfileView, {
   type AnalysisResult,
@@ -7,6 +8,8 @@ import DeckProfileView, {
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { getTierByTitle } from "@/lib/trainer-tiers";
+import QRCodeButton from "@/app/components/QRCodeButton";
+import CopyDeckListButton from "@/app/components/CopyDeckListButton";
 
 /* ─── Types ──────────────────────────────────────────────────── */
 
@@ -125,6 +128,13 @@ export default async function SharedDeckPage({
   const { shortId } = await params;
   const deck = await fetchDeck(shortId);
 
+  // Resolve the canonical share URL for the QR button (no API call needed —
+  // the URL is already known for a shared deck page).
+  const headersList = await headers();
+  const host = headersList.get("x-forwarded-host") ?? headersList.get("host") ?? "tcgdexter.com";
+  const proto = headersList.get("x-forwarded-proto") ?? "https";
+  const shareUrl = `${proto}://${host}/d/${shortId}`;
+
   if (!deck) {
     return (
       <div className="min-h-screen flex flex-col">
@@ -157,6 +167,12 @@ export default async function SharedDeckPage({
       analysis={deck.analysis}
       profiledAt={deck.profiledAt}
       creator={creator ?? undefined}
+      subtitle={
+        <div className="flex items-center gap-2">
+          <QRCodeButton shareUrl={shareUrl} />
+          <CopyDeckListButton deckList={deck.deckList} />
+        </div>
+      }
     />
   );
 }

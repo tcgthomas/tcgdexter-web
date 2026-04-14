@@ -6,6 +6,7 @@ import DeckProfileView, {
 } from "@/app/components/DeckProfileView";
 import archetypesRaw from "@/data/meta-archetypes.json";
 import CopyDeckListButton from "@/app/components/CopyDeckListButton";
+import QRCodeButton from "@/app/components/QRCodeButton";
 import DeckNotes from "./DeckNotes";
 import MatchLog from "./MatchLog";
 
@@ -92,7 +93,12 @@ export default async function MyDeckDetailPage({
       analysis={analysis}
       profiledAt={deck.updated_at}
       pageTitle={deck.name}
-      subtitle={<CopyDeckListButton deckList={deck.deck_list} />}
+      subtitle={
+        <div className="flex items-center gap-2">
+          <QRCodeButton deckList={deck.deck_list} analysis={analysis} />
+          <CopyDeckListButton deckList={deck.deck_list} />
+        </div>
+      }
       hideSave
       topSlot={
         <>
