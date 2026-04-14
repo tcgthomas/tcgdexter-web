@@ -169,11 +169,6 @@ export default function SavedDeckRow({
           className="flex items-center gap-2"
           onClick={(e) => e.stopPropagation()}
         >
-          <QRCodeButton
-            deckList={deck.deck_list}
-            analysis={deck.analysis as unknown}
-          />
-          <CopyDeckListButton deckList={deck.deck_list} />
           <button
             onClick={() => toggleExpand("quicklog")}
             className={`inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-semibold transition-all ${
@@ -197,6 +192,11 @@ export default function SavedDeckRow({
             </svg>
             Log Match
           </button>
+          <CopyDeckListButton deckList={deck.deck_list} />
+          <QRCodeButton
+            deckList={deck.deck_list}
+            analysis={deck.analysis as unknown}
+          />
         </div>
       </div>
 

@@ -169,8 +169,8 @@ export default async function SharedDeckPage({
       creator={creator ?? undefined}
       subtitle={
         <div className="flex items-center gap-2">
-          <QRCodeButton shareUrl={shareUrl} />
           <CopyDeckListButton deckList={deck.deckList} />
+          <QRCodeButton shareUrl={shareUrl} />
         </div>
       }
     />

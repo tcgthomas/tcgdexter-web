@@ -54,8 +54,6 @@ export default function MyDeckClient({
       pageTitle={pageTitle}
       subtitle={
         <div className="flex items-center gap-2">
-          <QRCodeButton deckList={deckList} analysis={analysis} />
-          <CopyDeckListButton deckList={deckList} />
           <button
             onClick={() => setLogOpen((o) => !o)}
             className={`inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-semibold transition-all ${
@@ -79,6 +77,8 @@ export default function MyDeckClient({
             </svg>
             Log Match
           </button>
+          <CopyDeckListButton deckList={deckList} />
+          <QRCodeButton deckList={deckList} analysis={analysis} />
         </div>
       }
       hideSave
