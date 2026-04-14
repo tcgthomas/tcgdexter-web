@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import MatchForm, { type MatchFormData } from "@/app/components/MatchForm";
 import QRCodeButton from "@/app/components/QRCodeButton";
+import CopyDeckListButton from "@/app/components/CopyDeckListButton";
 
 interface SavedDeck {
   id: string;
@@ -37,12 +38,13 @@ type ExpandMode = null | "quicklog" | "manage";
 /**
  * Single row in the My Decks list.
  *
- * Collapsed: deck name + W/L record + quick-log button + chevron.
+ * Collapsed: two rows — (1) deck name + W-L record, (2) quick action buttons.
+ * Tapping anywhere outside the action buttons toggles the manage panel.
  *
  * Two mutually exclusive expand modes:
- *   - Quick-log (triggered by the "+" button): shows the match form inline.
- *   - Manage (triggered by the chevron): shows deck list, copy, view profile,
- *     rename, delete — the existing management UI.
+ *   - Quick-log (triggered by Log Match button): shows the match form inline.
+ *   - Manage (triggered by tapping the row): shows deck list, view profile,
+ *     rename, delete.
  */
 export default function SavedDeckRow({
   deck,
@@ -58,15 +60,18 @@ export default function SavedDeckRow({
   const [busy, setBusy] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [deleted, setDeleted] = useState(false);
-  const [copied, setCopied] = useState(false);
 
-  const totalMatches =
-    (matchStats?.wins ?? 0) + (matchStats?.losses ?? 0) + (matchStats?.draws ?? 0);
+  const wins = matchStats?.wins ?? 0;
+  const losses = matchStats?.losses ?? 0;
+  const draws = matchStats?.draws ?? 0;
+  const totalMatches = wins + losses + draws;
 
-  const winRate =
-    totalMatches > 0
-      ? Math.round(((matchStats?.wins ?? 0) / totalMatches) * 100)
-      : null;
+  const wlRecord =
+    totalMatches === 0
+      ? "No matches"
+      : draws > 0
+        ? `${wins}W - ${losses}L - ${draws}D`
+        : `${wins}W - ${losses}L`;
 
   // ── Handlers ────────────────────────────────────────────────
 
@@ -139,74 +144,60 @@ export default function SavedDeckRow({
     }
   }
 
-  async function handleCopy() {
-    try {
-      await navigator.clipboard.writeText(deck.deck_list);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    } catch {
-      setErrorMsg(
-        "Couldn't copy — select the text above and copy manually."
-      );
-    }
-  }
-
   if (deleted) return null;
 
   return (
     <div className={`bg-white${isLast ? "" : " border-b border-bg"}`}>
       {/* ── Collapsed row ──────────────────────────────────── */}
-      <div className="flex items-center gap-2.5 px-5 py-3.5">
-        {/* Deck name — tapping toggles manage panel */}
-        <button
-          onClick={() => toggleExpand("manage")}
-          className="flex-1 min-w-0 text-left hover:opacity-80 transition-opacity"
-        >
-          <span className="block font-semibold text-text-primary text-sm truncate">
+      {/* Clicking the outer container toggles manage; action buttons stop propagation */}
+      <div
+        className="px-5 py-3.5 cursor-pointer"
+        onClick={() => toggleExpand("manage")}
+      >
+        {/* Row 1: deck name + W-L record */}
+        <div className="flex items-center justify-between mb-2">
+          <span className="font-semibold text-text-primary text-sm truncate min-w-0 mr-2">
             {name}
           </span>
-        </button>
+          <span className="flex-shrink-0 text-xs font-semibold text-text-muted tabular-nums">
+            {wlRecord}
+          </span>
+        </div>
 
-        {/* Win rate */}
-        <span className="flex-shrink-0 text-xs font-semibold text-text-muted tabular-nums">
-          {winRate !== null ? `${winRate}%` : "—"}
-        </span>
-
-        {/* QR share button */}
-        <div className="flex-shrink-0" onClick={(e) => e.stopPropagation()}>
+        {/* Row 2: action buttons */}
+        <div
+          className="flex items-center gap-2"
+          onClick={(e) => e.stopPropagation()}
+        >
           <QRCodeButton
             deckList={deck.deck_list}
             analysis={deck.analysis as unknown}
           />
-        </div>
-
-        {/* Log Match button */}
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            toggleExpand("quicklog");
-          }}
-          className={`flex-shrink-0 inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-semibold transition-all ${
-            expandMode === "quicklog"
-              ? "bg-accent border-accent text-white"
-              : "border-border bg-bg text-text-secondary hover:bg-surface-2"
-          }`}
-        >
-          <svg
-            className="w-3.5 h-3.5"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            strokeWidth={2}
+          <CopyDeckListButton deckList={deck.deck_list} />
+          <button
+            onClick={() => toggleExpand("quicklog")}
+            className={`inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-semibold transition-all ${
+              expandMode === "quicklog"
+                ? "bg-accent border-accent text-white"
+                : "border-border bg-bg text-text-secondary hover:bg-surface-2"
+            }`}
           >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M12 4.5v15m7.5-7.5h-15"
-            />
-          </svg>
-          Log Match
-        </button>
+            <svg
+              className="w-3.5 h-3.5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={2}
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M12 4.5v15m7.5-7.5h-15"
+              />
+            </svg>
+            Log Match
+          </button>
+        </div>
       </div>
 
       {/* ── Quick-log expand ────────────────────────────────── */}
@@ -248,55 +239,12 @@ export default function SavedDeckRow({
             View Deck Profile
           </Link>
 
-          {/* Deck list with Copy */}
+          {/* Deck list (read-only) */}
           <div className="mt-3">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-xs font-semibold uppercase tracking-widest text-text-muted">
-                Deck List
-              </span>
-              <button
-                onClick={handleCopy}
-                disabled={busy}
-                className="inline-flex items-center gap-1.5 rounded-md bg-black px-2.5 py-1 text-xs font-semibold text-white disabled:opacity-50 transition-colors"
-              >
-                {copied ? (
-                  <>
-                    <svg
-                      className="w-3.5 h-3.5 text-green-600"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                      strokeWidth={2.5}
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M4.5 12.75l6 6 9-13.5"
-                      />
-                    </svg>
-                    Copied
-                  </>
-                ) : (
-                  <>
-                    <svg
-                      className="w-3.5 h-3.5"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                      strokeWidth={2}
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 01-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75a9.06 9.06 0 011.5.124m7.5 10.376h3.375c.621 0 1.125-.504 1.125-1.125V11.25c0-4.46-3.243-8.161-7.5-8.876a9.06 9.06 0 00-1.5-.124H9.375c-.621 0-1.125.504-1.125 1.125v3.5m7.5 10.375H9.375a1.125 1.125 0 01-1.125-1.125v-9.25m12 6.625v-1.875a3.375 3.375 0 00-3.375-3.375h-1.5a1.125 1.125 0 01-1.125-1.125v-1.5a3.375 3.375 0 00-3.375-3.375H9.75"
-                      />
-                    </svg>
-                    Copy
-                  </>
-                )}
-              </button>
-            </div>
-            <pre className="text-xs font-mono text-text-secondary whitespace-pre-wrap bg-bg rounded-lg border border-border p-3 max-h-80 overflow-auto">
+            <span className="text-xs font-semibold uppercase tracking-widest text-text-muted">
+              Deck List
+            </span>
+            <pre className="mt-2 text-xs font-mono text-text-secondary whitespace-pre-wrap bg-bg rounded-lg border border-border p-3 max-h-80 overflow-auto">
               {deck.deck_list}
             </pre>
           </div>

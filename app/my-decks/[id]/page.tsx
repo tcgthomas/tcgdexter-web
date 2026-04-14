@@ -1,20 +1,14 @@
-import Link from "next/link";
 import { redirect, notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import DeckProfileView, {
-  type AnalysisResult,
-} from "@/app/components/DeckProfileView";
+import { type AnalysisResult } from "@/app/components/DeckProfileView";
 import archetypesRaw from "@/data/meta-archetypes.json";
-import CopyDeckListButton from "@/app/components/CopyDeckListButton";
-import QRCodeButton from "@/app/components/QRCodeButton";
-import DeckNotes from "./DeckNotes";
-import MatchLog from "./MatchLog";
+import MyDeckClient from "./MyDeckClient";
 
 /**
  * Private saved-deck detail view.
  *
- * Renders the full deck profile, plus owner-only sections: Notes (auto-save
- * textarea) and Match Log (structured match history with inline logging).
+ * Fetches deck + match data server-side, then delegates all rendering and
+ * interactive state to MyDeckClient.
  */
 export default async function MyDeckDetailPage({
   params,
@@ -81,39 +75,15 @@ export default async function MyDeckDetailPage({
     played_at: string;
   }>;
 
-  const updatedStr = new Date(deck.updated_at).toLocaleDateString("en-US", {
-    month: "long",
-    day: "numeric",
-    year: "numeric",
-  });
-
   return (
-    <DeckProfileView
+    <MyDeckClient
+      savedDeckId={deck.id}
       deckList={deck.deck_list}
       analysis={analysis}
-      profiledAt={deck.updated_at}
+      initialMatches={matches}
+      initialNotes={deck.notes ?? ""}
       pageTitle={deck.name}
-      subtitle={
-        <div className="flex items-center gap-2">
-          <QRCodeButton deckList={deck.deck_list} analysis={analysis} />
-          <CopyDeckListButton deckList={deck.deck_list} />
-        </div>
-      }
-      hideSave
-      topSlot={
-        <>
-          <MatchLog savedDeckId={deck.id} initialMatches={matches} />
-          <DeckNotes savedDeckId={deck.id} initialNotes={deck.notes ?? ""} />
-        </>
-      }
-      footerCta={
-        <Link
-          href="/my-decks"
-          className="inline-flex items-center justify-center gap-2 rounded-lg border border-border bg-bg px-6 py-3 text-sm font-semibold text-text-primary transition-all hover:bg-surface-2"
-        >
-          Back to My Decks
-        </Link>
-      }
+      profiledAt={deck.updated_at}
     />
   );
 }

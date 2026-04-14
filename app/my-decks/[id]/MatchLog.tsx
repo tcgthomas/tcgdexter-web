@@ -19,6 +19,10 @@ interface Match {
 interface Props {
   savedDeckId: string;
   initialMatches: Match[];
+  /** Controlled form-open state. When provided the parent drives open/close. */
+  open?: boolean;
+  /** Called when the form should open or close (controlled mode). */
+  onOpenChange?: (open: boolean) => void;
 }
 
 /* ─── Result styling ─────────────────────────────────────────── */
@@ -31,11 +35,19 @@ const RESULT_STYLE = {
 
 /* ─── Component ──────────────────────────────────────────────── */
 
-export default function MatchLog({ savedDeckId, initialMatches }: Props) {
+export default function MatchLog({ savedDeckId, initialMatches, open, onOpenChange }: Props) {
   const router = useRouter();
   const [matches, setMatches] = useState<Match[]>(initialMatches);
-  const [formOpen, setFormOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
+
+  // Support both controlled (open prop) and uncontrolled (internal state) modes.
+  const [internalOpen, setInternalOpen] = useState(false);
+  const formOpen = open !== undefined ? open : internalOpen;
+
+  function closeForm() {
+    if (onOpenChange) onOpenChange(false);
+    else setInternalOpen(false);
+  }
 
   // ── Stats ───────────────────────────────────────────────────
   const wins = matches.filter((m) => m.result === "win").length;
@@ -78,7 +90,7 @@ export default function MatchLog({ savedDeckId, initialMatches }: Props) {
       played_at: data.played_at ?? null,
     };
     setMatches((prev) => [newMatch, ...prev]);
-    setFormOpen(false);
+    closeForm();
     router.refresh();
   }
 
@@ -150,33 +162,24 @@ export default function MatchLog({ savedDeckId, initialMatches }: Props) {
         )}
       </div>
 
-      {/* ── Log Match Button / Form ───────────────────────── */}
-      {!formOpen ? (
-        <button
-          onClick={() => { setFormOpen(true); setEditingId(null); }}
-          className="w-full inline-flex items-center justify-center gap-2 rounded-lg bg-text-primary px-4 py-2.5 text-sm font-semibold text-bg transition-all hover:opacity-90"
-        >
-          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-          </svg>
-          Log Match
-        </button>
-      ) : (
+      {/* ── New match form (shown when formOpen) ─────────── */}
+      {formOpen && (
         <div className="mb-4">
           <MatchForm
             onSubmit={handleNewMatch}
-            onCancel={() => setFormOpen(false)}
+            onCancel={closeForm}
           />
         </div>
       )}
 
-      {/* ── Match List ────────────────────────────────────── */}
+      {/* ── Empty state ───────────────────────────────────── */}
       {matches.length === 0 && !formOpen && (
         <p className="text-sm text-text-muted mt-3 text-center">
           No matches logged yet. Tap Log Match after your next game.
         </p>
       )}
 
+      {/* ── Match List ────────────────────────────────────── */}
       {matches.length > 0 && (
         <div className="mt-4 flex flex-col">
           {matches.map((match, i) => {
@@ -256,7 +259,7 @@ export default function MatchLog({ savedDeckId, initialMatches }: Props) {
                     <span className="text-xs text-text-muted">{dateStr}</span>
                   )}
                   <button
-                    onClick={() => { setEditingId(match.id); setFormOpen(false); }}
+                    onClick={() => { setEditingId(match.id); closeForm(); }}
                     className="text-text-muted/50 hover:text-accent transition-colors"
                     title="Edit match"
                   >
