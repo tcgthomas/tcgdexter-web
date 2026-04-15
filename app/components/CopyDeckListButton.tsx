@@ -18,7 +18,7 @@ export default function CopyDeckListButton({ deckList }: { deckList: string }) {
   return (
     <button
       onClick={handleCopy}
-      className="inline-flex items-center gap-1.5 rounded-md bg-black px-3 py-1.5 text-xs font-semibold text-white transition-colors"
+      className="inline-flex items-center gap-1.5 rounded-md bg-black border border-transparent px-3 py-1.5 text-xs font-semibold text-white transition-colors"
     >
       {copied ? (
         <>
