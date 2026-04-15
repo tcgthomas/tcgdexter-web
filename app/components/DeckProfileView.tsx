@@ -210,6 +210,8 @@ interface Props {
   profiledAt: string;
   /** Page heading; defaults to "Deck Profile". */
   pageTitle?: string;
+  /** Optional element rendered inline after the page heading (e.g. a pencil rename button). */
+  titleAction?: React.ReactNode;
   /** Subtitle line below the heading; defaults to "Created on <date>". Accepts a ReactNode for custom content. */
   subtitle?: React.ReactNode;
   /** Footer CTA content; defaults to a "Profile your own deck" link. */
@@ -238,6 +240,7 @@ export default function DeckProfileView({
   analysis,
   profiledAt,
   pageTitle = "Deck Profile",
+  titleAction,
   subtitle,
   footerCta,
   creator,
@@ -278,9 +281,12 @@ export default function DeckProfileView({
           />
         </div>
         <div className="mx-auto max-w-2xl">
-          <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-on-gradient">
-            {pageTitle}
-          </h1>
+          <div className="flex items-center gap-2">
+            <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-on-gradient">
+              {pageTitle}
+            </h1>
+            {titleAction}
+          </div>
           <div className="mt-2 text-sm text-on-gradient-muted">
             {effectiveSubtitle}
           </div>

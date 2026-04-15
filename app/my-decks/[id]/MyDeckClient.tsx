@@ -31,11 +31,6 @@ interface Props {
   profiledAt: string;
 }
 
-/**
- * Client wrapper for the saved deck detail page.
- * Action buttons, match log, notes, and deck list all live in topSlot
- * so their spacing is controlled by the flex gap rather than the header padding.
- */
 export default function MyDeckClient({
   savedDeckId,
   deckList,
@@ -48,6 +43,42 @@ export default function MyDeckClient({
   const router = useRouter();
   const [logOpen, setLogOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
+
+  // Rename state
+  const [deckName, setDeckName] = useState(pageTitle);
+  const [editingTitle, setEditingTitle] = useState(false);
+  const [titleInput, setTitleInput] = useState(pageTitle);
+  const [renameBusy, setRenameBusy] = useState(false);
+  const [renameError, setRenameError] = useState<string | null>(null);
+
+  async function handleRename() {
+    const trimmed = titleInput.trim();
+    if (!trimmed || trimmed === deckName) {
+      setEditingTitle(false);
+      setTitleInput(deckName);
+      return;
+    }
+    setRenameBusy(true);
+    setRenameError(null);
+    try {
+      const res = await fetch(`/api/saved-decks/${savedDeckId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: trimmed }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setDeckName(trimmed);
+        setEditingTitle(false);
+      } else {
+        setRenameError(data.error ?? "Failed to rename.");
+      }
+    } catch {
+      setRenameError("Network error.");
+    } finally {
+      setRenameBusy(false);
+    }
+  }
 
   async function handleDelete() {
     if (!confirm("Delete this deck? This cannot be undone.")) return;
@@ -66,12 +97,69 @@ export default function MyDeckClient({
     }
   }
 
+  // Pencil button shown inline after the title when not editing
+  const titleAction = !editingTitle ? (
+    <button
+      onClick={() => { setEditingTitle(true); setTitleInput(deckName); }}
+      aria-label="Rename deck"
+      className="flex-shrink-0 text-on-gradient opacity-50 hover:opacity-100 transition-opacity"
+    >
+      <svg
+        className="w-5 h-5"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+        strokeWidth={1.75}
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125"
+        />
+      </svg>
+    </button>
+  ) : null;
+
+  // Rename form shown in the subtitle slot when editing
+  const subtitle = editingTitle ? (
+    <div className="flex flex-col gap-1.5 mt-1">
+      <div className="flex items-center gap-2">
+        <input
+          type="text"
+          value={titleInput}
+          onChange={(e) => setTitleInput(e.target.value)}
+          onKeyDown={(e) => e.key === "Enter" && handleRename()}
+          autoFocus
+          disabled={renameBusy}
+          className="flex-1 min-w-0 rounded-lg border border-border bg-bg px-3 py-1.5 text-sm text-text-primary focus:outline-none focus:border-accent/40 focus:ring-1 focus:ring-accent/20 [font-size:16px] sm:text-sm"
+        />
+        <button
+          onClick={handleRename}
+          disabled={renameBusy}
+          className="rounded-lg bg-accent px-3 py-1.5 text-xs font-semibold text-white hover:bg-accent-light disabled:opacity-50"
+        >
+          {renameBusy ? "…" : "Save"}
+        </button>
+        <button
+          onClick={() => { setEditingTitle(false); setTitleInput(deckName); setRenameError(null); }}
+          disabled={renameBusy}
+          className="rounded-lg border border-border bg-bg px-3 py-1.5 text-xs font-semibold text-text-secondary hover:bg-surface-2 disabled:opacity-50"
+        >
+          Cancel
+        </button>
+      </div>
+      {renameError && <p className="text-xs text-red-600">{renameError}</p>}
+    </div>
+  ) : undefined;
+
   return (
     <DeckProfileView
       deckList={deckList}
       analysis={analysis}
       profiledAt={profiledAt}
-      pageTitle={pageTitle}
+      pageTitle={deckName}
+      titleAction={titleAction}
+      subtitle={subtitle}
       hideSave
       topSlot={
         <>
@@ -102,12 +190,12 @@ export default function MyDeckClient({
             </button>
             <CopyDeckListButton deckList={deckList} />
             <QRCodeButton deckList={deckList} analysis={analysis} />
-            {/* Delete — icon-only, same size as QR button */}
+            {/* Delete — icon-only, same visual weight as QR button */}
             <button
               onClick={handleDelete}
               disabled={deleting}
               title="Delete deck"
-              className="inline-flex items-center justify-center rounded-md bg-black border border-transparent px-3 py-1.5 text-white disabled:opacity-50 transition-opacity hover:opacity-80"
+              className="inline-flex items-center justify-center rounded-md bg-black border border-transparent px-3 py-[7px] text-white disabled:opacity-50 transition-opacity hover:opacity-80"
             >
               <svg
                 className="w-3.5 h-3.5"
