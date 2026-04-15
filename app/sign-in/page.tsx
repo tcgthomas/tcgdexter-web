@@ -147,7 +147,7 @@ function SignInForm() {
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="you@example.com"
                 disabled={status === "loading"}
-                className="w-full rounded-lg border border-border bg-bg px-4 py-3 text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent/40 focus:ring-1 focus:ring-accent/20 disabled:opacity-50 [font-size:16px] sm:text-sm"
+                className="w-full rounded-lg border border-[#d0d0d0] bg-bg px-4 py-3 text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:border-[#d0d0d0] disabled:opacity-50 [font-size:16px] sm:text-sm"
               />
 
               {errorMsg && (
@@ -157,7 +157,7 @@ function SignInForm() {
               <button
                 type="submit"
                 disabled={status === "loading" || !email.includes("@")}
-                className="mt-3 w-full inline-flex items-center justify-center gap-2 rounded-lg bg-text-primary border border-transparent px-5 py-3 text-sm font-semibold text-white transition-opacity hover:opacity-80 disabled:opacity-50 disabled:cursor-not-allowed"
+                className={`mt-3 w-full inline-flex items-center justify-center gap-2 rounded-lg border border-transparent px-5 py-3 text-sm font-semibold text-white transition-colors disabled:cursor-not-allowed ${email.includes("@") ? "bg-accent hover:opacity-90" : "bg-text-primary opacity-50"}`}
               >
                 {status === "loading" ? (
                   <>
