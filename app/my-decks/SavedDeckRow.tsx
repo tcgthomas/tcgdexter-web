@@ -158,7 +158,7 @@ export default function SavedDeckRow({
       >
         {/* Row 1: deck name + W-L record */}
         <div className="flex items-center justify-between mb-2">
-          <span className="font-semibold text-text-primary text-2xl truncate min-w-0 mr-2">
+          <span className="font-semibold text-text-primary text-lg truncate min-w-0 mr-2">
             {name}
           </span>
           <span className="flex-shrink-0 text-xs font-semibold text-text-muted tabular-nums">
