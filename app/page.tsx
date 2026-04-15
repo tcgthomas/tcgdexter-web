@@ -6,9 +6,6 @@ import RotationBanner from "@/app/components/RotationBanner";
 import SaveDeckButton from "@/app/components/SaveDeckButton";
 import ShareButton from "@/app/components/ShareButton";
 import StandardFormatInfo from "@/app/components/StandardFormatInfo";
-import QRCodeButton from "@/app/components/QRCodeButton";
-import CopyDeckListButton from "@/app/components/CopyDeckListButton";
-import Link from "next/link";
 
 /* ─── Types (mirrors API response) ───────────────────────────── */
 
@@ -385,65 +382,6 @@ export default function DeckProfilerPage() {
           {/* Results */}
           {result && (
             <div className="flex flex-col gap-4">
-
-              {/* ── QR + Copy buttons ─────────────────────── */}
-              <div className="flex items-center gap-2">
-                <QRCodeButton deckList={deckList} analysis={result} />
-                <CopyDeckListButton deckList={deckList} />
-              </div>
-
-              {/* ── Meta Match ────────────────────────────── */}
-              {result.metaMatch.matched && (() => {
-                const { archetypeName, archetypeId, matchPct, rank, conversionRate } = result.metaMatch;
-                const pct = (conversionRate ?? 0) * 100;
-                const presenceNote = (matchPct ?? 0) >= 0.1
-                  ? "High meta presence — expect to see this at locals."
-                  : (matchPct ?? 0) >= 0.05
-                  ? "Solid meta share — a real threat at any table."
-                  : "Niche presence — skilled pilots only.";
-                const convNote = pct >= 30
-                  ? "Exceptional conversion rate — the pilots who run it are winning."
-                  : pct >= 15
-                  ? "Good conversion — the deck delivers when it gets there."
-                  : "Low conversion rate — entries outpace top cuts.";
-                const Wrapper = archetypeId
-                  ? ({ children }: { children: React.ReactNode }) => (
-                      <Link href={`/meta-decks/${archetypeId}`} className="block rounded-xl border border-green-500/40 bg-green-500/10 p-5 transition-colors hover:bg-green-500/15 hover:border-green-500/60">
-                        {children}
-                      </Link>
-                    )
-                  : ({ children }: { children: React.ReactNode }) => (
-                      <div className="rounded-xl border border-green-500/40 bg-green-500/10 p-5">{children}</div>
-                    );
-                return (
-                  <Wrapper>
-                    <div className="flex items-start justify-between gap-3 mb-3">
-                      <div>
-                        <span className="inline-flex items-center rounded-full border border-green-500/50 bg-green-500/10 px-2.5 py-0.5 text-xs font-semibold text-green-600 mb-2">
-                          Top Meta Deck
-                        </span>
-                        <h2 className="text-xl font-bold text-text-primary">{archetypeName}</h2>
-                      </div>
-                      <div className="text-right shrink-0">
-                        {rank !== null && (
-                          <p className="text-2xl font-black text-green-600 leading-none">#{rank}</p>
-                        )}
-                        <p className="text-xs text-text-muted mt-0.5">in Standard</p>
-                      </div>
-                    </div>
-                    {matchPct !== null && (
-                      <p className="text-xs text-text-secondary mb-2 font-medium">
-                        {(matchPct * 100).toFixed(0)}% match to known deck list
-                      </p>
-                    )}
-                    <p className="text-sm text-text-secondary">{presenceNote} {convNote}</p>
-                    {archetypeId && (
-                      <p className="text-xs text-green-600 font-medium mt-3">View full meta breakdown →</p>
-                    )}
-                  </Wrapper>
-                );
-              })()}
-
 
               {/* ── Standard Format legality (warning only) ── */}
               <RotationBanner rotatingCards={result.rotation.rotatingCards} />
