@@ -102,9 +102,9 @@ function SignInForm() {
                 {discordLoading ? "Redirecting…" : "Sign in with Discord"}
               </button>
               <div className="mt-4 flex items-center gap-3">
-                <div className="flex-1 h-px bg-border" />
+                <div className="flex-1 h-px bg-text-primary" />
                 <span className="text-xs text-text-muted">or</span>
-                <div className="flex-1 h-px bg-border" />
+                <div className="flex-1 h-px bg-text-primary" />
               </div>
             </div>
           )}
@@ -138,16 +138,7 @@ function SignInForm() {
               </button>
             </div>
           ) : (
-            <form
-              onSubmit={handleSubmit}
-              className="rounded-xl border border-border bg-surface p-6"
-            >
-              <label
-                htmlFor="email"
-                className="block text-sm font-medium text-text-secondary mb-2"
-              >
-                Email
-              </label>
+            <form onSubmit={handleSubmit}>
               <input
                 id="email"
                 type="email"
@@ -166,7 +157,7 @@ function SignInForm() {
               <button
                 type="submit"
                 disabled={status === "loading" || !email.includes("@")}
-                className="mt-4 w-full inline-flex items-center justify-center gap-2 rounded-lg bg-accent px-5 py-3 text-sm font-semibold text-white transition-all hover:bg-accent-light disabled:opacity-50 disabled:cursor-not-allowed"
+                className="mt-3 w-full inline-flex items-center justify-center gap-2 rounded-lg bg-text-primary border border-transparent px-5 py-3 text-sm font-semibold text-white transition-opacity hover:opacity-80 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {status === "loading" ? (
                   <>
@@ -177,7 +168,7 @@ function SignInForm() {
                     Sending…
                   </>
                 ) : (
-                  "Sign In"
+                  "Sign in with Email"
                 )}
               </button>
             </form>
