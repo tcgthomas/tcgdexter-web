@@ -81,9 +81,6 @@ function SignInForm() {
             style={{ width: "288px", height: "auto" }}
           />
         </div>
-        <h1 className="text-3xl sm:text-4xl font-bold tracking-tight">
-          Sign in
-        </h1>
       </header>
 
       <main className="flex-1 px-6 pb-20">
