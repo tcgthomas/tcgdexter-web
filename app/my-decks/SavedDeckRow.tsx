@@ -73,6 +73,8 @@ export default function SavedDeckRow({
         ? `${wins}W - ${losses}L - ${draws}D`
         : `${wins}W - ${losses}L`;
 
+  const winRate = totalMatches === 0 ? null : Math.round((wins / totalMatches) * 100);
+
   // ── Handlers ────────────────────────────────────────────────
 
   function toggleExpand(mode: ExpandMode) {
