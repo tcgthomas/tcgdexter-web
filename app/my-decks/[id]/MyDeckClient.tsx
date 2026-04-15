@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import DeckProfileView, {
@@ -120,8 +120,9 @@ export default function MyDeckClient({
     </button>
   ) : null;
 
-  // Rename form shown in the subtitle slot when editing
-  const subtitle = editingTitle ? (
+  // Rename form shown in the subtitle slot when editing.
+  // Pass `false` when not editing so DeckProfileView's "Created on" fallback is suppressed.
+  const subtitle: React.ReactNode = editingTitle ? (
     <div className="flex flex-col gap-1.5 mt-1">
       <div className="flex items-center gap-2">
         <input
@@ -150,7 +151,7 @@ export default function MyDeckClient({
       </div>
       {renameError && <p className="text-xs text-red-600">{renameError}</p>}
     </div>
-  ) : undefined;
+  ) : false;
 
   return (
     <DeckProfileView
@@ -222,10 +223,13 @@ export default function MyDeckClient({
           <DeckNotes savedDeckId={savedDeckId} initialNotes={initialNotes} />
 
           {/* Deck list */}
-          <div className="rounded-xl bg-surface p-5">
-            <h2 className="text-sm font-semibold text-text-primary mb-3">
-              Deck List
-            </h2>
+          <div className="rounded-xl bg-white p-5">
+            <div className="flex items-center justify-between mb-3">
+              <h2 className="text-sm font-semibold text-text-primary">
+                Deck List
+              </h2>
+              <CopyDeckListButton deckList={deckList} iconOnly />
+            </div>
             <pre className="text-xs font-mono text-text-secondary whitespace-pre-wrap leading-relaxed">
               {deckList}
             </pre>
