@@ -152,7 +152,7 @@ export default function MatchLog({ savedDeckId, initialMatches, open, onOpenChan
                 <span className="font-semibold text-stone-600">{draws}D</span>
               </>
             )}
-            <span className="text-xs text-text-muted ml-1">({winRate}%)</span>
+
             {streak >= 3 && streakType === "win" && (
               <span className="text-xs font-bold text-green-600 ml-1">
                 {streak}W streak
