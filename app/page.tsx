@@ -304,7 +304,7 @@ export default function DeckProfilerPage() {
             src="/logo-light.png"
             alt="TCG Dexter"
             className="max-w-full"
-            style={{ width: "360px", height: "auto" }}
+            style={{ width: "288px", height: "auto" }}
           />
         </div>
         <p className="text-sm max-w-md mx-auto leading-relaxed text-text-secondary">

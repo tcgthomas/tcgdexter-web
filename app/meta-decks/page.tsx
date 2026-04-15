@@ -30,7 +30,7 @@ export default function MetaDecksPage() {
             src="/logo-light.png"
             alt="TCG Dexter"
             className="max-w-full"
-            style={{ width: "360px", height: "auto" }}
+            style={{ width: "288px", height: "auto" }}
           />
         </div>
         <div className="mx-auto max-w-lg flex items-end justify-between">
