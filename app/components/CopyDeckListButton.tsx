@@ -38,7 +38,7 @@ export default function CopyDeckListButton({
       <button
         onClick={handleCopy}
         title="Copy deck list"
-        className="inline-flex items-center justify-center rounded-md bg-black border border-transparent px-3 py-[7px] text-white disabled:opacity-50 transition-opacity hover:opacity-80"
+        className="inline-flex items-center justify-center px-3 py-[7px] text-text-primary opacity-50 hover:opacity-100 transition-opacity"
       >
         {copied ? checkIcon : clipboardIcon}
       </button>
