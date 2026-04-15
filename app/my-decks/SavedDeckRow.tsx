@@ -166,41 +166,35 @@ export default function SavedDeckRow({
           </span>
         </div>
 
-        {/* Win rate */}
-        <span className="flex-shrink-0 text-xs font-semibold text-text-muted tabular-nums">
-          {winRate !== null ? `${winRate}%` : "—"}
-        </span>
-
-        {/* Log Match button */}
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            toggleExpand("quicklog");
-          }}
-          className={`flex-shrink-0 inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-semibold transition-all ${
-            expandMode === "quicklog"
-              ? "bg-accent border-accent text-white"
-              : "border-border bg-bg text-text-secondary hover:bg-surface-2"
-          }`}
+        {/* Row 2: action buttons */}
+        <div
+          className="flex items-center gap-2"
+          onClick={(e) => e.stopPropagation()}
         >
-          <svg
-            className="w-3.5 h-3.5"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            strokeWidth={2}
+          <button
+            onClick={() => toggleExpand("quicklog")}
+            className={`inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-semibold transition-all ${
+              expandMode === "quicklog"
+                ? "bg-accent border-accent text-white"
+                : "border-border bg-bg text-text-secondary hover:bg-surface-2"
+            }`}
           >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M12 4.5v15m7.5-7.5h-15"
-            />
-          </svg>
-          Log Match
-        </button>
-
-        {/* QR share button */}
-        <div className="flex-shrink-0" onClick={(e) => e.stopPropagation()}>
+            <svg
+              className="w-3.5 h-3.5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={2}
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M12 4.5v15m7.5-7.5h-15"
+              />
+            </svg>
+            Log Match
+          </button>
+          <CopyDeckListButton deckList={deck.deck_list} />
           <QRCodeButton
             deckList={deck.deck_list}
             analysis={deck.analysis as unknown}
