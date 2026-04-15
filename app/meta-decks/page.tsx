@@ -62,10 +62,10 @@ export default function MetaDecksPage() {
 
                 {/* Info */}
                 <span className="flex-1 min-w-0">
-                  <span className="block font-semibold text-text-primary text-sm truncate">
+                  <span className="block font-semibold text-text-primary text-lg truncate">
                     {arch.name}
                   </span>
-                  <span className="flex items-center gap-3 mt-0.5 text-xs text-text-muted">
+                  <span className="flex items-center gap-3 mt-0.5 text-xs font-semibold text-text-muted">
                     <span>{arch.top_cut_entries} top cuts</span>
                     <span>{arch.total_entries} entries</span>
                   </span>
