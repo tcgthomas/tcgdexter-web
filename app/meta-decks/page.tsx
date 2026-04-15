@@ -33,11 +33,11 @@ export default function MetaDecksPage() {
             style={{ width: "450px", height: "auto" }}
           />
         </div>
-        <div className="mx-auto max-w-lg">
+        <div className="mx-auto max-w-lg flex items-end justify-between">
           <h1 className="text-3xl sm:text-4xl font-bold tracking-tight">
             Meta Decks
           </h1>
-          <p className="mt-1 text-sm text-text-secondary">
+          <p className="text-sm text-text-secondary pb-1">
             Standard · Top 30
           </p>
         </div>
@@ -56,8 +56,8 @@ export default function MetaDecksPage() {
                 }`}
               >
                 {/* Rank */}
-                <span className="flex-shrink-0 w-7 text-right text-xs font-medium text-text-muted">
-                  #{i + 1}
+                <span className="flex-shrink-0 w-6 text-right text-base font-semibold text-text-secondary">
+                  {i + 1}
                 </span>
 
                 {/* Info */}
@@ -69,11 +69,6 @@ export default function MetaDecksPage() {
                     <span>{arch.top_cut_entries} top cuts</span>
                     <span>{arch.total_entries} entries</span>
                   </span>
-                </span>
-
-                {/* Meta share */}
-                <span className="flex-shrink-0 text-sm font-medium text-accent">
-                  {(arch.representation_pct * 100).toFixed(1)}%
                 </span>
 
                 {/* Chevron */}
