@@ -23,6 +23,16 @@ export async function GET(request: Request) {
     const supabase = await createClient();
     const { error } = await supabase.auth.exchangeCodeForSession(code);
     if (!error) {
+      // Ensure a profiles row exists for this user. There is no database
+      // trigger on auth.users, so OAuth sign-ins (e.g. Discord) won't have
+      // a row yet. ignoreDuplicates means this is a no-op for returning users.
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        await supabase
+          .from("profiles")
+          .upsert({ id: user.id }, { onConflict: "id", ignoreDuplicates: true });
+      }
+
       // Respect Vercel's x-forwarded-host for correct preview URL redirects.
       const forwardedHost = request.headers.get("x-forwarded-host");
       const isLocalEnv = process.env.NODE_ENV === "development";
