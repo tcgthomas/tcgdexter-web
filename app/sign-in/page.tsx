@@ -76,9 +76,6 @@ function SignInForm() {
         <h1 className="text-3xl sm:text-4xl font-bold tracking-tight">
           Sign in
         </h1>
-        <p className="mt-3 text-sm text-text-secondary max-w-md mx-auto leading-relaxed">
-          We&apos;ll send you a link to sign in. No password needed.
-        </p>
       </header>
 
       <main className="flex-1 px-6 pb-20">
