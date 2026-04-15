@@ -30,7 +30,7 @@ export default function MetaDecksPage() {
             src="/logo-light.png"
             alt="TCG Dexter"
             className="max-w-full"
-            style={{ width: "450px", height: "auto" }}
+            style={{ width: "360px", height: "auto" }}
           />
         </div>
         <div className="mx-auto max-w-lg flex items-end justify-between">
@@ -51,7 +51,7 @@ export default function MetaDecksPage() {
               <Link
                 key={arch.id}
                 href={`/meta-decks/${arch.id}`}
-                className={`group flex items-center gap-3 px-5 py-3.5 bg-white transition-colors hover:bg-surface-2 ${
+                className={`group flex items-center gap-3 pl-4 pr-5 py-3.5 bg-white transition-colors hover:bg-surface-2 ${
                   i < archetypes.length - 1 ? "border-b border-bg" : ""
                 }`}
               >

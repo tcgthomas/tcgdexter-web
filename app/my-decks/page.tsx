@@ -80,7 +80,7 @@ export default async function MyDecksPage() {
             src="/logo-light.png"
             alt="TCG Dexter"
             className="max-w-full"
-            style={{ width: "450px", height: "auto" }}
+            style={{ width: "360px", height: "auto" }}
           />
         </div>
         <div className="mx-auto max-w-lg">

@@ -47,7 +47,7 @@ export default async function ProfilePage() {
               src="/logo-light.png"
               alt="TCG Dexter"
               className="max-w-full"
-              style={{ width: "450px", height: "auto" }}
+              style={{ width: "360px", height: "auto" }}
             />
           </div>
 
