@@ -216,7 +216,7 @@ function CollapsibleSection({
   badge?: React.ReactNode;
 }) {
   return (
-    <details className="rounded-xl border border-border bg-surface p-5 backdrop-blur-sm group">
+    <details className="rounded-xl bg-white p-5 backdrop-blur-sm group">
       <summary className="flex items-center justify-between cursor-pointer list-none [&::-webkit-details-marker]:hidden">
         <h2 className="text-lg font-semibold">{title}</h2>
         <svg
@@ -450,7 +450,7 @@ export default function DeckProfilerPage() {
 
 
               {/* ── 1. Overview ─────────────────────────────── */}
-              <div className="rounded-xl border border-border bg-surface p-5 backdrop-blur-sm">
+              <div className="rounded-xl bg-white p-5 backdrop-blur-sm">
                 <div className="flex items-baseline justify-between mb-4">
                   <h2 className="text-lg font-semibold">Overview</h2>
                   <span className="text-xs text-text-muted">{result.deckSize} cards</span>
@@ -522,7 +522,7 @@ export default function DeckProfilerPage() {
                   : "Energy count may be too high or too low for consistent attachment.";
 
                 return (
-                  <div className="rounded-xl border border-border bg-surface p-5 backdrop-blur-sm">
+                  <div className="rounded-xl bg-white p-5 backdrop-blur-sm">
                     <h2 className="text-lg font-semibold text-text-primary mb-3">Deck Notes</h2>
                     <ul className="flex flex-col gap-2 list-disc list-inside">
                       <li className="text-sm text-text-secondary">
