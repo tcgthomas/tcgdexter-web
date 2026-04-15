@@ -156,8 +156,7 @@ function SignInForm() {
 
               <button
                 type="submit"
-                disabled={status === "loading" || !email.includes("@")}
-                className={`mt-3 w-full inline-flex items-center justify-center gap-2 rounded-lg border border-transparent px-5 py-3 text-sm font-semibold text-white transition-colors disabled:cursor-not-allowed ${email.includes("@") ? "bg-accent hover:opacity-90" : "bg-text-primary opacity-50"}`}
+                className={`mt-3 w-full inline-flex items-center justify-center gap-2 rounded-lg border border-transparent px-5 py-3 text-sm font-semibold text-white transition-colors ${email.includes("@") ? "bg-accent hover:opacity-90" : "bg-text-primary"}`}
               >
                 {status === "loading" ? (
                   <>
