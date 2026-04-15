@@ -269,7 +269,7 @@ export default function DeckProfileView({
 
       {/* ── Header ─────────────────────────────────────────── */}
       <header
-        className="flex-shrink-0 pb-8 px-6"
+        className={`flex-shrink-0 px-6 ${effectiveSubtitle ? "pb-8" : "pb-4"}`}
         style={{ paddingTop: "calc(env(safe-area-inset-top) + 3rem)" }}
       >
         <div className="flex justify-center mb-4">
