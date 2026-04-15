@@ -287,9 +287,11 @@ export default function DeckProfileView({
             </h1>
             {titleAction}
           </div>
-          <div className="mt-2 text-sm text-on-gradient-muted">
-            {effectiveSubtitle}
-          </div>
+          {effectiveSubtitle && (
+            <div className="mt-2 text-sm text-on-gradient-muted">
+              {effectiveSubtitle}
+            </div>
+          )}
         </div>
       </header>
 
