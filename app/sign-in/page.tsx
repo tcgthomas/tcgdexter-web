@@ -99,6 +99,11 @@ function SignInForm() {
             style={{ width: "288px", height: "auto" }}
           />
         </div>
+        <p className="text-sm font-semibold text-text-primary leading-relaxed">
+          Save and share your deck lists.
+          <br />
+          Track performance. Earn Badges.
+        </p>
       </header>
 
       <main className="flex-1 px-6 pb-20">
