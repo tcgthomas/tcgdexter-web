@@ -45,9 +45,11 @@ STANDARD_SETS = {
     # SV sub-sets
     "PAF", "PFL",
     # Mega Evolution era (I-mark)
-    "JTG", "MEG", "MEP", "ASC", "WHT", "MEE",
+    "JTG", "MEG", "MEP", "ASC", "WHT",
+    # Mega Evolution sub-sets (energies, promos, etc.)
+    "MEE", "ME03",
     # Additional
-    "ME03", "BLK", "POR", "PH",
+    "BLK", "POR", "PH",
 }
 
 # Regulation marks that are rotated OUT of Standard
@@ -149,7 +151,12 @@ def is_standard_legal(cards: list[dict], card_db: dict[str, list[dict]] | None) 
 
     Two-layer check:
     1. Set code must be in STANDARD_SETS
-    2. If cards-standard.json is available, cross-check regulation marks
+    2. If cards-standard.json is available, verify the card's regulation mark
+       is H or later. A card like Iono from PAL has G-mark and is rotated
+       even though PAL also contains H-mark cards.
+
+    A card is legal if ANY of its printings has a non-rotated regulation mark.
+    Energy cards without regulation marks are assumed legal if their set code passes.
 
     Returns (is_legal, set of reasons for failure).
     """
@@ -166,17 +173,20 @@ def is_standard_legal(cards: list[dict], card_db: dict[str, list[dict]] | None) 
 
         # Layer 2: regulation mark check (if card DB available)
         if card_db and c["name"] in card_db:
-            # Find the printing that matches this set code
             printings = card_db[c["name"]]
+            # Check if the card has ANY printing with a legal regulation mark
+            has_legal_printing = False
+            has_any_mark = False
             for p in printings:
-                # Match by set code prefix in set_id (e.g., "sv1" for "SVI")
                 mark = p.get("regulation_mark")
-                if mark and mark.upper() in ROTATED_MARKS:
-                    # This specific printing is rotated, but the card might
-                    # have a legal printing — only flag if ALL printings are rotated
-                    pass
-            # If the card has any printing from the listed set code, trust the set code check
-            # (the set code check is the primary filter)
+                if mark:
+                    has_any_mark = True
+                    if mark.upper() not in ROTATED_MARKS:
+                        has_legal_printing = True
+                        break
+            # If the card has regulation marks but none are legal, it's rotated
+            if has_any_mark and not has_legal_printing:
+                issues.add(f"rotated:{c['name']}")
 
     return len(issues) == 0, issues
 
