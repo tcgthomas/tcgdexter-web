@@ -91,7 +91,7 @@ function SignInForm() {
   return (
     <div className="min-h-dvh flex flex-col">
       <header className="flex-shrink-0 pb-8 px-6 text-center" style={{ paddingTop: "calc(env(safe-area-inset-top) + 4rem)" }}>
-        <div className="flex justify-center mb-8">
+        <div className="flex justify-center mb-[18px]">
           <img
             src="/logo-light.png"
             alt="TCG Dexter"
