@@ -304,8 +304,10 @@ export default function DeckProfilerPage() {
             style={{ width: "288px", height: "auto" }}
           />
         </div>
-        <p className="text-sm max-w-md mx-auto leading-relaxed text-text-secondary">
-          Paste a Pokémon TCG deck list below for an instant Standard legality check, price estimate, archetype match, and card-level breakdown.
+        <p className="text-sm font-semibold text-text-primary leading-relaxed">
+          Paste your list to create a Deck Profile.
+          <br />
+          Save to take notes and track performance.
         </p>
 
       </header>
