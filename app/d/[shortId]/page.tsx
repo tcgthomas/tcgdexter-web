@@ -8,6 +8,7 @@ import DeckProfileView, {
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { getTierByTitle } from "@/lib/trainer-tiers";
+import { repriceDeck } from "@/lib/reprice-deck";
 import QRCodeButton from "@/app/components/QRCodeButton";
 import CopyDeckListButton from "@/app/components/CopyDeckListButton";
 
@@ -87,17 +88,21 @@ export async function generateMetadata({
     return { title: "Deck Not Found — TCG Dexter" };
   }
 
-  const { analysis, profiledAt } = deck;
-  const title = analysis.metaMatch.archetypeName
-    ? `${analysis.metaMatch.archetypeName} — TCG Dexter`
+  const { analysis: frozenAnalysis, profiledAt } = deck;
+
+  // Use live pricing for OG metadata too
+  const live = repriceDeck(deck.deckList);
+
+  const title = frozenAnalysis.metaMatch.archetypeName
+    ? `${frozenAnalysis.metaMatch.archetypeName} — TCG Dexter`
     : "Deck Analysis — TCG Dexter";
 
-  const rotationStatus = analysis.rotation.ready
+  const rotationStatus = live.rotation.ready
     ? "Standard Legal"
     : "Not Standard Legal";
   const pricePart =
-    analysis.deckPrice > 0 ? `$${analysis.deckPrice.toFixed(2)} deck` : "";
-  const archPart = analysis.metaMatch.archetypeName ?? "";
+    live.deckPrice > 0 ? `$${live.deckPrice.toFixed(2)} deck` : "";
+  const archPart = frozenAnalysis.metaMatch.archetypeName ?? "";
   const datePart = `Profiled ${new Date(profiledAt).toLocaleDateString(
     "en-US",
     { month: "short", day: "numeric", year: "numeric" },
@@ -161,10 +166,19 @@ export default async function SharedDeckPage({
 
   const creator = await fetchCreator(deck.userId);
 
+  // Re-price using latest bundled card data so shared pages reflect
+  // current market prices and rotation status instead of the frozen snapshot.
+  const live = repriceDeck(deck.deckList);
+  const analysis: AnalysisResult = {
+    ...deck.analysis,
+    deckPrice: live.deckPrice,
+    rotation: live.rotation,
+  };
+
   return (
     <DeckProfileView
       deckList={deck.deckList}
-      analysis={deck.analysis}
+      analysis={analysis}
       profiledAt={deck.profiledAt}
       creator={creator ?? undefined}
       subtitle={

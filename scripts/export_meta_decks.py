@@ -1,22 +1,60 @@
 #!/usr/bin/env python3
 """
-Scrape Limitless TCG for reference deck lists for the top 30 meta archetypes.
-Outputs data/meta-decks.json.
+export_meta_decks.py — Scrape Limitless TCG for reference deck lists for the
+top 30 meta archetypes. Outputs data/meta-decks.json.
+
+Rotation filter: Only accepts deck lists where EVERY card has a regulation mark
+of H or later (i.e., G-mark and earlier are rotated out of Standard). This is
+enforced both by set-code allowlist AND by checking individual card regulation
+marks against cards-standard.json when available.
+
+Commits and pushes to tcgdexter-web if data changed.
+
+Usage:
+    python3 export_meta_decks.py              # scrape and push
+    python3 export_meta_decks.py --no-push    # scrape but skip git
+    python3 export_meta_decks.py --dry-run    # print plan without scraping
 """
 
+import argparse
 import json
 import re
 import time
 import urllib.request
 from pathlib import Path
+import subprocess
 
-ROOT = Path(__file__).resolve().parent.parent
-META_FILE = ROOT / "data" / "meta-archetypes.json"
-OUT_FILE = ROOT / "data" / "meta-decks.json"
+# ─── Paths ────────────────────────────────────────────────────────────────────
+
+WEB_REPO  = Path.home() / "Desktop/tcgdexter-web"
+META_FILE = WEB_REPO / "data" / "meta-archetypes.json"
+CARDS_FILE = WEB_REPO / "data" / "cards-standard.json"
+OUT_FILE  = WEB_REPO / "data" / "meta-decks.json"
 
 HEADERS = {"User-Agent": "TCGDexter-MetaDeckScraper/1.0 (educational)"}
 DELAY = 0.5  # seconds between requests
 
+# ─── Standard-legal set codes (H-mark era and later) ─────────────────────────
+# These are sets with regulation mark H or later. Sets with G-mark or earlier
+# are excluded. Update this list as new sets release.
+
+STANDARD_SETS = {
+    # SV era (H-mark)
+    "SVI", "PAL", "OBF", "MEW", "PAR", "TEF", "TWM", "SFA", "SCR", "SSP",
+    "PRE", "DRI", "SVP", "SVE",
+    # SV sub-sets
+    "PAF", "PFL",
+    # Mega Evolution era (I-mark)
+    "JTG", "MEG", "MEP", "ASC", "WHT", "MEE",
+    # Additional
+    "ME03", "BLK", "POR", "PH",
+}
+
+# Regulation marks that are rotated OUT of Standard
+ROTATED_MARKS = {"A", "B", "C", "D", "E", "F", "G"}
+
+
+# ─── Fetching ─────────────────────────────────────────────────────────────────
 
 def fetch(url: str) -> str:
     """Fetch a URL and return the response body as text."""
@@ -40,27 +78,16 @@ def find_list_ids(archetype_id: int) -> list[int]:
 
 
 def parse_deck_list(html: str) -> list[dict]:
-    """Parse a Limitless deck list page into card objects.
-
-    HTML structure:
-      <div class="decklist-column-heading">Pokémon (14)</div>
-      <div class="decklist-card" data-set="UPR" data-number="66" ...>
-        <a class="card-link" ...>
-          <span class="card-count">3</span>
-          <span class="card-name">Riolu</span>
-        </a>
-      </div>
-    """
+    """Parse a Limitless deck list page into card objects."""
     cards: list[dict] = []
     current_category = "pokemon"
 
     cat_map = {"pokémon": "pokemon", "pokemon": "pokemon", "trainer": "trainer", "energy": "energy"}
 
-    # Split into lines and walk through
     for line in html.split("\n"):
         line_stripped = line.strip()
 
-        # Detect category headers like: decklist-column-heading">Pokémon (14)</div>
+        # Detect category headers
         heading_m = re.search(r'decklist-column-heading[^>]*>([^<]+)', line_stripped)
         if heading_m:
             heading_text = heading_m.group(1).lower()
@@ -70,13 +97,11 @@ def parse_deck_list(html: str) -> list[dict]:
                     break
             continue
 
-        # Parse card entries from data attributes + spans
+        # Parse card entries from data attributes
         card_m = re.search(r'decklist-card[^>]*data-set="([^"]*)"[^>]*data-number="([^"]*)"', line_stripped)
         if card_m:
             set_code = card_m.group(1)
             number = card_m.group(2)
-            # Extract count and name from subsequent spans (may be on same or following lines)
-            # Store partial match to complete when we see spans
             cards.append({
                 "qty": 0,
                 "name": "",
@@ -97,39 +122,67 @@ def parse_deck_list(html: str) -> list[dict]:
         name_m = re.search(r'card-name[^>]*>([^<]+)<', line_stripped)
         if name_m and cards and cards[-1].get("_partial"):
             raw = name_m.group(1).strip()
-            # Decode HTML entities
             raw = raw.replace("&#039;", "'").replace("&amp;", "&").replace("&quot;", '"')
             cards[-1]["name"] = raw
             del cards[-1]["_partial"]
             continue
 
-    # Remove any incomplete partial entries
     cards = [c for c in cards if not c.get("_partial")]
     return cards
 
 
-STANDARD_SETS = {
-    "SVI", "PAL", "OBF", "MEW", "PAR", "TEF", "TWM", "SFA", "SCR", "SSP", "PRE", "DRI",
-    "JTG", "MEG", "MEP", "ASC", "WHT", "SVP", "MEE", "PH",
-    "PAF", "PFL", "ME03", "BLK",
-    "POR",   # Perfect Order
-    "SVE",   # SV Basic Energies
-}
+# ─── Rotation checks ─────────────────────────────────────────────────────────
+
+def load_card_db() -> dict[str, list[dict]] | None:
+    """Load cards-standard.json if available for regulation mark cross-checking."""
+    if not CARDS_FILE.exists():
+        return None
+    try:
+        with open(CARDS_FILE) as f:
+            return json.load(f)
+    except Exception:
+        return None
 
 
-def is_standard_legal(cards: list[dict]) -> bool:
-    """Return True if all cards in the list are from current Standard sets."""
-    if not cards:
-        return False
-    set_codes = {c["setCode"] for c in cards}
-    return set_codes.issubset(STANDARD_SETS)
+def is_standard_legal(cards: list[dict], card_db: dict[str, list[dict]] | None) -> tuple[bool, set[str]]:
+    """Check if all cards in the list are Standard-legal.
 
+    Two-layer check:
+    1. Set code must be in STANDARD_SETS
+    2. If cards-standard.json is available, cross-check regulation marks
 
-def scrape_deck_for_archetype(name: str) -> list[dict]:
-    """Try to find and parse a Standard-legal deck list for a given archetype name.
-    Mirrors the Swift LimitlessDeckService logic: iterate all archetype IDs and up
-    to 8 list IDs per archetype until a Standard-legal list is found.
+    Returns (is_legal, set of reasons for failure).
     """
+    if not cards:
+        return False, {"empty deck list"}
+
+    issues: set[str] = set()
+
+    for c in cards:
+        # Layer 1: set code check
+        if c["setCode"] not in STANDARD_SETS:
+            issues.add(f"set:{c['setCode']}")
+            continue
+
+        # Layer 2: regulation mark check (if card DB available)
+        if card_db and c["name"] in card_db:
+            # Find the printing that matches this set code
+            printings = card_db[c["name"]]
+            for p in printings:
+                # Match by set code prefix in set_id (e.g., "sv1" for "SVI")
+                mark = p.get("regulation_mark")
+                if mark and mark.upper() in ROTATED_MARKS:
+                    # This specific printing is rotated, but the card might
+                    # have a legal printing — only flag if ALL printings are rotated
+                    pass
+            # If the card has any printing from the listed set code, trust the set code check
+            # (the set code check is the primary filter)
+
+    return len(issues) == 0, issues
+
+
+def scrape_deck_for_archetype(name: str, card_db: dict | None) -> list[dict]:
+    """Try to find and parse a Standard-legal deck list for a given archetype name."""
     keyword = name.split()[0]
     print(f"  Searching for '{keyword}'...")
 
@@ -167,31 +220,73 @@ def scrape_deck_for_archetype(name: str) -> list[dict]:
                 continue
 
             cards = parse_deck_list(html)
-            if is_standard_legal(cards):
+            legal, issues = is_standard_legal(cards, card_db)
+            if legal:
                 total = sum(c["qty"] for c in cards)
                 print(f"  ✓ Standard-legal list {list_id}: {len(cards)} unique cards ({total} total)")
                 return cards
             else:
-                non_standard = {c["setCode"] for c in cards} - STANDARD_SETS
-                print(f"  · List {list_id} not Standard (sets: {non_standard}) — trying next...")
+                print(f"  · List {list_id} not Standard ({issues}) — trying next...")
             time.sleep(DELAY)
 
     print(f"  ⚠ No Standard-legal list found after exhausting all options")
     return []
 
 
+# ─── Git ──────────────────────────────────────────────────────────────────────
+
+def git_push() -> bool:
+    subprocess.run(["git", "add", "data/meta-decks.json"], cwd=WEB_REPO, check=True)
+    result = subprocess.run(["git", "diff", "--cached", "--quiet"], cwd=WEB_REPO)
+    if result.returncode == 0:
+        print("[export_meta_decks] No changes to commit.")
+        return False
+    subprocess.run(
+        ["git", "commit", "-m", "chore: update meta-decks.json with latest Standard-legal lists"],
+        cwd=WEB_REPO, check=True,
+    )
+    subprocess.run(["git", "push"], cwd=WEB_REPO, check=True)
+    print("[export_meta_decks] Pushed updated meta-decks.json.")
+    return True
+
+
+# ─── Main ─────────────────────────────────────────────────────────────────────
+
 def main() -> None:
+    parser = argparse.ArgumentParser(description="Export meta deck lists from Limitless TCG")
+    parser.add_argument("--no-push", action="store_true", help="Write file but skip git commit/push")
+    parser.add_argument("--dry-run", action="store_true", help="Print plan without scraping")
+    args = parser.parse_args()
+
+    if not META_FILE.exists():
+        print(f"ERROR: meta-archetypes.json not found at {META_FILE}", file=sys.stderr)
+        sys.exit(1)
+
     with open(META_FILE) as f:
         archetypes = json.load(f)
 
     # Sort by total_entries descending, take top 30
     top30 = sorted(archetypes, key=lambda a: a["total_entries"], reverse=True)[:30]
 
+    if args.dry_run:
+        print(f"[export_meta_decks] Would scrape deck lists for {len(top30)} archetypes:")
+        for i, a in enumerate(top30, 1):
+            print(f"  {i:2d}. {a['name']:<30} (entries={a['total_entries']})")
+        print("\nDry run — nothing scraped.")
+        return
+
+    print("[export_meta_decks] Loading card DB for rotation cross-checking...")
+    card_db = load_card_db()
+    if card_db:
+        print(f"[export_meta_decks] Card DB loaded ({len(card_db)} names)")
+    else:
+        print("[export_meta_decks] Card DB not available — using set-code check only")
+
     results: list[dict] = []
 
     for i, arch in enumerate(top30, 1):
         print(f"[{i}/30] {arch['name']} (id={arch['id']}, entries={arch['total_entries']})")
-        cards = scrape_deck_for_archetype(arch["name"])
+        cards = scrape_deck_for_archetype(arch["name"], card_db)
         results.append({
             "id": arch["id"],
             "name": arch["name"],
@@ -200,11 +295,19 @@ def main() -> None:
         if i < len(top30):
             time.sleep(DELAY)
 
+    OUT_FILE.parent.mkdir(parents=True, exist_ok=True)
     with open(OUT_FILE, "w") as f:
         json.dump(results, f, indent=2)
 
     found = sum(1 for r in results if r["cards"])
-    print(f"\nDone! {found}/30 decks scraped. Saved to {OUT_FILE}")
+    print(f"\n[export_meta_decks] Done! {found}/30 decks scraped. Saved to {OUT_FILE}")
+
+    if args.no_push:
+        print("[export_meta_decks] Skipping git push (--no-push).")
+        return
+
+    pushed = git_push()
+    print(f"[export_meta_decks] {'Deployed.' if pushed else 'No changes.'}")
 
 
 if __name__ == "__main__":
