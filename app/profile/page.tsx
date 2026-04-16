@@ -40,7 +40,7 @@ export default async function ProfilePage() {
   return (
     <div className="min-h-dvh flex flex-col">
       <main className="flex-1 px-6 pb-20" style={{ paddingTop: "calc(env(safe-area-inset-top) + 3rem)" }}>
-        <div className="mx-auto max-w-lg">
+        <div className="mx-auto max-w-2xl">
           {/* ── Logo ─────────────────────────────────────────── */}
           <div className="flex justify-center mb-8">
             <img
