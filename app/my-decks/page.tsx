@@ -83,7 +83,7 @@ export default async function MyDecksPage() {
             style={{ width: "288px", height: "auto" }}
           />
         </div>
-        <div className="mx-auto max-w-lg">
+        <div className="mx-auto max-w-2xl">
           <h1 className="text-3xl sm:text-4xl font-bold tracking-tight">
             My Decks
           </h1>
@@ -91,7 +91,7 @@ export default async function MyDecksPage() {
       </header>
 
       <main className="flex-1 px-6 pb-20">
-        <div className="mx-auto max-w-lg">
+        <div className="mx-auto max-w-2xl">
           {savedDecks.length === 0 ? (
             <div className="rounded-xl border border-border bg-surface p-8 text-center">
               <svg

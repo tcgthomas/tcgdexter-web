@@ -271,7 +271,7 @@ export default async function MetaDeckDetailPage({
       {/* ── Header ───────────────────────────────────────────── */}
       <header className="flex-shrink-0 pb-6 px-6" style={{ paddingTop: "calc(env(safe-area-inset-top) + 4rem)" }}>
 
-        <div className="max-w-lg mx-auto">
+        <div className="max-w-2xl mx-auto">
           <p className="text-xs font-semibold uppercase tracking-widest mb-1 text-on-gradient-muted">
             #{rank} in Standard
           </p>
@@ -292,7 +292,7 @@ export default async function MetaDeckDetailPage({
 
       {/* ── Main ─────────────────────────────────────────────── */}
       <main className="flex-1 px-6 pb-20">
-        <div className="mx-auto max-w-lg space-y-8">
+        <div className="mx-auto max-w-2xl space-y-8">
           {/* ── Stats Grid ──────────────────────────────────── */}
           <div className="grid grid-cols-2 gap-3">
             <StatCard

@@ -33,7 +33,7 @@ export default function MetaDecksPage() {
             style={{ width: "288px", height: "auto" }}
           />
         </div>
-        <div className="mx-auto max-w-lg flex items-end justify-between">
+        <div className="mx-auto max-w-2xl flex items-end justify-between">
           <h1 className="text-3xl sm:text-4xl font-bold tracking-tight">
             Meta Decks
           </h1>
@@ -45,7 +45,7 @@ export default function MetaDecksPage() {
 
       {/* ── Main ─────────────────────────────────────────────── */}
       <main className="flex-1 px-6 pb-20">
-        <div className="mx-auto max-w-lg">
+        <div className="mx-auto max-w-2xl">
           <div className="rounded-xl bg-surface overflow-hidden">
             {archetypes.map((arch, i) => (
               <Link
