@@ -182,12 +182,11 @@ export default function DeckProfilerPage() {
 
       {result && profiledAt ? (
         <DeckProfileView
+          variant="fresh"
           deckList={deckList}
           analysis={result}
           profiledAt={profiledAt}
           subtitle={false}
-          hideLogo
-          theme="experiments"
         />
       ) : (
         <>

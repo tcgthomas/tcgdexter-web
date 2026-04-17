@@ -1,6 +1,7 @@
 import Link from "next/link";
 import DeckPriceModule from "@/app/components/DeckPriceModule";
 import SaveDeckButton from "@/app/components/SaveDeckButton";
+import ShareButton from "@/app/components/ShareButton";
 import StandardFormatInfo from "@/app/components/StandardFormatInfo";
 
 /* ─── Types ──────────────────────────────────────────────────── */
@@ -383,6 +384,20 @@ export interface DeckCreator {
 }
 
 interface Props {
+  /**
+   * Which variant of the deck profile this is. Controls logo visibility,
+   * save/share button layout, and default footer CTA.
+   *
+   * - "fresh"  — freshly generated on home page; logo already rendered above,
+   *              save + share two-button row.
+   * - "saved"  — viewing a saved deck (/my-decks/[id]); logo shown,
+   *              share button fills the full row (no save button).
+   * - "shared" — public shared link (/d/[shortId]); logo shown,
+   *              save + share two-button row.
+   * - "meta"   — meta archetype page; logo shown,
+   *              save + share two-button row.
+   */
+  variant: "fresh" | "saved" | "shared" | "meta";
   deckList: string;
   analysis: AnalysisResult;
   profiledAt: string;
@@ -392,24 +407,21 @@ interface Props {
   titleAction?: React.ReactNode;
   /** Subtitle line below the heading; defaults to "Created on <date>". Accepts a ReactNode for custom content. */
   subtitle?: React.ReactNode;
-  /** Footer CTA content; defaults to a "Profile your own deck" link. */
-  footerCta?: React.ReactNode;
+  /**
+   * Footer CTA content. Defaults to a "Profile your own deck" link.
+   * Pass `null` to suppress the footer CTA entirely (e.g. meta deck pages
+   * that don't need a "profile your own" nudge).
+   */
+  footerCta?: React.ReactNode | null;
   /** Optional creator info — shown as a badge card below the header. */
   creator?: DeckCreator;
   /**
-   * Content injected between the meta-match card and the overview section.
-   * Used by /my-decks/[id] to slot in the match log + notes at the top of
-   * the profile, above the analysis modules.
+   * Content injected above the price module.
+   * Used by /my-decks/[id] to slot in the match log + notes,
+   * and by /meta-decks/[slug] for stat cards + scouting note.
    */
   topSlot?: React.ReactNode;
-  /** If true, hides the Save Deck button (e.g. when viewing an already-saved deck). */
-  hideSave?: boolean;
-  /** If true, hides the TCG Dexter logo in the header (e.g. when the page
-   *  already renders the logo above). */
-  hideLogo?: boolean;
-  /** Visual theme. "experiments" swaps in the new design-identity styling
-   *  for cards and progress bars. Prod callers omit this and keep the
-   *  current look. */
+  /** Visual theme. "experiments" adopts the new design-identity styling. */
   theme?: "default" | "experiments";
 }
 
@@ -421,6 +433,7 @@ interface Props {
  * SaveDeckButton, StandardFormatInfo, ThemeColor, EnergyColor).
  */
 export default function DeckProfileView({
+  variant,
   deckList,
   analysis,
   profiledAt,
@@ -430,9 +443,7 @@ export default function DeckProfileView({
   footerCta,
   creator,
   topSlot,
-  hideSave = false,
-  hideLogo = false,
-  theme = "default",
+  theme = "experiments",
 }: Props) {
   const result = analysis;
   // Theme-aware class strings. Default preserves prod look verbatim;
@@ -473,7 +484,7 @@ export default function DeckProfileView({
       <header
         className={`flex-shrink-0 px-6 pt-[calc(env(safe-area-inset-top)_+_1.68rem)] md:pt-[calc(env(safe-area-inset-top)_+_3rem)] ${effectiveSubtitle ? "pb-8" : "pb-4"}`}
       >
-        {!hideLogo && (
+        {variant !== "fresh" && (
           <div className="flex justify-center mb-4">
             <img
               src="/logo-light.png"
@@ -527,17 +538,28 @@ export default function DeckProfileView({
           {/* Estimated Deck Price */}
           <DeckPriceModule deckPrice={result.deckPrice} theme={theme} />
 
-          {/* Save Deck button (hidden on saved deck views to avoid confusion) */}
-          {!hideSave && (
-            <SaveDeckButton
+          {/* Save + Share buttons — layout depends on variant */}
+          {variant === "saved" ? (
+            /* Saved variant: share fills the full row; no save button */
+            <ShareButton
               deckList={deckList}
               analysis={result}
-              className={
-                isExp
-                  ? "inline-flex w-full items-center justify-center gap-2 rounded-xl bg-[linear-gradient(90deg,#F2A20C_0%,#D91E0D_50%,#A60D0D_100%)] px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-[#D91E0D]/30 hover:shadow-[#D91E0D]/50 transition disabled:opacity-50 disabled:cursor-not-allowed"
-                  : "inline-flex w-full items-center justify-center gap-2 rounded-lg bg-text-primary px-5 py-2.5 text-sm font-semibold text-bg transition-all hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
-              }
+              className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-[linear-gradient(90deg,#F2A20C_0%,#D91E0D_50%,#A60D0D_100%)] px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-[#D91E0D]/30 hover:shadow-[#D91E0D]/50 transition disabled:opacity-50 disabled:cursor-not-allowed"
             />
+          ) : (
+            /* All other variants: Save (black) + Share side by side */
+            <div className="flex gap-3">
+              <SaveDeckButton
+                deckList={deckList}
+                analysis={result}
+                className="flex-1 inline-flex items-center justify-center gap-2 rounded-xl bg-black px-5 py-2.5 text-sm font-semibold text-white transition-all hover:bg-black/85 disabled:opacity-50 disabled:cursor-not-allowed"
+              />
+              <ShareButton
+                deckList={deckList}
+                analysis={result}
+                className="flex-1 inline-flex items-center justify-center gap-2 rounded-xl bg-[linear-gradient(90deg,#F2A20C_0%,#D91E0D_50%,#A60D0D_100%)] px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-[#D91E0D]/30 hover:shadow-[#D91E0D]/50 transition disabled:opacity-50 disabled:cursor-not-allowed"
+              />
+            </div>
           )}
 
           {/* Standard Format legality warning (only when not legal) */}
@@ -1322,8 +1344,10 @@ export default function DeckProfileView({
             </div>
           )}
 
-          {/* Footer CTA */}
-          <div className="text-center mt-4">{footerCta ?? defaultFooterCta}</div>
+          {/* Footer CTA — null suppresses entirely, undefined uses default */}
+          {footerCta !== null && (
+            <div className="text-center mt-4">{footerCta ?? defaultFooterCta}</div>
+          )}
         </div>
       </main>
 

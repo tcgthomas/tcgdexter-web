@@ -141,11 +141,11 @@ export default async function SharedDeckPage({
 
   return (
     <DeckProfileView
+      variant="shared"
       deckList={deck.deckList}
       analysis={analysis}
       profiledAt={deck.profiledAt}
       creator={creator ?? undefined}
-      theme="experiments"
       subtitle={
         <div className="flex items-center gap-2">
           <CopyDeckListButton deckList={deck.deckList} />

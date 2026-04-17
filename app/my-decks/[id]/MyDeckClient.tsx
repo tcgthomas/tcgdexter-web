@@ -204,14 +204,13 @@ export default function MyDeckClient({
 
   return (
     <DeckProfileView
+      variant="saved"
       deckList={deckList}
       analysis={analysis}
       profiledAt={profiledAt}
       pageTitle={deckName}
       titleAction={titleAction}
       subtitle={subtitle}
-      theme="experiments"
-      hideSave
       topSlot={
         <>
           {/* Action buttons */}
