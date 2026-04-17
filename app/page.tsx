@@ -114,7 +114,7 @@ export default function DeckProfilerPage() {
             dex for Pokémon TCG.
           </span>
         </h1>
-        <p className="mt-6 text-lg md:text-xl font-semibold text-text-primary max-w-2xl mx-auto leading-relaxed">
+        <p className="mt-6 text-sm md:text-xl font-semibold text-text-primary max-w-2xl mx-auto leading-relaxed">
           Paste your list to create a Deck Profile.
           <br />
           Save to take notes and track performance.
