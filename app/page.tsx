@@ -107,7 +107,7 @@ export default function DeckProfilerPage() {
           />
         </div>
 
-        <h1 className="text-5xl md:text-7xl font-semibold tracking-tight leading-[1.02] max-w-4xl mx-auto">
+        <h1 className="text-3xl md:text-7xl font-semibold tracking-tight leading-[1.02] max-w-4xl mx-auto">
           The deckbuilder&apos;s
           <br />
           <span className="bg-[linear-gradient(90deg,#F2A20C_0%,#D91E0D_50%,#A60D0D_100%)] bg-clip-text text-transparent">
