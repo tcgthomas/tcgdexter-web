@@ -388,7 +388,8 @@ interface Props {
    * Which variant of the deck profile this is. Controls logo visibility,
    * save/share button layout, and default footer CTA.
    *
-   * - "fresh"  — freshly generated on home page; save + share two-button row.
+   * - "fresh"  — freshly generated on home page; logo already rendered above,
+   *              save + share two-button row.
    * - "saved"  — viewing a saved deck (/my-decks/[id]); logo shown,
    *              share button fills the full row (no save button).
    * - "shared" — public shared link (/d/[shortId]); logo shown,
@@ -483,14 +484,16 @@ export default function DeckProfileView({
       <header
         className={`flex-shrink-0 px-6 pt-[calc(env(safe-area-inset-top)_+_1.68rem)] md:pt-[calc(env(safe-area-inset-top)_+_3rem)] ${effectiveSubtitle ? "pb-8" : "pb-4"}`}
       >
-        <div className="flex justify-center mb-4">
-          <img
-            src="/logo-light.png"
-            alt="TCG Dexter"
-            className="max-w-full"
-            style={{ width: "288px", height: "auto" }}
-          />
-        </div>
+        {variant !== "fresh" && (
+          <div className="flex justify-center mb-4">
+            <img
+              src="/logo-light.png"
+              alt="TCG Dexter"
+              className="max-w-full"
+              style={{ width: "288px", height: "auto" }}
+            />
+          </div>
+        )}
         <div className="mx-auto max-w-2xl">
           <div className="flex items-center gap-2">
             <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-on-gradient">
