@@ -471,7 +471,7 @@ export default function DeckProfileView({
 
       {/* ── Header ─────────────────────────────────────────── */}
       <header
-        className={`flex-shrink-0 px-6 pt-[calc(env(safe-area-inset-top)_+_2.1rem)] md:pt-[calc(env(safe-area-inset-top)_+_3rem)] ${effectiveSubtitle ? "pb-8" : "pb-4"}`}
+        className={`flex-shrink-0 px-6 pt-[calc(env(safe-area-inset-top)_+_1.68rem)] md:pt-[calc(env(safe-area-inset-top)_+_3rem)] ${effectiveSubtitle ? "pb-8" : "pb-4"}`}
       >
         {!hideLogo && (
           <div className="flex justify-center mb-4">
