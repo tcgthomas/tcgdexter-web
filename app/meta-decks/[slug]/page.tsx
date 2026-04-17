@@ -294,7 +294,7 @@ export default async function MetaDeckDetailPage({
             <SaveDeckButton
               deckList={buildDeckList(cards)}
               analysis={{ metaMatch: { archetypeName: arch.name, archetypeId: arch.id } }}
-              className="flex-1 inline-flex items-center justify-center gap-2 rounded-xl bg-black px-5 py-2.5 text-sm font-semibold text-white transition-all hover:bg-black/85 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex-1 inline-flex items-center justify-center gap-2 rounded-xl bg-[linear-gradient(90deg,#F2A20C_0%,#D91E0D_50%,#A60D0D_100%)] px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-[#D91E0D]/30 hover:shadow-[#D91E0D]/50 transition disabled:opacity-50 disabled:cursor-not-allowed"
             />
             <ShareButton
               deckList={buildDeckList(cards)}
@@ -305,7 +305,7 @@ export default async function MetaDeckDetailPage({
         )}
 
         {cards.length > 0 && <RotationBanner rotatingCards={rotatingCards} />}
-        {deckPrice > 0 && <DeckPriceModule deckPrice={deckPrice} />}
+        {deckPrice > 0 && <DeckPriceModule deckPrice={deckPrice} theme="experiments" />}
 
         <section>
           <div className="rounded-2xl border border-black/8 bg-white/90 backdrop-blur-xl shadow-sm p-4">

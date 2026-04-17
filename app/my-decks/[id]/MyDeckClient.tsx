@@ -210,6 +210,7 @@ export default function MyDeckClient({
       pageTitle={deckName}
       titleAction={titleAction}
       subtitle={subtitle}
+      theme="experiments"
       hideSave
       topSlot={
         <>
@@ -272,7 +273,7 @@ export default function MyDeckClient({
           <DeckNotes savedDeckId={savedDeckId} initialNotes={initialNotes} />
 
           {/* Deck list */}
-          <div className="rounded-xl bg-white p-5">
+          <div className="rounded-2xl border border-black/8 bg-white/90 backdrop-blur-xl shadow-sm p-5">
             <div className="flex items-center justify-between mb-3">
               <h2 className="text-sm font-semibold text-text-primary">
                 Deck List

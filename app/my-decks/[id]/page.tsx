@@ -62,16 +62,14 @@ export default async function MyDeckDetailPage({
   }>;
 
   return (
-    <main className="px-6 pt-12 pb-24">
-      <MyDeckClient
-        savedDeckId={deck.id}
-        deckList={deck.deck_list}
-        analysis={analysis}
-        initialMatches={matches}
-        initialNotes={deck.notes ?? ""}
-        pageTitle={deck.name}
-        profiledAt={deck.updated_at}
-      />
-    </main>
+    <MyDeckClient
+      savedDeckId={deck.id}
+      deckList={deck.deck_list}
+      analysis={analysis}
+      initialMatches={matches}
+      initialNotes={deck.notes ?? ""}
+      pageTitle={deck.name}
+      profiledAt={deck.updated_at}
+    />
   );
 }
