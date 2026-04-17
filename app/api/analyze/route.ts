@@ -29,6 +29,8 @@ interface CardDataEntry {
   number: string;
   supertype: string;
   subtypes: string[];
+  /** Elemental types on Pokémon cards (e.g. ["Darkness"]). Empty/absent on Trainer/Energy. */
+  types?: string[];
   hp: string | null;
   abilities: Array<{ name: string; text: string; type: string }>;
   attacks: Array<{
@@ -90,6 +92,9 @@ interface AnalysisResult {
     stage2Count: number;
     abilities: PokemonAbility[];
     attacks: PokemonAttack[];
+    /** Map of Pokémon card name → its elemental types (usually a single
+     *  entry; some cards are dual-typed). Sourced from card DB, not inferred. */
+    typesByName: Record<string, string[]>;
   };
   trainer: {
     totalCards: number;
@@ -304,6 +309,7 @@ export async function POST(req: NextRequest) {
 
     const abilities: PokemonAbility[] = [];
     const attacks: PokemonAttack[] = [];
+    const typesByName: Record<string, string[]> = {};
     let basicCount = 0;
     let stage1Count = 0;
     let stage2Count = 0;
@@ -317,6 +323,9 @@ export async function POST(req: NextRequest) {
         if (subtypes.includes("Stage 2")) stage2Count += qty;
         else if (subtypes.includes("Stage 1")) stage1Count += qty;
         else if (subtypes.includes("Basic")) basicCount += qty;
+        if (card.types && card.types.length > 0) {
+          typesByName[pokemonName] = card.types;
+        }
       }
       if (!card) continue;
 
@@ -574,6 +583,7 @@ export async function POST(req: NextRequest) {
         stage2Count,
         abilities,
         attacks,
+        typesByName,
       },
       trainer: {
         totalCards: trainerCount,

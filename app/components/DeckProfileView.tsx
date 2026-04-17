@@ -48,6 +48,9 @@ export interface AnalysisResult {
     stage2Count: number;
     abilities: PokemonAbility[];
     attacks: PokemonAttack[];
+    /** Map of Pokémon card name → elemental types, sourced from the card DB.
+     *  Field is optional so older cached responses without it still type-check. */
+    typesByName?: Record<string, string[]>;
   };
   trainer: {
     totalCards: number;
@@ -152,17 +155,167 @@ function EnergyCostPill({ type }: { type: string }) {
   );
 }
 
+/* ─── Deck composition matrix (experiments theme) ────────────── */
+
+/**
+ * Palette for basic-energy-typed squares in the composition matrix.
+ * Standalone from ENERGY_HEX above so we can tune the matrix look
+ * without rippling changes through every energy chip in the profile.
+ */
+const MATRIX_ENERGY_PALETTE: Record<string, string> = {
+  Fire:      "#F1554B",
+  Water:     "#3BBBE7",
+  Grass:     "#57B060",
+  Lightning: "#F3DC67",
+  Psychic:   "#AC84A7",
+  Fighting:  "#DF8524",
+  Darkness:  "#318C98",
+  Colorless: "#E8EDEC",
+  // Not specified in latest palette; kept as reasonable defaults.
+  Metal:     "#A8A8A8",
+  Dragon:    "#D4A93A",
+  Fairy:     "#E879A3",
+};
+
+/** Known ACE SPEC Trainer / Special Energy card names in Standard rotation.
+ *  Extend as the list grows. Used to color-flag the square pink in the
+ *  composition matrix. */
+const ACE_SPEC_NAMES = new Set<string>([
+  "Master Ball",
+  "Prime Catcher",
+  "Secret Box",
+  "Maximum Belt",
+  "Scoop Up Cyclone",
+  "Unfair Stamp",
+  "Hero's Cape",
+  "Neutralization Zone",
+  "Reboot Pod",
+  "Survival Brace",
+  "Legacy Energy",
+  "Dangerous Laser",
+  "Awakening Drum",
+]);
+
+/** Infer a basic-energy type from a card name ("Basic Fire Energy SVE 2",
+ *  "Basic {D} Energy MEE 7", etc). Returns undefined for non-basics / special
+ *  energies. */
+function matrixEnergyType(name: string): string | undefined {
+  const n = name.toLowerCase();
+  for (const type of Object.keys(MATRIX_ENERGY_PALETTE)) {
+    if (n.includes(type.toLowerCase())) return type;
+  }
+  const braceMap: Record<string, string> = {
+    "{r}": "Fire", "{w}": "Water", "{g}": "Grass", "{l}": "Lightning",
+    "{p}": "Psychic", "{f}": "Fighting", "{d}": "Darkness", "{m}": "Metal",
+    "{n}": "Dragon", "{y}": "Fairy", "{c}": "Colorless",
+  };
+  for (const [brace, type] of Object.entries(braceMap)) {
+    if (n.includes(brace)) return type;
+  }
+  return undefined;
+}
+
+interface MatrixSlot {
+  kind: "pokemon" | "trainer" | "trainer-ace" | "energy-basic" | "energy-special" | "energy-ace" | "empty";
+  energyType?: string;
+  name?: string;
+}
+
+/** Build a name → primary elemental type map from the analyze response's
+ *  `pokemon.typesByName` field. Uses the first listed type when a Pokémon is
+ *  dual-typed (rare in TCG) so the matrix has a single color per card. */
+function pokemonPrimaryTypes(
+  typesByName: Record<string, string[]> | undefined,
+): Map<string, string> {
+  const out = new Map<string, string>();
+  if (!typesByName) return out;
+  for (const [name, types] of Object.entries(typesByName)) {
+    if (types && types.length > 0) out.set(name, types[0]);
+  }
+  return out;
+}
+
+function buildMatrixSlots(
+  cards: Array<{ qty: number; name: string; section: string }>,
+  pokemonTypes: Map<string, string>,
+): MatrixSlot[] {
+  const slots: MatrixSlot[] = [];
+  // Fill Pokémon first, then Trainer, then Energy — matches the card-order
+  // convention players write their lists in.
+  const byOrder: Array<[string, MatrixSlot["kind"] | "energy-maybe"]> = [
+    ["pokemon", "pokemon"],
+    ["trainer", "trainer"],
+    ["energy", "energy-maybe"],
+  ];
+  // Pre-sort attack map keys by length descending so longer names
+  // ("Marnie's Grimmsnarl ex") win over shorter ones ("Grimmsnarl").
+  const sortedNames = Array.from(pokemonTypes.keys()).sort(
+    (a, b) => b.length - a.length,
+  );
+  const lookupType = (cardName: string): string | undefined => {
+    const lower = cardName.toLowerCase();
+    for (const n of sortedNames) {
+      if (lower.includes(n.toLowerCase())) return pokemonTypes.get(n);
+    }
+    return undefined;
+  };
+  for (const [section, defaultKind] of byOrder) {
+    for (const card of cards.filter((c) => c.section === section)) {
+      for (let i = 0; i < card.qty; i++) {
+        if (section === "trainer") {
+          slots.push({
+            kind: ACE_SPEC_NAMES.has(card.name) ? "trainer-ace" : "trainer",
+            name: card.name,
+          });
+        } else if (section === "energy") {
+          const isAce = ACE_SPEC_NAMES.has(card.name);
+          const energyType = matrixEnergyType(card.name);
+          const isBasic = /basic/i.test(card.name) || !!energyType;
+          slots.push({
+            kind: isAce
+              ? "energy-ace"
+              : isBasic
+                ? "energy-basic"
+                : "energy-special",
+            energyType,
+            name: card.name,
+          });
+        } else {
+          slots.push({
+            kind: defaultKind as MatrixSlot["kind"],
+            energyType: lookupType(card.name),
+            name: card.name,
+          });
+        }
+      }
+    }
+  }
+  while (slots.length < 60) slots.push({ kind: "empty" });
+  return slots.slice(0, 60);
+}
+
+/** Convert a #RRGGBB hex to an rgba() string at the given alpha. */
+function hexToRgba(hex: string, alpha: number): string {
+  const h = hex.replace("#", "");
+  const r = parseInt(h.slice(0, 2), 16);
+  const g = parseInt(h.slice(2, 4), 16);
+  const b = parseInt(h.slice(4, 6), 16);
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+}
+
 function CollapsibleSection({
   title,
   children,
   badge,
+  cardClass = "rounded-xl bg-white backdrop-blur-sm",
 }: {
   title: string;
   children: React.ReactNode;
   badge?: React.ReactNode;
+  cardClass?: string;
 }) {
   return (
-    <details className="rounded-xl bg-white p-5 backdrop-blur-sm group">
+    <details className={`${cardClass} p-5 group`}>
       <summary className="flex items-center justify-between cursor-pointer list-none [&::-webkit-details-marker]:hidden">
         <h2 className="text-lg font-semibold">{title}</h2>
         <svg
@@ -182,6 +335,31 @@ function CollapsibleSection({
       {badge && <div className="flex gap-2 flex-wrap mt-4 mb-4">{badge}</div>}
       <div className="mt-4">{children}</div>
     </details>
+  );
+}
+
+/** Legend row for the deck composition matrix — tiny sample tile + label + count. */
+function LegendItem({
+  label,
+  count,
+  sample,
+}: {
+  label: string;
+  count: number;
+  sample: React.ReactNode;
+}) {
+  return (
+    <div className="flex items-center gap-2">
+      <div className="w-4 h-4 rounded-[3px] p-[1.5px] bg-[#F2F2F2] flex-shrink-0">
+        {sample}
+      </div>
+      <span className="text-[11px] font-semibold uppercase tracking-widest text-text-secondary">
+        {label}
+      </span>
+      <span className="text-sm font-semibold text-text-primary tabular-nums">
+        {count}
+      </span>
+    </div>
   );
 }
 
@@ -226,6 +404,13 @@ interface Props {
   topSlot?: React.ReactNode;
   /** If true, hides the Save Deck button (e.g. when viewing an already-saved deck). */
   hideSave?: boolean;
+  /** If true, hides the TCG Dexter logo in the header (e.g. when the page
+   *  already renders the logo above). */
+  hideLogo?: boolean;
+  /** Visual theme. "experiments" swaps in the new design-identity styling
+   *  for cards and progress bars. Prod callers omit this and keep the
+   *  current look. */
+  theme?: "default" | "experiments";
 }
 
 /**
@@ -246,8 +431,21 @@ export default function DeckProfileView({
   creator,
   topSlot,
   hideSave = false,
+  hideLogo = false,
+  theme = "default",
 }: Props) {
   const result = analysis;
+  // Theme-aware class strings. Default preserves prod look verbatim;
+  // "experiments" adopts the new design-identity treatment.
+  const isExp = theme === "experiments";
+  const CARD_CLS = isExp
+    ? "rounded-2xl border border-black/8 bg-white/90 backdrop-blur-xl shadow-sm"
+    : "rounded-xl bg-white backdrop-blur-sm";
+  const TRACK_CLS = isExp ? "bg-black/5" : "bg-surface-2";
+  const SUBCARD_CLS = isExp
+    ? "border border-black/8 rounded-xl overflow-hidden"
+    : "border border-border rounded-xl overflow-hidden";
+  const SUBHEADER_CLS = isExp ? "bg-[#fafafa]" : "bg-surface-2";
   const dateStr = new Date(profiledAt).toLocaleDateString("en-US", {
     month: "long",
     day: "numeric",
@@ -257,8 +455,12 @@ export default function DeckProfileView({
 
   const defaultFooterCta = (
     <Link
-      href="/"
-      className="inline-flex items-center justify-center gap-2 rounded-lg bg-accent px-6 py-3 text-sm font-semibold text-white transition-all hover:bg-accent-light"
+      href={isExp ? "/experiments/home" : "/"}
+      className={
+        isExp
+          ? "inline-flex items-center justify-center gap-2 rounded-xl bg-[linear-gradient(90deg,#F2A20C_0%,#D91E0D_50%,#A60D0D_100%)] px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-[#D91E0D]/30 hover:shadow-[#D91E0D]/50 transition"
+          : "inline-flex items-center justify-center gap-2 rounded-lg bg-accent px-6 py-3 text-sm font-semibold text-white transition-all hover:bg-accent-light"
+      }
     >
       Profile your own deck
     </Link>
@@ -272,14 +474,16 @@ export default function DeckProfileView({
         className={`flex-shrink-0 px-6 ${effectiveSubtitle ? "pb-8" : "pb-4"}`}
         style={{ paddingTop: "calc(env(safe-area-inset-top) + 3rem)" }}
       >
-        <div className="flex justify-center mb-4">
-          <img
-            src="/logo-light.png"
-            alt="TCG Dexter"
-            className="max-w-full"
-            style={{ width: "288px", height: "auto" }}
-          />
-        </div>
+        {!hideLogo && (
+          <div className="flex justify-center mb-4">
+            <img
+              src="/logo-light.png"
+              alt="TCG Dexter"
+              className="max-w-full"
+              style={{ width: "288px", height: "auto" }}
+            />
+          </div>
+        )}
         <div className="mx-auto max-w-2xl">
           <div className="flex items-center gap-2">
             <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-on-gradient">
@@ -301,7 +505,7 @@ export default function DeckProfileView({
 
           {/* Creator badge card */}
           {creator && (
-            <div className="flex items-center gap-3 rounded-xl bg-white px-4 py-3">
+            <div className={`flex items-center gap-3 ${CARD_CLS} px-4 py-3`}>
               <img
                 src={`/badges/${creator.badgeSlug}.svg`}
                 alt={creator.trainerTitle}
@@ -322,20 +526,30 @@ export default function DeckProfileView({
           {topSlot}
 
           {/* Estimated Deck Price */}
-          <DeckPriceModule deckPrice={result.deckPrice} />
+          <DeckPriceModule deckPrice={result.deckPrice} theme={theme} />
 
           {/* Save Deck button (hidden on saved deck views to avoid confusion) */}
           {!hideSave && (
             <SaveDeckButton
               deckList={deckList}
               analysis={result}
-              className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-text-primary px-5 py-2.5 text-sm font-semibold text-bg transition-all hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
+              className={
+                isExp
+                  ? "inline-flex w-full items-center justify-center gap-2 rounded-xl bg-[linear-gradient(90deg,#F2A20C_0%,#D91E0D_50%,#A60D0D_100%)] px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-[#D91E0D]/30 hover:shadow-[#D91E0D]/50 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                  : "inline-flex w-full items-center justify-center gap-2 rounded-lg bg-text-primary px-5 py-2.5 text-sm font-semibold text-bg transition-all hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
+              }
             />
           )}
 
           {/* Standard Format legality warning (only when not legal) */}
           {!result.rotation.ready && (
-            <div className="rounded-xl border border-yellow-500/40 bg-yellow-500/10 px-5 py-4">
+            <div
+              className={
+                isExp
+                  ? `${CARD_CLS} px-5 py-4`
+                  : "rounded-xl border border-yellow-500/40 bg-yellow-500/10 px-5 py-4"
+              }
+            >
               <div className="flex items-center gap-3 mb-3">
                 <svg
                   className="w-4 h-4 text-yellow-500 flex-shrink-0"
@@ -368,7 +582,11 @@ export default function DeckProfileView({
                 {result.rotation.rotatingCards.map((c) => (
                   <span
                     key={c.name}
-                    className="inline-flex items-center gap-1 rounded-full border border-yellow-500/50 bg-yellow-500/10 px-2.5 py-0.5 text-xs text-text-secondary"
+                    className={
+                      isExp
+                        ? "inline-flex items-center gap-1 rounded-full border border-yellow-500/30 bg-yellow-500/[0.08] px-2.5 py-0.5 text-xs text-text-secondary"
+                        : "inline-flex items-center gap-1 rounded-full border border-yellow-500/50 bg-yellow-500/10 px-2.5 py-0.5 text-xs text-text-secondary"
+                    }
                   >
                     <span className="font-semibold">{c.qty}</span>
                     <span>{c.name}</span>
@@ -378,76 +596,314 @@ export default function DeckProfileView({
             </div>
           )}
 
+          {/* Warnings — grouped here with the legality banner so all
+              "things to fix" live together near the top. */}
+          {result.warnings.length > 0 && (
+            <div
+              className={
+                isExp
+                  ? `${CARD_CLS} p-5`
+                  : "rounded-xl border border-amber-600/30 bg-amber-50 p-4"
+              }
+            >
+              <h3
+                className={`text-sm font-semibold mb-2 flex items-center gap-2 ${
+                  isExp ? "text-text-primary" : "text-amber-800"
+                }`}
+              >
+                <svg
+                  className={`w-4 h-4 ${isExp ? "text-amber-600" : ""}`}
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth={2}
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z"
+                  />
+                </svg>
+                Warnings
+              </h3>
+              <ul className="space-y-1">
+                {result.warnings.map((w, i) => (
+                  <li
+                    key={i}
+                    className={`text-sm ${isExp ? "text-text-secondary" : "text-amber-700"}`}
+                  >
+                    {w}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
           {/* Overview */}
-          <div className="rounded-xl bg-white p-5 backdrop-blur-sm">
-            <div className="flex items-baseline justify-between mb-4">
-              <h2 className="text-lg font-semibold">Overview</h2>
-              <span className="text-xs text-text-muted">
-                {result.deckSize} cards
-              </span>
-            </div>
-            <div className="flex h-1.5 rounded-full overflow-hidden bg-surface-2 mb-4">
-              {result.sections.pokemon > 0 && (
-                <div
-                  className="bg-blue-400 transition-all"
-                  style={{
-                    width: `${(result.sections.pokemon / result.deckSize) * 100}%`,
-                  }}
-                />
-              )}
-              {result.sections.trainer > 0 && (
-                <div
-                  className="bg-stone-400 transition-all"
-                  style={{
-                    width: `${(result.sections.trainer / result.deckSize) * 100}%`,
-                  }}
-                />
-              )}
-              {result.sections.energy > 0 && (
-                <div
-                  className="bg-yellow-400 transition-all"
-                  style={{
-                    width: `${(result.sections.energy / result.deckSize) * 100}%`,
-                  }}
-                />
-              )}
-            </div>
-            <div className="grid grid-cols-3 divide-x divide-border">
-              <div className="pr-4">
-                <p className="text-xs text-text-muted uppercase tracking-wide mb-1">
-                  Pok&eacute;mon
-                </p>
-                <p className="text-2xl font-bold text-text-primary">
-                  {result.sections.pokemon}
-                </p>
-                <p className="text-xs text-text-muted mt-0.5">
-                  {result.sections.pokemonRatio}
-                </p>
+          {isExp ? (
+            (() => {
+              const pokemonTypes = pokemonPrimaryTypes(
+                result.pokemon.typesByName,
+              );
+              const slots = buildMatrixSlots(result.cards, pokemonTypes);
+              const hasAce = slots.some(
+                (s) => s.kind === "trainer-ace" || s.kind === "energy-ace",
+              );
+              // For the Pokémon legend tile: sample the deck's dominant
+              // Pokémon type so the swatch reflects this specific build.
+              const pokemonTypeCounts = new Map<string, number>();
+              for (const s of slots) {
+                if (s.kind === "pokemon" && s.energyType) {
+                  pokemonTypeCounts.set(
+                    s.energyType,
+                    (pokemonTypeCounts.get(s.energyType) ?? 0) + 1,
+                  );
+                }
+              }
+              const dominantPokemonType = Array.from(
+                pokemonTypeCounts.entries(),
+              ).sort((a, b) => b[1] - a[1])[0]?.[0];
+              const pokemonSwatch = dominantPokemonType
+                ? MATRIX_ENERGY_PALETTE[dominantPokemonType]
+                : MATRIX_ENERGY_PALETTE.Colorless;
+              // Render each 60-square card with a 2px #F2F2F2 "trim" plus
+              // content that visually references the real card face.
+              const renderSlot = (slot: MatrixSlot, i: number) => {
+                const frame =
+                  "aspect-square rounded-[4px] p-[4px] bg-[#F2F2F2]";
+                const inner = "w-full h-full rounded-[2px]";
+                if (slot.kind === "empty") {
+                  return (
+                    <div
+                      key={i}
+                      className="aspect-square rounded-[4px] border-[2px] border-dashed border-black/15"
+                      title="Empty slot"
+                    />
+                  );
+                }
+                if (slot.kind === "pokemon") {
+                  // Pokémon get their primary attack-energy type at 50%
+                  // opacity, so they read as softer/tinted compared to the
+                  // fully-saturated Energy cards below.
+                  const baseColor = slot.energyType
+                    ? MATRIX_ENERGY_PALETTE[slot.energyType]
+                    : MATRIX_ENERGY_PALETTE.Colorless;
+                  return (
+                    <div
+                      key={i}
+                      className={frame}
+                      title={
+                        slot.energyType
+                          ? `${slot.name ?? "Pokémon"} (${slot.energyType})`
+                          : slot.name ?? "Pokémon"
+                      }
+                    >
+                      <div
+                        className={inner}
+                        style={{ background: hexToRgba(baseColor, 0.5) }}
+                      />
+                    </div>
+                  );
+                }
+                if (slot.kind === "trainer") {
+                  return (
+                    <div key={i} className={frame} title={slot.name ?? "Trainer"}>
+                      <div className={inner} style={{ background: "#E6E6E6" }} />
+                    </div>
+                  );
+                }
+                if (slot.kind === "trainer-ace" || slot.kind === "energy-ace") {
+                  return (
+                    <div
+                      key={i}
+                      className={frame}
+                      title={`${slot.name ?? ""} (ACE SPEC)`}
+                    >
+                      <div className={inner} style={{ background: "#ED008C" }} />
+                    </div>
+                  );
+                }
+                if (slot.kind === "energy-basic") {
+                  const color = slot.energyType
+                    ? MATRIX_ENERGY_PALETTE[slot.energyType]
+                    : MATRIX_ENERGY_PALETTE.Colorless;
+                  return (
+                    <div
+                      key={i}
+                      className={frame}
+                      title={`${slot.energyType ?? "Energy"}${slot.name ? ` — ${slot.name}` : ""}`}
+                    >
+                      <div className={inner} style={{ background: color }} />
+                    </div>
+                  );
+                }
+                // energy-special (non-ACE)
+                return (
+                  <div
+                    key={i}
+                    className={frame}
+                    title={slot.name ?? "Special Energy"}
+                  >
+                    <div
+                      className={inner}
+                      style={{
+                        background:
+                          "linear-gradient(135deg,#C9C5BC 0%,#A8A8A8 100%)",
+                      }}
+                    />
+                  </div>
+                );
+              };
+              return (
+                <div className={`${CARD_CLS} p-5`}>
+                  <div className="flex items-baseline justify-between mb-5">
+                    <h2 className="text-lg font-semibold">Overview</h2>
+                    <span
+                      className={`text-sm font-mono tabular-nums ${
+                        result.deckSize === 60
+                          ? "text-text-muted"
+                          : "text-[#D91E0D]"
+                      }`}
+                    >
+                      {result.deckSize} / 60
+                    </span>
+                  </div>
+
+                  <div
+                    className="grid grid-cols-12 gap-1.5 mb-5"
+                    aria-label="Deck composition matrix"
+                  >
+                    {slots.map(renderSlot)}
+                  </div>
+
+                  {/* Legend — supertype counts with a mini sample tile
+                      matching the matrix styling. */}
+                  <div className="flex flex-wrap items-center justify-between gap-4 border-t border-black/5 pt-4">
+                    <LegendItem
+                      label="Pokémon"
+                      count={result.sections.pokemon}
+                      sample={
+                        <div
+                          className="w-full h-full rounded-[1px]"
+                          style={{ background: hexToRgba(pokemonSwatch, 0.5) }}
+                        />
+                      }
+                    />
+                    <LegendItem
+                      label="Trainer"
+                      count={result.sections.trainer}
+                      sample={
+                        <div
+                          className="w-full h-full rounded-[1px]"
+                          style={{ background: "#E6E6E6" }}
+                        />
+                      }
+                    />
+                    <LegendItem
+                      label="Energy"
+                      count={result.sections.energy}
+                      sample={
+                        <div
+                          className="w-full h-full rounded-[1px]"
+                          style={{
+                            background: MATRIX_ENERGY_PALETTE.Lightning,
+                          }}
+                        />
+                      }
+                    />
+                    {hasAce && (
+                      <LegendItem
+                        label="ACE SPEC"
+                        count={
+                          slots.filter(
+                            (s) =>
+                              s.kind === "trainer-ace" ||
+                              s.kind === "energy-ace",
+                          ).length
+                        }
+                        sample={
+                          <div
+                            className="w-full h-full rounded-[1px]"
+                            style={{ background: "#ED008C" }}
+                          />
+                        }
+                      />
+                    )}
+                  </div>
+                </div>
+              );
+            })()
+          ) : (
+            <div className={`${CARD_CLS} p-5`}>
+              <div className="flex items-baseline justify-between mb-4">
+                <h2 className="text-lg font-semibold">Overview</h2>
+                <span className="text-xs text-text-muted">
+                  {result.deckSize} cards
+                </span>
               </div>
-              <div className="px-4">
-                <p className="text-xs text-text-muted uppercase tracking-wide mb-1">
-                  Trainers
-                </p>
-                <p className="text-2xl font-bold text-text-primary">
-                  {result.sections.trainer}
-                </p>
-                <p className="text-xs text-text-muted mt-0.5">
-                  {result.sections.trainerRatio}
-                </p>
+              <div className={`flex h-1.5 rounded-full overflow-hidden ${TRACK_CLS} mb-4`}>
+                {result.sections.pokemon > 0 && (
+                  <div
+                    className="bg-blue-400 transition-all"
+                    style={{
+                      width: `${(result.sections.pokemon / result.deckSize) * 100}%`,
+                    }}
+                  />
+                )}
+                {result.sections.trainer > 0 && (
+                  <div
+                    className="bg-stone-400 transition-all"
+                    style={{
+                      width: `${(result.sections.trainer / result.deckSize) * 100}%`,
+                    }}
+                  />
+                )}
+                {result.sections.energy > 0 && (
+                  <div
+                    className="bg-yellow-400 transition-all"
+                    style={{
+                      width: `${(result.sections.energy / result.deckSize) * 100}%`,
+                    }}
+                  />
+                )}
               </div>
-              <div className="pl-4">
-                <p className="text-xs text-text-muted uppercase tracking-wide mb-1">
-                  Energy
-                </p>
-                <p className="text-2xl font-bold text-text-primary">
-                  {result.sections.energy}
-                </p>
-                <p className="text-xs text-text-muted mt-0.5">
-                  {result.sections.energyRatio}
-                </p>
+              <div className="grid grid-cols-3 divide-x divide-border">
+                <div className="pr-4">
+                  <p className="text-xs text-text-muted uppercase tracking-wide mb-1">
+                    Pok&eacute;mon
+                  </p>
+                  <p className="text-2xl font-bold text-text-primary">
+                    {result.sections.pokemon}
+                  </p>
+                  <p className="text-xs text-text-muted mt-0.5">
+                    {result.sections.pokemonRatio}
+                  </p>
+                </div>
+                <div className="px-4">
+                  <p className="text-xs text-text-muted uppercase tracking-wide mb-1">
+                    Trainers
+                  </p>
+                  <p className="text-2xl font-bold text-text-primary">
+                    {result.sections.trainer}
+                  </p>
+                  <p className="text-xs text-text-muted mt-0.5">
+                    {result.sections.trainerRatio}
+                  </p>
+                </div>
+                <div className="pl-4">
+                  <p className="text-xs text-text-muted uppercase tracking-wide mb-1">
+                    Energy
+                  </p>
+                  <p className="text-2xl font-bold text-text-primary">
+                    {result.sections.energy}
+                  </p>
+                  <p className="text-xs text-text-muted mt-0.5">
+                    {result.sections.energyRatio}
+                  </p>
+                </div>
               </div>
             </div>
-          </div>
+          )}
 
           {/* Deck Notes */}
           {result.deckScore &&
@@ -486,7 +942,7 @@ export default function DeckProfileView({
                     : "Energy count may be too high or too low for consistent attachment.";
 
               return (
-                <div className="rounded-xl bg-white p-5 backdrop-blur-sm">
+                <div className={`${CARD_CLS} p-5`}>
                   <h2 className="text-lg font-semibold text-text-primary mb-3">
                     Deck Notes
                   </h2>
@@ -511,6 +967,7 @@ export default function DeckProfileView({
 
           {/* Pokemon */}
           <CollapsibleSection
+            cardClass={CARD_CLS}
             title="Pok&eacute;mon"
             badge={
               <>
@@ -550,9 +1007,9 @@ export default function DeckProfileView({
                       ([pokemonName, abilities]) => (
                         <div
                           key={pokemonName}
-                          className="border border-border rounded-xl overflow-hidden"
+                          className={SUBCARD_CLS}
                         >
-                          <div className="bg-surface-2 px-4 py-2">
+                          <div className={`${SUBHEADER_CLS} px-4 py-2`}>
                             <span className="text-sm font-semibold text-text-primary">
                               {pokemonName}
                             </span>
@@ -597,9 +1054,9 @@ export default function DeckProfileView({
                       ([pokemonName, attacks]) => (
                         <div
                           key={pokemonName}
-                          className="border border-border rounded-xl overflow-hidden"
+                          className={SUBCARD_CLS}
                         >
-                          <div className="bg-surface-2 px-4 py-2">
+                          <div className={`${SUBHEADER_CLS} px-4 py-2`}>
                             <span className="text-sm font-semibold text-text-primary">
                               {pokemonName}
                             </span>
@@ -650,6 +1107,7 @@ export default function DeckProfileView({
 
           {/* Trainer */}
           <CollapsibleSection
+            cardClass={CARD_CLS}
             title="Trainer"
             badge={
               <>
@@ -689,9 +1147,9 @@ export default function DeckProfileView({
                 {result.trainer.details.map((t) => (
                   <div
                     key={t.name}
-                    className="border border-border rounded-xl overflow-hidden"
+                    className={SUBCARD_CLS}
                   >
-                    <div className="bg-surface-2 px-4 py-2">
+                    <div className={`${SUBHEADER_CLS} px-4 py-2`}>
                       <span className="text-sm font-semibold text-text-primary">
                         {t.name}
                       </span>
@@ -713,6 +1171,7 @@ export default function DeckProfileView({
 
           {/* Energy */}
           <CollapsibleSection
+            cardClass={CARD_CLS}
             title="Energy"
             badge={
               <>
@@ -743,9 +1202,9 @@ export default function DeckProfileView({
                 {result.energy.specialDetails.map((e) => (
                   <div
                     key={e.name}
-                    className="border border-border rounded-xl overflow-hidden"
+                    className={SUBCARD_CLS}
                   >
-                    <div className="bg-surface-2 px-4 py-2 flex items-center justify-between">
+                    <div className={`${SUBHEADER_CLS} px-4 py-2 flex items-center justify-between`}>
                       <span className="text-sm font-semibold text-text-primary">
                         {e.name}
                       </span>
@@ -772,7 +1231,20 @@ export default function DeckProfileView({
 
           {/* Shop Matches */}
           {result.shopMatches.length > 0 && (
-            <details className="rounded-xl border border-[#d8b460]/40 bg-[#d8b460]/10 p-5 group">
+            <div
+              className={
+                isExp
+                  ? "rounded-2xl p-[1.5px] bg-[linear-gradient(90deg,#F2A20C_0%,#D91E0D_50%,#A60D0D_100%)] shadow-sm"
+                  : ""
+              }
+            >
+            <details
+              className={
+                isExp
+                  ? "rounded-[14.5px] bg-white/95 backdrop-blur-xl p-5 group"
+                  : "rounded-xl border border-[#d8b460]/40 bg-[#d8b460]/10 p-5 group"
+              }
+            >
               <summary className="flex items-center justify-between cursor-pointer list-none [&::-webkit-details-marker]:hidden">
                 <div>
                   <h2 className="text-lg font-semibold text-text-primary">
@@ -822,7 +1294,11 @@ export default function DeckProfileView({
                         href={listing.listingUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex-shrink-0 inline-flex items-center gap-1 rounded-md border border-[#d8b460]/50 bg-[#d8b460]/10 px-3 py-1 text-xs font-semibold text-[#d8b460] hover:bg-[#d8b460]/20 transition-colors"
+                        className={
+                          isExp
+                            ? "flex-shrink-0 inline-flex items-center gap-1 rounded-md border border-black/10 bg-white px-3 py-1 text-xs font-semibold text-text-primary hover:border-[#D91E0D]/40 hover:text-[#D91E0D] transition-colors"
+                            : "flex-shrink-0 inline-flex items-center gap-1 rounded-md border border-[#d8b460]/50 bg-[#d8b460]/10 px-3 py-1 text-xs font-semibold text-[#d8b460] hover:bg-[#d8b460]/20 transition-colors"
+                        }
                       >
                         View
                         <svg
@@ -844,34 +1320,6 @@ export default function DeckProfileView({
                 )}
               </div>
             </details>
-          )}
-
-          {/* Warnings */}
-          {result.warnings.length > 0 && (
-            <div className="rounded-xl border border-amber-600/30 bg-amber-50 p-4">
-              <h3 className="text-sm font-semibold text-amber-800 mb-2 flex items-center gap-2">
-                <svg
-                  className="w-4 h-4"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  strokeWidth={2}
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z"
-                  />
-                </svg>
-                Warnings
-              </h3>
-              <ul className="space-y-1">
-                {result.warnings.map((w, i) => (
-                  <li key={i} className="text-sm text-amber-700">
-                    {w}
-                  </li>
-                ))}
-              </ul>
             </div>
           )}
 

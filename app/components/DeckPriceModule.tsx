@@ -16,6 +16,8 @@
 interface Props {
   deckPrice: number;
   deckList?: string; // retained for when the alert form comes back
+  /** Visual theme. "experiments" adopts the new glass-card treatment. */
+  theme?: "default" | "experiments";
 }
 
 /**
@@ -25,7 +27,11 @@ interface Props {
  * is temporarily hidden (see top-of-file note). The data layer is intact,
  * so turning this back on is a UI-only change.
  */
-export default function DeckPriceModule({ deckPrice }: Props) {
+export default function DeckPriceModule({ deckPrice, theme = "default" }: Props) {
+  const cardClass =
+    theme === "experiments"
+      ? "rounded-2xl border border-black/8 bg-white/90 backdrop-blur-xl shadow-sm p-5"
+      : "rounded-xl bg-white p-5 backdrop-blur-sm";
   // ── Alert sign-up state (disabled) ────────────────────────────────
   // const [alertThreshold, setAlertThreshold] = useState("");
   // const [alertStatus, setAlertStatus] = useState<
@@ -75,7 +81,7 @@ export default function DeckPriceModule({ deckPrice }: Props) {
   if (deckPrice <= 0) return null;
 
   return (
-    <div className="rounded-xl bg-white p-5 backdrop-blur-sm">
+    <div className={cardClass}>
       <div className="flex items-center justify-between">
         <h2 className="text-lg font-semibold">Estimated Deck Price</h2>
         <span className="text-lg font-bold text-text-primary">
