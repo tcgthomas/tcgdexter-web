@@ -77,7 +77,7 @@ function SignInForm() {
   }
 
   return (
-    <section className="mx-auto max-w-md px-6 pt-16 pb-24">
+    <section className="mx-auto max-w-md px-6 pt-11 md:pt-16 pb-24">
       <div className="flex justify-center mb-8">
         <img
           src="/logo-light.png"

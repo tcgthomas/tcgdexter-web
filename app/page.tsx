@@ -96,7 +96,7 @@ export default function DeckProfilerPage() {
   return (
     <>
       {/* Hero */}
-      <section className="mx-auto max-w-6xl px-6 pt-20 pb-16 text-center">
+      <section className="mx-auto max-w-6xl px-6 pt-14 md:pt-20 pb-16 text-center">
         {/* Logo */}
         <div className="flex justify-center mb-8">
           <img
