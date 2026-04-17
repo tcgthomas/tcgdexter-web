@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import ThemeProvider from "./components/ThemeProvider";
-import ThemeMenu from "./components/ThemeMenu";
 import AuroraBackground from "./components/_design/AuroraBackground";
 import ExperimentNav from "./components/_design/ExperimentNav";
 import ExperimentFooter from "./components/_design/ExperimentFooter";
@@ -57,9 +56,6 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} font-sans antialiased text-[var(--text-primary)]`}
       >
         <ThemeProvider>
-          <div className="fixed left-4 z-50" style={{ top: "calc(env(safe-area-inset-top) + 1rem)" }}>
-            <ThemeMenu />
-          </div>
           <div className="min-h-dvh bg-bg text-text-primary antialiased overflow-x-hidden">
             <AuroraBackground />
             <ExperimentNav />
