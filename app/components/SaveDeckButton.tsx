@@ -141,20 +141,6 @@ export default function SaveDeckButton({
         )}
       </button>
 
-      {/* ── Saved confirmation toast ───────────────────────── */}
-      {status === "saved" && (
-        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 rounded-lg bg-accent px-5 py-2.5 text-sm font-semibold text-white shadow-lg animate-fade-toast flex items-center gap-3">
-          <span>Saved to My Decks</span>
-          <Link
-            href="/my-decks"
-            className="underline hover:opacity-80"
-            onClick={() => setStatus("idle")}
-          >
-            View
-          </Link>
-        </div>
-      )}
-
       {/* ── Title upgrade toast ─────────────────────────────── */}
       {newTitle && (
         <div className="fixed bottom-16 left-1/2 -translate-x-1/2 z-50 rounded-lg bg-text-primary px-5 py-3 text-sm font-semibold text-bg shadow-lg animate-fade-toast flex items-center gap-3">
@@ -179,7 +165,7 @@ export default function SaveDeckButton({
           onClick={() => setSignInPrompt(false)}
         >
           <div
-            className="w-full max-w-sm rounded-2xl border border-border bg-surface p-6 shadow-2xl"
+            className="w-full max-w-sm rounded-2xl border border-black/8 bg-white/90 backdrop-blur-xl p-6 shadow-2xl"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-start justify-between mb-4">

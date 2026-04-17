@@ -105,7 +105,7 @@ export default function ShareButton({ deckList, analysis, className }: Props) {
           onClick={closeShareModal}
         >
           <div
-            className="w-full max-w-sm rounded-2xl border border-border bg-surface p-6 shadow-2xl"
+            className="w-full max-w-sm rounded-2xl border border-black/8 bg-white/90 backdrop-blur-xl p-6 shadow-2xl"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-start justify-between mb-4">
@@ -130,7 +130,7 @@ export default function ShareButton({ deckList, analysis, className }: Props) {
               readOnly
               value={shareUrl}
               onFocus={(e) => e.currentTarget.select()}
-              className="w-full rounded-lg border border-border bg-bg px-3 py-2 text-xs font-mono text-text-primary focus:outline-none focus:border-accent/40 focus:ring-1 focus:ring-accent/20 [font-size:16px] sm:text-xs"
+              className="w-full rounded-lg border border-black/8 bg-white/60 px-3 py-2 text-xs font-mono text-text-primary focus:outline-none focus:border-accent/40 focus:ring-1 focus:ring-accent/20 [font-size:16px] sm:text-xs"
             />
 
             {shareError && (
@@ -140,7 +140,7 @@ export default function ShareButton({ deckList, analysis, className }: Props) {
             <div className="mt-4">
               <button
                 onClick={handleCopyShareUrl}
-                className="w-full inline-flex items-center justify-center gap-2 rounded-lg border border-border bg-bg px-4 py-2.5 text-sm font-semibold text-text-primary transition-all hover:bg-surface-2"
+                className="w-full inline-flex items-center justify-center gap-2 rounded-lg border border-black/8 bg-white/60 px-4 py-2.5 text-sm font-semibold text-text-primary transition-all hover:bg-white"
               >
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 0 1-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75a9.06 9.06 0 0 1 1.5.124m7.5 10.376h3.375c.621 0 1.125-.504 1.125-1.125V11.25c0-4.46-3.243-8.161-7.5-8.876a9.06 9.06 0 0 0-1.5-.124H9.375c-.621 0-1.125.504-1.125 1.125v3.5m7.5 10.375H9.375a1.125 1.125 0 0 1-1.125-1.125v-9.25m12 6.625v-1.875a3.375 3.375 0 0 0-3.375-3.375h-1.5a1.125 1.125 0 0 1-1.125-1.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H9.75" />
