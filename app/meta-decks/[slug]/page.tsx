@@ -113,14 +113,12 @@ export default async function MetaDeckDetailPage({
   const cards = deckData?.cards ?? [];
   const deckList = buildDeckList(cards);
 
-  const analysis = cards.length > 0
-    ? buildMetaAnalysis(cards, {
-        name: arch.name,
-        rank,
-        conversionRate: arch.conversion_rate,
-        representationPct: arch.representation_pct,
-      })
-    : null;
+  const analysis = buildMetaAnalysis(cards, {
+    name: arch.name,
+    rank,
+    conversionRate: arch.conversion_rate,
+    representationPct: arch.representation_pct,
+  });
 
   // Fallback profiledAt — meta decks use last_updated date
   const profiledAt = arch.last_updated
@@ -205,24 +203,12 @@ export default async function MetaDeckDetailPage({
         <h3 className="text-sm font-semibold text-text-primary mb-2">Scouting Note</h3>
         <p className="text-sm text-text-secondary leading-relaxed">{scoutingNote}</p>
       </div>
+
+      {cards.length === 0 && (
+        <p className="text-sm text-text-muted italic">Deck list not yet available for this archetype.</p>
+      )}
     </div>
   );
-
-  if (!analysis) {
-    // No deck data — render a minimal shell without DeckProfileView
-    return (
-      <main className="mx-auto max-w-2xl px-6 pt-12 pb-24">
-        <div className="mb-8">
-          <p className="text-xs font-semibold uppercase tracking-widest mb-1 text-[#D91E0D]">
-            #{rank} in Standard
-          </p>
-          <h1 className="text-4xl sm:text-5xl font-semibold tracking-tight">{arch.name}</h1>
-        </div>
-        {topSlot}
-        <p className="mt-8 text-sm text-text-muted italic">Deck list not yet available for this archetype.</p>
-      </main>
-    );
-  }
 
   return (
     <DeckProfileView
