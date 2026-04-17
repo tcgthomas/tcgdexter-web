@@ -3,6 +3,9 @@ import localFont from "next/font/local";
 import "./globals.css";
 import ThemeProvider from "./components/ThemeProvider";
 import ThemeMenu from "./components/ThemeMenu";
+import AuroraBackground from "./components/_design/AuroraBackground";
+import ExperimentNav from "./components/_design/ExperimentNav";
+import ExperimentFooter from "./components/_design/ExperimentFooter";
 
 /* Geist Sans — clean, modern typeface from Vercel */
 const geistSans = localFont({
@@ -57,7 +60,12 @@ export default function RootLayout({
           <div className="fixed left-4 z-50" style={{ top: "calc(env(safe-area-inset-top) + 1rem)" }}>
             <ThemeMenu />
           </div>
-          {children}
+          <div className="min-h-dvh bg-bg text-text-primary antialiased overflow-x-hidden">
+            <AuroraBackground />
+            <ExperimentNav />
+            {children}
+            <ExperimentFooter />
+          </div>
         </ThemeProvider>
       </body>
     </html>

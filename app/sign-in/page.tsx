@@ -3,29 +3,28 @@
 import { useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import GradientButton from "@/app/components/_design/GradientButton";
 
 /**
- * Sign-in page — magic link flow.
- *
- * User types email, clicks "Send magic link", we call Supabase's
- * signInWithOtp(). Supabase emails a link; user clicks it; Supabase redirects
- * them to /auth/callback which finishes the exchange.
+ * Sign-in page — magic link + Discord/Google OAuth. Post-auth redirects
+ * through /auth/callback to the user's profile (the callback default).
  */
 function SignInForm() {
   const searchParams = useSearchParams();
   const errorParam = searchParams.get("error");
 
   const [email, setEmail] = useState("");
-  const [status, setStatus] = useState<
-    "idle" | "loading" | "sent" | "error"
-  >("idle");
+  const [status, setStatus] = useState<"idle" | "loading" | "sent" | "error">("idle");
   const [discordLoading, setDiscordLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(
     errorParam === "auth_callback_failed"
       ? "That link expired or was already used. Try again below."
-      : null
+      : null,
   );
+
+  const redirectTo = () =>
+    `${window.location.origin}/auth/callback?next=/`;
 
   async function handleDiscordSignIn() {
     setDiscordLoading(true);
@@ -33,15 +32,12 @@ function SignInForm() {
     const supabase = createClient();
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "discord",
-      options: {
-        redirectTo: `${window.location.origin}/auth/callback`,
-      },
+      options: { redirectTo: redirectTo() },
     });
     if (error) {
       setErrorMsg(error.message);
       setDiscordLoading(false);
     }
-    // On success, Supabase redirects the browser — no further action needed.
   }
 
   async function handleGoogleSignIn() {
@@ -50,15 +46,12 @@ function SignInForm() {
     const supabase = createClient();
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
-      options: {
-        redirectTo: `${window.location.origin}/auth/callback`,
-      },
+      options: { redirectTo: redirectTo() },
     });
     if (error) {
       setErrorMsg(error.message);
       setGoogleLoading(false);
     }
-    // On success, Supabase redirects the browser — no further action needed.
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -68,18 +61,13 @@ function SignInForm() {
       setStatus("error");
       return;
     }
-
     setStatus("loading");
     setErrorMsg(null);
-
     const supabase = createClient();
     const { error } = await supabase.auth.signInWithOtp({
       email: email.trim().toLowerCase(),
-      options: {
-        emailRedirectTo: `${window.location.origin}/auth/callback`,
-      },
+      options: { emailRedirectTo: redirectTo() },
     });
-
     if (error) {
       setErrorMsg(error.message);
       setStatus("error");
@@ -89,29 +77,28 @@ function SignInForm() {
   }
 
   return (
-    <div className="min-h-dvh flex flex-col">
-      <header className="flex-shrink-0 pb-8 px-6 text-center" style={{ paddingTop: "calc(env(safe-area-inset-top) + 4rem)" }}>
-        <div className="flex justify-center mb-[18px]">
-          <img
-            src="/logo-light.png"
-            alt="TCG Dexter"
-            className="max-w-full"
-            style={{ width: "288px", height: "auto" }}
-          />
-        </div>
-        <p className="text-sm font-semibold text-text-primary leading-relaxed">
-          Save and share your deck lists.
-          <br />
-          Track performance. Earn Badges.
-        </p>
-      </header>
+    <section className="mx-auto max-w-md px-6 pt-16 pb-24">
+      <div className="flex justify-center mb-8">
+        <img
+          src="/logo-light.png"
+          alt="TCG Dexter"
+          className="max-w-full"
+          style={{ width: "240px", height: "auto" }}
+        />
+      </div>
+      <p className="text-center text-base font-semibold text-text-primary leading-relaxed mb-10">
+        Save and share your deck lists.
+        <br />
+        Track performance. Earn Badges.
+      </p>
 
-      <main className="flex-1 px-6 pb-20">
-        <div className="mx-auto max-w-sm">
+      <div className="relative">
+        <div className="absolute -inset-px rounded-2xl bg-[linear-gradient(90deg,#F2A20C_0%,#D91E0D_50%,#A60D0D_100%)] opacity-20 blur-xl" />
+        <div className="relative rounded-2xl bg-white/90 backdrop-blur-xl border border-black/8 shadow-[0_20px_60px_-15px_rgba(217,30,13,0.2)] p-6">
           {status === "sent" ? (
-            <div className="rounded-xl border border-border bg-surface p-6 text-center">
+            <div className="text-center">
               <svg
-                className="w-10 h-10 mx-auto text-accent mb-3"
+                className="w-10 h-10 mx-auto text-[#D91E0D] mb-3"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -119,19 +106,16 @@ function SignInForm() {
               >
                 <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75" />
               </svg>
-              <h2 className="text-lg font-semibold text-text-primary mb-2">
-                Check your email
-              </h2>
+              <h2 className="text-lg font-semibold text-text-primary mb-2">Check your email</h2>
               <p className="text-sm text-text-secondary">
-                We sent a link to <span className="font-semibold">{email}</span>.
-                Click the link to sign in.
+                We sent a link to <span className="font-semibold">{email}</span>. Click the link to sign in.
               </p>
               <button
                 onClick={() => {
                   setStatus("idle");
                   setEmail("");
                 }}
-                className="mt-4 text-xs text-accent hover:text-accent-light transition-colors"
+                className="mt-4 text-xs text-[#D91E0D] hover:opacity-80 transition"
               >
                 Use a different email
               </button>
@@ -146,16 +130,14 @@ function SignInForm() {
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="you@example.com"
                 disabled={status === "loading"}
-                className="w-full rounded-lg border border-[#d0d0d0] bg-bg px-4 py-3 text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:border-[#d0d0d0] disabled:opacity-50 [font-size:16px] sm:text-sm"
+                className="w-full rounded-lg border border-black/10 bg-white px-4 py-3 text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:border-black/20 disabled:opacity-50 [font-size:16px] sm:text-sm"
               />
-
-              {errorMsg && (
-                <p className="mt-3 text-xs text-red-600">{errorMsg}</p>
-              )}
-
-              <button
+              {errorMsg && <p className="mt-3 text-xs text-red-600">{errorMsg}</p>}
+              <GradientButton
                 type="submit"
-                className={`mt-3 w-full inline-flex items-center justify-center gap-2 rounded-lg border border-transparent px-5 py-3 text-sm font-semibold text-white transition-colors ${email.includes("@") ? "bg-accent hover:opacity-90" : "bg-text-primary"}`}
+                showIcon={false}
+                disabled={status === "loading"}
+                className="mt-3 w-full"
               >
                 {status === "loading" ? (
                   <>
@@ -168,17 +150,16 @@ function SignInForm() {
                 ) : (
                   "Sign in with Email"
                 )}
-              </button>
+              </GradientButton>
             </form>
           )}
 
-          {/* Discord sign-in — shown unless the magic link was just sent */}
           {status !== "sent" && (
-            <div className="mt-4">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="flex-1 h-px bg-text-primary" />
+            <>
+              <div className="flex items-center gap-3 my-5">
+                <div className="flex-1 h-px bg-black/10" />
                 <span className="text-xs text-text-muted">or</span>
-                <div className="flex-1 h-px bg-text-primary" />
+                <div className="flex-1 h-px bg-black/10" />
               </div>
               <button
                 onClick={handleDiscordSignIn}
@@ -201,7 +182,7 @@ function SignInForm() {
               <button
                 onClick={handleGoogleSignIn}
                 disabled={googleLoading || discordLoading || status === "loading"}
-                className="mt-3 w-full inline-flex items-center justify-center gap-2.5 rounded-lg border border-[#d0d0d0] bg-white px-5 py-3 text-sm font-semibold text-text-primary transition-opacity hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="mt-3 w-full inline-flex items-center justify-center gap-2.5 rounded-lg border border-black/10 bg-white px-5 py-3 text-sm font-semibold text-text-primary transition-opacity hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {googleLoading ? (
                   <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
@@ -210,23 +191,19 @@ function SignInForm() {
                   </svg>
                 ) : (
                   <svg className="w-5 h-5 flex-shrink-0" viewBox="0 0 24 24">
-                    <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                    <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                    <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
-                    <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                    <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
+                    <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+                    <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
+                    <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
                   </svg>
                 )}
                 {googleLoading ? "Redirecting…" : "Sign in with Google"}
               </button>
-            </div>
+            </>
           )}
         </div>
-      </main>
-
-      <footer className="flex-shrink-0 py-8 px-6 text-center text-sm text-text-muted">
-        <p>&copy; 2026 TCG Dexter &middot; tcgdexter.com</p>
-      </footer>
-    </div>
+      </div>
+    </section>
   );
 }
 

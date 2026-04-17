@@ -455,7 +455,7 @@ export default function DeckProfileView({
 
   const defaultFooterCta = (
     <Link
-      href={isExp ? "/experiments/home" : "/"}
+      href="/"
       className={
         isExp
           ? "inline-flex items-center justify-center gap-2 rounded-xl bg-[linear-gradient(90deg,#F2A20C_0%,#D91E0D_50%,#A60D0D_100%)] px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-[#D91E0D]/30 hover:shadow-[#D91E0D]/50 transition"

@@ -12,7 +12,11 @@ import { repriceDeck } from "@/lib/reprice-deck";
 import QRCodeButton from "@/app/components/QRCodeButton";
 import CopyDeckListButton from "@/app/components/CopyDeckListButton";
 
-/* ─── Types ──────────────────────────────────────────────────── */
+/**
+ * Experiment mirror of /d/[shortId]. Reuses the real DeckProfileView.
+ * Note: DeckProfileView supplies its own internal chrome; our experiment
+ * shell (nav + aurora + footer) wraps around it.
+ */
 
 interface DeckRecord {
   deckList: string;
@@ -20,8 +24,6 @@ interface DeckRecord {
   analysis: AnalysisResult;
   userId: string | null;
 }
-
-/* ─── Supabase fetch helper ──────────────────────────────────── */
 
 async function fetchDeck(shortId: string): Promise<DeckRecord | null> {
   try {
@@ -31,9 +33,7 @@ async function fetchDeck(shortId: string): Promise<DeckRecord | null> {
       .select("deck_list, analysis, created_at, user_id")
       .eq("id", shortId)
       .maybeSingle();
-
     if (error || !data) return null;
-
     return {
       deckList: data.deck_list,
       analysis: data.analysis as AnalysisResult,
@@ -45,11 +45,6 @@ async function fetchDeck(shortId: string): Promise<DeckRecord | null> {
   }
 }
 
-/**
- * Look up the creator's display name and trainer title via the service-role
- * client (bypasses RLS since profiles are owner-only select). Returns null
- * for anonymous shares (user_id is null) or if the lookup fails.
- */
 async function fetchCreator(userId: string | null): Promise<DeckCreator | null> {
   if (!userId) return null;
   try {
@@ -59,9 +54,7 @@ async function fetchCreator(userId: string | null): Promise<DeckCreator | null> 
       .select("display_name, trainer_title")
       .eq("id", userId)
       .maybeSingle();
-
     if (!data) return null;
-
     const tier = getTierByTitle(data.trainer_title ?? "Rookie Trainer");
     return {
       displayName: data.display_name ?? "Trainer",
@@ -74,8 +67,6 @@ async function fetchCreator(userId: string | null): Promise<DeckCreator | null> 
   }
 }
 
-/* ─── OG Metadata ────────────────────────────────────────────── */
-
 export async function generateMetadata({
   params,
 }: {
@@ -83,47 +74,30 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { shortId } = await params;
   const deck = await fetchDeck(shortId);
-
-  if (!deck) {
-    return { title: "Deck Not Found — TCG Dexter" };
-  }
+  if (!deck) return { title: "Deck Not Found — TCG Dexter" };
 
   const { analysis: frozenAnalysis, profiledAt } = deck;
-
-  // Use live pricing for OG metadata too
   const live = repriceDeck(deck.deckList);
 
   const title = frozenAnalysis.metaMatch.archetypeName
     ? `${frozenAnalysis.metaMatch.archetypeName} — TCG Dexter`
     : "Deck Analysis — TCG Dexter";
 
-  const rotationStatus = live.rotation.ready
-    ? "Standard Legal"
-    : "Not Standard Legal";
-  const pricePart =
-    live.deckPrice > 0 ? `$${live.deckPrice.toFixed(2)} deck` : "";
+  const rotationStatus = live.rotation.ready ? "Standard Legal" : "Not Standard Legal";
+  const pricePart = live.deckPrice > 0 ? `$${live.deckPrice.toFixed(2)} deck` : "";
   const archPart = frozenAnalysis.metaMatch.archetypeName ?? "";
-  const datePart = `Profiled ${new Date(profiledAt).toLocaleDateString(
-    "en-US",
-    { month: "short", day: "numeric", year: "numeric" },
-  )}`;
-  const descParts = [rotationStatus, pricePart, archPart, datePart].filter(
-    Boolean,
-  );
+  const datePart = `Profiled ${new Date(profiledAt).toLocaleDateString("en-US", {
+    month: "short", day: "numeric", year: "numeric",
+  })}`;
+  const descParts = [rotationStatus, pricePart, archPart, datePart].filter(Boolean);
 
   return {
     title,
     description: descParts.join(" · "),
     openGraph: { title, description: descParts.join(" · ") },
-    twitter: {
-      card: "summary_large_image",
-      title,
-      description: descParts.join(" · "),
-    },
+    twitter: { card: "summary_large_image", title, description: descParts.join(" · ") },
   };
 }
-
-/* ─── Page ───────────────────────────────────────────────────── */
 
 export default async function SharedDeckPage({
   params,
@@ -133,41 +107,31 @@ export default async function SharedDeckPage({
   const { shortId } = await params;
   const deck = await fetchDeck(shortId);
 
-  // Resolve the canonical share URL for the QR button (no API call needed —
-  // the URL is already known for a shared deck page).
   const headersList = await headers();
-  const host = headersList.get("x-forwarded-host") ?? headersList.get("host") ?? "tcgdexter.com";
+  const host =
+    headersList.get("x-forwarded-host") ?? headersList.get("host") ?? "tcgdexter.com";
   const proto = headersList.get("x-forwarded-proto") ?? "https";
   const shareUrl = `${proto}://${host}/d/${shortId}`;
 
   if (!deck) {
     return (
-      <div className="min-h-screen flex flex-col">
-        <header
-          className="flex-shrink-0 pb-8 px-6 text-center"
-          style={{ paddingTop: "calc(env(safe-area-inset-top) + 3rem)" }}
+      <main className="mx-auto max-w-2xl px-6 pt-24 pb-32 text-center">
+        <h1 className="text-4xl font-semibold tracking-tight">Deck Not Found</h1>
+        <p className="mt-3 text-sm text-text-secondary max-w-md mx-auto leading-relaxed">
+          This shared deck link is invalid or has expired.
+        </p>
+        <Link
+          href="/"
+          className="inline-flex items-center justify-center gap-2 mt-6 rounded-xl bg-[linear-gradient(90deg,#F2A20C_0%,#D91E0D_50%,#A60D0D_100%)] px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-[#D91E0D]/30 hover:shadow-[#D91E0D]/50 transition"
         >
-          <h1 className="text-3xl sm:text-4xl font-bold tracking-tight">
-            Deck Not Found
-          </h1>
-          <p className="mt-3 text-sm text-text-secondary max-w-md mx-auto leading-relaxed">
-            This shared deck link is invalid or has expired.
-          </p>
-          <Link
-            href="/"
-            className="inline-flex items-center justify-center gap-2 mt-6 rounded-lg bg-accent px-6 py-3 text-sm font-semibold text-white transition-all hover:bg-accent-light"
-          >
-            Profile your own deck
-          </Link>
-        </header>
-      </div>
+          Profile your own deck
+        </Link>
+      </main>
     );
   }
 
   const creator = await fetchCreator(deck.userId);
 
-  // Re-price using latest bundled card data so shared pages reflect
-  // current market prices and rotation status instead of the frozen snapshot.
   const live = repriceDeck(deck.deckList);
   const analysis: AnalysisResult = {
     ...deck.analysis,
@@ -181,6 +145,7 @@ export default async function SharedDeckPage({
       analysis={analysis}
       profiledAt={deck.profiledAt}
       creator={creator ?? undefined}
+      theme="experiments"
       subtitle={
         <div className="flex items-center gap-2">
           <CopyDeckListButton deckList={deck.deckList} />
