@@ -98,7 +98,7 @@ export default function ThemeMenu() {
 
   const internalLinks = [
     { label: "Deck Profiler", href: "/" },
-    // { label: "Meta Decks", href: "/meta-decks" }, // paused — meta decks feature temporarily disabled
+    { label: "Meta Decks", href: "/meta-decks" },
     { label: "My Decks", href: "/my-decks" },
   ];
 
