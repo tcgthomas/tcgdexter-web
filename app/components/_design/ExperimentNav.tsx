@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
+import MobileNavDrawer from "./MobileNavDrawer";
 
 /**
  * Sticky top nav rendered by the root layout on every page.
@@ -16,7 +17,8 @@ export default async function ExperimentNav() {
   return (
     <nav className="sticky top-0 z-30 backdrop-blur-xl bg-bg/70 border-b border-black/5">
       <div className="mx-auto max-w-6xl px-6 h-14 flex items-center justify-between">
-        <Link href="/" className="flex items-center gap-2 group">
+        {/* Desktop logo — navigates home */}
+        <Link href="/" className="hidden md:flex items-center gap-2 group">
           <div className="h-7 w-7 rounded-lg bg-gradient-to-br from-[#F2A20C] to-[#A60D0D] flex items-center justify-center text-[11px] font-black text-white">
             TD
           </div>
@@ -25,6 +27,8 @@ export default async function ExperimentNav() {
             Beta
           </span>
         </Link>
+        {/* Mobile logo button — opens drawer */}
+        <MobileNavDrawer />
         <div className="hidden md:flex items-center gap-7 text-sm text-text-secondary">
           <Link href="/my-decks" className="hover:text-text-primary transition">Decks</Link>
           <Link href="/meta-decks" className="hover:text-text-primary transition">Meta</Link>
@@ -51,12 +55,6 @@ export default async function ExperimentNav() {
             </>
           )}
         </div>
-      </div>
-      {/* Mobile-only nav row */}
-      <div className="md:hidden border-t border-black/5 flex items-center justify-center gap-6 h-9 text-xs font-medium text-text-secondary">
-        <Link href="/" className="hover:text-text-primary transition">Profiler</Link>
-        <Link href="/my-decks" className="hover:text-text-primary transition">My Decks</Link>
-        <Link href="/meta-decks" className="hover:text-text-primary transition">Meta</Link>
       </div>
     </nav>
   );
