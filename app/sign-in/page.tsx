@@ -3,7 +3,7 @@
 import { useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
-import GradientButton from "@/app/components/_design/GradientButton";
+import GradientButton from "@/app/components/ui/GradientButton";
 
 /**
  * Sign-in page — magic link + Discord/Google OAuth. Post-auth redirects

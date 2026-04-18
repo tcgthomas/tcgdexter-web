@@ -9,12 +9,14 @@ import { usePathname } from "next/navigation";
 const TRANSITION_MS = 200;
 
 interface Props {
-  /** Passed from the server component so auth buttons render correctly. */
+  /** Passed from the server component so the auth item renders correctly. */
   isAuthed: boolean;
+  /** User's display name from the profiles table; null for anon users. */
+  displayName: string | null;
 }
 
 /**
- * Full-screen nav takeover triggered by the TD monogram.
+ * Full-screen nav takeover triggered by the hamburger icon.
  *
  * State model
  * ───────────
@@ -32,7 +34,7 @@ interface Props {
  * so there is zero layout shift on open or close. scrollLockedRef guards
  * against double-lock/unlock so unlockScroll() is safe from any code path.
  */
-export default function MobileNavMenu({ isAuthed }: Props) {
+export default function MobileNavMenu({ isAuthed, displayName }: Props) {
   const [isOpen, setIsOpen] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
 
@@ -206,6 +208,16 @@ export default function MobileNavMenu({ isAuthed }: Props) {
   const linkClass =
     "block py-2 text-lg font-medium text-text-secondary hover:text-text-primary transition-colors";
 
+  // ── Hamburger icon (reused in trigger + panel close button) ──────────────────
+
+  const HamburgerIcon = () => (
+    <svg width="20" height="16" viewBox="0 0 20 16" fill="none" aria-hidden="true">
+      <path d="M0 1.5H20" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" />
+      <path d="M0 8H20" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" />
+      <path d="M0 14.5H20" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" />
+    </svg>
+  );
+
   // ── Panel (rendered into a portal at document.body) ──────────────────────────
 
   const panel = (
@@ -232,51 +244,14 @@ export default function MobileNavMenu({ isAuthed }: Props) {
           the data-nav-menu-visible attribute below that hides the real
           toolbar, so only one toolbar is ever rendered at a time. */}
       <div className="flex-shrink-0 backdrop-blur-xl bg-bg/70 border-b border-black/5">
-        <div className="mx-auto max-w-6xl px-6 h-14 flex items-center justify-between">
-          {/* Monogram — tapping it closes the menu */}
+        <div className="mx-auto max-w-6xl px-6 h-14 flex items-center">
+          {/* Hamburger — tapping it closes the menu */}
           <button
             onClick={closeMenu}
             aria-label="Close navigation menu"
-            className="flex items-center gap-2"
           >
-            <div className="h-7 w-7 rounded-lg bg-gradient-to-br from-[#F2A20C] to-[#A60D0D] flex items-center justify-center text-[11px] font-black text-white">
-              TD
-            </div>
-            <span className="font-semibold tracking-tight">Dexter</span>
-            <span className="ml-2 text-[10px] uppercase tracking-widest text-text-muted border border-black/10 rounded-full px-2 py-0.5">
-              Beta
-            </span>
+            <HamburgerIcon />
           </button>
-
-          {/* Auth buttons — same styling as the real nav header */}
-          <div className="flex items-center gap-3">
-            {isAuthed ? (
-              <Link
-                href="/profile"
-                onClick={closeMenu}
-                className="text-sm font-medium bg-black text-white rounded-full px-4 py-1.5 hover:bg-black/85 transition"
-              >
-                Profile
-              </Link>
-            ) : (
-              <>
-                <Link
-                  href="/sign-in"
-                  onClick={closeMenu}
-                  className="text-sm text-text-secondary hover:text-text-primary transition"
-                >
-                  Sign in
-                </Link>
-                <Link
-                  href="/sign-in"
-                  onClick={closeMenu}
-                  className="text-sm font-medium bg-black text-white rounded-full px-4 py-1.5 hover:bg-black/85 transition"
-                >
-                  Get started
-                </Link>
-              </>
-            )}
-          </div>
         </div>
       </div>
 
@@ -292,6 +267,21 @@ export default function MobileNavMenu({ isAuthed }: Props) {
       >
         <nav className="mx-auto max-w-6xl px-6 pt-10 pb-12">
           <ul className="flex flex-col gap-1">
+            {/* Auth item — top of nav */}
+            <li>
+              {isAuthed ? (
+                <Link href="/profile" className={linkClass} onClick={closeMenu}>
+                  {displayName ?? "Profile"}
+                </Link>
+              ) : (
+                <Link href="/sign-in" className={linkClass} onClick={closeMenu}>
+                  Sign in
+                </Link>
+              )}
+            </li>
+
+            <li role="separator" className="my-4 border-t border-black/8" />
+
             {INTERNAL_LINKS.map(({ href, label }) => (
               <li key={href}>
                 <Link href={href} className={linkClass} onClick={closeMenu}>
@@ -327,20 +317,13 @@ export default function MobileNavMenu({ isAuthed }: Props) {
     <>
       <button
         ref={triggerRef}
-        className="flex items-center gap-2"
         onClick={toggle}
         aria-label="Toggle navigation menu"
         aria-expanded={isOpen}
         aria-controls="site-nav-panel"
         aria-haspopup="dialog"
       >
-        <div className="h-7 w-7 rounded-lg bg-gradient-to-br from-[#F2A20C] to-[#A60D0D] flex items-center justify-center text-[11px] font-black text-white">
-          TD
-        </div>
-        <span className="font-semibold tracking-tight">Dexter</span>
-        <span className="ml-2 text-[10px] uppercase tracking-widest text-text-muted border border-black/10 rounded-full px-2 py-0.5">
-          Beta
-        </span>
+        <HamburgerIcon />
       </button>
 
       {isVisible && createPortal(panel, document.body)}

@@ -2,7 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import SavedDeckRow from "@/app/my-decks/SavedDeckRow";
-import SectionHeader from "@/app/components/_design/SectionHeader";
+import SectionHeader from "@/app/components/ui/SectionHeader";
 
 /**
  * Experiment mirror of /my-decks — same server-side auth + query logic,

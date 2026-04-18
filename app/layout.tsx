@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import ThemeProvider from "./components/ThemeProvider";
-import AuroraBackground from "./components/_design/AuroraBackground";
-import ExperimentNav from "./components/_design/ExperimentNav";
-import ExperimentFooter from "./components/_design/ExperimentFooter";
+import AuroraBackground from "./components/ui/AuroraBackground";
+import SiteNav from "./components/ui/SiteNav";
+import SiteFooter from "./components/ui/SiteFooter";
 
 /* Geist Sans — clean, modern typeface from Vercel */
 const geistSans = localFont({
@@ -61,9 +61,9 @@ export default function RootLayout({
         <ThemeProvider>
           <div className="min-h-dvh bg-bg text-text-primary antialiased overflow-x-hidden">
             <AuroraBackground />
-            <ExperimentNav />
+            <SiteNav />
             {children}
-            <ExperimentFooter />
+            <SiteFooter />
           </div>
         </ThemeProvider>
       </body>

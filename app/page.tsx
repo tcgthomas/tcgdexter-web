@@ -5,9 +5,9 @@ import Link from "next/link";
 import DeckProfileView, {
   type AnalysisResult,
 } from "@/app/components/DeckProfileView";
-import SectionHeader from "@/app/components/_design/SectionHeader";
-import GradientButton from "@/app/components/_design/GradientButton";
-import StatsStrip from "@/app/components/_design/StatsStrip";
+import SectionHeader from "@/app/components/ui/SectionHeader";
+import GradientButton from "@/app/components/ui/GradientButton";
+import StatsStrip from "@/app/components/ui/StatsStrip";
 
 const EXAMPLE_DECK = `Pokémon: 8
 4 Marnie's Impidimp DRI 134

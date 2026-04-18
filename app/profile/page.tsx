@@ -3,7 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { TRAINER_TIERS, getTierByTitle, getNextTier } from "@/lib/trainer-tiers";
 import EditDisplayName from "@/app/profile/EditDisplayName";
 import SignOutButton from "@/app/profile/SignOutButton";
-import SectionHeader from "@/app/components/_design/SectionHeader";
+import SectionHeader from "@/app/components/ui/SectionHeader";
 
 /**
  * Experiment mirror of /profile. Same auth + Supabase queries, same

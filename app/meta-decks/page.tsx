@@ -1,6 +1,6 @@
 import Link from "next/link";
 import archetypesRaw from "@/data/meta-archetypes.json";
-import SectionHeader from "@/app/components/_design/SectionHeader";
+import SectionHeader from "@/app/components/ui/SectionHeader";
 
 /**
  * Experiment mirror of /meta-decks. Same Top-30 list and JSON source.

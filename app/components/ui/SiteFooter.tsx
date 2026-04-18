@@ -1,8 +1,7 @@
 /**
- * Minimal footer used on every /experiments/* page. Hair-thin border,
- * muted legal text, matching the aesthetic of the nav.
+ * Minimal footer rendered by the root layout on every page.
  */
-export default function ExperimentFooter() {
+export default function SiteFooter() {
   return (
     <footer className="border-t border-black/5">
       <div className="mx-auto max-w-6xl px-6 py-10 flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-text-muted">
