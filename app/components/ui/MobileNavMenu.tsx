@@ -280,7 +280,7 @@ export default function MobileNavMenu({ isAuthed, displayName }: Props) {
               )}
             </li>
 
-            <li role="separator" className="my-4 border-t border-black/8" />
+            <li role="separator" className="my-4" />
 
             {INTERNAL_LINKS.map(({ href, label }) => (
               <li key={href}>
@@ -290,7 +290,7 @@ export default function MobileNavMenu({ isAuthed, displayName }: Props) {
               </li>
             ))}
 
-            <li role="separator" className="my-4 border-t border-black/8" />
+            <li role="separator" className="my-4" />
 
             {EXTERNAL_LINKS.map(({ href, label }) => (
               <li key={href}>
