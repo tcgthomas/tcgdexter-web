@@ -21,10 +21,10 @@ export default function RotationBanner({ rotatingCards }: Props) {
   const count = rotatingCards.reduce((s, c) => s + c.qty, 0);
 
   return (
-    <div className="rounded-xl border border-yellow-500/40 bg-yellow-500/10 px-5 py-4">
+    <div className="rounded-xl border border-amber-500/40 bg-amber-500/10 px-5 py-4">
       <div className="flex items-center gap-3 mb-3">
         <svg
-          className="w-4 h-4 text-yellow-500 flex-shrink-0"
+          className="w-4 h-4 text-amber-500 flex-shrink-0"
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
@@ -52,7 +52,7 @@ export default function RotationBanner({ rotatingCards }: Props) {
         {rotatingCards.map((c) => (
           <span
             key={c.name}
-            className="inline-flex items-center gap-1 rounded-full border border-yellow-500/50 bg-yellow-500/10 px-2.5 py-0.5 text-xs text-text-secondary"
+            className="inline-flex items-center gap-1 rounded-full border border-amber-500/50 bg-amber-500/10 px-2.5 py-0.5 text-xs text-text-secondary"
           >
             <span className="font-semibold">{c.qty}</span>
             <span>{c.name}</span>

@@ -568,12 +568,12 @@ export default function DeckProfileView({
               className={
                 isExp
                   ? `${CARD_CLS} px-5 py-4`
-                  : "rounded-xl border border-yellow-500/40 bg-yellow-500/10 px-5 py-4"
+                  : "rounded-xl border border-amber-500/40 bg-amber-500/10 px-5 py-4"
               }
             >
               <div className="flex items-center gap-3 mb-3">
                 <svg
-                  className="w-4 h-4 text-yellow-500 flex-shrink-0"
+                  className="w-4 h-4 text-amber-500 flex-shrink-0"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -605,8 +605,8 @@ export default function DeckProfileView({
                     key={c.name}
                     className={
                       isExp
-                        ? "inline-flex items-center gap-1 rounded-full border border-yellow-500/30 bg-yellow-500/[0.08] px-2.5 py-0.5 text-xs text-text-secondary"
-                        : "inline-flex items-center gap-1 rounded-full border border-yellow-500/50 bg-yellow-500/10 px-2.5 py-0.5 text-xs text-text-secondary"
+                        ? "inline-flex items-center gap-1 rounded-full border border-amber-500/30 bg-amber-500/[0.08] px-2.5 py-0.5 text-xs text-text-secondary"
+                        : "inline-flex items-center gap-1 rounded-full border border-amber-500/50 bg-amber-500/10 px-2.5 py-0.5 text-xs text-text-secondary"
                     }
                   >
                     <span className="font-semibold">{c.qty}</span>
