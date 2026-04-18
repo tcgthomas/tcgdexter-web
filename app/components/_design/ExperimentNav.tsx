@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
-import MobileNavDrawer from "./MobileNavDrawer";
+import MobileNavMenu from "./MobileNavMenu";
 
 /**
  * Sticky top nav rendered by the root layout on every page.
@@ -27,8 +27,8 @@ export default async function ExperimentNav() {
             Beta
           </span>
         </Link>
-        {/* Mobile logo button — opens drawer */}
-        <MobileNavDrawer />
+        {/* Mobile logo button — opens overlay menu */}
+        <MobileNavMenu />
         <div className="hidden md:flex items-center gap-7 text-sm text-text-secondary">
           <Link href="/my-decks" className="hover:text-text-primary transition">Decks</Link>
           <Link href="/meta-decks" className="hover:text-text-primary transition">Meta</Link>
