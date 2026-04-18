@@ -17,8 +17,8 @@ export default async function ExperimentNav() {
   return (
     <nav className="sticky top-0 z-30 backdrop-blur-xl bg-bg/70 border-b border-black/5">
       <div className="mx-auto max-w-6xl px-6 h-14 flex items-center justify-between">
-        {/* Universal nav trigger — monogram opens dropdown on all breakpoints */}
-        <MobileNavMenu />
+        {/* Universal nav trigger — monogram opens full-screen takeover */}
+        <MobileNavMenu isAuthed={!!user} />
         <div className="flex items-center gap-3">
           {user ? (
             <Link

@@ -5,23 +5,26 @@ import { createPortal } from "react-dom";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
+interface Props {
+  /** Passed from the server component so auth buttons render correctly. */
+  isAuthed: boolean;
+}
+
 /**
- * Universal nav dropdown triggered by the TD monogram — mobile AND desktop.
+ * Full-screen nav takeover triggered by the TD monogram.
  *
- * On mobile  : panel spans left-4/right-4 (full-width-minus-gutter).
- * On desktop : panel is anchored to the monogram's left edge (via
- *              getBoundingClientRect on open) and capped at w-52.
+ * When open, covers the entire viewport with solid bg-bg gray — same token
+ * as the page background (#f2f2f2), matching the themeColor so iOS chrome
+ * blends seamlessly. The panel contains its own header row (identical to the
+ * real nav) so there is no visible seam or color break at the top.
  *
- * Rendered via portal so it escapes the nav's backdrop-filter stacking
- * context. No full-viewport backdrop — "click outside" uses a pointerdown
- * document listener so iOS Safari never reads a gray overlay at the
- * screen edges and doesn't retint the browser chrome.
+ * No full-viewport backdrop hack — the panel itself IS the background.
+ * The real nav header sits below the panel (z-30 < z-[110]) and is revealed
+ * when the panel fades out on close.
  */
-export default function MobileNavMenu() {
+export default function MobileNavMenu({ isAuthed }: Props) {
   const [open, setOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
-  // Desktop: panel left edge anchored to the monogram; null = mobile layout.
-  const [desktopLeft, setDesktopLeft] = useState<number | null>(null);
   const pathname = usePathname();
   const triggerRef = useRef<HTMLButtonElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
@@ -33,55 +36,59 @@ export default function MobileNavMenu() {
     setOpen(false);
   }, [pathname]);
 
-  // Escape key + pointer-down outside panel
+  // Escape key + Tab focus trap
   useEffect(() => {
-    if (!open) return;
+    if (!open || !panelRef.current) return;
+
+    const panel = panelRef.current;
+    const getFocusable = () =>
+      Array.from(
+        panel.querySelectorAll<HTMLElement>(
+          'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])'
+        )
+      );
+
+    // Focus first element (the in-panel close trigger)
+    getFocusable()[0]?.focus();
 
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") close();
-    };
-
-    const onPointerDown = (e: PointerEvent) => {
-      if (
-        !panelRef.current?.contains(e.target as Node) &&
-        !triggerRef.current?.contains(e.target as Node)
-      ) {
+      if (e.key === "Escape") {
         close();
+        return;
+      }
+      if (e.key === "Tab") {
+        const focusable = getFocusable();
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        if (e.shiftKey) {
+          if (document.activeElement === first) {
+            e.preventDefault();
+            last?.focus();
+          }
+        } else {
+          if (document.activeElement === last) {
+            e.preventDefault();
+            first?.focus();
+          }
+        }
       }
     };
-
-    // Move focus into the panel's first link
-    panelRef.current?.querySelector<HTMLAnchorElement>("a")?.focus();
 
     document.addEventListener("keydown", onKey);
-    document.addEventListener("pointerdown", onPointerDown);
-    return () => {
-      document.removeEventListener("keydown", onKey);
-      document.removeEventListener("pointerdown", onPointerDown);
-    };
+    return () => document.removeEventListener("keydown", onKey);
   }, [open]);
-
-  const toggle = () => {
-    if (!open && triggerRef.current) {
-      // On desktop (md+), anchor panel to the button's left edge.
-      if (window.matchMedia("(min-width: 768px)").matches) {
-        setDesktopLeft(triggerRef.current.getBoundingClientRect().left);
-      } else {
-        setDesktopLeft(null);
-      }
-    }
-    setOpen((o) => !o);
-  };
 
   const close = () => {
     setOpen(false);
     triggerRef.current?.focus();
   };
 
+  const toggle = () => setOpen((o) => !o);
+
   const INTERNAL_LINKS = [
     { href: "/", label: "Create a Deck Profile" },
-    { href: "/my-decks", label: "My Decks" },
     { href: "/meta-decks", label: "Top 30 Meta Decks" },
+    { href: "/my-decks", label: "My Decks" },
   ];
 
   const EXTERNAL_LINKS = [
@@ -91,25 +98,77 @@ export default function MobileNavMenu() {
   ];
 
   const linkClass =
-    "flex items-center px-3 py-2.5 text-sm font-medium text-text-secondary hover:text-text-primary hover:bg-black/5 rounded-xl transition";
+    "block py-2 text-lg font-medium text-text-secondary hover:text-text-primary transition-colors";
 
   const panel = (
     <div
       ref={panelRef}
-      id="mobile-nav-panel"
-      style={desktopLeft !== null ? { left: desktopLeft } : undefined}
+      id="site-nav-panel"
+      role="dialog"
+      aria-label="Site navigation"
+      aria-modal="true"
       className={[
-        "fixed top-14 z-[110] bg-surface border-2 border-black/10 rounded-2xl shadow-sm",
-        "transition-all duration-150 origin-top",
-        // Mobile: full-width-minus-gutter; Desktop: anchored width
-        desktopLeft !== null ? "w-52" : "left-4 right-4",
+        // Full-screen, solid site-gray — same as --bg so iOS chrome blends
+        "fixed inset-0 z-[110] bg-bg flex flex-col",
+        // Fade + slight upward slide; both directions animated
+        "transition-all duration-200 ease-out",
         open
-          ? "opacity-100 scale-100 pointer-events-auto"
-          : "opacity-0 scale-95 pointer-events-none",
+          ? "opacity-100 translate-y-0 pointer-events-auto"
+          : "opacity-0 -translate-y-2 pointer-events-none",
       ].join(" ")}
     >
-      <nav aria-label="Site navigation" className="p-2">
-        <ul className="flex flex-col gap-0.5">
+      {/* ── Header row ── mirrors the real nav exactly (h-14, px-6, border-b)
+           so there is zero visible seam when the panel opens over the header. */}
+      <div className="flex-shrink-0 h-14 flex items-center justify-between px-6 border-b border-black/5">
+        {/* Monogram — acts as the close trigger inside the panel */}
+        <button
+          onClick={close}
+          aria-label="Close navigation menu"
+          className="flex items-center gap-2"
+        >
+          <div className="h-7 w-7 rounded-lg bg-gradient-to-br from-[#F2A20C] to-[#A60D0D] flex items-center justify-center text-[11px] font-black text-white">
+            TD
+          </div>
+          <span className="font-semibold tracking-tight">Dexter</span>
+          <span className="ml-2 text-[10px] uppercase tracking-widest text-text-muted border border-black/10 rounded-full px-2 py-0.5">
+            Beta
+          </span>
+        </button>
+
+        {/* Auth buttons — same styling as the real nav */}
+        <div className="flex items-center gap-3">
+          {isAuthed ? (
+            <Link
+              href="/profile"
+              onClick={close}
+              className="text-sm font-medium bg-black text-white rounded-full px-4 py-1.5 hover:bg-black/85 transition"
+            >
+              Profile
+            </Link>
+          ) : (
+            <>
+              <Link
+                href="/sign-in"
+                onClick={close}
+                className="text-sm text-text-secondary hover:text-text-primary transition"
+              >
+                Sign in
+              </Link>
+              <Link
+                href="/sign-in"
+                onClick={close}
+                className="text-sm font-medium bg-black text-white rounded-full px-4 py-1.5 hover:bg-black/85 transition"
+              >
+                Get started
+              </Link>
+            </>
+          )}
+        </div>
+      </div>
+
+      {/* ── Nav links ── */}
+      <nav className="flex-1 px-6 pt-10 pb-12 overflow-y-auto">
+        <ul className="flex flex-col gap-1">
           {INTERNAL_LINKS.map(({ href, label }) => (
             <li key={href}>
               <Link href={href} className={linkClass} onClick={close}>
@@ -118,8 +177,7 @@ export default function MobileNavMenu() {
             </li>
           ))}
 
-          {/* Divider between app sections and external links */}
-          <li role="separator" className="my-1 border-t border-black/8" />
+          <li role="separator" className="my-4 border-t border-black/8" />
 
           {EXTERNAL_LINKS.map(({ href, label }) => (
             <li key={href}>
@@ -141,15 +199,15 @@ export default function MobileNavMenu() {
 
   return (
     <>
-      {/* Trigger — visible on ALL breakpoints (mobile + desktop) */}
+      {/* Trigger — always visible in the real nav header */}
       <button
         ref={triggerRef}
         className="flex items-center gap-2"
         onClick={toggle}
         aria-label="Toggle navigation menu"
         aria-expanded={open}
-        aria-controls="mobile-nav-panel"
-        aria-haspopup="true"
+        aria-controls="site-nav-panel"
+        aria-haspopup="dialog"
       >
         <div className="h-7 w-7 rounded-lg bg-gradient-to-br from-[#F2A20C] to-[#A60D0D] flex items-center justify-center text-[11px] font-black text-white">
           TD
