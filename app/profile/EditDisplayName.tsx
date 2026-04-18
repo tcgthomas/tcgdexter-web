@@ -116,7 +116,7 @@ export default function EditDisplayName({ initialName }: Props) {
       )}
 
       {error && (
-        <p className="absolute mt-12 text-xs text-red-600">{error}</p>
+        <p className="absolute mt-12 text-xs text-accent">{error}</p>
       )}
     </div>
   );

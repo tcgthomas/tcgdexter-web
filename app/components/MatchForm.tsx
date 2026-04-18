@@ -279,7 +279,7 @@ export default function MatchForm({
         )}
       </div>
 
-      {error && <p className="text-xs text-red-600 mb-2">{error}</p>}
+      {error && <p className="text-xs text-accent mb-2">{error}</p>}
 
       <div className="flex gap-2">
         <button

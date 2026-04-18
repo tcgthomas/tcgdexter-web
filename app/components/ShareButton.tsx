@@ -134,7 +134,7 @@ export default function ShareButton({ deckList, analysis, className }: Props) {
             />
 
             {shareError && (
-              <p className="mt-2 text-xs text-red-600">{shareError}</p>
+              <p className="mt-2 text-xs text-accent">{shareError}</p>
             )}
 
             <div className="mt-4">

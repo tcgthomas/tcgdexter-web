@@ -145,7 +145,7 @@ export default function MatchLog({ savedDeckId, initialMatches, open, onOpenChan
           <div className="flex items-center gap-2 text-sm">
             <span className="font-semibold text-green-700">{wins}W</span>
             <span className="text-text-muted">-</span>
-            <span className="font-semibold text-red-700">{losses}L</span>
+            <span className="font-semibold text-accent">{losses}L</span>
             {draws > 0 && (
               <>
                 <span className="text-text-muted">-</span>
@@ -269,7 +269,7 @@ export default function MatchLog({ savedDeckId, initialMatches, open, onOpenChan
                   </button>
                   <button
                     onClick={() => handleDelete(match.id)}
-                    className="text-text-muted/50 hover:text-red-600 transition-colors"
+                    className="text-text-muted/50 hover:text-accent transition-colors"
                     title="Delete match"
                   >
                     <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>

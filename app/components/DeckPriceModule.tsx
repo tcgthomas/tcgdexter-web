@@ -126,7 +126,7 @@ export default function DeckPriceModule({ deckPrice, theme = "default" }: Props)
                   </button>
                 </div>
                 {alertStatus === "error" && (
-                  <p className="text-xs text-red-600 mt-2">Something went wrong, try again.</p>
+                  <p className="text-xs text-accent mt-2">Something went wrong, try again.</p>
                 )}
               </>
             )

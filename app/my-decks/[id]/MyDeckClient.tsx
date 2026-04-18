@@ -198,7 +198,7 @@ export default function MyDeckClient({
           Cancel
         </button>
       </div>
-      {renameError && <p className="text-xs text-red-600">{renameError}</p>}
+      {renameError && <p className="text-xs text-accent">{renameError}</p>}
     </div>
   ) : false;
 

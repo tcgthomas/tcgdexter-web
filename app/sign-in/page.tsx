@@ -132,7 +132,7 @@ function SignInForm() {
                 disabled={status === "loading"}
                 className="w-full rounded-lg border border-black/10 bg-white px-4 py-3 text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:border-black/20 disabled:opacity-50 [font-size:16px] sm:text-sm"
               />
-              {errorMsg && <p className="mt-3 text-xs text-red-600">{errorMsg}</p>}
+              {errorMsg && <p className="mt-3 text-xs text-accent">{errorMsg}</p>}
               <GradientButton
                 type="submit"
                 showIcon={false}
