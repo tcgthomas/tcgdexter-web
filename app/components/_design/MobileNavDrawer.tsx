@@ -34,12 +34,10 @@ export default function MobileNavDrawer() {
     };
 
     document.addEventListener("keydown", handleKeyDown);
-    document.body.style.overflow = "hidden";
     closeButtonRef.current?.focus();
 
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
-      document.body.style.overflow = "";
     };
   }, [open]);
 
