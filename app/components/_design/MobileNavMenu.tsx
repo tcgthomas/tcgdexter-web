@@ -79,9 +79,9 @@ export default function MobileNavMenu() {
   };
 
   const INTERNAL_LINKS = [
-    { href: "/", label: "Profiler" },
+    { href: "/", label: "Create a Deck Profile" },
     { href: "/my-decks", label: "My Decks" },
-    { href: "/meta-decks", label: "Meta" },
+    { href: "/meta-decks", label: "Top 30 Meta Decks" },
   ];
 
   const EXTERNAL_LINKS = [
