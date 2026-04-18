@@ -4,6 +4,7 @@ import { TRAINER_TIERS, getTierByTitle, getNextTier } from "@/lib/trainer-tiers"
 import EditDisplayName from "@/app/profile/EditDisplayName";
 import SignOutButton from "@/app/profile/SignOutButton";
 import SectionHeader from "@/app/components/ui/SectionHeader";
+import MatchHeatMap from "@/app/profile/MatchHeatMap";
 
 /**
  * Experiment mirror of /profile. Same auth + Supabase queries, same
@@ -29,12 +30,22 @@ export default async function ProfilePage() {
   const currentTier = getTierByTitle(currentTitle);
   const nextTier = getNextTier(highWaterMark);
 
-  const { data: matchStats } = await supabase.from("matches").select("result");
+  const { data: matchStats } = await supabase
+    .from("matches")
+    .select("result, played_at, created_at");
   const globalWins = matchStats?.filter((m) => m.result === "win").length ?? 0;
   const globalLosses = matchStats?.filter((m) => m.result === "loss").length ?? 0;
   const globalDraws = matchStats?.filter((m) => m.result === "draw").length ?? 0;
   const globalTotal = globalWins + globalLosses + globalDraws;
   const globalWinRate = globalTotal > 0 ? ((globalWins / globalTotal) * 100).toFixed(1) : null;
+
+  const joinedDate = profile?.created_at
+    ? new Date(profile.created_at).toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+      })
+    : "—";
 
   return (
     <main className="mx-auto max-w-2xl px-6 pt-[calc(env(safe-area-inset-top)_+_1.68rem)] md:pt-[calc(env(safe-area-inset-top)_+_3rem)] pb-24">
@@ -42,67 +53,91 @@ export default async function ProfilePage() {
         <SectionHeader eyebrow="Account" title="Profile" />
       </div>
 
-      {/* User info */}
-      <div className="rounded-2xl border border-black/8 bg-white/90 backdrop-blur-xl shadow-sm overflow-hidden">
-        <EditDisplayName initialName={profile?.display_name ?? "—"} />
-        <Row label="Email" value={user.email ?? "—"} />
-        <Row
-          label="Joined"
-          value={
-            profile?.created_at
-              ? new Date(profile.created_at).toLocaleDateString("en-US", {
-                  month: "short", day: "numeric", year: "numeric",
-                })
-              : "—"
-          }
-          last
-        />
-      </div>
-
-      {/* Current trainer title */}
-      <div className="mt-6 rounded-2xl border border-black/8 bg-white/90 backdrop-blur-xl shadow-sm p-5">
-        <div className="flex items-center gap-4">
-          <img
-            src={`/badges/${currentTier.slug}.svg`}
-            alt={currentTier.title}
-            className="w-14 h-14 flex-shrink-0"
-          />
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-widest text-text-muted">
-              Trainer Title
-            </p>
-            <p className={`text-lg font-bold ${currentTier.color}`}>
-              {currentTier.title}
-            </p>
-            <p className="text-xs text-text-muted mt-0.5">
-              {highWaterMark} deck{highWaterMark !== 1 ? "s" : ""} saved
-            </p>
-          </div>
+      {/* Row 1 — half-width pair: User Info | Trainer Rank */}
+      <div className="grid grid-cols-2 gap-4 items-stretch">
+        {/* User info */}
+        <div className="h-full flex flex-col rounded-2xl border border-black/8 bg-white/90 backdrop-blur-xl shadow-sm overflow-hidden">
+          <EditDisplayName initialName={profile?.display_name ?? "—"} />
+          <Row label="Email" value={user.email ?? "—"} />
+          <Row label="Joined" value={joinedDate} last />
         </div>
 
-        {nextTier && (
-          <div className="mt-4 pt-4 border-t border-black/5">
-            <div className="flex items-center justify-between text-xs text-text-muted mb-2">
-              <span>Next: {nextTier.title}</span>
-              <span>{highWaterMark} / {nextTier.threshold}</span>
+        {/* Current trainer title */}
+        <div className="h-full flex flex-col rounded-2xl border border-black/8 bg-white/90 backdrop-blur-xl shadow-sm p-5">
+          <div className="flex items-center gap-3">
+            <img
+              src={`/badges/${currentTier.slug}.svg`}
+              alt={currentTier.title}
+              className="w-12 h-12 flex-shrink-0"
+            />
+            <div className="min-w-0">
+              <p className="text-xs font-semibold uppercase tracking-widest text-text-muted">
+                Trainer Title
+              </p>
+              <p className={`text-sm font-bold leading-tight ${currentTier.color}`}>
+                {currentTier.title}
+              </p>
+              <p className="text-xs text-text-muted mt-0.5">
+                {highWaterMark} deck{highWaterMark !== 1 ? "s" : ""} saved
+              </p>
             </div>
-            <div className="h-2 rounded-full bg-black/5 overflow-hidden">
-              <div
-                className="h-full rounded-full bg-[linear-gradient(90deg,#F2A20C_0%,#D91E0D_50%,#A60D0D_100%)] transition-all"
-                style={{
-                  width: `${Math.min((highWaterMark / nextTier.threshold) * 100, 100)}%`,
-                }}
-              />
-            </div>
-            <p className="text-xs text-text-muted mt-1.5">
-              {nextTier.threshold - highWaterMark} more deck
-              {nextTier.threshold - highWaterMark !== 1 ? "s" : ""} to unlock
-            </p>
           </div>
-        )}
+
+          {nextTier && (
+            <div className="mt-auto pt-4">
+              <div className="flex items-center justify-between text-xs text-text-muted mb-2">
+                <span className="truncate">Next: {nextTier.title}</span>
+                <span className="flex-shrink-0 ml-2">
+                  {highWaterMark} / {nextTier.threshold}
+                </span>
+              </div>
+              <div className="h-2 rounded-full bg-black/5 overflow-hidden">
+                <div
+                  className="h-full rounded-full bg-[linear-gradient(90deg,#F2A20C_0%,#D91E0D_50%,#A60D0D_100%)] transition-all"
+                  style={{
+                    width: `${Math.min((highWaterMark / nextTier.threshold) * 100, 100)}%`,
+                  }}
+                />
+              </div>
+              <p className="text-xs text-text-muted mt-1.5">
+                {nextTier.threshold - highWaterMark} more deck
+                {nextTier.threshold - highWaterMark !== 1 ? "s" : ""} to unlock
+              </p>
+            </div>
+          )}
+        </div>
       </div>
 
-      {/* Tier progression ladder */}
+      {/* Row 2 — Overall W/L (full width, conditional) */}
+      {globalTotal > 0 && (
+        <div className="mt-6 rounded-2xl border border-black/8 bg-white/90 backdrop-blur-xl shadow-sm p-5">
+          <h2 className="text-lg font-semibold text-text-primary mb-3">Overall Record</h2>
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 text-lg">
+              <span className="font-bold text-emerald-700">{globalWins}W</span>
+              <span className="text-text-muted">-</span>
+              <span className="font-bold text-rose-700">{globalLosses}L</span>
+              {globalDraws > 0 && (
+                <>
+                  <span className="text-text-muted">-</span>
+                  <span className="font-bold text-stone-600">{globalDraws}D</span>
+                </>
+              )}
+            </div>
+            {globalWinRate && (
+              <span className="text-sm text-text-muted">{globalWinRate}% win rate</span>
+            )}
+          </div>
+          <p className="text-xs text-text-muted mt-2">
+            {globalTotal} match{globalTotal !== 1 ? "es" : ""} across all decks
+          </p>
+        </div>
+      )}
+
+      {/* Row 3 — Match activity heat map (full width) */}
+      <MatchHeatMap matches={matchStats ?? []} />
+
+      {/* Row 4 — Tier progression ladder (full width) */}
       <div className="mt-6 rounded-2xl border border-black/8 bg-white/90 backdrop-blur-xl shadow-sm p-5">
         <h2 className="text-lg font-semibold text-text-primary mb-4">Trainer Progression</h2>
         <div className="flex flex-col gap-1">
@@ -156,32 +191,6 @@ export default async function ProfilePage() {
         </div>
       </div>
 
-      {/* Global match record */}
-      {globalTotal > 0 && (
-        <div className="mt-6 rounded-2xl border border-black/8 bg-white/90 backdrop-blur-xl shadow-sm p-5">
-          <h2 className="text-lg font-semibold text-text-primary mb-3">Overall Record</h2>
-          <div className="flex items-center gap-3">
-            <div className="flex items-center gap-2 text-lg">
-              <span className="font-bold text-emerald-700">{globalWins}W</span>
-              <span className="text-text-muted">-</span>
-              <span className="font-bold text-rose-700">{globalLosses}L</span>
-              {globalDraws > 0 && (
-                <>
-                  <span className="text-text-muted">-</span>
-                  <span className="font-bold text-stone-600">{globalDraws}D</span>
-                </>
-              )}
-            </div>
-            {globalWinRate && (
-              <span className="text-sm text-text-muted">{globalWinRate}% win rate</span>
-            )}
-          </div>
-          <p className="text-xs text-text-muted mt-2">
-            {globalTotal} match{globalTotal !== 1 ? "es" : ""} across all decks
-          </p>
-        </div>
-      )}
-
       <div className="mt-6">
         <SignOutButton />
       </div>
@@ -200,12 +209,12 @@ function Row({
 }) {
   return (
     <div
-      className={`flex items-center justify-between px-5 py-3.5 ${last ? "" : "border-b border-black/5"}`}
+      className={`flex items-center justify-between px-4 py-3 ${last ? "" : "border-b border-black/5"}`}
     >
-      <span className="text-xs font-semibold uppercase tracking-widest text-text-muted">
+      <span className="text-[11px] font-semibold uppercase tracking-widest text-text-muted">
         {label}
       </span>
-      <span className="text-sm font-semibold text-text-primary">{value}</span>
+      <span className="text-xs font-semibold text-text-primary truncate ml-2">{value}</span>
     </div>
   );
 }
