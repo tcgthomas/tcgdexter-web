@@ -206,12 +206,14 @@ export default function MobileNavMenu({ isAuthed }: Props) {
         // overscroll-contain prevents momentum scroll bleeding to the page
         // behind on iOS Safari even if overflow:hidden on body isn't airtight.
         "fixed inset-0 z-[110] bg-bg flex flex-col overscroll-contain",
-        // Target only opacity + transform; transition-all can pick up
-        // unintended property changes and cause subtle visual artifacts.
-        "transition-[opacity,transform] duration-200 ease-out",
+        // Opacity-only transition: the panel's replica header mirrors the
+        // real nav pixel-for-pixel, so any transform would make the replica
+        // buttons drift relative to the static toolbar underneath and look
+        // like the toolbar is jumping. Fade only = seamless takeover.
+        "transition-opacity duration-200 ease-out",
         isOpen
-          ? "opacity-100 translate-y-0 pointer-events-auto"
-          : "opacity-0 -translate-y-2 pointer-events-none",
+          ? "opacity-100 pointer-events-auto"
+          : "opacity-0 pointer-events-none",
       ].join(" ")}
     >
       {/* Header row — h-14 px-6 border-b mirrors the real nav exactly.
