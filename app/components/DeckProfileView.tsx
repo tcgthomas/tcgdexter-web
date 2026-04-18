@@ -482,9 +482,9 @@ export default function DeckProfileView({
 
       {/* ── Header ─────────────────────────────────────────── */}
       <header
-        className={`flex-shrink-0 px-6 pt-[calc(env(safe-area-inset-top)_+_1.68rem)] md:pt-[calc(env(safe-area-inset-top)_+_3rem)] ${effectiveSubtitle ? "pb-8" : "pb-4"}`}
+        className={`flex-shrink-0 px-6 ${variant === "shared" ? "pt-[calc(env(safe-area-inset-top)_+_1.176rem)] md:pt-[calc(env(safe-area-inset-top)_+_2.1rem)]" : "pt-[calc(env(safe-area-inset-top)_+_1.68rem)] md:pt-[calc(env(safe-area-inset-top)_+_3rem)]"} ${effectiveSubtitle ? "pb-8" : "pb-4"}`}
       >
-        {variant !== "fresh" && (
+        {variant === "shared" && (
           <div className="flex justify-center mb-4">
             <img
               src="/logo-light.png"
