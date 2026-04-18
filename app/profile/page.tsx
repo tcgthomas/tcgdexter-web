@@ -208,13 +208,11 @@ function Row({
   last?: boolean;
 }) {
   return (
-    <div
-      className={`flex items-center justify-between px-4 py-3 ${last ? "" : "border-b border-black/5"}`}
-    >
-      <span className="text-[11px] font-semibold uppercase tracking-widest text-text-muted">
+    <div className={`px-4 py-3 ${last ? "" : "border-b border-black/5"}`}>
+      <p className="text-[11px] font-semibold uppercase tracking-widest text-text-muted">
         {label}
-      </span>
-      <span className="text-xs font-semibold text-text-primary truncate ml-2">{value}</span>
+      </p>
+      <p className="mt-0.5 text-sm font-semibold text-text-primary truncate">{value}</p>
     </div>
   );
 }

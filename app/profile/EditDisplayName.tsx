@@ -62,13 +62,13 @@ export default function EditDisplayName({ initialName }: Props) {
   }
 
   return (
-    <div className="flex items-center justify-between px-5 py-3.5 border-b border-bg bg-white">
-      <span className="text-xs font-medium uppercase tracking-widest text-text-muted">
+    <div className="px-4 py-3 border-b border-black/5 bg-white">
+      <p className="text-[11px] font-semibold uppercase tracking-widest text-text-muted">
         Display name
-      </span>
+      </p>
 
       {editing ? (
-        <div className="flex items-center gap-2">
+        <div className="mt-1 flex items-center gap-2">
           <input
             type="text"
             value={input}
@@ -80,7 +80,7 @@ export default function EditDisplayName({ initialName }: Props) {
               if (e.key === "Enter") handleSave();
               if (e.key === "Escape") handleCancel();
             }}
-            className="w-36 rounded-md border border-border bg-bg px-2 py-1 text-sm text-text-primary text-right focus:outline-none focus:border-accent/40 focus:ring-1 focus:ring-accent/20 [font-size:16px] sm:text-sm"
+            className="flex-1 min-w-0 rounded-md border border-border bg-bg px-2 py-1 text-sm text-text-primary focus:outline-none focus:border-accent/40 focus:ring-1 focus:ring-accent/20 [font-size:16px] sm:text-sm"
           />
           <button
             onClick={handleSave}
@@ -98,8 +98,8 @@ export default function EditDisplayName({ initialName }: Props) {
           </button>
         </div>
       ) : (
-        <div className="flex items-center gap-2">
-          <span className="text-sm font-semibold text-text-primary">
+        <div className="mt-0.5 flex items-center gap-2 min-w-0">
+          <span className="text-sm font-semibold text-text-primary truncate">
             {name}
           </span>
           <button
@@ -108,7 +108,7 @@ export default function EditDisplayName({ initialName }: Props) {
               setEditing(true);
               setError(null);
             }}
-            className="text-xs font-semibold text-accent hover:text-accent-light"
+            className="flex-shrink-0 text-xs font-semibold text-accent hover:text-accent-light"
           >
             Edit
           </button>
@@ -116,7 +116,7 @@ export default function EditDisplayName({ initialName }: Props) {
       )}
 
       {error && (
-        <p className="absolute mt-12 text-xs text-accent">{error}</p>
+        <p className="mt-1 text-xs text-accent">{error}</p>
       )}
     </div>
   );
