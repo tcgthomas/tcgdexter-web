@@ -5,6 +5,9 @@ import { createPortal } from "react-dom";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
+/** Must match the CSS transition-duration on the panel div below. */
+const TRANSITION_MS = 200;
+
 interface Props {
   /** Passed from the server component so auth buttons render correctly. */
   isAuthed: boolean;
@@ -13,47 +16,139 @@ interface Props {
 /**
  * Full-screen nav takeover triggered by the TD monogram.
  *
- * When open, covers the entire viewport with solid bg-bg gray — same token
- * as the page background (#f2f2f2), matching the themeColor so iOS chrome
- * blends seamlessly. The panel contains its own header row (identical to the
- * real nav) so there is no visible seam or color break at the top.
+ * State model
+ * ───────────
+ * isOpen    — drives CSS open/closed classes. Flipping this triggers the
+ *             CSS transition. Never flip it on the same frame as a DOM
+ *             insertion — use double-rAF on enter.
+ * isVisible — drives portal mount/unmount. True while the panel is visible
+ *             OR still animating out. Unmounted only after the exit transition
+ *             finishes (via setTimeout matched to TRANSITION_MS).
  *
- * No full-viewport backdrop hack — the panel itself IS the background.
- * The real nav header sits below the panel (z-30 < z-[110]) and is revealed
- * when the panel fades out on close.
+ * Scroll lock
+ * ───────────
+ * Uses position:fixed + top:-scrollY (the only approach that reliably
+ * prevents scroll on iOS Safari). scrollLockedRef guards against
+ * double-lock/unlock so unlockScroll() is safe to call from any code path.
  */
 export default function MobileNavMenu({ isAuthed }: Props) {
-  const [open, setOpen] = useState(false);
-  const [mounted, setMounted] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
+
   const pathname = usePathname();
   const triggerRef = useRef<HTMLButtonElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => setMounted(true), []);
+  // Scroll-lock state
+  const scrollYRef = useRef(0);
+  const prevBodyStyleRef = useRef("");
+  const scrollLockedRef = useRef(false);
 
-  // Close on route change
+  // Pending animation handles
+  const rafRef = useRef(0);
+  const closeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // ── Scroll lock helpers ──────────────────────────────────────────────────────
+
+  const lockScroll = () => {
+    if (scrollLockedRef.current) return;
+    scrollLockedRef.current = true;
+    prevBodyStyleRef.current = document.body.getAttribute("style") ?? "";
+    scrollYRef.current = window.scrollY;
+    document.body.style.position = "fixed";
+    document.body.style.top = `-${scrollYRef.current}px`;
+    document.body.style.width = "100%";
+    document.body.style.overflow = "hidden";
+  };
+
+  const unlockScroll = () => {
+    if (!scrollLockedRef.current) return;
+    scrollLockedRef.current = false;
+    if (prevBodyStyleRef.current) {
+      document.body.setAttribute("style", prevBodyStyleRef.current);
+    } else {
+      document.body.removeAttribute("style");
+    }
+    window.scrollTo(0, scrollYRef.current);
+  };
+
+  // ── Open / close ─────────────────────────────────────────────────────────────
+
+  const openMenu = () => {
+    // Cancel any in-flight close
+    if (closeTimerRef.current) clearTimeout(closeTimerRef.current);
+    cancelAnimationFrame(rafRef.current);
+
+    lockScroll();
+    // 1. Mount portal: panel is in DOM but still in closed CSS state.
+    setIsVisible(true);
+    // 2. Double rAF: browser has now painted the closed state, so the CSS
+    //    transition has a valid starting point and won't flash.
+    rafRef.current = requestAnimationFrame(() => {
+      rafRef.current = requestAnimationFrame(() => {
+        setIsOpen(true);
+      });
+    });
+  };
+
+  const closeMenu = () => {
+    cancelAnimationFrame(rafRef.current);
+    unlockScroll();
+    // Flip CSS to closed — transition animates out.
+    setIsOpen(false);
+    triggerRef.current?.focus();
+    // Unmount portal only after the exit animation finishes.
+    closeTimerRef.current = setTimeout(
+      () => setIsVisible(false),
+      TRANSITION_MS,
+    );
+  };
+
+  const toggle = () => {
+    // Guard mid-open-animation state with scrollLockedRef (isOpen is still
+    // false during the double-rAF window, but the lock is already set).
+    if (isOpen || scrollLockedRef.current) closeMenu();
+    else openMenu();
+  };
+
+  // ── Side effects ─────────────────────────────────────────────────────────────
+
+  // Route change: close menu if it was open or mid-animation.
   useEffect(() => {
-    setOpen(false);
+    if (!scrollLockedRef.current && !isOpen) return;
+    closeMenu();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname]);
 
-  // Escape key + Tab focus trap
+  // Bulletproof unmount cleanup — releases scroll lock even if the component
+  // tree unmounts while the menu is open (e.g. hard navigation).
   useEffect(() => {
-    if (!open || !panelRef.current) return;
+    return () => {
+      cancelAnimationFrame(rafRef.current);
+      if (closeTimerRef.current) clearTimeout(closeTimerRef.current);
+      unlockScroll();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
+  // Escape key + Tab focus trap (active only while open).
+  useEffect(() => {
+    if (!isOpen || !panelRef.current) return;
     const panel = panelRef.current;
+
     const getFocusable = () =>
       Array.from(
         panel.querySelectorAll<HTMLElement>(
-          'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])'
-        )
+          'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])',
+        ),
       );
 
-    // Focus first element (the in-panel close trigger)
+    // Move focus into panel immediately.
     getFocusable()[0]?.focus();
 
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
-        close();
+        closeMenu();
         return;
       }
       if (e.key === "Tab") {
@@ -76,14 +171,10 @@ export default function MobileNavMenu({ isAuthed }: Props) {
 
     document.addEventListener("keydown", onKey);
     return () => document.removeEventListener("keydown", onKey);
-  }, [open]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen]);
 
-  const close = () => {
-    setOpen(false);
-    triggerRef.current?.focus();
-  };
-
-  const toggle = () => setOpen((o) => !o);
+  // ── Nav link data ─────────────────────────────────────────────────────────────
 
   const INTERNAL_LINKS = [
     { href: "/", label: "Create a Deck Profile" },
@@ -100,6 +191,8 @@ export default function MobileNavMenu({ isAuthed }: Props) {
   const linkClass =
     "block py-2 text-lg font-medium text-text-secondary hover:text-text-primary transition-colors";
 
+  // ── Panel (rendered into a portal at document.body) ──────────────────────────
+
   const panel = (
     <div
       ref={panelRef}
@@ -108,21 +201,23 @@ export default function MobileNavMenu({ isAuthed }: Props) {
       aria-label="Site navigation"
       aria-modal="true"
       className={[
-        // Full-screen, solid site-gray — same as --bg so iOS chrome blends
+        // Full-screen solid gray — bg-bg (#f2f2f2) matches themeColor so
+        // iOS chrome tints seamlessly when the panel is open.
         "fixed inset-0 z-[110] bg-bg flex flex-col",
-        // Fade + slight upward slide; both directions animated
-        "transition-all duration-200 ease-out",
-        open
+        // Target only opacity + transform; transition-all can pick up
+        // unintended property changes and cause subtle visual artifacts.
+        "transition-[opacity,transform] duration-200 ease-out",
+        isOpen
           ? "opacity-100 translate-y-0 pointer-events-auto"
           : "opacity-0 -translate-y-2 pointer-events-none",
       ].join(" ")}
     >
-      {/* ── Header row ── mirrors the real nav exactly (h-14, px-6, border-b)
-           so there is zero visible seam when the panel opens over the header. */}
+      {/* Header row — h-14 px-6 border-b mirrors the real nav exactly.
+          This is what prevents any visible seam on open. */}
       <div className="flex-shrink-0 h-14 flex items-center justify-between px-6 border-b border-black/5">
-        {/* Monogram — acts as the close trigger inside the panel */}
+        {/* Monogram — tapping it closes the menu */}
         <button
-          onClick={close}
+          onClick={closeMenu}
           aria-label="Close navigation menu"
           className="flex items-center gap-2"
         >
@@ -135,12 +230,12 @@ export default function MobileNavMenu({ isAuthed }: Props) {
           </span>
         </button>
 
-        {/* Auth buttons — same styling as the real nav */}
+        {/* Auth buttons — same styling as the real nav header */}
         <div className="flex items-center gap-3">
           {isAuthed ? (
             <Link
               href="/profile"
-              onClick={close}
+              onClick={closeMenu}
               className="text-sm font-medium bg-black text-white rounded-full px-4 py-1.5 hover:bg-black/85 transition"
             >
               Profile
@@ -149,14 +244,14 @@ export default function MobileNavMenu({ isAuthed }: Props) {
             <>
               <Link
                 href="/sign-in"
-                onClick={close}
+                onClick={closeMenu}
                 className="text-sm text-text-secondary hover:text-text-primary transition"
               >
                 Sign in
               </Link>
               <Link
                 href="/sign-in"
-                onClick={close}
+                onClick={closeMenu}
                 className="text-sm font-medium bg-black text-white rounded-full px-4 py-1.5 hover:bg-black/85 transition"
               >
                 Get started
@@ -166,12 +261,12 @@ export default function MobileNavMenu({ isAuthed }: Props) {
         </div>
       </div>
 
-      {/* ── Nav links ── */}
+      {/* Nav links */}
       <nav className="flex-1 px-6 pt-10 pb-12 overflow-y-auto">
         <ul className="flex flex-col gap-1">
           {INTERNAL_LINKS.map(({ href, label }) => (
             <li key={href}>
-              <Link href={href} className={linkClass} onClick={close}>
+              <Link href={href} className={linkClass} onClick={closeMenu}>
                 {label}
               </Link>
             </li>
@@ -186,7 +281,7 @@ export default function MobileNavMenu({ isAuthed }: Props) {
                 target="_blank"
                 rel="noopener noreferrer"
                 className={linkClass}
-                onClick={close}
+                onClick={closeMenu}
               >
                 {label}
               </a>
@@ -197,15 +292,16 @@ export default function MobileNavMenu({ isAuthed }: Props) {
     </div>
   );
 
+  // ── Trigger + portal ──────────────────────────────────────────────────────────
+
   return (
     <>
-      {/* Trigger — always visible in the real nav header */}
       <button
         ref={triggerRef}
         className="flex items-center gap-2"
         onClick={toggle}
         aria-label="Toggle navigation menu"
-        aria-expanded={open}
+        aria-expanded={isOpen}
         aria-controls="site-nav-panel"
         aria-haspopup="dialog"
       >
@@ -218,7 +314,7 @@ export default function MobileNavMenu({ isAuthed }: Props) {
         </span>
       </button>
 
-      {mounted && createPortal(panel, document.body)}
+      {isVisible && createPortal(panel, document.body)}
     </>
   );
 }
