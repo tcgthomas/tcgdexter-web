@@ -27,9 +27,10 @@ interface Props {
  *
  * Scroll lock
  * ───────────
- * Uses position:fixed + top:-scrollY (the only approach that reliably
- * prevents scroll on iOS Safari). scrollLockedRef guards against
- * double-lock/unlock so unlockScroll() is safe to call from any code path.
+ * Sets overflow:hidden on <html> and <body> (plus touch-action:none on body)
+ * while the panel is open. No position:fixed, no top:-scrollY, no scrollTo —
+ * so there is zero layout shift on open or close. scrollLockedRef guards
+ * against double-lock/unlock so unlockScroll() is safe from any code path.
  */
 export default function MobileNavMenu({ isAuthed }: Props) {
   const [isOpen, setIsOpen] = useState(false);
@@ -40,8 +41,9 @@ export default function MobileNavMenu({ isAuthed }: Props) {
   const panelRef = useRef<HTMLDivElement>(null);
 
   // Scroll-lock state
-  const scrollYRef = useRef(0);
-  const prevBodyStyleRef = useRef("");
+  const prevHtmlOverflowRef = useRef("");
+  const prevBodyOverflowRef = useRef("");
+  const prevBodyTouchActionRef = useRef("");
   const scrollLockedRef = useRef(false);
 
   // Pending animation handles
@@ -53,23 +55,21 @@ export default function MobileNavMenu({ isAuthed }: Props) {
   const lockScroll = () => {
     if (scrollLockedRef.current) return;
     scrollLockedRef.current = true;
-    prevBodyStyleRef.current = document.body.getAttribute("style") ?? "";
-    scrollYRef.current = window.scrollY;
-    document.body.style.position = "fixed";
-    document.body.style.top = `-${scrollYRef.current}px`;
-    document.body.style.width = "100%";
+    const html = document.documentElement;
+    prevHtmlOverflowRef.current = html.style.overflow;
+    prevBodyOverflowRef.current = document.body.style.overflow;
+    prevBodyTouchActionRef.current = document.body.style.touchAction;
+    html.style.overflow = "hidden";
     document.body.style.overflow = "hidden";
+    document.body.style.touchAction = "none";
   };
 
   const unlockScroll = () => {
     if (!scrollLockedRef.current) return;
     scrollLockedRef.current = false;
-    if (prevBodyStyleRef.current) {
-      document.body.setAttribute("style", prevBodyStyleRef.current);
-    } else {
-      document.body.removeAttribute("style");
-    }
-    window.scrollTo(0, scrollYRef.current);
+    document.documentElement.style.overflow = prevHtmlOverflowRef.current;
+    document.body.style.overflow = prevBodyOverflowRef.current;
+    document.body.style.touchAction = prevBodyTouchActionRef.current;
   };
 
   // ── Open / close ─────────────────────────────────────────────────────────────
@@ -203,7 +203,9 @@ export default function MobileNavMenu({ isAuthed }: Props) {
       className={[
         // Full-screen solid gray — bg-bg (#f2f2f2) matches themeColor so
         // iOS chrome tints seamlessly when the panel is open.
-        "fixed inset-0 z-[110] bg-bg flex flex-col",
+        // overscroll-contain prevents momentum scroll bleeding to the page
+        // behind on iOS Safari even if overflow:hidden on body isn't airtight.
+        "fixed inset-0 z-[110] bg-bg flex flex-col overscroll-contain",
         // Target only opacity + transform; transition-all can pick up
         // unintended property changes and cause subtle visual artifacts.
         "transition-[opacity,transform] duration-200 ease-out",
