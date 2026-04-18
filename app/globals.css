@@ -21,6 +21,13 @@
   html {
     background-color: var(--bg);
     scroll-behavior: smooth;
+    /* Reserve the scrollbar gutter permanently so toggling
+       overflow:hidden during the nav menu scroll-lock causes
+       no horizontal reflow. Without this, the reflow subtly
+       shifts the sticky toolbar's backdrop-blur sampling,
+       producing a perceived 1–2px jitter on menu open/close.
+       No-op on platforms with overlay scrollbars (macOS). */
+    scrollbar-gutter: stable;
   }
 
   /* Custom selection color */
