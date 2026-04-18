@@ -96,7 +96,7 @@ export default function MobileNavMenu({ isAuthed }: Props) {
     unlockScroll();
     // Flip CSS to closed — transition animates out.
     setIsOpen(false);
-    triggerRef.current?.focus();
+    triggerRef.current?.focus({ preventScroll: true });
     // Unmount portal only after the exit animation finishes.
     closeTimerRef.current = setTimeout(
       () => setIsVisible(false),
@@ -144,7 +144,7 @@ export default function MobileNavMenu({ isAuthed }: Props) {
       );
 
     // Move focus into panel immediately.
-    getFocusable()[0]?.focus();
+    getFocusable()[0]?.focus({ preventScroll: true });
 
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
@@ -158,12 +158,12 @@ export default function MobileNavMenu({ isAuthed }: Props) {
         if (e.shiftKey) {
           if (document.activeElement === first) {
             e.preventDefault();
-            last?.focus();
+            last?.focus({ preventScroll: true });
           }
         } else {
           if (document.activeElement === last) {
             e.preventDefault();
-            first?.focus();
+            first?.focus({ preventScroll: true });
           }
         }
       }
