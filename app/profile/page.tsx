@@ -55,11 +55,11 @@ export default async function ProfilePage() {
 
       {/* Row 1 — Combined account + trainer title card */}
       <div className="rounded-2xl border border-black/8 bg-white/90 backdrop-blur-xl shadow-sm overflow-hidden">
-        {/* Display name | Joined */}
-        <div className="grid grid-cols-2 border-b border-black/5">
-          <EditDisplayName initialName={profile?.display_name ?? "—"} />
-          <Row label="Joined" value={joinedDate} last />
-        </div>
+        {/* Display name | Joined (Joined hides while editing) */}
+        <EditDisplayName
+          initialName={profile?.display_name ?? "—"}
+          joinedDate={joinedDate}
+        />
 
         {/* Trainer title */}
         <div className="p-5">
@@ -197,21 +197,3 @@ export default async function ProfilePage() {
   );
 }
 
-function Row({
-  label,
-  value,
-  last = false,
-}: {
-  label: string;
-  value: React.ReactNode;
-  last?: boolean;
-}) {
-  return (
-    <div className={`px-4 py-3 ${last ? "" : "border-b border-black/5"}`}>
-      <p className="text-[11px] font-semibold uppercase tracking-widest text-text-muted">
-        {label}
-      </p>
-      <p className="mt-0.5 text-sm font-semibold text-text-primary truncate">{value}</p>
-    </div>
-  );
-}
