@@ -388,13 +388,13 @@ interface Props {
    * Which variant of the deck profile this is. Controls logo visibility,
    * save/share button layout, and default footer CTA.
    *
-   * - "fresh"  — freshly generated on home page; logo already rendered above,
+   * - "fresh"  — freshly generated on home page; no logo (rendered above),
    *              save + share two-button row.
-   * - "saved"  — viewing a saved deck (/my-decks/[id]); logo shown,
+   * - "saved"  — viewing a saved deck (/my-decks/[id]); no logo,
    *              share button fills the full row (no save button).
    * - "shared" — public shared link (/d/[shortId]); logo shown,
    *              save + share two-button row.
-   * - "meta"   — meta archetype page; logo shown,
+   * - "meta"   — meta archetype page; no logo,
    *              save + share two-button row.
    */
   variant: "fresh" | "saved" | "shared" | "meta";
