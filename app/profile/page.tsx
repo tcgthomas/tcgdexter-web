@@ -53,17 +53,16 @@ export default async function ProfilePage() {
         <SectionHeader eyebrow="Account" title="Profile" />
       </div>
 
-      {/* Row 1 — half-width pair: User Info | Trainer Rank */}
-      <div className="grid grid-cols-2 gap-4 items-stretch">
-        {/* User info */}
-        <div className="h-full flex flex-col rounded-2xl border border-black/8 bg-white/90 backdrop-blur-xl shadow-sm overflow-hidden">
+      {/* Row 1 — Combined account + trainer title card */}
+      <div className="rounded-2xl border border-black/8 bg-white/90 backdrop-blur-xl shadow-sm overflow-hidden">
+        {/* Display name | Joined */}
+        <div className="grid grid-cols-2 border-b border-black/5">
           <EditDisplayName initialName={profile?.display_name ?? "—"} />
-          <Row label="Email" value={user.email ?? "—"} />
           <Row label="Joined" value={joinedDate} last />
         </div>
 
-        {/* Current trainer title */}
-        <div className="h-full flex flex-col rounded-2xl border border-black/8 bg-white/90 backdrop-blur-xl shadow-sm p-5">
+        {/* Trainer title */}
+        <div className="p-5">
           <div className="flex items-center gap-3">
             <img
               src={`/badges/${currentTier.slug}.svg`}
@@ -71,7 +70,7 @@ export default async function ProfilePage() {
               className="w-12 h-12 flex-shrink-0"
             />
             <div className="min-w-0">
-              <p className="text-xs font-semibold uppercase tracking-widest text-text-muted">
+              <p className="text-[11px] font-semibold uppercase tracking-widest text-text-muted">
                 Trainer Title
               </p>
               <p className={`text-sm font-bold leading-tight ${currentTier.color}`}>
@@ -84,7 +83,7 @@ export default async function ProfilePage() {
           </div>
 
           {nextTier && (
-            <div className="mt-auto pt-4">
+            <div className="mt-4">
               <div className="flex items-center justify-between text-xs text-text-muted mb-2">
                 <span className="truncate">Next: {nextTier.title}</span>
                 <span className="flex-shrink-0 ml-2">
