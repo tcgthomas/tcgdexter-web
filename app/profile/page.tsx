@@ -37,7 +37,7 @@ export default async function ProfilePage() {
   const globalWinRate = globalTotal > 0 ? ((globalWins / globalTotal) * 100).toFixed(1) : null;
 
   return (
-    <main className="mx-auto max-w-2xl px-6 pt-16 pb-24">
+    <main className="mx-auto max-w-2xl px-6 pt-[calc(env(safe-area-inset-top)_+_1.68rem)] md:pt-[calc(env(safe-area-inset-top)_+_3rem)] pb-24">
       <div className="mb-8">
         <SectionHeader eyebrow="Account" title="Profile" />
       </div>
