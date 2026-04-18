@@ -50,7 +50,7 @@ export default async function ProfilePage() {
   return (
     <main className="mx-auto max-w-2xl px-6 pt-[calc(env(safe-area-inset-top)_+_1.68rem)] md:pt-[calc(env(safe-area-inset-top)_+_3rem)] pb-24">
       <div className="mb-8">
-        <SectionHeader eyebrow="Account" title="Profile" />
+        <SectionHeader title="Profile" />
       </div>
 
       {/* Row 1 — Combined account + trainer title card */}
