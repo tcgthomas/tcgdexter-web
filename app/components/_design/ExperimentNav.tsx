@@ -28,7 +28,6 @@ export default async function ExperimentNav() {
         <div className="hidden md:flex items-center gap-7 text-sm text-text-secondary">
           <Link href="/my-decks" className="hover:text-text-primary transition">Decks</Link>
           <Link href="/meta-decks" className="hover:text-text-primary transition">Meta</Link>
-          <Link href="/buy-list" className="hover:text-text-primary transition">Buy List</Link>
         </div>
         <div className="flex items-center gap-3">
           {user ? (
