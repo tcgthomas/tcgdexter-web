@@ -6,14 +6,22 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 /**
- * Mobile-only nav overlay triggered by the TD monogram.
- * Renders as a floating dropdown card anchored just below the header —
- * deliberately NOT a full-viewport overlay, so iOS Safari never reads the
- * panel background at the screen edges and doesn't retint the browser chrome.
+ * Universal nav dropdown triggered by the TD monogram — mobile AND desktop.
+ *
+ * On mobile  : panel spans left-4/right-4 (full-width-minus-gutter).
+ * On desktop : panel is anchored to the monogram's left edge (via
+ *              getBoundingClientRect on open) and capped at w-52.
+ *
+ * Rendered via portal so it escapes the nav's backdrop-filter stacking
+ * context. No full-viewport backdrop — "click outside" uses a pointerdown
+ * document listener so iOS Safari never reads a gray overlay at the
+ * screen edges and doesn't retint the browser chrome.
  */
 export default function MobileNavMenu() {
   const [open, setOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
+  // Desktop: panel left edge anchored to the monogram; null = mobile layout.
+  const [desktopLeft, setDesktopLeft] = useState<number | null>(null);
   const pathname = usePathname();
   const triggerRef = useRef<HTMLButtonElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
@@ -53,41 +61,77 @@ export default function MobileNavMenu() {
     };
   }, [open]);
 
+  const toggle = () => {
+    if (!open && triggerRef.current) {
+      // On desktop (md+), anchor panel to the button's left edge.
+      if (window.matchMedia("(min-width: 768px)").matches) {
+        setDesktopLeft(triggerRef.current.getBoundingClientRect().left);
+      } else {
+        setDesktopLeft(null);
+      }
+    }
+    setOpen((o) => !o);
+  };
+
   const close = () => {
     setOpen(false);
     triggerRef.current?.focus();
   };
 
-  const NAV_LINKS = [
+  const INTERNAL_LINKS = [
     { href: "/", label: "Profiler" },
     { href: "/my-decks", label: "My Decks" },
     { href: "/meta-decks", label: "Meta" },
   ];
 
-  // Panel: fixed just below the header (top-14 = 56px = h-14 nav height).
-  // Auto height — never reaches the bottom viewport edge.
-  // Rendered via portal so it escapes the nav's backdrop-filter stacking context.
+  const EXTERNAL_LINKS = [
+    { href: "https://tcgdexter.beehiiv.com/", label: "TCG News" },
+    { href: "https://www.tiktok.com/@tcgdexter", label: "TikTok" },
+    { href: "https://www.ebay.com/usr/tcgdexter", label: "Card Shop" },
+  ];
+
+  const linkClass =
+    "flex items-center px-3 py-2.5 text-sm font-medium text-text-secondary hover:text-text-primary hover:bg-black/5 rounded-xl transition";
+
   const panel = (
     <div
       ref={panelRef}
       id="mobile-nav-panel"
-      className={`fixed top-14 left-4 right-4 z-[110] bg-surface border-2 border-black/10 rounded-2xl shadow-sm transition-all duration-150 origin-top ${
+      style={desktopLeft !== null ? { left: desktopLeft } : undefined}
+      className={[
+        "fixed top-14 z-[110] bg-surface border-2 border-black/10 rounded-2xl shadow-sm",
+        "transition-all duration-150 origin-top",
+        // Mobile: full-width-minus-gutter; Desktop: anchored width
+        desktopLeft !== null ? "w-52" : "left-4 right-4",
         open
           ? "opacity-100 scale-100 pointer-events-auto"
-          : "opacity-0 scale-95 pointer-events-none"
-      }`}
+          : "opacity-0 scale-95 pointer-events-none",
+      ].join(" ")}
     >
-      <nav aria-label="Mobile navigation" className="p-2">
+      <nav aria-label="Site navigation" className="p-2">
         <ul className="flex flex-col gap-0.5">
-          {NAV_LINKS.map(({ href, label }) => (
+          {INTERNAL_LINKS.map(({ href, label }) => (
             <li key={href}>
-              <Link
+              <Link href={href} className={linkClass} onClick={close}>
+                {label}
+              </Link>
+            </li>
+          ))}
+
+          {/* Divider between app sections and external links */}
+          <li role="separator" className="my-1 border-t border-black/8" />
+
+          {EXTERNAL_LINKS.map(({ href, label }) => (
+            <li key={href}>
+              <a
                 href={href}
-                className="flex items-center px-3 py-2.5 text-sm font-medium text-text-secondary hover:text-text-primary hover:bg-black/5 rounded-xl transition"
+                target="_blank"
+                rel="noopener noreferrer"
+                className={linkClass}
                 onClick={close}
               >
                 {label}
-              </Link>
+              </a>
             </li>
           ))}
         </ul>
@@ -97,11 +141,11 @@ export default function MobileNavMenu() {
 
   return (
     <>
-      {/* Mobile-only — hidden on md and up */}
+      {/* Trigger — visible on ALL breakpoints (mobile + desktop) */}
       <button
         ref={triggerRef}
-        className="md:hidden flex items-center gap-2"
-        onClick={() => setOpen((o) => !o)}
+        className="flex items-center gap-2"
+        onClick={toggle}
         aria-label="Toggle navigation menu"
         aria-expanded={open}
         aria-controls="mobile-nav-panel"
