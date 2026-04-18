@@ -421,6 +421,11 @@ interface Props {
    * and by /meta-decks/[slug] for stat cards + scouting note.
    */
   topSlot?: React.ReactNode;
+  /**
+   * Content injected directly below the Save/Share button row.
+   * Used by /meta-decks/[slug] to place the Scouting Note after the CTAs.
+   */
+  postCtaSlot?: React.ReactNode;
   /** Visual theme. "experiments" adopts the new design-identity styling. */
   theme?: "default" | "experiments";
 }
@@ -443,6 +448,7 @@ export default function DeckProfileView({
   footerCta,
   creator,
   topSlot,
+  postCtaSlot,
   theme = "experiments",
 }: Props) {
   const result = analysis;
@@ -561,6 +567,9 @@ export default function DeckProfileView({
               />
             </div>
           )}
+
+          {/* Post-CTA slot (meta variant uses this for the Scouting Note) */}
+          {postCtaSlot}
 
           {/* Standard Format legality warning (only when not legal) */}
           {!result.rotation.ready && (

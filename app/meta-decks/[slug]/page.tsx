@@ -198,15 +198,17 @@ export default async function MetaDeckDetailPage({
         </p>
       </div>
 
-      {/* Scouting note */}
-      <div className="rounded-2xl border border-black/8 bg-white/90 backdrop-blur-xl shadow-sm px-5 py-4">
-        <h3 className="text-sm font-semibold text-text-primary mb-2">Scouting Note</h3>
-        <p className="text-sm text-text-secondary leading-relaxed">{scoutingNote}</p>
-      </div>
-
       {cards.length === 0 && (
         <p className="text-sm text-text-muted italic">Deck list not yet available for this archetype.</p>
       )}
+    </div>
+  );
+
+  // postCtaSlot: rendered below the Save/Share button row
+  const postCtaSlot = (
+    <div className="rounded-2xl border border-black/8 bg-white/90 backdrop-blur-xl shadow-sm px-5 py-4">
+      <h3 className="text-sm font-semibold text-text-primary mb-2">Scouting Note</h3>
+      <p className="text-sm text-text-secondary leading-relaxed">{scoutingNote}</p>
     </div>
   );
 
@@ -219,6 +221,7 @@ export default async function MetaDeckDetailPage({
       pageTitle={arch.name}
       subtitle={false}
       topSlot={topSlot}
+      postCtaSlot={postCtaSlot}
       footerCta={null}
     />
   );
