@@ -127,9 +127,24 @@ export default function MobileNavMenu({ isAuthed }: Props) {
       cancelAnimationFrame(rafRef.current);
       if (closeTimerRef.current) clearTimeout(closeTimerRef.current);
       unlockScroll();
+      document.body.removeAttribute("data-nav-menu-visible");
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Hide the real sticky toolbar whenever the panel is mounted. The panel's
+  // header row is a pixel-perfect replica (same bg-bg/70 backdrop-blur-xl
+  // and border), so the swap is invisible — but leaving both rendered at
+  // once makes their borders composite during the body's opacity fade,
+  // producing a ~1-2px divider jitter on open/close. CSS selector lives
+  // in globals.css: body[data-nav-menu-visible] nav[data-site-toolbar].
+  useEffect(() => {
+    if (isVisible) {
+      document.body.setAttribute("data-nav-menu-visible", "");
+    } else {
+      document.body.removeAttribute("data-nav-menu-visible");
+    }
+  }, [isVisible]);
 
   // Escape key + Tab focus trap (active only while open).
   useEffect(() => {
@@ -201,98 +216,108 @@ export default function MobileNavMenu({ isAuthed }: Props) {
       aria-label="Site navigation"
       aria-modal="true"
       className={[
-        // Full-screen solid gray — bg-bg (#f2f2f2) matches themeColor so
-        // iOS chrome tints seamlessly when the panel is open.
-        // overscroll-contain prevents momentum scroll bleeding to the page
-        // behind on iOS Safari even if overflow:hidden on body isn't airtight.
-        "fixed inset-0 z-[110] bg-bg flex flex-col overscroll-contain",
-        // Opacity-only transition: the panel's replica header mirrors the
-        // real nav pixel-for-pixel, so any transform would make the replica
-        // buttons drift relative to the static toolbar underneath and look
-        // like the toolbar is jumping. Fade only = seamless takeover.
-        "transition-opacity duration-200 ease-out",
-        isOpen
-          ? "opacity-100 pointer-events-auto"
-          : "opacity-0 pointer-events-none",
+        // Full-screen takeover. overscroll-contain prevents momentum scroll
+        // bleeding to the page behind on iOS Safari.
+        "fixed inset-0 z-[110] flex flex-col overscroll-contain",
+        // pointer-events toggles with isOpen so the page under the fading-
+        // out body isn't interactable mid-transition.
+        isOpen ? "pointer-events-auto" : "pointer-events-none",
       ].join(" ")}
     >
-      {/* Header row — h-14 px-6 border-b mirrors the real nav exactly.
-          This is what prevents any visible seam on open. */}
-      <div className="flex-shrink-0 h-14 flex items-center justify-between px-6 border-b border-black/5">
-        {/* Monogram — tapping it closes the menu */}
-        <button
-          onClick={closeMenu}
-          aria-label="Close navigation menu"
-          className="flex items-center gap-2"
-        >
-          <div className="h-7 w-7 rounded-lg bg-gradient-to-br from-[#F2A20C] to-[#A60D0D] flex items-center justify-center text-[11px] font-black text-white">
-            TD
-          </div>
-          <span className="font-semibold tracking-tight">Dexter</span>
-          <span className="ml-2 text-[10px] uppercase tracking-widest text-text-muted border border-black/10 rounded-full px-2 py-0.5">
-            Beta
-          </span>
-        </button>
+      {/* Header row — styling mirrors the real toolbar exactly (matching
+          bg-bg/70 backdrop-blur-xl and border). ALWAYS at full opacity,
+          never fades. This avoids the real toolbar's border and this
+          replica's border compositing at partial alpha during a fade —
+          which produced a ~1-2px divider jitter on open/close. Pair with
+          the data-nav-menu-visible attribute below that hides the real
+          toolbar, so only one toolbar is ever rendered at a time. */}
+      <div className="flex-shrink-0 backdrop-blur-xl bg-bg/70 border-b border-black/5">
+        <div className="mx-auto max-w-6xl px-6 h-14 flex items-center justify-between">
+          {/* Monogram — tapping it closes the menu */}
+          <button
+            onClick={closeMenu}
+            aria-label="Close navigation menu"
+            className="flex items-center gap-2"
+          >
+            <div className="h-7 w-7 rounded-lg bg-gradient-to-br from-[#F2A20C] to-[#A60D0D] flex items-center justify-center text-[11px] font-black text-white">
+              TD
+            </div>
+            <span className="font-semibold tracking-tight">Dexter</span>
+            <span className="ml-2 text-[10px] uppercase tracking-widest text-text-muted border border-black/10 rounded-full px-2 py-0.5">
+              Beta
+            </span>
+          </button>
 
-        {/* Auth buttons — same styling as the real nav header */}
-        <div className="flex items-center gap-3">
-          {isAuthed ? (
-            <Link
-              href="/profile"
-              onClick={closeMenu}
-              className="text-sm font-medium bg-black text-white rounded-full px-4 py-1.5 hover:bg-black/85 transition"
-            >
-              Profile
-            </Link>
-          ) : (
-            <>
+          {/* Auth buttons — same styling as the real nav header */}
+          <div className="flex items-center gap-3">
+            {isAuthed ? (
               <Link
-                href="/sign-in"
-                onClick={closeMenu}
-                className="text-sm text-text-secondary hover:text-text-primary transition"
-              >
-                Sign in
-              </Link>
-              <Link
-                href="/sign-in"
+                href="/profile"
                 onClick={closeMenu}
                 className="text-sm font-medium bg-black text-white rounded-full px-4 py-1.5 hover:bg-black/85 transition"
               >
-                Get started
+                Profile
               </Link>
-            </>
-          )}
+            ) : (
+              <>
+                <Link
+                  href="/sign-in"
+                  onClick={closeMenu}
+                  className="text-sm text-text-secondary hover:text-text-primary transition"
+                >
+                  Sign in
+                </Link>
+                <Link
+                  href="/sign-in"
+                  onClick={closeMenu}
+                  className="text-sm font-medium bg-black text-white rounded-full px-4 py-1.5 hover:bg-black/85 transition"
+                >
+                  Get started
+                </Link>
+              </>
+            )}
+          </div>
         </div>
       </div>
 
-      {/* Nav links */}
-      <nav className="flex-1 px-6 pt-10 pb-12 overflow-y-auto">
-        <ul className="flex flex-col gap-1">
-          {INTERNAL_LINKS.map(({ href, label }) => (
-            <li key={href}>
-              <Link href={href} className={linkClass} onClick={closeMenu}>
-                {label}
-              </Link>
-            </li>
-          ))}
+      {/* Nav body — bg + links fade as a unit. At opacity 0 the page
+          content is visible beneath; at opacity 1 the takeover is fully
+          opaque. Header above stays fixed, so the divider never flickers. */}
+      <div
+        className={[
+          "flex-1 bg-bg overflow-y-auto",
+          "transition-opacity duration-200 ease-out",
+          isOpen ? "opacity-100" : "opacity-0",
+        ].join(" ")}
+      >
+        <nav className="mx-auto max-w-6xl px-6 pt-10 pb-12">
+          <ul className="flex flex-col gap-1">
+            {INTERNAL_LINKS.map(({ href, label }) => (
+              <li key={href}>
+                <Link href={href} className={linkClass} onClick={closeMenu}>
+                  {label}
+                </Link>
+              </li>
+            ))}
 
-          <li role="separator" className="my-4 border-t border-black/8" />
+            <li role="separator" className="my-4 border-t border-black/8" />
 
-          {EXTERNAL_LINKS.map(({ href, label }) => (
-            <li key={href}>
-              <a
-                href={href}
-                target="_blank"
-                rel="noopener noreferrer"
-                className={linkClass}
-                onClick={closeMenu}
-              >
-                {label}
-              </a>
-            </li>
-          ))}
-        </ul>
-      </nav>
+            {EXTERNAL_LINKS.map(({ href, label }) => (
+              <li key={href}>
+                <a
+                  href={href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={linkClass}
+                  onClick={closeMenu}
+                >
+                  {label}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </nav>
+      </div>
     </div>
   );
 

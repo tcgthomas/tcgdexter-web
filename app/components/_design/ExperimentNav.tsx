@@ -15,7 +15,7 @@ export default async function ExperimentNav() {
   } = await supabase.auth.getUser();
 
   return (
-    <nav className="sticky top-0 z-30 backdrop-blur-xl bg-bg/70 border-b border-black/5">
+    <nav data-site-toolbar className="sticky top-0 z-30 backdrop-blur-xl bg-bg/70 border-b border-black/5">
       <div className="mx-auto max-w-6xl px-6 h-14 flex items-center justify-between">
         {/* Universal nav trigger — monogram opens full-screen takeover */}
         <MobileNavMenu isAuthed={!!user} />

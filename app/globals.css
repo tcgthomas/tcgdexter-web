@@ -35,6 +35,17 @@
     background-color: rgba(242, 48, 48, 0.2);
     color: var(--text-primary);
   }
+
+  /* Hide the real sticky toolbar whenever the full-screen nav panel is
+     mounted. The panel ships a pixel-perfect replica header (same
+     bg-bg/70 backdrop-blur-xl and border), so the swap is invisible —
+     but leaving both rendered at once makes their borders composite
+     during the panel body's opacity fade, producing a ~1-2px divider
+     jitter on open/close. Attribute is set by MobileNavMenu while
+     isVisible is true. */
+  body[data-nav-menu-visible] nav[data-site-toolbar] {
+    visibility: hidden;
+  }
 }
 
 @layer components {
