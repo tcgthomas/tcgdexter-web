@@ -4,7 +4,6 @@ import "./globals.css";
 import ThemeProvider from "./components/ThemeProvider";
 import AuroraBackground from "./components/_design/AuroraBackground";
 import ExperimentNav from "./components/_design/ExperimentNav";
-import ExperimentFooter from "./components/_design/ExperimentFooter";
 
 /* Geist Sans — clean, modern typeface from Vercel */
 const geistSans = localFont({
@@ -60,7 +59,6 @@ export default function RootLayout({
             <AuroraBackground />
             <ExperimentNav />
             {children}
-            <ExperimentFooter />
           </div>
         </ThemeProvider>
       </body>

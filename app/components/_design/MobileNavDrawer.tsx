@@ -65,7 +65,7 @@ export default function MobileNavDrawer() {
         role="dialog"
         aria-label="Site navigation"
         aria-modal="true"
-        className={`fixed top-0 left-0 h-full w-64 z-[110] bg-white shadow-2xl transition-transform duration-200 ease-in-out ${
+        className={`fixed top-0 left-0 h-full w-64 z-[110] bg-bg shadow-2xl transition-transform duration-200 ease-in-out ${
           open ? "translate-x-0" : "-translate-x-full"
         }`}
       >
