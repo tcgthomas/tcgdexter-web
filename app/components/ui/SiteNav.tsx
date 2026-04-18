@@ -25,7 +25,7 @@ export default async function SiteNav() {
     : null;
 
   return (
-    <nav data-site-toolbar className="sticky top-0 z-30 backdrop-blur-xl bg-bg/70 border-b border-black/5">
+    <nav data-site-toolbar className="sticky top-0 z-30 backdrop-blur-xl bg-bg/70">
       <div className="mx-auto max-w-6xl px-6 h-14 flex items-center">
         <MobileNavMenu isAuthed={!!user} displayName={displayName} />
       </div>

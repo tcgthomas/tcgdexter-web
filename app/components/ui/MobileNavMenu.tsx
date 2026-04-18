@@ -243,7 +243,7 @@ export default function MobileNavMenu({ isAuthed, displayName }: Props) {
           which produced a ~1-2px divider jitter on open/close. Pair with
           the data-nav-menu-visible attribute below that hides the real
           toolbar, so only one toolbar is ever rendered at a time. */}
-      <div className="flex-shrink-0 backdrop-blur-xl bg-bg/70 border-b border-black/5">
+      <div className="flex-shrink-0 backdrop-blur-xl bg-bg/70">
         <div className="mx-auto max-w-6xl px-6 h-14 flex items-center">
           {/* Hamburger — tapping it closes the menu */}
           <button
