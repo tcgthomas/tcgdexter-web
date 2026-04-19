@@ -38,10 +38,31 @@ export default function QRCodeButton({ shareUrl, deckList, analysis }: Props) {
 
   useEffect(() => {
     if (!open) return;
-    const prev = document.body.style.overflow;
+    const prevOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
+
+    // Tint iOS Safari chrome (status bar, floating URL bar) to match the
+    // dim overlay so the sheet reads edge-to-edge on mobile.
+    const head = document.head;
+    const existing = head.querySelector<HTMLMetaElement>(
+      'meta[name="theme-color"]'
+    );
+    const prevThemeColor = existing?.getAttribute("content") ?? null;
+    const meta = existing ?? document.createElement("meta");
+    if (!existing) {
+      meta.setAttribute("name", "theme-color");
+      head.appendChild(meta);
+    }
+    // bg-black/40 blended over #f2f2f2 ≈ #919191
+    meta.setAttribute("content", "#919191");
+
     return () => {
-      document.body.style.overflow = prev;
+      document.body.style.overflow = prevOverflow;
+      if (prevThemeColor === null) {
+        meta.remove();
+      } else {
+        meta.setAttribute("content", prevThemeColor);
+      }
     };
   }, [open]);
 
