@@ -296,7 +296,7 @@ export default function HomeClient({
           {/* Final CTA */}
           <section className="mx-auto max-w-5xl px-6 pb-32">
             <div className="relative rounded-3xl overflow-hidden border border-black/8 shadow-xl">
-              <div className="absolute inset-0 bg-[linear-gradient(90deg,#F2A20C_0%,#D91E0D_50%,#A60D0D_100%)]" />
+              <div className="absolute inset-0 bg-[linear-gradient(90deg,#F2A20C_0%,#D91E0D_50%,#A60D0D_100%)] opacity-20" />
               <div className="relative p-12 md:p-20 text-center">
                 <h2 className="text-4xl md:text-6xl font-semibold tracking-tight leading-[1.05] max-w-3xl mx-auto text-text-primary">
                   Ready to see what your deck is really made of?
