@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 
 interface Props {
   /** Pre-known share URL (e.g. on the public /d/[shortId] page). */
@@ -29,6 +30,11 @@ export default function QRCodeButton({ shareUrl, deckList, analysis }: Props) {
   const [loading, setLoading] = useState(false);
   const [copied, setCopied] = useState(false);
   const [error, setError] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     if (!open) return;
@@ -136,7 +142,7 @@ export default function QRCodeButton({ shareUrl, deckList, analysis }: Props) {
       </button>
 
       {/* ── Modal overlay ─────────────────────────────────────────── */}
-      {open && resolvedUrl && (
+      {mounted && open && resolvedUrl && createPortal(
         <div
           className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm"
           onClick={() => setOpen(false)}
@@ -208,7 +214,8 @@ export default function QRCodeButton({ shareUrl, deckList, analysis }: Props) {
               </button>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       {/* Error toast (rare network failure) */}
