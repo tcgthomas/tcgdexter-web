@@ -44,6 +44,8 @@ export default function MatchLog({ savedDeckId, initialMatches, open, onOpenChan
   const [internalOpen, setInternalOpen] = useState(false);
   const formOpen = open !== undefined ? open : internalOpen;
 
+  const [historyExpanded, setHistoryExpanded] = useState(false);
+
   function closeForm() {
     if (onOpenChange) onOpenChange(false);
     else setInternalOpen(false);
@@ -158,6 +160,25 @@ export default function MatchLog({ savedDeckId, initialMatches, open, onOpenChan
                 {streak}W streak
               </span>
             )}
+
+            {total > 3 && (
+              <button
+                onClick={() => setHistoryExpanded((v) => !v)}
+                aria-label={historyExpanded ? "Collapse match history" : "Expand match history"}
+                aria-expanded={historyExpanded}
+                className="ml-1 rounded-md p-1 text-text-muted hover:text-text-primary hover:bg-black/5 transition-colors"
+              >
+                <svg
+                  className={`w-4 h-4 transition-transform ${historyExpanded ? "rotate-180" : ""}`}
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth={2}
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                </svg>
+              </button>
+            )}
           </div>
         )}
       </div>
@@ -182,7 +203,7 @@ export default function MatchLog({ savedDeckId, initialMatches, open, onOpenChan
       {/* ── Match List ────────────────────────────────────── */}
       {matches.length > 0 && (
         <div className="mt-4 flex flex-col">
-          {matches.map((match, i) => {
+          {(historyExpanded ? matches : matches.slice(0, 3)).map((match, i, arr) => {
             const s = RESULT_STYLE[match.result];
             const dateStr = match.played_at
               ? new Date(match.played_at).toLocaleDateString("en-US", {
@@ -196,7 +217,7 @@ export default function MatchLog({ savedDeckId, initialMatches, open, onOpenChan
               return (
                 <div
                   key={match.id}
-                  className={`py-3 ${i < matches.length - 1 ? "border-b border-border/50" : ""}`}
+                  className={`py-3 ${i < arr.length - 1 ? "border-b border-border/50" : ""}`}
                 >
                   <MatchForm
                     initial={{
@@ -219,7 +240,7 @@ export default function MatchLog({ savedDeckId, initialMatches, open, onOpenChan
               <div
                 key={match.id}
                 className={`flex items-start gap-3 px-1 py-3 ${
-                  i < matches.length - 1 ? "border-b border-border/50" : ""
+                  i < arr.length - 1 ? "border-b border-border/50" : ""
                 }`}
               >
                 <span
