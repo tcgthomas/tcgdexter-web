@@ -50,6 +50,9 @@ interface Archetype {
   representation_pct: number;
   conversion_rate: number;
   velocity: number;
+  wins: number;
+  losses: number;
+  ties: number;
 }
 
 const top3Archetypes = (archetypesRaw as Archetype[])
@@ -248,14 +251,17 @@ export default function HomeClient({
                 </Link>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {top3Archetypes.map((arch, i) => (
+                {top3Archetypes.map((arch, i) => {
+                  const totalMatches = arch.wins + arch.losses + arch.ties;
+                  const winRate = totalMatches > 0 ? arch.wins / totalMatches : 0;
+                  return (
                   <Link key={arch.id} href={`/meta-decks/${arch.id}`}>
                     <div className="rounded-xl border border-black/8 bg-white p-5 shadow-sm hover:shadow-md hover:bg-white/90 transition cursor-pointer h-full">
-                      {/* Header row: rank + velocity */}
+                      {/* Header row: rank + win rate */}
                       <div className="flex items-start justify-between mb-3">
                         <span className="text-xs font-mono text-text-muted">#{i + 1}</span>
-                        <span className={`text-xs font-mono ${arch.velocity >= 0 ? "text-emerald-600" : "text-rose-500"}`}>
-                          {arch.velocity >= 0 ? "↑" : "↓"} {(Math.abs(arch.velocity) * 100).toFixed(1)}pp
+                        <span className={`text-xs font-mono ${winRate >= 0.5 ? "text-emerald-600" : "text-rose-500"}`}>
+                          {(winRate * 100).toFixed(0)}% WR
                         </span>
                       </div>
                       {/* Name */}
@@ -284,7 +290,8 @@ export default function HomeClient({
                       </div>
                     </div>
                   </Link>
-                ))}
+                  );
+                })}
               </div>
             </div>
           </section>
