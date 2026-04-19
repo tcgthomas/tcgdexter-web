@@ -229,7 +229,7 @@ export default function HomeClient({
           </section>
 
           {/* Meta ticker */}
-          <section className="mx-auto max-w-6xl px-6 py-12">
+          <section className="mx-auto max-w-6xl px-6 py-6">
             <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-8">
               <div>
                 <div className="text-xs uppercase tracking-widest text-[#D91E0D] mb-3 flex items-center gap-2">
@@ -296,14 +296,7 @@ export default function HomeClient({
           {/* Final CTA */}
           <section className="mx-auto max-w-5xl px-6 pb-32">
             <div className="relative rounded-3xl overflow-hidden border border-black/8 shadow-xl">
-              <div className="absolute inset-0 bg-gradient-to-br from-[#ff8a3d]/15 via-[#ffd3a8]/20 to-[#c4b5fd]/20" />
-              <div
-                className="absolute inset-0 opacity-60"
-                style={{
-                  backgroundImage:
-                    "radial-gradient(circle at 30% 20%, rgba(255, 138, 61, 0.35) 0%, transparent 50%), radial-gradient(circle at 70% 80%, rgba(196, 181, 253, 0.35) 0%, transparent 50%)",
-                }}
-              />
+              <div className="absolute inset-0 bg-[linear-gradient(90deg,#F2A20C_0%,#D91E0D_50%,#A60D0D_100%)]" />
               <div className="relative p-12 md:p-20 text-center">
                 <h2 className="text-4xl md:text-6xl font-semibold tracking-tight leading-[1.05] max-w-3xl mx-auto text-text-primary">
                   Ready to see what your deck is really made of?
