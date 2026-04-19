@@ -54,7 +54,7 @@ export default function DeckNotes({ savedDeckId, initialNotes }: Props) {
   }
 
   return (
-    <div className="rounded-xl bg-surface p-5">
+    <div className="rounded-xl bg-white p-5">
       <div className="flex items-center justify-between mb-3">
         <h2 className="text-lg font-semibold text-text-primary">Notes</h2>
         <span className="text-xs text-text-muted">
@@ -67,7 +67,7 @@ export default function DeckNotes({ savedDeckId, initialNotes }: Props) {
         onBlur={handleBlur}
         placeholder="Strategy notes, matchup observations, card swap ideas..."
         rows={4}
-        className="w-full rounded-lg bg-white px-3 py-2 text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-1 focus:ring-accent/20 resize-y [font-size:16px] sm:text-sm"
+        className="w-full bg-transparent text-sm text-text-primary placeholder:text-text-muted focus:outline-none resize-y [font-size:16px] sm:text-sm"
       />
     </div>
   );
