@@ -230,85 +230,74 @@ export default function HomeClient({
           </section>
 
           {/* Meta ticker */}
-          <section className="mx-auto max-w-6xl px-6 py-24">
-            <div className="rounded-3xl border border-black/8 bg-gradient-to-br from-white/80 to-white/40 backdrop-blur-sm p-8 md:p-12 shadow-sm">
-              <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-8">
-                <div>
-                  <div className="text-xs uppercase tracking-widest text-[#D91E0D] mb-3 flex items-center gap-2">
-                    <span className="relative flex h-2 w-2">
-                      <span className="absolute inline-flex h-full w-full rounded-full bg-[#ff8a3d] opacity-75 animate-ping" />
-                      <span className="relative inline-flex h-2 w-2 rounded-full bg-[#ff8a3d]" />
-                    </span>
-                    Live meta
-                  </div>
-                  <h2 className="text-4xl font-semibold tracking-tight">This week&apos;s top archetypes.</h2>
+          <section className="mx-auto max-w-6xl px-6 py-12">
+            <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-8">
+              <div>
+                <div className="text-xs uppercase tracking-widest text-[#D91E0D] mb-3 flex items-center gap-2">
+                  <span className="relative flex h-2 w-2">
+                    <span className="absolute inline-flex h-full w-full rounded-full bg-[#ff8a3d] opacity-75 animate-ping" />
+                    <span className="relative inline-flex h-2 w-2 rounded-full bg-[#ff8a3d]" />
+                  </span>
+                  Live meta
                 </div>
-                <Link
-                  href="/meta-decks"
-                  className="text-sm text-text-secondary hover:text-text-primary transition self-start md:self-auto whitespace-nowrap"
-                >
-                  View Top 30 Meta Decks →
-                </Link>
+                <h2 className="text-4xl font-semibold tracking-tight">This week&apos;s top archetypes.</h2>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {top3Archetypes.map((arch, i) => {
-                  const totalMatches = arch.wins + arch.losses + arch.ties;
-                  const winRate = totalMatches > 0 ? arch.wins / totalMatches : 0;
-                  return (
-                  <Link key={arch.id} href={`/meta-decks/${arch.id}`}>
-                    <div className="rounded-xl border border-black/8 bg-white p-5 shadow-sm hover:shadow-md hover:bg-white/90 transition cursor-pointer h-full">
-                      {/* Header row: rank + win rate */}
-                      <div className="flex items-start justify-between mb-3">
-                        <span className="text-xs font-mono text-text-muted">#{i + 1}</span>
-                        <span className="text-xs font-mono text-text-primary">
-                          {(winRate * 100).toFixed(0)}% Win Rate
-                        </span>
+              <Link
+                href="/meta-decks"
+                className="text-sm text-text-secondary hover:text-text-primary transition self-start md:self-auto whitespace-nowrap"
+              >
+                View Top 30 Meta Decks →
+              </Link>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {top3Archetypes.map((arch, i) => {
+                const totalMatches = arch.wins + arch.losses + arch.ties;
+                const winRate = totalMatches > 0 ? arch.wins / totalMatches : 0;
+                return (
+                <Link key={arch.id} href={`/meta-decks/${arch.id}`}>
+                  <div className="rounded-xl border border-black/8 bg-white p-5 shadow-sm hover:shadow-md hover:bg-white/90 transition cursor-pointer h-full">
+                    {/* Header row: rank + win rate */}
+                    <div className="flex items-start justify-between mb-3">
+                      <span className="text-xs font-mono text-text-muted">#{i + 1}</span>
+                      <span className="text-xs font-mono text-text-primary">
+                        {(winRate * 100).toFixed(0)}% Win Rate
+                      </span>
+                    </div>
+                    {/* Name */}
+                    <div className="font-semibold tracking-tight text-lg leading-tight mb-3">{arch.name}</div>
+                    {/* Progress bar — scaled relative to #1 */}
+                    <div className="h-1 rounded-full bg-black/5 overflow-hidden mb-4">
+                      <div
+                        className="h-full bg-[linear-gradient(90deg,#F2A20C_0%,#D91E0D_50%,#A60D0D_100%)]"
+                        style={{ width: `${(arch.representation_pct / maxRep) * 100}%` }}
+                      />
+                    </div>
+                    {/* Stat chips */}
+                    <div className="grid grid-cols-3 gap-2">
+                      <div className="rounded-lg bg-black/[0.04] px-2 py-2 text-center">
+                        <div className="text-sm font-semibold tabular-nums">{(arch.representation_pct * 100).toFixed(1)}%</div>
+                        <div className="text-[10px] text-text-muted mt-0.5 leading-tight">meta share</div>
                       </div>
-                      {/* Name */}
-                      <div className="font-semibold tracking-tight text-lg leading-tight mb-3">{arch.name}</div>
-                      {/* Progress bar — scaled relative to #1 */}
-                      <div className="h-1 rounded-full bg-black/5 overflow-hidden mb-4">
-                        <div
-                          className="h-full bg-[linear-gradient(90deg,#F2A20C_0%,#D91E0D_50%,#A60D0D_100%)]"
-                          style={{ width: `${(arch.representation_pct / maxRep) * 100}%` }}
-                        />
+                      <div className="rounded-lg bg-black/[0.04] px-2 py-2 text-center">
+                        <div className="text-sm font-semibold tabular-nums">{(arch.conversion_rate * 100).toFixed(1)}%</div>
+                        <div className="text-[10px] text-text-muted mt-0.5 leading-tight">conversion</div>
                       </div>
-                      {/* Stat chips */}
-                      <div className="grid grid-cols-3 gap-2">
-                        <div className="rounded-lg bg-black/[0.04] px-2 py-2 text-center">
-                          <div className="text-sm font-semibold tabular-nums">{(arch.representation_pct * 100).toFixed(1)}%</div>
-                          <div className="text-[10px] text-text-muted mt-0.5 leading-tight">meta share</div>
-                        </div>
-                        <div className="rounded-lg bg-black/[0.04] px-2 py-2 text-center">
-                          <div className="text-sm font-semibold tabular-nums">{(arch.conversion_rate * 100).toFixed(1)}%</div>
-                          <div className="text-[10px] text-text-muted mt-0.5 leading-tight">conversion</div>
-                        </div>
-                        <div className="rounded-lg bg-black/[0.04] px-2 py-2 text-center">
-                          <div className="text-sm font-semibold tabular-nums">{arch.top_cut_entries}</div>
-                          <div className="text-[10px] text-text-muted mt-0.5 leading-tight">top cuts</div>
-                        </div>
+                      <div className="rounded-lg bg-black/[0.04] px-2 py-2 text-center">
+                        <div className="text-sm font-semibold tabular-nums">{arch.top_cut_entries}</div>
+                        <div className="text-[10px] text-text-muted mt-0.5 leading-tight">top cuts</div>
                       </div>
                     </div>
-                  </Link>
-                  );
-                })}
-              </div>
+                  </div>
+                </Link>
+                );
+              })}
             </div>
           </section>
 
-          {/* Testimonial */}
+          {/* Secondary CTA */}
           <section className="mx-auto max-w-4xl px-6 py-24 text-center">
             <div className="text-3xl md:text-4xl font-semibold tracking-tight leading-tight text-text-primary">
-              <span className="text-text-muted">&ldquo;</span>
-              I used to have five tabs open to profile a new brew. Now I paste once and I&apos;m playing a ladder game two minutes later.
-              <span className="text-text-muted">&rdquo;</span>
-            </div>
-            <div className="mt-8 flex items-center justify-center gap-3 text-sm">
-              <div className="h-10 w-10 rounded-full bg-[linear-gradient(135deg,#F2A20C_0%,#A60D0D_100%)]" />
-              <div className="text-left">
-                <div className="font-semibold text-text-primary">Regional Top 8, 2026 Season</div>
-                <div className="text-text-muted">Verified tournament player</div>
-              </div>
+              A dex for your decks. Save your own lists, share with fellow trainers, and browse the top meta archetypes. Track your progress and earn badges.
             </div>
           </section>
 
