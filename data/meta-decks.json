@@ -242,17 +242,17 @@
         "category": "pokemon"
       },
       {
-        "qty": 1,
-        "name": "Fezandipiti ex",
+        "qty": 2,
+        "name": "Budew",
         "setCode": "ASC",
-        "number": "142",
+        "number": "16",
         "category": "pokemon"
       },
       {
         "qty": 1,
-        "name": "Tatsugiri",
-        "setCode": "TWM",
-        "number": "131",
+        "name": "Fezandipiti ex",
+        "setCode": "ASC",
+        "number": "142",
         "category": "pokemon"
       },
       {
@@ -277,20 +277,6 @@
         "category": "pokemon"
       },
       {
-        "qty": 1,
-        "name": "Pecharunt ex",
-        "setCode": "SFA",
-        "number": "39",
-        "category": "pokemon"
-      },
-      {
-        "qty": 1,
-        "name": "Yveltal",
-        "setCode": "MEG",
-        "number": "88",
-        "category": "pokemon"
-      },
-      {
         "qty": 4,
         "name": "Lillie's Determination",
         "setCode": "MEG",
@@ -298,17 +284,45 @@
         "category": "trainer"
       },
       {
-        "qty": 4,
+        "qty": 3,
         "name": "Boss's Orders",
         "setCode": "MEG",
         "number": "114",
         "category": "trainer"
       },
       {
-        "qty": 2,
+        "qty": 1,
         "name": "Dawn",
         "setCode": "PFL",
         "number": "87",
+        "category": "trainer"
+      },
+      {
+        "qty": 1,
+        "name": "Judge",
+        "setCode": "POR",
+        "number": "76",
+        "category": "trainer"
+      },
+      {
+        "qty": 1,
+        "name": "Team Rocket's Petrel",
+        "setCode": "DRI",
+        "number": "176",
+        "category": "trainer"
+      },
+      {
+        "qty": 1,
+        "name": "Crispin",
+        "setCode": "SCR",
+        "number": "133",
+        "category": "trainer"
+      },
+      {
+        "qty": 4,
+        "name": "Buddy-Buddy Poffin",
+        "setCode": "TEF",
+        "number": "144",
         "category": "trainer"
       },
       {
@@ -319,17 +333,10 @@
         "category": "trainer"
       },
       {
-        "qty": 4,
+        "qty": 3,
         "name": "Pok\u00e9 Pad",
         "setCode": "POR",
         "number": "81",
-        "category": "trainer"
-      },
-      {
-        "qty": 3,
-        "name": "Buddy-Buddy Poffin",
-        "setCode": "TEF",
-        "number": "144",
         "category": "trainer"
       },
       {
@@ -355,17 +362,24 @@
       },
       {
         "qty": 1,
+        "name": "Team Rocket's Watchtower",
+        "setCode": "DRI",
+        "number": "180",
+        "category": "trainer"
+      },
+      {
+        "qty": 1,
         "name": "Risky Ruins",
         "setCode": "MEG",
         "number": "127",
         "category": "trainer"
       },
       {
-        "qty": 1,
-        "name": "Area Zero Underdepths",
-        "setCode": "SCR",
-        "number": "131",
-        "category": "trainer"
+        "qty": 3,
+        "name": "Psychic Energy",
+        "setCode": "MEE",
+        "number": "5",
+        "category": "energy"
       },
       {
         "qty": 3,
@@ -375,17 +389,10 @@
         "category": "energy"
       },
       {
-        "qty": 3,
+        "qty": 2,
         "name": "Darkness Energy",
         "setCode": "MEE",
         "number": "7",
-        "category": "energy"
-      },
-      {
-        "qty": 2,
-        "name": "Psychic Energy",
-        "setCode": "MEE",
-        "number": "5",
         "category": "energy"
       }
     ],
@@ -721,209 +728,6 @@
     "hasRotatedCards": false
   },
   {
-    "id": "alakazam-dudunsparce",
-    "name": "Alakazam Dudunsparce",
-    "cards": [
-      {
-        "qty": 4,
-        "name": "Abra",
-        "setCode": "MEG",
-        "number": "54",
-        "category": "pokemon"
-      },
-      {
-        "qty": 4,
-        "name": "Kadabra",
-        "setCode": "MEG",
-        "number": "55",
-        "category": "pokemon"
-      },
-      {
-        "qty": 3,
-        "name": "Alakazam",
-        "setCode": "MEG",
-        "number": "56",
-        "category": "pokemon"
-      },
-      {
-        "qty": 2,
-        "name": "Dunsparce",
-        "setCode": "JTG",
-        "number": "120",
-        "category": "pokemon"
-      },
-      {
-        "qty": 1,
-        "name": "Dunsparce",
-        "setCode": "TEF",
-        "number": "128",
-        "category": "pokemon"
-      },
-      {
-        "qty": 3,
-        "name": "Dudunsparce",
-        "setCode": "TEF",
-        "number": "129",
-        "category": "pokemon"
-      },
-      {
-        "qty": 1,
-        "name": "Gothita",
-        "setCode": "WHT",
-        "number": "41",
-        "category": "pokemon"
-      },
-      {
-        "qty": 1,
-        "name": "Gothitelle",
-        "setCode": "WHT",
-        "number": "43",
-        "category": "pokemon"
-      },
-      {
-        "qty": 1,
-        "name": "Fezandipiti ex",
-        "setCode": "ASC",
-        "number": "142",
-        "category": "pokemon"
-      },
-      {
-        "qty": 1,
-        "name": "Psyduck",
-        "setCode": "ASC",
-        "number": "39",
-        "category": "pokemon"
-      },
-      {
-        "qty": 1,
-        "name": "Shaymin",
-        "setCode": "DRI",
-        "number": "10",
-        "category": "pokemon"
-      },
-      {
-        "qty": 4,
-        "name": "Hilda",
-        "setCode": "WHT",
-        "number": "84",
-        "category": "trainer"
-      },
-      {
-        "qty": 3,
-        "name": "Boss's Orders",
-        "setCode": "MEG",
-        "number": "114",
-        "category": "trainer"
-      },
-      {
-        "qty": 3,
-        "name": "Dawn",
-        "setCode": "PFL",
-        "number": "87",
-        "category": "trainer"
-      },
-      {
-        "qty": 1,
-        "name": "Lana's Aid",
-        "setCode": "TWM",
-        "number": "155",
-        "category": "trainer"
-      },
-      {
-        "qty": 1,
-        "name": "Eri",
-        "setCode": "TEF",
-        "number": "146",
-        "category": "trainer"
-      },
-      {
-        "qty": 4,
-        "name": "Buddy-Buddy Poffin",
-        "setCode": "TEF",
-        "number": "144",
-        "category": "trainer"
-      },
-      {
-        "qty": 4,
-        "name": "Pok\u00e9 Pad",
-        "setCode": "POR",
-        "number": "81",
-        "category": "trainer"
-      },
-      {
-        "qty": 3,
-        "name": "Rare Candy",
-        "setCode": "MEG",
-        "number": "125",
-        "category": "trainer"
-      },
-      {
-        "qty": 2,
-        "name": "Enhanced Hammer",
-        "setCode": "TWM",
-        "number": "148",
-        "category": "trainer"
-      },
-      {
-        "qty": 1,
-        "name": "Night Stretcher",
-        "setCode": "ASC",
-        "number": "196",
-        "category": "trainer"
-      },
-      {
-        "qty": 1,
-        "name": "Wondrous Patch",
-        "setCode": "PFL",
-        "number": "94",
-        "category": "trainer"
-      },
-      {
-        "qty": 1,
-        "name": "Sacred Ash",
-        "setCode": "DRI",
-        "number": "168",
-        "category": "trainer"
-      },
-      {
-        "qty": 1,
-        "name": "Air Balloon",
-        "setCode": "ASC",
-        "number": "181",
-        "category": "trainer"
-      },
-      {
-        "qty": 3,
-        "name": "Battle Cage",
-        "setCode": "PFL",
-        "number": "85",
-        "category": "trainer"
-      },
-      {
-        "qty": 3,
-        "name": "Telepathic Psychic Energy",
-        "setCode": "POR",
-        "number": "88",
-        "category": "energy"
-      },
-      {
-        "qty": 2,
-        "name": "Psychic Energy",
-        "setCode": "MEE",
-        "number": "5",
-        "category": "energy"
-      },
-      {
-        "qty": 1,
-        "name": "Enriching Energy",
-        "setCode": "SSP",
-        "number": "191",
-        "category": "energy"
-      }
-    ],
-    "hasRotatedCards": false
-  },
-  {
     "id": "n-zoroark",
     "name": "N's Zoroark",
     "cards": [
@@ -1121,6 +925,209 @@
         "name": "Darkness Energy",
         "setCode": "MEE",
         "number": "7",
+        "category": "energy"
+      }
+    ],
+    "hasRotatedCards": false
+  },
+  {
+    "id": "alakazam-dudunsparce",
+    "name": "Alakazam Dudunsparce",
+    "cards": [
+      {
+        "qty": 4,
+        "name": "Abra",
+        "setCode": "MEG",
+        "number": "54",
+        "category": "pokemon"
+      },
+      {
+        "qty": 4,
+        "name": "Kadabra",
+        "setCode": "MEG",
+        "number": "55",
+        "category": "pokemon"
+      },
+      {
+        "qty": 3,
+        "name": "Alakazam",
+        "setCode": "MEG",
+        "number": "56",
+        "category": "pokemon"
+      },
+      {
+        "qty": 2,
+        "name": "Dunsparce",
+        "setCode": "JTG",
+        "number": "120",
+        "category": "pokemon"
+      },
+      {
+        "qty": 1,
+        "name": "Dunsparce",
+        "setCode": "TEF",
+        "number": "128",
+        "category": "pokemon"
+      },
+      {
+        "qty": 3,
+        "name": "Dudunsparce",
+        "setCode": "TEF",
+        "number": "129",
+        "category": "pokemon"
+      },
+      {
+        "qty": 1,
+        "name": "Gothita",
+        "setCode": "WHT",
+        "number": "41",
+        "category": "pokemon"
+      },
+      {
+        "qty": 1,
+        "name": "Gothitelle",
+        "setCode": "WHT",
+        "number": "43",
+        "category": "pokemon"
+      },
+      {
+        "qty": 1,
+        "name": "Fezandipiti ex",
+        "setCode": "ASC",
+        "number": "142",
+        "category": "pokemon"
+      },
+      {
+        "qty": 1,
+        "name": "Psyduck",
+        "setCode": "ASC",
+        "number": "39",
+        "category": "pokemon"
+      },
+      {
+        "qty": 1,
+        "name": "Shaymin",
+        "setCode": "DRI",
+        "number": "10",
+        "category": "pokemon"
+      },
+      {
+        "qty": 4,
+        "name": "Hilda",
+        "setCode": "WHT",
+        "number": "84",
+        "category": "trainer"
+      },
+      {
+        "qty": 3,
+        "name": "Boss's Orders",
+        "setCode": "MEG",
+        "number": "114",
+        "category": "trainer"
+      },
+      {
+        "qty": 3,
+        "name": "Dawn",
+        "setCode": "PFL",
+        "number": "87",
+        "category": "trainer"
+      },
+      {
+        "qty": 1,
+        "name": "Lana's Aid",
+        "setCode": "TWM",
+        "number": "155",
+        "category": "trainer"
+      },
+      {
+        "qty": 1,
+        "name": "Eri",
+        "setCode": "TEF",
+        "number": "146",
+        "category": "trainer"
+      },
+      {
+        "qty": 4,
+        "name": "Buddy-Buddy Poffin",
+        "setCode": "TEF",
+        "number": "144",
+        "category": "trainer"
+      },
+      {
+        "qty": 4,
+        "name": "Pok\u00e9 Pad",
+        "setCode": "POR",
+        "number": "81",
+        "category": "trainer"
+      },
+      {
+        "qty": 3,
+        "name": "Rare Candy",
+        "setCode": "MEG",
+        "number": "125",
+        "category": "trainer"
+      },
+      {
+        "qty": 2,
+        "name": "Enhanced Hammer",
+        "setCode": "TWM",
+        "number": "148",
+        "category": "trainer"
+      },
+      {
+        "qty": 1,
+        "name": "Night Stretcher",
+        "setCode": "ASC",
+        "number": "196",
+        "category": "trainer"
+      },
+      {
+        "qty": 1,
+        "name": "Wondrous Patch",
+        "setCode": "PFL",
+        "number": "94",
+        "category": "trainer"
+      },
+      {
+        "qty": 1,
+        "name": "Sacred Ash",
+        "setCode": "DRI",
+        "number": "168",
+        "category": "trainer"
+      },
+      {
+        "qty": 1,
+        "name": "Air Balloon",
+        "setCode": "ASC",
+        "number": "181",
+        "category": "trainer"
+      },
+      {
+        "qty": 3,
+        "name": "Battle Cage",
+        "setCode": "PFL",
+        "number": "85",
+        "category": "trainer"
+      },
+      {
+        "qty": 3,
+        "name": "Telepathic Psychic Energy",
+        "setCode": "POR",
+        "number": "88",
+        "category": "energy"
+      },
+      {
+        "qty": 2,
+        "name": "Psychic Energy",
+        "setCode": "MEE",
+        "number": "5",
+        "category": "energy"
+      },
+      {
+        "qty": 1,
+        "name": "Enriching Energy",
+        "setCode": "SSP",
+        "number": "191",
         "category": "energy"
       }
     ],
@@ -1517,9 +1524,9 @@
       },
       {
         "qty": 2,
-        "name": "Munkidori",
-        "setCode": "TWM",
-        "number": "95",
+        "name": "Budew",
+        "setCode": "ASC",
+        "number": "16",
         "category": "pokemon"
       },
       {
@@ -1531,16 +1538,16 @@
       },
       {
         "qty": 1,
-        "name": "Fezandipiti ex",
-        "setCode": "ASC",
-        "number": "142",
+        "name": "Munkidori",
+        "setCode": "TWM",
+        "number": "95",
         "category": "pokemon"
       },
       {
         "qty": 1,
-        "name": "Budew",
+        "name": "Fezandipiti ex",
         "setCode": "ASC",
-        "number": "16",
+        "number": "142",
         "category": "pokemon"
       },
       {
@@ -1551,17 +1558,31 @@
         "category": "trainer"
       },
       {
-        "qty": 3,
+        "qty": 2,
+        "name": "Crispin",
+        "setCode": "SCR",
+        "number": "133",
+        "category": "trainer"
+      },
+      {
+        "qty": 2,
         "name": "Boss's Orders",
         "setCode": "MEG",
         "number": "114",
         "category": "trainer"
       },
       {
-        "qty": 2,
-        "name": "Crispin",
-        "setCode": "SCR",
-        "number": "133",
+        "qty": 1,
+        "name": "Dawn",
+        "setCode": "PFL",
+        "number": "87",
+        "category": "trainer"
+      },
+      {
+        "qty": 1,
+        "name": "Team Rocket's Petrel",
+        "setCode": "DRI",
+        "number": "176",
         "category": "trainer"
       },
       {
@@ -1573,16 +1594,16 @@
       },
       {
         "qty": 4,
-        "name": "Buddy-Buddy Poffin",
-        "setCode": "TEF",
-        "number": "144",
+        "name": "Pok\u00e9 Pad",
+        "setCode": "POR",
+        "number": "81",
         "category": "trainer"
       },
       {
         "qty": 4,
-        "name": "Pok\u00e9 Pad",
-        "setCode": "POR",
-        "number": "81",
+        "name": "Buddy-Buddy Poffin",
+        "setCode": "TEF",
+        "number": "144",
         "category": "trainer"
       },
       {
@@ -1593,17 +1614,17 @@
         "category": "trainer"
       },
       {
-        "qty": 3,
-        "name": "Rare Candy",
-        "setCode": "MEG",
-        "number": "125",
-        "category": "trainer"
-      },
-      {
         "qty": 2,
         "name": "Night Stretcher",
         "setCode": "ASC",
         "number": "196",
+        "category": "trainer"
+      },
+      {
+        "qty": 2,
+        "name": "Rare Candy",
+        "setCode": "MEG",
+        "number": "125",
         "category": "trainer"
       },
       {
@@ -1615,30 +1636,30 @@
       },
       {
         "qty": 2,
-        "name": "Risky Ruins",
-        "setCode": "MEG",
-        "number": "127",
-        "category": "trainer"
-      },
-      {
-        "qty": 1,
         "name": "Team Rocket's Watchtower",
         "setCode": "DRI",
         "number": "180",
         "category": "trainer"
       },
       {
-        "qty": 3,
-        "name": "Fire Energy",
-        "setCode": "MEE",
-        "number": "2",
-        "category": "energy"
+        "qty": 1,
+        "name": "Jamming Tower",
+        "setCode": "TWM",
+        "number": "153",
+        "category": "trainer"
       },
       {
         "qty": 3,
         "name": "Psychic Energy",
         "setCode": "MEE",
         "number": "5",
+        "category": "energy"
+      },
+      {
+        "qty": 3,
+        "name": "Fire Energy",
+        "setCode": "MEE",
+        "number": "2",
         "category": "energy"
       },
       {
@@ -2933,6 +2954,195 @@
     "hasRotatedCards": false
   },
   {
+    "id": "crustle-dri",
+    "name": "Crustle",
+    "cards": [
+      {
+        "qty": 4,
+        "name": "Dwebble",
+        "setCode": "DRI",
+        "number": "11",
+        "category": "pokemon"
+      },
+      {
+        "qty": 3,
+        "name": "Crustle",
+        "setCode": "DRI",
+        "number": "12",
+        "category": "pokemon"
+      },
+      {
+        "qty": 2,
+        "name": "Mega Kangaskhan ex",
+        "setCode": "MEG",
+        "number": "104",
+        "category": "pokemon"
+      },
+      {
+        "qty": 1,
+        "name": "Cornerstone Mask Ogerpon ex",
+        "setCode": "TWM",
+        "number": "112",
+        "category": "pokemon"
+      },
+      {
+        "qty": 4,
+        "name": "Lillie's Determination",
+        "setCode": "MEG",
+        "number": "119",
+        "category": "trainer"
+      },
+      {
+        "qty": 4,
+        "name": "Boss's Orders",
+        "setCode": "MEG",
+        "number": "114",
+        "category": "trainer"
+      },
+      {
+        "qty": 4,
+        "name": "Team Rocket's Petrel",
+        "setCode": "DRI",
+        "number": "176",
+        "category": "trainer"
+      },
+      {
+        "qty": 2,
+        "name": "Colress's Tenacity",
+        "setCode": "SFA",
+        "number": "57",
+        "category": "trainer"
+      },
+      {
+        "qty": 2,
+        "name": "Hilda",
+        "setCode": "WHT",
+        "number": "84",
+        "category": "trainer"
+      },
+      {
+        "qty": 1,
+        "name": "Xerosic's Machinations",
+        "setCode": "SFA",
+        "number": "64",
+        "category": "trainer"
+      },
+      {
+        "qty": 1,
+        "name": "Morty's Conviction",
+        "setCode": "TEF",
+        "number": "155",
+        "category": "trainer"
+      },
+      {
+        "qty": 1,
+        "name": "Pok\u00e9mon Center Lady",
+        "setCode": "MEG",
+        "number": "123",
+        "category": "trainer"
+      },
+      {
+        "qty": 4,
+        "name": "Pok\u00e9gear 3.0",
+        "setCode": "SVI",
+        "number": "186",
+        "category": "trainer"
+      },
+      {
+        "qty": 4,
+        "name": "Jumbo Ice Cream",
+        "setCode": "PFL",
+        "number": "91",
+        "category": "trainer"
+      },
+      {
+        "qty": 2,
+        "name": "Buddy-Buddy Poffin",
+        "setCode": "TEF",
+        "number": "144",
+        "category": "trainer"
+      },
+      {
+        "qty": 2,
+        "name": "Ultra Ball",
+        "setCode": "MEG",
+        "number": "131",
+        "category": "trainer"
+      },
+      {
+        "qty": 1,
+        "name": "Pok\u00e9 Pad",
+        "setCode": "POR",
+        "number": "81",
+        "category": "trainer"
+      },
+      {
+        "qty": 1,
+        "name": "Switch",
+        "setCode": "MEG",
+        "number": "130",
+        "category": "trainer"
+      },
+      {
+        "qty": 1,
+        "name": "Hero's Cape",
+        "setCode": "TEF",
+        "number": "152",
+        "category": "trainer"
+      },
+      {
+        "qty": 1,
+        "name": "Team Rocket's Factory",
+        "setCode": "DRI",
+        "number": "173",
+        "category": "trainer"
+      },
+      {
+        "qty": 1,
+        "name": "Community Center",
+        "setCode": "TWM",
+        "number": "146",
+        "category": "trainer"
+      },
+      {
+        "qty": 4,
+        "name": "Mist Energy",
+        "setCode": "TEF",
+        "number": "161",
+        "category": "energy"
+      },
+      {
+        "qty": 4,
+        "name": "Growing Grass Energy",
+        "setCode": "POR",
+        "number": "86",
+        "category": "energy"
+      },
+      {
+        "qty": 3,
+        "name": "Spiky Energy",
+        "setCode": "JTG",
+        "number": "159",
+        "category": "energy"
+      },
+      {
+        "qty": 2,
+        "name": "Rocky Fighting Energy",
+        "setCode": "POR",
+        "number": "87",
+        "category": "energy"
+      },
+      {
+        "qty": 1,
+        "name": "Grass Energy",
+        "setCode": "MEE",
+        "number": "1",
+        "category": "energy"
+      }
+    ],
+    "hasRotatedCards": false
+  },
+  {
     "id": "flareon-noctowl",
     "name": "Flareon Noctowl",
     "cards": [
@@ -3148,195 +3358,6 @@
       },
       {
         "qty": 2,
-        "name": "Grass Energy",
-        "setCode": "MEE",
-        "number": "1",
-        "category": "energy"
-      }
-    ],
-    "hasRotatedCards": false
-  },
-  {
-    "id": "crustle-dri",
-    "name": "Crustle",
-    "cards": [
-      {
-        "qty": 4,
-        "name": "Dwebble",
-        "setCode": "DRI",
-        "number": "11",
-        "category": "pokemon"
-      },
-      {
-        "qty": 3,
-        "name": "Crustle",
-        "setCode": "DRI",
-        "number": "12",
-        "category": "pokemon"
-      },
-      {
-        "qty": 2,
-        "name": "Mega Kangaskhan ex",
-        "setCode": "MEG",
-        "number": "104",
-        "category": "pokemon"
-      },
-      {
-        "qty": 1,
-        "name": "Cornerstone Mask Ogerpon ex",
-        "setCode": "TWM",
-        "number": "112",
-        "category": "pokemon"
-      },
-      {
-        "qty": 4,
-        "name": "Lillie's Determination",
-        "setCode": "MEG",
-        "number": "119",
-        "category": "trainer"
-      },
-      {
-        "qty": 4,
-        "name": "Boss's Orders",
-        "setCode": "MEG",
-        "number": "114",
-        "category": "trainer"
-      },
-      {
-        "qty": 4,
-        "name": "Team Rocket's Petrel",
-        "setCode": "DRI",
-        "number": "176",
-        "category": "trainer"
-      },
-      {
-        "qty": 2,
-        "name": "Colress's Tenacity",
-        "setCode": "SFA",
-        "number": "57",
-        "category": "trainer"
-      },
-      {
-        "qty": 2,
-        "name": "Hilda",
-        "setCode": "WHT",
-        "number": "84",
-        "category": "trainer"
-      },
-      {
-        "qty": 1,
-        "name": "Xerosic's Machinations",
-        "setCode": "SFA",
-        "number": "64",
-        "category": "trainer"
-      },
-      {
-        "qty": 1,
-        "name": "Morty's Conviction",
-        "setCode": "TEF",
-        "number": "155",
-        "category": "trainer"
-      },
-      {
-        "qty": 1,
-        "name": "Pok\u00e9mon Center Lady",
-        "setCode": "MEG",
-        "number": "123",
-        "category": "trainer"
-      },
-      {
-        "qty": 4,
-        "name": "Pok\u00e9gear 3.0",
-        "setCode": "SVI",
-        "number": "186",
-        "category": "trainer"
-      },
-      {
-        "qty": 4,
-        "name": "Jumbo Ice Cream",
-        "setCode": "PFL",
-        "number": "91",
-        "category": "trainer"
-      },
-      {
-        "qty": 2,
-        "name": "Buddy-Buddy Poffin",
-        "setCode": "TEF",
-        "number": "144",
-        "category": "trainer"
-      },
-      {
-        "qty": 2,
-        "name": "Ultra Ball",
-        "setCode": "MEG",
-        "number": "131",
-        "category": "trainer"
-      },
-      {
-        "qty": 1,
-        "name": "Pok\u00e9 Pad",
-        "setCode": "POR",
-        "number": "81",
-        "category": "trainer"
-      },
-      {
-        "qty": 1,
-        "name": "Switch",
-        "setCode": "MEG",
-        "number": "130",
-        "category": "trainer"
-      },
-      {
-        "qty": 1,
-        "name": "Hero's Cape",
-        "setCode": "TEF",
-        "number": "152",
-        "category": "trainer"
-      },
-      {
-        "qty": 1,
-        "name": "Team Rocket's Factory",
-        "setCode": "DRI",
-        "number": "173",
-        "category": "trainer"
-      },
-      {
-        "qty": 1,
-        "name": "Community Center",
-        "setCode": "TWM",
-        "number": "146",
-        "category": "trainer"
-      },
-      {
-        "qty": 4,
-        "name": "Mist Energy",
-        "setCode": "TEF",
-        "number": "161",
-        "category": "energy"
-      },
-      {
-        "qty": 4,
-        "name": "Growing Grass Energy",
-        "setCode": "POR",
-        "number": "86",
-        "category": "energy"
-      },
-      {
-        "qty": 3,
-        "name": "Spiky Energy",
-        "setCode": "JTG",
-        "number": "159",
-        "category": "energy"
-      },
-      {
-        "qty": 2,
-        "name": "Rocky Fighting Energy",
-        "setCode": "POR",
-        "number": "87",
-        "category": "energy"
-      },
-      {
-        "qty": 1,
         "name": "Grass Energy",
         "setCode": "MEE",
         "number": "1",
@@ -3773,195 +3794,6 @@
     "hasRotatedCards": false
   },
   {
-    "id": "slowking-scr",
-    "name": "Slowking",
-    "cards": [
-      {
-        "qty": 4,
-        "name": "Slowpoke",
-        "setCode": "SCR",
-        "number": "57",
-        "category": "pokemon"
-      },
-      {
-        "qty": 3,
-        "name": "Slowking",
-        "setCode": "SCR",
-        "number": "58",
-        "category": "pokemon"
-      },
-      {
-        "qty": 2,
-        "name": "Latias ex",
-        "setCode": "SSP",
-        "number": "76",
-        "category": "pokemon"
-      },
-      {
-        "qty": 2,
-        "name": "Meowth ex",
-        "setCode": "POR",
-        "number": "62",
-        "category": "pokemon"
-      },
-      {
-        "qty": 2,
-        "name": "Kyurem",
-        "setCode": "SFA",
-        "number": "47",
-        "category": "pokemon"
-      },
-      {
-        "qty": 1,
-        "name": "Smoochum",
-        "setCode": "SSP",
-        "number": "75",
-        "category": "pokemon"
-      },
-      {
-        "qty": 1,
-        "name": "Fezandipiti ex",
-        "setCode": "ASC",
-        "number": "142",
-        "category": "pokemon"
-      },
-      {
-        "qty": 1,
-        "name": "Haxorus",
-        "setCode": "BLK",
-        "number": "70",
-        "category": "pokemon"
-      },
-      {
-        "qty": 1,
-        "name": "Annihilape",
-        "setCode": "SSP",
-        "number": "100",
-        "category": "pokemon"
-      },
-      {
-        "qty": 1,
-        "name": "Zeraora",
-        "setCode": "DRI",
-        "number": "78",
-        "category": "pokemon"
-      },
-      {
-        "qty": 4,
-        "name": "Hilda",
-        "setCode": "WHT",
-        "number": "84",
-        "category": "trainer"
-      },
-      {
-        "qty": 3,
-        "name": "Lillie's Determination",
-        "setCode": "MEG",
-        "number": "119",
-        "category": "trainer"
-      },
-      {
-        "qty": 1,
-        "name": "Ciphermaniac's Codebreaking",
-        "setCode": "TEF",
-        "number": "145",
-        "category": "trainer"
-      },
-      {
-        "qty": 1,
-        "name": "Boss's Orders",
-        "setCode": "MEG",
-        "number": "114",
-        "category": "trainer"
-      },
-      {
-        "qty": 1,
-        "name": "Lana's Aid",
-        "setCode": "TWM",
-        "number": "155",
-        "category": "trainer"
-      },
-      {
-        "qty": 1,
-        "name": "Colress's Tenacity",
-        "setCode": "SFA",
-        "number": "57",
-        "category": "trainer"
-      },
-      {
-        "qty": 1,
-        "name": "Surfer",
-        "setCode": "SSP",
-        "number": "187",
-        "category": "trainer"
-      },
-      {
-        "qty": 1,
-        "name": "Carmine",
-        "setCode": "TWM",
-        "number": "145",
-        "category": "trainer"
-      },
-      {
-        "qty": 4,
-        "name": "Pok\u00e9 Pad",
-        "setCode": "POR",
-        "number": "81",
-        "category": "trainer"
-      },
-      {
-        "qty": 4,
-        "name": "Ultra Ball",
-        "setCode": "MEG",
-        "number": "131",
-        "category": "trainer"
-      },
-      {
-        "qty": 4,
-        "name": "Night Stretcher",
-        "setCode": "ASC",
-        "number": "196",
-        "category": "trainer"
-      },
-      {
-        "qty": 3,
-        "name": "Wondrous Patch",
-        "setCode": "PFL",
-        "number": "94",
-        "category": "trainer"
-      },
-      {
-        "qty": 4,
-        "name": "Academy at Night",
-        "setCode": "SFA",
-        "number": "54",
-        "category": "trainer"
-      },
-      {
-        "qty": 5,
-        "name": "Psychic Energy",
-        "setCode": "MEE",
-        "number": "5",
-        "category": "energy"
-      },
-      {
-        "qty": 4,
-        "name": "Telepathic Psychic Energy",
-        "setCode": "POR",
-        "number": "88",
-        "category": "energy"
-      },
-      {
-        "qty": 1,
-        "name": "Enriching Energy",
-        "setCode": "SSP",
-        "number": "191",
-        "category": "energy"
-      }
-    ],
-    "hasRotatedCards": false
-  },
-  {
     "id": "clefairy-ogerpon",
     "name": "Clefairy Ogerpon",
     "cards": [
@@ -4145,6 +3977,195 @@
         "name": "Telepathic Psychic Energy",
         "setCode": "POR",
         "number": "88",
+        "category": "energy"
+      }
+    ],
+    "hasRotatedCards": false
+  },
+  {
+    "id": "slowking-scr",
+    "name": "Slowking",
+    "cards": [
+      {
+        "qty": 4,
+        "name": "Slowpoke",
+        "setCode": "SCR",
+        "number": "57",
+        "category": "pokemon"
+      },
+      {
+        "qty": 3,
+        "name": "Slowking",
+        "setCode": "SCR",
+        "number": "58",
+        "category": "pokemon"
+      },
+      {
+        "qty": 2,
+        "name": "Latias ex",
+        "setCode": "SSP",
+        "number": "76",
+        "category": "pokemon"
+      },
+      {
+        "qty": 2,
+        "name": "Meowth ex",
+        "setCode": "POR",
+        "number": "62",
+        "category": "pokemon"
+      },
+      {
+        "qty": 2,
+        "name": "Kyurem",
+        "setCode": "SFA",
+        "number": "47",
+        "category": "pokemon"
+      },
+      {
+        "qty": 1,
+        "name": "Smoochum",
+        "setCode": "SSP",
+        "number": "75",
+        "category": "pokemon"
+      },
+      {
+        "qty": 1,
+        "name": "Fezandipiti ex",
+        "setCode": "ASC",
+        "number": "142",
+        "category": "pokemon"
+      },
+      {
+        "qty": 1,
+        "name": "Haxorus",
+        "setCode": "BLK",
+        "number": "70",
+        "category": "pokemon"
+      },
+      {
+        "qty": 1,
+        "name": "Annihilape",
+        "setCode": "SSP",
+        "number": "100",
+        "category": "pokemon"
+      },
+      {
+        "qty": 1,
+        "name": "Zeraora",
+        "setCode": "DRI",
+        "number": "78",
+        "category": "pokemon"
+      },
+      {
+        "qty": 4,
+        "name": "Hilda",
+        "setCode": "WHT",
+        "number": "84",
+        "category": "trainer"
+      },
+      {
+        "qty": 3,
+        "name": "Lillie's Determination",
+        "setCode": "MEG",
+        "number": "119",
+        "category": "trainer"
+      },
+      {
+        "qty": 1,
+        "name": "Ciphermaniac's Codebreaking",
+        "setCode": "TEF",
+        "number": "145",
+        "category": "trainer"
+      },
+      {
+        "qty": 1,
+        "name": "Boss's Orders",
+        "setCode": "MEG",
+        "number": "114",
+        "category": "trainer"
+      },
+      {
+        "qty": 1,
+        "name": "Lana's Aid",
+        "setCode": "TWM",
+        "number": "155",
+        "category": "trainer"
+      },
+      {
+        "qty": 1,
+        "name": "Colress's Tenacity",
+        "setCode": "SFA",
+        "number": "57",
+        "category": "trainer"
+      },
+      {
+        "qty": 1,
+        "name": "Surfer",
+        "setCode": "SSP",
+        "number": "187",
+        "category": "trainer"
+      },
+      {
+        "qty": 1,
+        "name": "Carmine",
+        "setCode": "TWM",
+        "number": "145",
+        "category": "trainer"
+      },
+      {
+        "qty": 4,
+        "name": "Pok\u00e9 Pad",
+        "setCode": "POR",
+        "number": "81",
+        "category": "trainer"
+      },
+      {
+        "qty": 4,
+        "name": "Ultra Ball",
+        "setCode": "MEG",
+        "number": "131",
+        "category": "trainer"
+      },
+      {
+        "qty": 4,
+        "name": "Night Stretcher",
+        "setCode": "ASC",
+        "number": "196",
+        "category": "trainer"
+      },
+      {
+        "qty": 3,
+        "name": "Wondrous Patch",
+        "setCode": "PFL",
+        "number": "94",
+        "category": "trainer"
+      },
+      {
+        "qty": 4,
+        "name": "Academy at Night",
+        "setCode": "SFA",
+        "number": "54",
+        "category": "trainer"
+      },
+      {
+        "qty": 5,
+        "name": "Psychic Energy",
+        "setCode": "MEE",
+        "number": "5",
+        "category": "energy"
+      },
+      {
+        "qty": 4,
+        "name": "Telepathic Psychic Energy",
+        "setCode": "POR",
+        "number": "88",
+        "category": "energy"
+      },
+      {
+        "qty": 1,
+        "name": "Enriching Energy",
+        "setCode": "SSP",
+        "number": "191",
         "category": "energy"
       }
     ],
@@ -4382,181 +4403,6 @@
     "hasRotatedCards": false
   },
   {
-    "id": "mega-starmie-ex",
-    "name": "Mega Starmie",
-    "cards": [
-      {
-        "qty": 3,
-        "name": "Dreepy",
-        "setCode": "TWM",
-        "number": "128",
-        "category": "pokemon"
-      },
-      {
-        "qty": 3,
-        "name": "Drakloak",
-        "setCode": "TWM",
-        "number": "129",
-        "category": "pokemon"
-      },
-      {
-        "qty": 1,
-        "name": "Dragapult ex",
-        "setCode": "TWM",
-        "number": "130",
-        "category": "pokemon"
-      },
-      {
-        "qty": 3,
-        "name": "Staryu",
-        "setCode": "POR",
-        "number": "20",
-        "category": "pokemon"
-      },
-      {
-        "qty": 3,
-        "name": "Mega Starmie ex",
-        "setCode": "POR",
-        "number": "21",
-        "category": "pokemon"
-      },
-      {
-        "qty": 2,
-        "name": "Munkidori",
-        "setCode": "TWM",
-        "number": "95",
-        "category": "pokemon"
-      },
-      {
-        "qty": 1,
-        "name": "Meowth ex",
-        "setCode": "POR",
-        "number": "62",
-        "category": "pokemon"
-      },
-      {
-        "qty": 1,
-        "name": "Budew",
-        "setCode": "ASC",
-        "number": "16",
-        "category": "pokemon"
-      },
-      {
-        "qty": 4,
-        "name": "Lillie's Determination",
-        "setCode": "MEG",
-        "number": "119",
-        "category": "trainer"
-      },
-      {
-        "qty": 3,
-        "name": "Boss's Orders",
-        "setCode": "MEG",
-        "number": "114",
-        "category": "trainer"
-      },
-      {
-        "qty": 3,
-        "name": "Hilda",
-        "setCode": "WHT",
-        "number": "84",
-        "category": "trainer"
-      },
-      {
-        "qty": 2,
-        "name": "Crispin",
-        "setCode": "SCR",
-        "number": "133",
-        "category": "trainer"
-      },
-      {
-        "qty": 2,
-        "name": "Judge",
-        "setCode": "POR",
-        "number": "76",
-        "category": "trainer"
-      },
-      {
-        "qty": 4,
-        "name": "Buddy-Buddy Poffin",
-        "setCode": "TEF",
-        "number": "144",
-        "category": "trainer"
-      },
-      {
-        "qty": 4,
-        "name": "Pok\u00e9 Pad",
-        "setCode": "POR",
-        "number": "81",
-        "category": "trainer"
-      },
-      {
-        "qty": 3,
-        "name": "Ultra Ball",
-        "setCode": "MEG",
-        "number": "131",
-        "category": "trainer"
-      },
-      {
-        "qty": 2,
-        "name": "Night Stretcher",
-        "setCode": "ASC",
-        "number": "196",
-        "category": "trainer"
-      },
-      {
-        "qty": 1,
-        "name": "Pok\u00e9gear 3.0",
-        "setCode": "SVI",
-        "number": "186",
-        "category": "trainer"
-      },
-      {
-        "qty": 2,
-        "name": "Air Balloon",
-        "setCode": "ASC",
-        "number": "181",
-        "category": "trainer"
-      },
-      {
-        "qty": 3,
-        "name": "Risky Ruins",
-        "setCode": "MEG",
-        "number": "127",
-        "category": "trainer"
-      },
-      {
-        "qty": 5,
-        "name": "Water Energy",
-        "setCode": "MEE",
-        "number": "3",
-        "category": "energy"
-      },
-      {
-        "qty": 3,
-        "name": "Darkness Energy",
-        "setCode": "MEE",
-        "number": "7",
-        "category": "energy"
-      },
-      {
-        "qty": 1,
-        "name": "Ignition Energy",
-        "setCode": "WHT",
-        "number": "86",
-        "category": "energy"
-      },
-      {
-        "qty": 1,
-        "name": "Neo Upper Energy",
-        "setCode": "TEF",
-        "number": "162",
-        "category": "energy"
-      }
-    ],
-    "hasRotatedCards": false
-  },
-  {
     "id": "froslass-munkidori",
     "name": "Froslass Munkidori",
     "cards": [
@@ -4754,6 +4600,181 @@
         "name": "Prism Energy",
         "setCode": "ASC",
         "number": "216",
+        "category": "energy"
+      }
+    ],
+    "hasRotatedCards": false
+  },
+  {
+    "id": "mega-starmie-ex",
+    "name": "Mega Starmie",
+    "cards": [
+      {
+        "qty": 3,
+        "name": "Dreepy",
+        "setCode": "TWM",
+        "number": "128",
+        "category": "pokemon"
+      },
+      {
+        "qty": 3,
+        "name": "Drakloak",
+        "setCode": "TWM",
+        "number": "129",
+        "category": "pokemon"
+      },
+      {
+        "qty": 1,
+        "name": "Dragapult ex",
+        "setCode": "TWM",
+        "number": "130",
+        "category": "pokemon"
+      },
+      {
+        "qty": 3,
+        "name": "Staryu",
+        "setCode": "POR",
+        "number": "20",
+        "category": "pokemon"
+      },
+      {
+        "qty": 3,
+        "name": "Mega Starmie ex",
+        "setCode": "POR",
+        "number": "21",
+        "category": "pokemon"
+      },
+      {
+        "qty": 2,
+        "name": "Munkidori",
+        "setCode": "TWM",
+        "number": "95",
+        "category": "pokemon"
+      },
+      {
+        "qty": 1,
+        "name": "Meowth ex",
+        "setCode": "POR",
+        "number": "62",
+        "category": "pokemon"
+      },
+      {
+        "qty": 1,
+        "name": "Budew",
+        "setCode": "ASC",
+        "number": "16",
+        "category": "pokemon"
+      },
+      {
+        "qty": 4,
+        "name": "Lillie's Determination",
+        "setCode": "MEG",
+        "number": "119",
+        "category": "trainer"
+      },
+      {
+        "qty": 3,
+        "name": "Boss's Orders",
+        "setCode": "MEG",
+        "number": "114",
+        "category": "trainer"
+      },
+      {
+        "qty": 3,
+        "name": "Hilda",
+        "setCode": "WHT",
+        "number": "84",
+        "category": "trainer"
+      },
+      {
+        "qty": 2,
+        "name": "Crispin",
+        "setCode": "SCR",
+        "number": "133",
+        "category": "trainer"
+      },
+      {
+        "qty": 2,
+        "name": "Judge",
+        "setCode": "POR",
+        "number": "76",
+        "category": "trainer"
+      },
+      {
+        "qty": 4,
+        "name": "Buddy-Buddy Poffin",
+        "setCode": "TEF",
+        "number": "144",
+        "category": "trainer"
+      },
+      {
+        "qty": 4,
+        "name": "Pok\u00e9 Pad",
+        "setCode": "POR",
+        "number": "81",
+        "category": "trainer"
+      },
+      {
+        "qty": 3,
+        "name": "Ultra Ball",
+        "setCode": "MEG",
+        "number": "131",
+        "category": "trainer"
+      },
+      {
+        "qty": 2,
+        "name": "Night Stretcher",
+        "setCode": "ASC",
+        "number": "196",
+        "category": "trainer"
+      },
+      {
+        "qty": 1,
+        "name": "Pok\u00e9gear 3.0",
+        "setCode": "SVI",
+        "number": "186",
+        "category": "trainer"
+      },
+      {
+        "qty": 2,
+        "name": "Air Balloon",
+        "setCode": "ASC",
+        "number": "181",
+        "category": "trainer"
+      },
+      {
+        "qty": 3,
+        "name": "Risky Ruins",
+        "setCode": "MEG",
+        "number": "127",
+        "category": "trainer"
+      },
+      {
+        "qty": 5,
+        "name": "Water Energy",
+        "setCode": "MEE",
+        "number": "3",
+        "category": "energy"
+      },
+      {
+        "qty": 3,
+        "name": "Darkness Energy",
+        "setCode": "MEE",
+        "number": "7",
+        "category": "energy"
+      },
+      {
+        "qty": 1,
+        "name": "Ignition Energy",
+        "setCode": "WHT",
+        "number": "86",
+        "category": "energy"
+      },
+      {
+        "qty": 1,
+        "name": "Neo Upper Energy",
+        "setCode": "TEF",
+        "number": "162",
         "category": "energy"
       }
     ],
