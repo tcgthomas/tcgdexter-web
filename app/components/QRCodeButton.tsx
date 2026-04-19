@@ -75,7 +75,7 @@ export default function QRCodeButton({ shareUrl, deckList, analysis }: Props) {
   const qrSrc = resolvedUrl
     ? `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(
         resolvedUrl
-      )}&color=1a1a1a&bgcolor=e8e8e8&margin=1`
+      )}&color=1a1a1a&bgcolor=ffffff&margin=1`
     : null;
 
   return (
@@ -133,9 +133,12 @@ export default function QRCodeButton({ shareUrl, deckList, analysis }: Props) {
           onClick={() => setOpen(false)}
         >
           <div
-            className="w-full max-w-sm rounded-2xl border border-border bg-surface p-6 shadow-2xl"
+            className="relative w-full max-w-sm"
             onClick={(e) => e.stopPropagation()}
           >
+            {/* Gradient glow */}
+            <div className="absolute -inset-px rounded-2xl bg-[linear-gradient(90deg,#F2A20C_0%,#D91E0D_50%,#A60D0D_100%)] opacity-60 blur-xl pointer-events-none" />
+            <div className="relative rounded-2xl bg-white/90 backdrop-blur-xl border border-black/5 p-6 shadow-[0_20px_60px_-15px_rgba(217,30,13,0.3)]">
             {/* Header */}
             <div className="flex items-center justify-between mb-5">
               <h2 className="text-base font-semibold text-text-primary">
@@ -143,7 +146,7 @@ export default function QRCodeButton({ shareUrl, deckList, analysis }: Props) {
               </h2>
               <button
                 onClick={() => setOpen(false)}
-                className="rounded-lg p-1.5 text-text-muted hover:text-text-primary hover:bg-surface-2 transition-colors"
+                className="rounded-lg p-1.5 text-text-muted hover:text-text-primary hover:bg-black/5 transition-colors"
                 aria-label="Close"
               >
                 <svg
@@ -164,7 +167,7 @@ export default function QRCodeButton({ shareUrl, deckList, analysis }: Props) {
 
             {/* QR Code */}
             <div className="flex justify-center mb-5">
-              <div className="rounded-xl border border-border bg-bg p-3">
+              <div className="rounded-xl border border-black/5 bg-white p-3">
                 {qrSrc && (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
@@ -185,7 +188,7 @@ export default function QRCodeButton({ shareUrl, deckList, analysis }: Props) {
                 readOnly
                 value={resolvedUrl}
                 onFocus={(e) => e.target.select()}
-                className="flex-1 min-w-0 rounded-lg border border-border bg-bg px-3 py-2 text-xs text-text-secondary focus:outline-none"
+                className="flex-1 min-w-0 rounded-lg border border-black/5 bg-white px-3 py-2 text-xs text-text-secondary focus:outline-none"
               />
               <button
                 onClick={handleCopy}
@@ -193,6 +196,7 @@ export default function QRCodeButton({ shareUrl, deckList, analysis }: Props) {
               >
                 {copied ? "Copied!" : "Copy"}
               </button>
+            </div>
             </div>
           </div>
         </div>
