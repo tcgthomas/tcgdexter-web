@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 
 interface Props {
   savedDeckId: string;
@@ -17,6 +17,18 @@ export default function DeckNotes({ savedDeckId, initialNotes }: Props) {
   const [lastSaved, setLastSaved] = useState<string | null>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const lastSavedValue = useRef(initialNotes);
+  const textareaRef = useRef<HTMLTextAreaElement | null>(null);
+
+  const autoResize = useCallback(() => {
+    const el = textareaRef.current;
+    if (!el) return;
+    el.style.height = "auto";
+    el.style.height = `${el.scrollHeight}px`;
+  }, []);
+
+  useEffect(() => {
+    autoResize();
+  }, [autoResize, notes]);
 
   const save = useCallback(
     async (value: string) => {
@@ -62,12 +74,13 @@ export default function DeckNotes({ savedDeckId, initialNotes }: Props) {
         </span>
       </div>
       <textarea
+        ref={textareaRef}
         value={notes}
         onChange={(e) => handleChange(e.target.value)}
         onBlur={handleBlur}
         placeholder="Strategy notes, matchup observations, card swap ideas..."
-        rows={4}
-        className="w-full bg-transparent text-sm text-text-primary placeholder:text-text-muted focus:outline-none resize-y [font-size:16px] sm:text-sm"
+        rows={1}
+        className="block w-full bg-transparent text-sm text-text-primary placeholder:text-text-muted focus:outline-none resize-none overflow-hidden [font-size:16px] sm:text-sm"
       />
     </div>
   );
