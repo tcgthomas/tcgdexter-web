@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 interface Props {
   /** Pre-known share URL (e.g. on the public /d/[shortId] page). */
@@ -29,6 +29,15 @@ export default function QRCodeButton({ shareUrl, deckList, analysis }: Props) {
   const [loading, setLoading] = useState(false);
   const [copied, setCopied] = useState(false);
   const [error, setError] = useState(false);
+
+  useEffect(() => {
+    if (!open) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, [open]);
 
   async function handleOpen() {
     setError(false);
@@ -133,12 +142,9 @@ export default function QRCodeButton({ shareUrl, deckList, analysis }: Props) {
           onClick={() => setOpen(false)}
         >
           <div
-            className="relative w-full max-w-sm"
+            className="w-full max-w-sm rounded-2xl bg-white/90 backdrop-blur-xl border border-black/5 p-6 shadow-[0_20px_60px_-15px_rgba(217,30,13,0.3)]"
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Gradient glow */}
-            <div className="absolute -inset-px rounded-2xl bg-[linear-gradient(90deg,#F2A20C_0%,#D91E0D_50%,#A60D0D_100%)] opacity-60 blur-xl pointer-events-none" />
-            <div className="relative rounded-2xl bg-white/90 backdrop-blur-xl border border-black/5 p-6 shadow-[0_20px_60px_-15px_rgba(217,30,13,0.3)]">
             {/* Header */}
             <div className="flex items-center justify-between mb-5">
               <h2 className="text-base font-semibold text-text-primary">
@@ -167,17 +173,21 @@ export default function QRCodeButton({ shareUrl, deckList, analysis }: Props) {
 
             {/* QR Code */}
             <div className="flex justify-center mb-5">
-              <div className="rounded-xl border border-black/5 bg-white p-3">
-                {qrSrc && (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    src={qrSrc}
-                    alt="QR code for deck share link"
-                    width={180}
-                    height={180}
-                    className="rounded-md block"
-                  />
-                )}
+              <div className="relative">
+                {/* Gradient glow */}
+                <div className="absolute -inset-px rounded-xl bg-[linear-gradient(90deg,#F2A20C_0%,#D91E0D_50%,#A60D0D_100%)] opacity-60 blur-xl pointer-events-none" />
+                <div className="relative rounded-xl border border-black/5 bg-white p-3">
+                  {qrSrc && (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={qrSrc}
+                      alt="QR code for deck share link"
+                      width={180}
+                      height={180}
+                      className="rounded-md block"
+                    />
+                  )}
+                </div>
               </div>
             </div>
 
@@ -196,7 +206,6 @@ export default function QRCodeButton({ shareUrl, deckList, analysis }: Props) {
               >
                 {copied ? "Copied!" : "Copy"}
               </button>
-            </div>
             </div>
           </div>
         </div>
