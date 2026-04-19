@@ -260,8 +260,8 @@ export default function HomeClient({
                       {/* Header row: rank + win rate */}
                       <div className="flex items-start justify-between mb-3">
                         <span className="text-xs font-mono text-text-muted">#{i + 1}</span>
-                        <span className={`text-xs font-mono ${winRate >= 0.5 ? "text-emerald-600" : "text-rose-500"}`}>
-                          {(winRate * 100).toFixed(0)}% WR
+                        <span className="text-xs font-mono text-text-primary">
+                          {(winRate * 100).toFixed(0)}% Win Rate
                         </span>
                       </div>
                       {/* Name */}
