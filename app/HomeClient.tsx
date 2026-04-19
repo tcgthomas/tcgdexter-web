@@ -58,7 +58,6 @@ interface Archetype {
 const top3Archetypes = (archetypesRaw as Archetype[])
   .sort((a, b) => b.total_entries - a.total_entries)
   .slice(0, 3);
-const maxRep = top3Archetypes[0]?.representation_pct ?? 1;
 
 export default function HomeClient({
   stats,
@@ -264,14 +263,7 @@ export default function HomeClient({
                       </span>
                     </div>
                     {/* Name */}
-                    <div className="font-semibold tracking-tight text-lg leading-tight mb-3">{arch.name}</div>
-                    {/* Progress bar — scaled relative to #1 */}
-                    <div className="h-1 rounded-full bg-black/5 overflow-hidden mb-4">
-                      <div
-                        className="h-full bg-[linear-gradient(90deg,#F2A20C_0%,#D91E0D_50%,#A60D0D_100%)]"
-                        style={{ width: `${(arch.representation_pct / maxRep) * 100}%` }}
-                      />
-                    </div>
+                    <div className="font-semibold tracking-tight text-lg leading-tight mb-4">{arch.name}</div>
                     {/* Stat chips */}
                     <div className="grid grid-cols-3 gap-2">
                       <div className="rounded-lg bg-black/[0.04] px-2 py-2 text-center">
