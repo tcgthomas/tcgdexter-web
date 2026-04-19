@@ -23,9 +23,6 @@ export const viewport = {
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
-  // Pins iOS Safari's chrome to the page background color so it never
-  // guesses a tint from page content or overlays.
-  themeColor: "#f2f2f2",
 };
 
 export const metadata: Metadata = {
