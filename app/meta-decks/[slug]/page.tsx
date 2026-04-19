@@ -50,36 +50,6 @@ function getWinRate(a: Archetype): number {
   return total > 0 ? a.wins / total : 0;
 }
 
-function getScoutingNote(a: Archetype): string {
-  const winRate = getWinRate(a);
-  const hasWinData = a.wins + a.losses + a.ties > 0;
-  const velocity = a.velocity ?? 0;
-  const notes: string[] = [];
-  if (a.representation_pct >= 0.1) {
-    if (velocity > 0.01) notes.push("Dominant and rising — the deck to beat right now.");
-    else if (velocity < -0.01) notes.push("High meta presence but fading — pilots may be adapting away.");
-    else notes.push("Firmly established — expect to face this at every locals.");
-  } else if (a.representation_pct >= 0.05) {
-    if (velocity > 0.005) notes.push("Gaining momentum — a rising threat in the current meta.");
-    else if (velocity < -0.005) notes.push("Solid meta share, but trending down from recent peaks.");
-    else notes.push("Consistent meta presence — a real threat at any table.");
-  } else {
-    if (velocity > 0.003) notes.push("Emerging archetype — entry numbers are climbing fast.");
-    else notes.push("Niche presence — expect skilled, dedicated pilots.");
-  }
-  if (a.conversion_rate >= 0.25) notes.push("Elite conversion — the players running it are reaching top cut at an exceptional rate.");
-  else if (a.conversion_rate >= 0.15) notes.push("Strong conversion — the deck delivers when it gets into the right hands.");
-  else if (a.conversion_rate >= 0.08) notes.push("Average conversion — entries and top cuts are roughly in proportion.");
-  else notes.push("Low conversion — popular but underperforming in top cut finishes.");
-  if (hasWinData) {
-    if (winRate >= 0.55) notes.push("Win rate is well above 50% — positive matchup spread across the field.");
-    else if (winRate >= 0.5) notes.push("Win rate is slightly above breakeven — holds its own across matchups.");
-    else if (winRate >= 0.45) notes.push("Win rate is just under 50% — may struggle against the current top decks.");
-    else notes.push("Win rate is below 45% — the field is finding answers to this deck.");
-  }
-  return notes.join(" ");
-}
-
 function buildDeckList(cards: DeckCard[]): string {
   const groups: Record<string, DeckCard[]> = { pokemon: [], trainer: [], energy: [] };
   for (const card of cards) groups[card.category]?.push(card);
@@ -108,7 +78,6 @@ export default async function MetaDeckDetailPage({
 
   const rank = getRank(arch.id);
   const winRate = getWinRate(arch);
-  const scoutingNote = getScoutingNote(arch);
   const deckData = (metaDecksRaw as MetaDeck[]).find((d) => d.id === arch.id);
   const cards = deckData?.cards ?? [];
   const deckList = buildDeckList(cards);
@@ -204,14 +173,6 @@ export default async function MetaDeckDetailPage({
     </div>
   );
 
-  // postCtaSlot: rendered below the Save/Share button row
-  const postCtaSlot = (
-    <div className="rounded-2xl border border-black/8 bg-white/90 backdrop-blur-xl shadow-sm px-5 py-4">
-      <h3 className="text-sm font-semibold text-text-primary mb-2">Scouting Note</h3>
-      <p className="text-sm text-text-secondary leading-relaxed">{scoutingNote}</p>
-    </div>
-  );
-
   return (
     <DeckProfileView
       variant="meta"
@@ -221,7 +182,6 @@ export default async function MetaDeckDetailPage({
       pageTitle={arch.name}
       subtitle={false}
       topSlot={topSlot}
-      postCtaSlot={postCtaSlot}
       footerCta={null}
     />
   );

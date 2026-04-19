@@ -1,5 +1,6 @@
 import Link from "next/link";
 import DeckPriceModule from "@/app/components/DeckPriceModule";
+import DeckListCard from "@/app/components/DeckListCard";
 import SaveDeckButton from "@/app/components/SaveDeckButton";
 import ShareButton from "@/app/components/ShareButton";
 import StandardFormatInfo from "@/app/components/StandardFormatInfo";
@@ -935,8 +936,11 @@ export default function DeckProfileView({
             </div>
           )}
 
-          {/* Deck Notes */}
-          {result.deckScore &&
+          {/* Deck Notes (replaced by the live Deck List on the meta variant
+              so visitors see the actual sample list Limitless is showing). */}
+          {variant === "meta" ? (
+            <DeckListCard deckList={deckList} />
+          ) : result.deckScore &&
             (() => {
               const { consistency, evolution, energyFit } = result.deckScore!;
               const rotatingCount = result.rotation.rotatingCards.length;
