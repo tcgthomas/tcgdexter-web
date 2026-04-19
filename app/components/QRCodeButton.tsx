@@ -144,7 +144,13 @@ export default function QRCodeButton({ shareUrl, deckList, analysis }: Props) {
       {/* ── Modal overlay ─────────────────────────────────────────── */}
       {mounted && open && resolvedUrl && createPortal(
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm"
+          className="fixed z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm"
+          style={{
+            top: "calc(-1 * env(safe-area-inset-top))",
+            right: "calc(-1 * env(safe-area-inset-right))",
+            bottom: "calc(-1 * env(safe-area-inset-bottom))",
+            left: "calc(-1 * env(safe-area-inset-left))",
+          }}
           onClick={() => setOpen(false)}
         >
           <div
