@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import ThemeProvider from "./components/ThemeProvider";
-import AuroraBackground from "./components/ui/AuroraBackground";
 import SiteNav from "./components/ui/SiteNav";
 import SiteFooter from "./components/ui/SiteFooter";
 
@@ -60,7 +59,6 @@ export default function RootLayout({
       >
         <ThemeProvider>
           <div className="min-h-dvh bg-bg text-text-primary antialiased overflow-x-hidden">
-            <AuroraBackground />
             <SiteNav />
             {children}
             <SiteFooter />
