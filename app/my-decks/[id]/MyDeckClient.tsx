@@ -212,7 +212,6 @@ export default function MyDeckClient({
       pageTitle={deckName}
       titleAction={titleAction}
       subtitle={subtitle}
-      heroTitleName={`deck-title-${savedDeckId}`}
       preOverviewSlot={
         <>
           {/* Action buttons */}

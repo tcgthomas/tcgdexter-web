@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import MatchForm, { type MatchFormData } from "@/app/components/MatchForm";
 import QRCodeButton from "@/app/components/QRCodeButton";
@@ -35,12 +34,10 @@ interface Props {
 /**
  * Single row in the My Decks list.
  *
- * Collapsed: two rows — (1) deck name + W-L below, (2) quick action buttons.
- * An absolute-positioned `<Link prefetch>` covers the row so Next.js warms
- * the detail route on hover/viewport; the buttons sit above it via
- * `pointer-events-auto`. The deck title carries `view-transition-name` that
- * matches the detail page's `<h1>`, so the browser morphs between them.
+ * Collapsed: two rows — (1) deck name + pencil icon + W-L below, (2) quick action buttons.
+ * Tapping the row navigates to the deck profile.
  * Log Match button expands an inline match form.
+ * Pencil icon triggers inline rename.
  */
 export default function SavedDeckRow({
   deck,
@@ -61,6 +58,12 @@ export default function SavedDeckRow({
     ? `${wins}W - ${losses}L - ${draws}D`
     : `${wins}W - ${losses}L`;
 
+  // ── Handlers ────────────────────────────────────────────────
+
+  function handleRowClick() {
+    router.push(`/my-decks/${deck.id}`);
+  }
+
   async function handleQuickLog(data: MatchFormData) {
     const res = await fetch("/api/matches", {
       method: "POST",
@@ -75,27 +78,19 @@ export default function SavedDeckRow({
     router.refresh();
   }
 
-  return (
-    <div className={`relative bg-white${isLast ? "" : " border-b border-bg"}`}>
-      {/* Row-wide link overlay. Prefetches the detail route on hover/viewport.
-          Buttons below opt back into pointer events. */}
-      <Link
-        href={`/my-decks/${deck.id}`}
-        prefetch
-        aria-label={`Open ${name}`}
-        className="absolute inset-0 z-0"
-      />
 
+  return (
+    <div className={`bg-white${isLast ? "" : " border-b border-bg"}`}>
       {/* ── Collapsed row ──────────────────────────────────── */}
-      <div className="relative z-10 px-5 py-3.5 flex items-center gap-3 pointer-events-none">
+      <div
+        className="px-5 py-3.5 cursor-pointer flex items-center gap-3"
+        onClick={handleRowClick}
+      >
         {/* Left content */}
         <div className="flex-1 min-w-0">
           {/* Row 1: deck name + W-L */}
           <div className="flex items-center gap-1.5 mb-2">
-            <span
-              className="font-semibold text-text-primary text-lg truncate min-w-0"
-              style={{ viewTransitionName: `deck-title-${deck.id}` }}
-            >
+            <span className="font-semibold text-text-primary text-lg truncate min-w-0">
               {name}
             </span>
             {totalMatches > 0 && (
@@ -105,8 +100,11 @@ export default function SavedDeckRow({
             )}
           </div>
 
-          {/* Row 2: action buttons — opt back into pointer events */}
-          <div className="flex items-center gap-2 pointer-events-auto">
+          {/* Row 2: action buttons */}
+          <div
+            className="flex items-center gap-2"
+            onClick={(e) => e.stopPropagation()}
+          >
             <button
               onClick={() => setQuicklogOpen((o) => !o)}
               className={`inline-flex items-center gap-1.5 rounded-full border border-transparent px-3 py-1.5 text-xs font-semibold transition-all ${
@@ -160,7 +158,7 @@ export default function SavedDeckRow({
 
       {/* ── Quick-log expand ────────────────────────────────── */}
       {quicklogOpen && (
-        <div className="relative z-10 px-5 pb-4 pointer-events-auto">
+        <div className="px-5 pb-4">
           <MatchForm
             onSubmit={handleQuickLog}
             onCancel={() => setQuicklogOpen(false)}
