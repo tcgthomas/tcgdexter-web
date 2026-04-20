@@ -92,6 +92,7 @@ export default function MyDeckClient({
   const router = useRouter();
   const [logOpen, setLogOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [confirmingDelete, setConfirmingDelete] = useState(false);
 
   // Rename state
   const [deckName, setDeckName] = useState(pageTitle);
@@ -129,8 +130,8 @@ export default function MyDeckClient({
     }
   }
 
-  async function handleDelete() {
-    if (!confirm("Delete this deck? This cannot be undone.")) return;
+  async function performDelete() {
+    setConfirmingDelete(false);
     setDeleting(true);
     try {
       const res = await fetch(`/api/saved-decks/${savedDeckId}`, {
@@ -246,10 +247,11 @@ export default function MyDeckClient({
             <QRCodeButton deckList={deckList} analysis={analysis} />
             {/* Delete — icon-only, same visual weight as QR button */}
             <button
-              onClick={handleDelete}
+              type="button"
+              onClick={() => setConfirmingDelete(true)}
               disabled={deleting}
-              title="Delete deck"
-              className="inline-flex items-center justify-center rounded-full bg-black border border-transparent px-3 py-[7px] text-white disabled:opacity-50 transition-opacity hover:opacity-80"
+              aria-label="Delete deck"
+              className="inline-flex items-center justify-center rounded-full bg-black border border-transparent px-3 py-[7px] text-white disabled:opacity-50 transition-opacity hover:opacity-80 touch-manipulation"
             >
               <svg
                 className="w-3.5 h-3.5"
@@ -274,6 +276,48 @@ export default function MyDeckClient({
               open={logOpen}
               onOpenChange={setLogOpen}
             />
+          )}
+
+          {confirmingDelete && (
+            <div
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="delete-deck-title"
+              className="fixed inset-0 z-[120] flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm"
+              onClick={() => setConfirmingDelete(false)}
+            >
+              <div
+                className="w-full max-w-sm rounded-2xl bg-white/95 backdrop-blur-xl border border-black/5 p-6 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.4)]"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <h2
+                  id="delete-deck-title"
+                  className="text-base font-semibold text-text-primary"
+                >
+                  Delete this deck?
+                </h2>
+                <p className="mt-2 text-sm text-text-secondary">
+                  This cannot be undone.
+                </p>
+                <div className="mt-5 flex items-center justify-end gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setConfirmingDelete(false)}
+                    className="inline-flex items-center justify-center rounded-full border border-black/10 bg-white px-4 py-1.5 text-xs font-semibold text-text-secondary hover:bg-black/5 transition touch-manipulation"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="button"
+                    onClick={performDelete}
+                    disabled={deleting}
+                    className="inline-flex items-center justify-center rounded-full bg-black px-4 py-1.5 text-xs font-semibold text-white disabled:opacity-50 hover:opacity-80 transition-opacity touch-manipulation"
+                  >
+                    {deleting ? "Deleting…" : "Delete"}
+                  </button>
+                </div>
+              </div>
+            </div>
           )}
         </>
       }
