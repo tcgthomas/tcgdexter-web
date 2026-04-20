@@ -484,6 +484,271 @@ export default function DeckProfileView({
     </Link>
   );
 
+  const overviewNode = isExp ? (
+    (() => {
+      const pokemonTypes = pokemonPrimaryTypes(
+        result.pokemon.typesByName,
+      );
+      const slots = buildMatrixSlots(result.cards, pokemonTypes);
+      const hasAce = slots.some(
+        (s) => s.kind === "trainer-ace" || s.kind === "energy-ace",
+      );
+      // For the Pokémon legend tile: sample the deck's dominant
+      // Pokémon type so the swatch reflects this specific build.
+      const pokemonTypeCounts = new Map<string, number>();
+      for (const s of slots) {
+        if (s.kind === "pokemon" && s.energyType) {
+          pokemonTypeCounts.set(
+            s.energyType,
+            (pokemonTypeCounts.get(s.energyType) ?? 0) + 1,
+          );
+        }
+      }
+      const dominantPokemonType = Array.from(
+        pokemonTypeCounts.entries(),
+      ).sort((a, b) => b[1] - a[1])[0]?.[0];
+      const pokemonSwatch = dominantPokemonType
+        ? MATRIX_ENERGY_PALETTE[dominantPokemonType]
+        : MATRIX_ENERGY_PALETTE.Colorless;
+      // Render each 60-square card with a 2px #F2F2F2 "trim" plus
+      // content that visually references the real card face.
+      const renderSlot = (slot: MatrixSlot, i: number) => {
+        const frame =
+          "aspect-square rounded-[4px] p-[4px] bg-[#F2F2F2]";
+        const inner = "w-full h-full rounded-[2px]";
+        if (slot.kind === "empty") {
+          return (
+            <div
+              key={i}
+              className="aspect-square rounded-[4px] border-[2px] border-dashed border-black/15"
+              title="Empty slot"
+            />
+          );
+        }
+        if (slot.kind === "pokemon") {
+          // Pokémon get their primary attack-energy type at 50%
+          // opacity, so they read as softer/tinted compared to the
+          // fully-saturated Energy cards below.
+          const baseColor = slot.energyType
+            ? MATRIX_ENERGY_PALETTE[slot.energyType]
+            : MATRIX_ENERGY_PALETTE.Colorless;
+          return (
+            <div
+              key={i}
+              className={frame}
+              title={
+                slot.energyType
+                  ? `${slot.name ?? "Pokémon"} (${slot.energyType})`
+                  : slot.name ?? "Pokémon"
+              }
+            >
+              <div
+                className={inner}
+                style={{ background: hexToRgba(baseColor, 0.5) }}
+              />
+            </div>
+          );
+        }
+        if (slot.kind === "trainer") {
+          return (
+            <div key={i} className={frame} title={slot.name ?? "Trainer"}>
+              <div className={inner} style={{ background: "#E6E6E6" }} />
+            </div>
+          );
+        }
+        if (slot.kind === "trainer-ace" || slot.kind === "energy-ace") {
+          return (
+            <div
+              key={i}
+              className={frame}
+              title={`${slot.name ?? ""} (ACE SPEC)`}
+            >
+              <div className={inner} style={{ background: "#ED008C" }} />
+            </div>
+          );
+        }
+        if (slot.kind === "energy-basic") {
+          const color = slot.energyType
+            ? MATRIX_ENERGY_PALETTE[slot.energyType]
+            : MATRIX_ENERGY_PALETTE.Colorless;
+          return (
+            <div
+              key={i}
+              className={frame}
+              title={`${slot.energyType ?? "Energy"}${slot.name ? ` — ${slot.name}` : ""}`}
+            >
+              <div className={inner} style={{ background: color }} />
+            </div>
+          );
+        }
+        // energy-special (non-ACE)
+        return (
+          <div
+            key={i}
+            className={frame}
+            title={slot.name ?? "Special Energy"}
+          >
+            <div
+              className={inner}
+              style={{
+                background:
+                  "linear-gradient(135deg,#C9C5BC 0%,#A8A8A8 100%)",
+              }}
+            />
+          </div>
+        );
+      };
+      return (
+        <div className={`${CARD_CLS} p-5`}>
+          <div className="flex items-baseline justify-between mb-5">
+            <h2 className="text-lg font-semibold">Overview</h2>
+            <span
+              className={`text-sm font-mono tabular-nums ${
+                result.deckSize === 60
+                  ? "text-text-muted"
+                  : "text-[#D91E0D]"
+              }`}
+            >
+              {result.deckSize} / 60
+            </span>
+          </div>
+
+          <div
+            className="grid grid-cols-12 gap-1.5 mb-5"
+            aria-label="Deck composition matrix"
+          >
+            {slots.map(renderSlot)}
+          </div>
+
+          {/* Legend — supertype counts with a mini sample tile
+              matching the matrix styling. */}
+          <div className="flex flex-wrap items-center justify-between gap-4 border-t border-black/5 pt-4">
+            <LegendItem
+              label="Pokémon"
+              count={result.sections.pokemon}
+              sample={
+                <div
+                  className="w-full h-full rounded-[1px]"
+                  style={{ background: hexToRgba(pokemonSwatch, 0.5) }}
+                />
+              }
+            />
+            <LegendItem
+              label="Trainer"
+              count={result.sections.trainer}
+              sample={
+                <div
+                  className="w-full h-full rounded-[1px]"
+                  style={{ background: "#E6E6E6" }}
+                />
+              }
+            />
+            <LegendItem
+              label="Energy"
+              count={result.sections.energy}
+              sample={
+                <div
+                  className="w-full h-full rounded-[1px]"
+                  style={{
+                    background: MATRIX_ENERGY_PALETTE.Lightning,
+                  }}
+                />
+              }
+            />
+            {hasAce && (
+              <LegendItem
+                label="ACE SPEC"
+                count={
+                  slots.filter(
+                    (s) =>
+                      s.kind === "trainer-ace" ||
+                      s.kind === "energy-ace",
+                  ).length
+                }
+                sample={
+                  <div
+                    className="w-full h-full rounded-[1px]"
+                    style={{ background: "#ED008C" }}
+                  />
+                }
+              />
+            )}
+          </div>
+        </div>
+      );
+    })()
+  ) : (
+    <div className={`${CARD_CLS} p-5`}>
+      <div className="flex items-baseline justify-between mb-4">
+        <h2 className="text-lg font-semibold">Overview</h2>
+        <span className="text-xs text-text-muted">
+          {result.deckSize} cards
+        </span>
+      </div>
+      <div className={`flex h-1.5 rounded-full overflow-hidden ${TRACK_CLS} mb-4`}>
+        {result.sections.pokemon > 0 && (
+          <div
+            className="bg-blue-400 transition-all"
+            style={{
+              width: `${(result.sections.pokemon / result.deckSize) * 100}%`,
+            }}
+          />
+        )}
+        {result.sections.trainer > 0 && (
+          <div
+            className="bg-stone-400 transition-all"
+            style={{
+              width: `${(result.sections.trainer / result.deckSize) * 100}%`,
+            }}
+          />
+        )}
+        {result.sections.energy > 0 && (
+          <div
+            className="bg-yellow-400 transition-all"
+            style={{
+              width: `${(result.sections.energy / result.deckSize) * 100}%`,
+            }}
+          />
+        )}
+      </div>
+      <div className="grid grid-cols-3 divide-x divide-border">
+        <div className="pr-4">
+          <p className="text-xs text-text-muted uppercase tracking-wide mb-1">
+            Pok&eacute;mon
+          </p>
+          <p className="text-2xl font-bold text-text-primary">
+            {result.sections.pokemon}
+          </p>
+          <p className="text-xs text-text-muted mt-0.5">
+            {result.sections.pokemonRatio}
+          </p>
+        </div>
+        <div className="px-4">
+          <p className="text-xs text-text-muted uppercase tracking-wide mb-1">
+            Trainers
+          </p>
+          <p className="text-2xl font-bold text-text-primary">
+            {result.sections.trainer}
+          </p>
+          <p className="text-xs text-text-muted mt-0.5">
+            {result.sections.trainerRatio}
+          </p>
+        </div>
+        <div className="pl-4">
+          <p className="text-xs text-text-muted uppercase tracking-wide mb-1">
+            Energy
+          </p>
+          <p className="text-2xl font-bold text-text-primary">
+            {result.sections.energy}
+          </p>
+          <p className="text-xs text-text-muted mt-0.5">
+            {result.sections.energyRatio}
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+
   return (
     <div className="min-h-dvh flex flex-col bg-bg">
 
@@ -541,6 +806,7 @@ export default function DeckProfileView({
 
           {/* ── Top slot (match log + notes for saved deck views) ── */}
           {topSlot}
+          {variant === "saved" && overviewNode}
 
           {/* Estimated Deck Price */}
           <DeckPriceModule deckPrice={result.deckPrice} theme={theme} />
@@ -671,276 +937,13 @@ export default function DeckProfileView({
           )}
 
           {/* Overview */}
-          {isExp ? (
-            (() => {
-              const pokemonTypes = pokemonPrimaryTypes(
-                result.pokemon.typesByName,
-              );
-              const slots = buildMatrixSlots(result.cards, pokemonTypes);
-              const hasAce = slots.some(
-                (s) => s.kind === "trainer-ace" || s.kind === "energy-ace",
-              );
-              // For the Pokémon legend tile: sample the deck's dominant
-              // Pokémon type so the swatch reflects this specific build.
-              const pokemonTypeCounts = new Map<string, number>();
-              for (const s of slots) {
-                if (s.kind === "pokemon" && s.energyType) {
-                  pokemonTypeCounts.set(
-                    s.energyType,
-                    (pokemonTypeCounts.get(s.energyType) ?? 0) + 1,
-                  );
-                }
-              }
-              const dominantPokemonType = Array.from(
-                pokemonTypeCounts.entries(),
-              ).sort((a, b) => b[1] - a[1])[0]?.[0];
-              const pokemonSwatch = dominantPokemonType
-                ? MATRIX_ENERGY_PALETTE[dominantPokemonType]
-                : MATRIX_ENERGY_PALETTE.Colorless;
-              // Render each 60-square card with a 2px #F2F2F2 "trim" plus
-              // content that visually references the real card face.
-              const renderSlot = (slot: MatrixSlot, i: number) => {
-                const frame =
-                  "aspect-square rounded-[4px] p-[4px] bg-[#F2F2F2]";
-                const inner = "w-full h-full rounded-[2px]";
-                if (slot.kind === "empty") {
-                  return (
-                    <div
-                      key={i}
-                      className="aspect-square rounded-[4px] border-[2px] border-dashed border-black/15"
-                      title="Empty slot"
-                    />
-                  );
-                }
-                if (slot.kind === "pokemon") {
-                  // Pokémon get their primary attack-energy type at 50%
-                  // opacity, so they read as softer/tinted compared to the
-                  // fully-saturated Energy cards below.
-                  const baseColor = slot.energyType
-                    ? MATRIX_ENERGY_PALETTE[slot.energyType]
-                    : MATRIX_ENERGY_PALETTE.Colorless;
-                  return (
-                    <div
-                      key={i}
-                      className={frame}
-                      title={
-                        slot.energyType
-                          ? `${slot.name ?? "Pokémon"} (${slot.energyType})`
-                          : slot.name ?? "Pokémon"
-                      }
-                    >
-                      <div
-                        className={inner}
-                        style={{ background: hexToRgba(baseColor, 0.5) }}
-                      />
-                    </div>
-                  );
-                }
-                if (slot.kind === "trainer") {
-                  return (
-                    <div key={i} className={frame} title={slot.name ?? "Trainer"}>
-                      <div className={inner} style={{ background: "#E6E6E6" }} />
-                    </div>
-                  );
-                }
-                if (slot.kind === "trainer-ace" || slot.kind === "energy-ace") {
-                  return (
-                    <div
-                      key={i}
-                      className={frame}
-                      title={`${slot.name ?? ""} (ACE SPEC)`}
-                    >
-                      <div className={inner} style={{ background: "#ED008C" }} />
-                    </div>
-                  );
-                }
-                if (slot.kind === "energy-basic") {
-                  const color = slot.energyType
-                    ? MATRIX_ENERGY_PALETTE[slot.energyType]
-                    : MATRIX_ENERGY_PALETTE.Colorless;
-                  return (
-                    <div
-                      key={i}
-                      className={frame}
-                      title={`${slot.energyType ?? "Energy"}${slot.name ? ` — ${slot.name}` : ""}`}
-                    >
-                      <div className={inner} style={{ background: color }} />
-                    </div>
-                  );
-                }
-                // energy-special (non-ACE)
-                return (
-                  <div
-                    key={i}
-                    className={frame}
-                    title={slot.name ?? "Special Energy"}
-                  >
-                    <div
-                      className={inner}
-                      style={{
-                        background:
-                          "linear-gradient(135deg,#C9C5BC 0%,#A8A8A8 100%)",
-                      }}
-                    />
-                  </div>
-                );
-              };
-              return (
-                <div className={`${CARD_CLS} p-5`}>
-                  <div className="flex items-baseline justify-between mb-5">
-                    <h2 className="text-lg font-semibold">Overview</h2>
-                    <span
-                      className={`text-sm font-mono tabular-nums ${
-                        result.deckSize === 60
-                          ? "text-text-muted"
-                          : "text-[#D91E0D]"
-                      }`}
-                    >
-                      {result.deckSize} / 60
-                    </span>
-                  </div>
-
-                  <div
-                    className="grid grid-cols-12 gap-1.5 mb-5"
-                    aria-label="Deck composition matrix"
-                  >
-                    {slots.map(renderSlot)}
-                  </div>
-
-                  {/* Legend — supertype counts with a mini sample tile
-                      matching the matrix styling. */}
-                  <div className="flex flex-wrap items-center justify-between gap-4 border-t border-black/5 pt-4">
-                    <LegendItem
-                      label="Pokémon"
-                      count={result.sections.pokemon}
-                      sample={
-                        <div
-                          className="w-full h-full rounded-[1px]"
-                          style={{ background: hexToRgba(pokemonSwatch, 0.5) }}
-                        />
-                      }
-                    />
-                    <LegendItem
-                      label="Trainer"
-                      count={result.sections.trainer}
-                      sample={
-                        <div
-                          className="w-full h-full rounded-[1px]"
-                          style={{ background: "#E6E6E6" }}
-                        />
-                      }
-                    />
-                    <LegendItem
-                      label="Energy"
-                      count={result.sections.energy}
-                      sample={
-                        <div
-                          className="w-full h-full rounded-[1px]"
-                          style={{
-                            background: MATRIX_ENERGY_PALETTE.Lightning,
-                          }}
-                        />
-                      }
-                    />
-                    {hasAce && (
-                      <LegendItem
-                        label="ACE SPEC"
-                        count={
-                          slots.filter(
-                            (s) =>
-                              s.kind === "trainer-ace" ||
-                              s.kind === "energy-ace",
-                          ).length
-                        }
-                        sample={
-                          <div
-                            className="w-full h-full rounded-[1px]"
-                            style={{ background: "#ED008C" }}
-                          />
-                        }
-                      />
-                    )}
-                  </div>
-                </div>
-              );
-            })()
-          ) : (
-            <div className={`${CARD_CLS} p-5`}>
-              <div className="flex items-baseline justify-between mb-4">
-                <h2 className="text-lg font-semibold">Overview</h2>
-                <span className="text-xs text-text-muted">
-                  {result.deckSize} cards
-                </span>
-              </div>
-              <div className={`flex h-1.5 rounded-full overflow-hidden ${TRACK_CLS} mb-4`}>
-                {result.sections.pokemon > 0 && (
-                  <div
-                    className="bg-blue-400 transition-all"
-                    style={{
-                      width: `${(result.sections.pokemon / result.deckSize) * 100}%`,
-                    }}
-                  />
-                )}
-                {result.sections.trainer > 0 && (
-                  <div
-                    className="bg-stone-400 transition-all"
-                    style={{
-                      width: `${(result.sections.trainer / result.deckSize) * 100}%`,
-                    }}
-                  />
-                )}
-                {result.sections.energy > 0 && (
-                  <div
-                    className="bg-yellow-400 transition-all"
-                    style={{
-                      width: `${(result.sections.energy / result.deckSize) * 100}%`,
-                    }}
-                  />
-                )}
-              </div>
-              <div className="grid grid-cols-3 divide-x divide-border">
-                <div className="pr-4">
-                  <p className="text-xs text-text-muted uppercase tracking-wide mb-1">
-                    Pok&eacute;mon
-                  </p>
-                  <p className="text-2xl font-bold text-text-primary">
-                    {result.sections.pokemon}
-                  </p>
-                  <p className="text-xs text-text-muted mt-0.5">
-                    {result.sections.pokemonRatio}
-                  </p>
-                </div>
-                <div className="px-4">
-                  <p className="text-xs text-text-muted uppercase tracking-wide mb-1">
-                    Trainers
-                  </p>
-                  <p className="text-2xl font-bold text-text-primary">
-                    {result.sections.trainer}
-                  </p>
-                  <p className="text-xs text-text-muted mt-0.5">
-                    {result.sections.trainerRatio}
-                  </p>
-                </div>
-                <div className="pl-4">
-                  <p className="text-xs text-text-muted uppercase tracking-wide mb-1">
-                    Energy
-                  </p>
-                  <p className="text-2xl font-bold text-text-primary">
-                    {result.sections.energy}
-                  </p>
-                  <p className="text-xs text-text-muted mt-0.5">
-                    {result.sections.energyRatio}
-                  </p>
-                </div>
-              </div>
-            </div>
-          )}
+          {variant !== "saved" && overviewNode}
 
           {/* Deck Notes (replaced by the live Deck List on the meta variant
               so visitors see the actual sample list Limitless is showing). */}
           {variant === "meta" ? (
             <DeckListCard deckList={deckList} />
-          ) : result.deckScore &&
+          ) : variant !== "saved" && result.deckScore &&
             (() => {
               const { consistency, evolution, energyFit } = result.deckScore!;
               const rotatingCount = result.rotation.rotatingCards.length;
