@@ -423,6 +423,12 @@ interface Props {
    */
   topSlot?: React.ReactNode;
   /**
+   * Content injected BEFORE the Overview matrix on the saved variant.
+   * Use this for action buttons + match log so the Overview can sit
+   * between them and the rest of the saved-deck content.
+   */
+  preOverviewSlot?: React.ReactNode;
+  /**
    * Content injected directly below the Save/Share button row.
    * Used by /meta-decks/[slug] to place the Scouting Note after the CTAs.
    */
@@ -449,6 +455,7 @@ export default function DeckProfileView({
   footerCta,
   creator,
   topSlot,
+  preOverviewSlot,
   postCtaSlot,
   theme = "experiments",
 }: Props) {
@@ -804,9 +811,12 @@ export default function DeckProfileView({
             </div>
           )}
 
-          {/* ── Top slot (match log + notes for saved deck views) ── */}
-          {topSlot}
+          {/* ── Saved variant: action buttons + match log go above Overview ── */}
+          {variant === "saved" && preOverviewSlot}
           {variant === "saved" && overviewNode}
+
+          {/* ── Top slot (remaining saved content; stat cards + scouting on meta) ── */}
+          {topSlot}
 
           {/* Estimated Deck Price */}
           <DeckPriceModule deckPrice={result.deckPrice} theme={theme} />
@@ -939,68 +949,9 @@ export default function DeckProfileView({
           {/* Overview */}
           {variant !== "saved" && overviewNode}
 
-          {/* Deck Notes (replaced by the live Deck List on the meta variant
-              so visitors see the actual sample list Limitless is showing). */}
-          {variant === "meta" ? (
-            <DeckListCard deckList={deckList} />
-          ) : variant !== "saved" && result.deckScore &&
-            (() => {
-              const { consistency, evolution, energyFit } = result.deckScore!;
-              const rotatingCount = result.rotation.rotatingCards.length;
-
-              const rotationStr =
-                rotatingCount === 0
-                  ? "All cards legal in 2026 Standard Format."
-                  : rotatingCount <= 2
-                    ? `${rotatingCount} card${rotatingCount > 1 ? "s" : ""} no longer legal in Standard — minor updates needed.`
-                    : "Several cards in this deck are no longer legal in Standard Format.";
-
-              const consistencyStr =
-                consistency >= 22
-                  ? "Strong draw engine with key supporters and search cards."
-                  : consistency >= 15
-                    ? "Decent consistency — a few more draw supporters could help."
-                    : consistency >= 6
-                      ? "Thin draw engine — this deck may struggle to set up reliably."
-                      : "Missing core draw and search cards — consider building out your supporter and item line.";
-
-              const evolutionStr =
-                evolution >= 23
-                  ? "Evolution lines look complete."
-                  : evolution >= 15
-                    ? "Most evolution lines intact — double-check your Stage 1 and Stage 2 ratios."
-                    : "Incomplete evolution lines detected — this deck may struggle to evolve consistently.";
-
-              const energyStr =
-                energyFit === 25
-                  ? "Energy count is in the optimal range."
-                  : energyFit >= 15
-                    ? "Energy count is slightly outside the typical range."
-                    : "Energy count may be too high or too low for consistent attachment.";
-
-              return (
-                <div className={`${CARD_CLS} p-5`}>
-                  <h2 className="text-lg font-semibold text-text-primary mb-3">
-                    Deck Notes
-                  </h2>
-                  <ul className="flex flex-col gap-2 list-disc list-inside">
-                    <li className="text-sm text-text-secondary">
-                      <span>{rotationStr}</span>
-                      <span className="inline-flex align-middle ml-1">
-                        <StandardFormatInfo />
-                      </span>
-                    </li>
-                    {[consistencyStr, evolutionStr, energyStr].map(
-                      (str, i) => (
-                        <li key={i} className="text-sm text-text-secondary">
-                          {str}
-                        </li>
-                      ),
-                    )}
-                  </ul>
-                </div>
-              );
-            })()}
+          {/* Meta variant shows the live Deck List in this position so
+              visitors see the actual sample list Limitless is showing. */}
+          {variant === "meta" && <DeckListCard deckList={deckList} />}
 
           {/* Pokemon */}
           <CollapsibleSection

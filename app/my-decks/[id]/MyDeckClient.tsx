@@ -211,7 +211,7 @@ export default function MyDeckClient({
       pageTitle={deckName}
       titleAction={titleAction}
       subtitle={subtitle}
-      topSlot={
+      preOverviewSlot={
         <>
           {/* Action buttons */}
           <div className="flex items-center gap-2">
@@ -275,6 +275,10 @@ export default function MyDeckClient({
               onOpenChange={setLogOpen}
             />
           )}
+        </>
+      }
+      topSlot={
+        <>
           <DeckNotes savedDeckId={savedDeckId} initialNotes={initialNotes} />
 
           {/* Deck list */}
