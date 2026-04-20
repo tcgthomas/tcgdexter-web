@@ -78,6 +78,14 @@ function SignInForm() {
 
   return (
     <section className="mx-auto max-w-md px-6 pt-[calc(env(safe-area-inset-top)_+_1.68rem)] md:pt-[calc(env(safe-area-inset-top)_+_3rem)] pb-24">
+      <div className="flex justify-center mb-7 md:mb-8">
+        <img
+          src="/logo-light.png"
+          alt="TCG Dexter"
+          className="max-w-full"
+          style={{ width: "240px", height: "auto" }}
+        />
+      </div>
       <p className="text-center text-base font-semibold text-text-primary leading-relaxed mb-10">
         Save and share your deck lists.
         <br />
