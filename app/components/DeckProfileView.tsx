@@ -265,7 +265,21 @@ function buildMatrixSlots(
     return undefined;
   };
   for (const [section, defaultKind] of byOrder) {
-    for (const card of cards.filter((c) => c.section === section)) {
+    // Within the trainer section, push ACE SPEC trainers last so they sit
+    // immediately before the energy section — ACE SPECs are the transitional
+    // band between trainers and energy in the matrix.
+    const sectionCards =
+      section === "trainer"
+        ? [
+            ...cards.filter(
+              (c) => c.section === "trainer" && !ACE_SPEC_NAMES.has(c.name),
+            ),
+            ...cards.filter(
+              (c) => c.section === "trainer" && ACE_SPEC_NAMES.has(c.name),
+            ),
+          ]
+        : cards.filter((c) => c.section === section);
+    for (const card of sectionCards) {
       for (let i = 0; i < card.qty; i++) {
         if (section === "trainer") {
           slots.push({
