@@ -106,7 +106,7 @@ export default function SaveDeckButton({
 
   const baseClasses =
     className ??
-    "inline-flex items-center justify-center gap-2 rounded-xl bg-black px-5 py-2.5 text-sm font-semibold text-white transition-all hover:bg-black/85 disabled:opacity-50 disabled:cursor-not-allowed";
+    "inline-flex items-center justify-center gap-2 rounded-full bg-black px-5 py-2.5 text-sm font-semibold text-white transition-all hover:bg-black/85 disabled:opacity-50 disabled:cursor-not-allowed";
 
   return (
     <>
@@ -192,7 +192,7 @@ export default function SaveDeckButton({
             <div className="flex flex-col gap-2">
               <Link
                 href="/sign-in"
-                className="inline-flex items-center justify-center rounded-lg bg-accent px-5 py-2.5 text-sm font-semibold text-white transition-all hover:bg-accent-light"
+                className="inline-flex items-center justify-center rounded-full bg-accent px-5 py-2.5 text-sm font-semibold text-white transition-all hover:bg-accent-light"
               >
                 Sign in
               </Link>

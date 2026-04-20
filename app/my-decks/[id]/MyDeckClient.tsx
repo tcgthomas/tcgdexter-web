@@ -186,14 +186,14 @@ export default function MyDeckClient({
         <button
           onClick={handleRename}
           disabled={renameBusy}
-          className="rounded-lg bg-accent px-3 py-1.5 text-xs font-semibold text-white hover:bg-accent-light disabled:opacity-50"
+          className="rounded-full bg-accent px-3 py-1.5 text-xs font-semibold text-white hover:bg-accent-light disabled:opacity-50"
         >
           {renameBusy ? "…" : "Save"}
         </button>
         <button
           onClick={() => { setEditingTitle(false); setTitleInput(deckName); setRenameError(null); }}
           disabled={renameBusy}
-          className="rounded-lg border border-border bg-bg px-3 py-1.5 text-xs font-semibold text-text-secondary hover:bg-surface-2 disabled:opacity-50"
+          className="rounded-full border border-border bg-bg px-3 py-1.5 text-xs font-semibold text-text-secondary hover:bg-surface-2 disabled:opacity-50"
         >
           Cancel
         </button>
@@ -217,7 +217,7 @@ export default function MyDeckClient({
           <div className="flex items-center gap-2">
             <button
               onClick={() => setLogOpen((o) => !o)}
-              className={`inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-semibold transition-all ${
+              className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-semibold transition-all ${
                 logOpen
                   ? "bg-accent border-accent text-white"
                   : "border-border bg-bg text-text-secondary hover:bg-surface-2"
@@ -244,7 +244,7 @@ export default function MyDeckClient({
               onClick={handleDelete}
               disabled={deleting}
               title="Delete deck"
-              className="inline-flex items-center justify-center rounded-md bg-black border border-transparent px-3 py-[7px] text-white disabled:opacity-50 transition-opacity hover:opacity-80"
+              className="inline-flex items-center justify-center rounded-full bg-black border border-transparent px-3 py-[7px] text-white disabled:opacity-50 transition-opacity hover:opacity-80"
             >
               <svg
                 className="w-3.5 h-3.5"
@@ -300,7 +300,7 @@ export default function MyDeckClient({
       footerCta={
         <Link
           href="/my-decks"
-          className="inline-flex items-center justify-center gap-2 rounded-lg border border-border bg-bg px-6 py-3 text-sm font-semibold text-text-primary transition-all hover:bg-surface-2"
+          className="inline-flex items-center justify-center gap-2 rounded-full border border-border bg-bg px-6 py-3 text-sm font-semibold text-text-primary transition-all hover:bg-surface-2"
         >
           Back to My Decks
         </Link>

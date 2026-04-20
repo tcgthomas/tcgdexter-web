@@ -476,8 +476,8 @@ export default function DeckProfileView({
       href="/"
       className={
         isExp
-          ? "inline-flex items-center justify-center gap-2 rounded-xl bg-[linear-gradient(90deg,#F2A20C_0%,#D91E0D_50%,#A60D0D_100%)] px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-[#D91E0D]/30 hover:shadow-[#D91E0D]/50 transition"
-          : "inline-flex items-center justify-center gap-2 rounded-lg bg-accent px-6 py-3 text-sm font-semibold text-white transition-all hover:bg-accent-light"
+          ? "inline-flex items-center justify-center gap-2 rounded-full bg-[linear-gradient(90deg,#F2A20C_0%,#D91E0D_50%,#A60D0D_100%)] px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-[#D91E0D]/30 hover:shadow-[#D91E0D]/50 transition"
+          : "inline-flex items-center justify-center gap-2 rounded-full bg-accent px-6 py-3 text-sm font-semibold text-white transition-all hover:bg-accent-light"
       }
     >
       Profile your own deck
@@ -551,7 +551,7 @@ export default function DeckProfileView({
             <ShareButton
               deckList={deckList}
               analysis={result}
-              className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-[linear-gradient(90deg,#F2A20C_0%,#D91E0D_50%,#A60D0D_100%)] px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-[#D91E0D]/30 hover:shadow-[#D91E0D]/50 transition disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full inline-flex items-center justify-center gap-2 rounded-full bg-[linear-gradient(90deg,#F2A20C_0%,#D91E0D_50%,#A60D0D_100%)] px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-[#D91E0D]/30 hover:shadow-[#D91E0D]/50 transition disabled:opacity-50 disabled:cursor-not-allowed"
             />
           ) : (
             /* All other variants: Save (black) + Share side by side */
@@ -559,12 +559,12 @@ export default function DeckProfileView({
               <SaveDeckButton
                 deckList={deckList}
                 analysis={result}
-                className="flex-1 inline-flex items-center justify-center gap-2 rounded-xl bg-black px-5 py-2.5 text-sm font-semibold text-white transition-all hover:bg-black/85 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex-1 inline-flex items-center justify-center gap-2 rounded-full bg-black px-5 py-2.5 text-sm font-semibold text-white transition-all hover:bg-black/85 disabled:opacity-50 disabled:cursor-not-allowed"
               />
               <ShareButton
                 deckList={deckList}
                 analysis={result}
-                className="flex-1 inline-flex items-center justify-center gap-2 rounded-xl bg-[linear-gradient(90deg,#F2A20C_0%,#D91E0D_50%,#A60D0D_100%)] px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-[#D91E0D]/30 hover:shadow-[#D91E0D]/50 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex-1 inline-flex items-center justify-center gap-2 rounded-full bg-[linear-gradient(90deg,#F2A20C_0%,#D91E0D_50%,#A60D0D_100%)] px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-[#D91E0D]/30 hover:shadow-[#D91E0D]/50 transition disabled:opacity-50 disabled:cursor-not-allowed"
               />
             </div>
           )}
@@ -1330,8 +1330,8 @@ export default function DeckProfileView({
                         rel="noopener noreferrer"
                         className={
                           isExp
-                            ? "flex-shrink-0 inline-flex items-center gap-1 rounded-md border border-black/10 bg-white px-3 py-1 text-xs font-semibold text-text-primary hover:border-[#D91E0D]/40 hover:text-[#D91E0D] transition-colors"
-                            : "flex-shrink-0 inline-flex items-center gap-1 rounded-md border border-[#d8b460]/50 bg-[#d8b460]/10 px-3 py-1 text-xs font-semibold text-[#d8b460] hover:bg-[#d8b460]/20 transition-colors"
+                            ? "flex-shrink-0 inline-flex items-center gap-1 rounded-full border border-black/10 bg-white px-3 py-1 text-xs font-semibold text-text-primary hover:border-[#D91E0D]/40 hover:text-[#D91E0D] transition-colors"
+                            : "flex-shrink-0 inline-flex items-center gap-1 rounded-full border border-[#d8b460]/50 bg-[#d8b460]/10 px-3 py-1 text-xs font-semibold text-[#d8b460] hover:bg-[#d8b460]/20 transition-colors"
                         }
                       >
                         View

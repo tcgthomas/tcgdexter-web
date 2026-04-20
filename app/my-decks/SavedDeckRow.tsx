@@ -107,7 +107,7 @@ export default function SavedDeckRow({
           >
             <button
               onClick={() => setQuicklogOpen((o) => !o)}
-              className={`inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-semibold transition-all ${
+              className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-semibold transition-all ${
                 quicklogOpen
                   ? "bg-accent border-accent text-white"
                   : "border-border bg-bg text-text-secondary hover:bg-surface-2"

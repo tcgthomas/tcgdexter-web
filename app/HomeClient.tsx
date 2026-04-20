@@ -307,13 +307,13 @@ export default function HomeClient({
                 <div className="mt-10 flex flex-col sm:flex-row gap-3 justify-center">
                   <Link
                     href="/"
-                    className="rounded-xl bg-black text-white font-semibold px-6 py-3 hover:bg-black/85 transition shadow-lg"
+                    className="rounded-full bg-black text-white font-semibold px-6 py-3 hover:bg-black/85 transition shadow-lg"
                   >
                     Profile a deck now
                   </Link>
                   <Link
                     href="/meta-decks"
-                    className="rounded-xl border border-black/15 bg-white/80 backdrop-blur-sm text-text-primary font-semibold px-6 py-3 hover:bg-white transition"
+                    className="rounded-full border border-black/15 bg-white/80 backdrop-blur-sm text-text-primary font-semibold px-6 py-3 hover:bg-white transition"
                   >
                     Browse the meta →
                   </Link>

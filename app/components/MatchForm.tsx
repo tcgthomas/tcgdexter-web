@@ -151,7 +151,7 @@ export default function MatchForm({
             <button
               key={r}
               onClick={() => setResult(r)}
-              className={`flex-1 rounded-lg border py-2.5 text-sm font-bold transition-all ${
+              className={`flex-1 rounded-full border py-2.5 text-sm font-bold transition-all ${
                 selected
                   ? `${s.bg} ${s.text} ${s.border} ring-2 ring-offset-1 ring-current`
                   : "border-border bg-bg text-text-secondary hover:bg-surface-2"
@@ -285,13 +285,13 @@ export default function MatchForm({
         <button
           onClick={handleSubmit}
           disabled={submitting || !result}
-          className="flex-1 rounded-lg bg-accent px-4 py-2 text-sm font-semibold text-white hover:bg-accent-light disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+          className="flex-1 rounded-full bg-accent px-4 py-2 text-sm font-semibold text-white hover:bg-accent-light disabled:opacity-50 disabled:cursor-not-allowed transition-all"
         >
           {submitting ? "Saving..." : submitLabel}
         </button>
         <button
           onClick={onCancel}
-          className="rounded-lg border border-border bg-bg px-4 py-2 text-sm font-semibold text-text-secondary hover:bg-surface-2 transition-all"
+          className="rounded-full border border-border bg-bg px-4 py-2 text-sm font-semibold text-text-secondary hover:bg-surface-2 transition-all"
         >
           Cancel
         </button>

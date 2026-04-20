@@ -170,7 +170,7 @@ export default function MatchLog({ savedDeckId, initialMatches, open, onOpenChan
             onClick={() => setHistoryExpanded((v) => !v)}
             aria-label={historyExpanded ? "Collapse match history" : "Expand match history"}
             aria-expanded={historyExpanded}
-            className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-semibold text-text-muted hover:text-text-primary hover:bg-black/5 transition-colors"
+            className="inline-flex items-center gap-1 rounded-full px-2 py-1 text-xs font-semibold text-text-muted hover:text-text-primary hover:bg-black/5 transition-colors"
           >
             {historyExpanded ? "Less" : "More"}
             <svg

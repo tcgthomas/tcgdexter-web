@@ -156,7 +156,7 @@ function SignInForm() {
               <button
                 onClick={handleDiscordSignIn}
                 disabled={discordLoading || googleLoading || status === "loading"}
-                className="w-full inline-flex items-center justify-center gap-2.5 rounded-lg px-5 py-3 text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full inline-flex items-center justify-center gap-2.5 rounded-full px-5 py-3 text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
                 style={{ backgroundColor: "#5865F2" }}
               >
                 {discordLoading ? (
@@ -174,7 +174,7 @@ function SignInForm() {
               <button
                 onClick={handleGoogleSignIn}
                 disabled={googleLoading || discordLoading || status === "loading"}
-                className="mt-3 w-full inline-flex items-center justify-center gap-2.5 rounded-lg border border-black/10 bg-white px-5 py-3 text-sm font-semibold text-text-primary transition-opacity hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="mt-3 w-full inline-flex items-center justify-center gap-2.5 rounded-full border border-black/10 bg-white px-5 py-3 text-sm font-semibold text-text-primary transition-opacity hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {googleLoading ? (
                   <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
