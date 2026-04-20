@@ -238,7 +238,6 @@ export default function MyDeckClient({
               </svg>
               Log Match
             </button>
-            <CopyDeckListButton deckList={deckList} />
             <QRCodeButton deckList={deckList} analysis={analysis} />
             {/* Delete — icon-only, same visual weight as QR button */}
             <button

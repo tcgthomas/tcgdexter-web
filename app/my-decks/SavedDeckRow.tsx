@@ -4,7 +4,6 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import MatchForm, { type MatchFormData } from "@/app/components/MatchForm";
 import QRCodeButton from "@/app/components/QRCodeButton";
-import CopyDeckListButton from "@/app/components/CopyDeckListButton";
 
 interface SavedDeck {
   id: string;
@@ -129,7 +128,6 @@ export default function SavedDeckRow({
               </svg>
               Log Match
             </button>
-            <CopyDeckListButton deckList={deck.deck_list} />
             <QRCodeButton
               deckList={deck.deck_list}
               analysis={deck.analysis as unknown}
