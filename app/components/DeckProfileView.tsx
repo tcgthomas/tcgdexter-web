@@ -4,6 +4,7 @@ import DeckListCard from "@/app/components/DeckListCard";
 import SaveDeckButton from "@/app/components/SaveDeckButton";
 import ShareButton from "@/app/components/ShareButton";
 import StandardFormatInfo from "@/app/components/StandardFormatInfo";
+import { buildTypesByName } from "@/lib/cardTypes";
 
 /* ─── Types ──────────────────────────────────────────────────── */
 
@@ -50,8 +51,10 @@ export interface AnalysisResult {
     stage2Count: number;
     abilities: PokemonAbility[];
     attacks: PokemonAttack[];
-    /** Map of Pokémon card name → elemental types, sourced from the card DB.
-     *  Field is optional so older cached responses without it still type-check. */
+    /** @deprecated No longer read by the renderer — the Overview matrix now
+     *  re-derives types from `cards` against the bundled card DB at render
+     *  time (see `buildTypesByName` in `lib/cardTypes.ts`). Still emitted by
+     *  the analyzer and persisted on older saved-deck rows; safe to ignore. */
     typesByName?: Record<string, string[]>;
   };
   trainer: {
@@ -494,7 +497,7 @@ export default function DeckProfileView({
   const overviewNode = isExp ? (
     (() => {
       const pokemonTypes = pokemonPrimaryTypes(
-        result.pokemon.typesByName,
+        buildTypesByName(result.cards),
       );
       const slots = buildMatrixSlots(result.cards, pokemonTypes);
       const hasAce = slots.some(
