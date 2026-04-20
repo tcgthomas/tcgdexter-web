@@ -107,11 +107,16 @@ export default function SavedDeckRow({
           >
             <button
               onClick={() => setQuicklogOpen((o) => !o)}
-              className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-semibold transition-all ${
-                quicklogOpen
-                  ? "bg-accent border-accent text-white"
-                  : "border-border bg-bg text-text-secondary hover:bg-surface-2"
+              className={`inline-flex items-center gap-1.5 rounded-full border border-transparent px-3 py-1.5 text-xs font-semibold transition-all ${
+                quicklogOpen ? "text-white" : "text-text-secondary"
               }`}
+              style={{
+                backgroundImage: quicklogOpen
+                  ? "linear-gradient(var(--accent), var(--accent)), linear-gradient(90deg, #F2A20C, #D91E0D, #A60D0D)"
+                  : "linear-gradient(var(--bg), var(--bg)), linear-gradient(90deg, #F2A20C, #D91E0D, #A60D0D)",
+                backgroundOrigin: "border-box",
+                backgroundClip: "padding-box, border-box",
+              }}
             >
               <svg
                 className="w-3.5 h-3.5"
