@@ -452,6 +452,12 @@ interface Props {
   postCtaSlot?: React.ReactNode;
   /** Visual theme. "experiments" adopts the new design-identity styling. */
   theme?: "default" | "experiments";
+  /**
+   * If set, applies `view-transition-name` to the page `<h1>`. When the
+   * same name is on a list-page element (e.g. a row title) in the outgoing
+   * document, the browser morphs between them during navigation.
+   */
+  heroTitleName?: string;
 }
 
 /**
@@ -475,6 +481,7 @@ export default function DeckProfileView({
   preOverviewSlot,
   postCtaSlot,
   theme = "experiments",
+  heroTitleName,
 }: Props) {
   const result = analysis;
   // Theme-aware class strings. Default preserves prod look verbatim;
@@ -792,7 +799,10 @@ export default function DeckProfileView({
         )}
         <div className="mx-auto max-w-2xl">
           <div className="flex items-center gap-2">
-            <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-on-gradient">
+            <h1
+              className="text-3xl sm:text-4xl font-bold tracking-tight text-on-gradient"
+              style={heroTitleName ? { viewTransitionName: heroTitleName } : undefined}
+            >
               {pageTitle}
             </h1>
             {titleAction}
