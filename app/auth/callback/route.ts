@@ -1,90 +1,106 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createServerClient } from "@supabase/ssr";
+import type { EmailOtpType } from "@supabase/supabase-js";
 
 /**
- * Auth callback — handles the redirect from the magic link email.
+ * Auth callback — handles the redirect from OAuth providers and magic-link emails.
  *
- * Supabase sends the user to this URL after they click the magic link in
- * their email. The URL carries a `code` query param which we exchange for
- * a session cookie, then redirect the user to their destination.
+ * Supports two URL shapes:
  *
- * Flow:
- *   1. User submits email on /sign-in → Supabase emails magic link
- *   2. User clicks magic link → browser lands here with ?code=...&next=/profile
- *   3. We exchange the code for a session → cookie set
- *   4. Redirect to ?next (default /account)
+ *   1. PKCE code flow (Google/Discord OAuth):
+ *      ?code=...&next=/...
+ *      → exchangeCodeForSession(code) — needs the client-set code_verifier cookie.
+ *
+ *   2. Token-hash flow (magic-link emails):
+ *      ?token_hash=...&type=email&next=/...
+ *      → verifyOtp({ type, token_hash }) — does NOT need code_verifier.
+ *
+ * Magic links use the token-hash flow so they survive email-provider
+ * pre-fetch scanners and cross-device opens (a known Supabase + PKCE issue
+ * where the code_verifier cookie is missing because the link was opened in
+ * a different browser, or the link was consumed by a safe-link scanner
+ * before the user clicked it).
+ *
+ * For magic links to take this path, the Supabase email template must
+ * generate the link as:
+ *   {{ .SiteURL }}/auth/callback?token_hash={{ .TokenHash }}&type=email&next=/
  */
 export async function GET(request: NextRequest) {
   const { searchParams, origin } = new URL(request.url);
   const code = searchParams.get("code");
+  const tokenHash = searchParams.get("token_hash");
+  const type = searchParams.get("type") as EmailOtpType | null;
   const next = searchParams.get("next") ?? "/profile";
 
-  // ── Debug logging (remove once auth issue is resolved) ───────────────────
   const forwardedHost = request.headers.get("x-forwarded-host");
+  const isLocalEnv = process.env.NODE_ENV === "development";
+  const redirectUrl = isLocalEnv
+    ? `${origin}${next}`
+    : forwardedHost
+    ? `https://${forwardedHost}${next}`
+    : `${origin}${next}`;
+
+  // Build the redirect response BEFORE the auth call so the Supabase client
+  // can write session cookies directly onto it. Using next/headers cookies()
+  // here doesn't work — those cookies land on an internal store that is
+  // never copied onto the NextResponse we return.
+  const response = NextResponse.redirect(redirectUrl);
+
+  // ── Debug logging (remove once magic-link issue is confirmed resolved) ──
   const incomingCookieNames = request.cookies.getAll().map((c) => c.name);
-  console.log("[auth/callback] origin:", origin);
-  console.log("[auth/callback] x-forwarded-host:", forwardedHost);
-  console.log("[auth/callback] code present:", !!code);
-  console.log("[auth/callback] incoming cookie names:", incomingCookieNames.join(", ") || "(none)");
-  // ─────────────────────────────────────────────────────────────────────────
+  const cookiesWritten: string[] = [];
+  // ────────────────────────────────────────────────────────────────────────
 
-  if (code) {
-    const isLocalEnv = process.env.NODE_ENV === "development";
-    const redirectUrl = isLocalEnv
-      ? `${origin}${next}`
-      : forwardedHost
-      ? `https://${forwardedHost}${next}`
-      : `${origin}${next}`;
-
-    console.log("[auth/callback] redirectUrl:", redirectUrl);
-
-    // Build the redirect response BEFORE exchanging the code so that
-    // exchangeCodeForSession writes session cookies directly onto this
-    // response. Using createClient() (next/headers cookies()) won't work
-    // here because those cookies land on an internal store that is never
-    // copied onto the NextResponse we return — the browser never sees them.
-    const response = NextResponse.redirect(redirectUrl);
-
-    const cookiesWritten: string[] = [];
-    const supabase = createServerClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-      {
-        cookies: {
-          getAll() {
-            return request.cookies.getAll();
-          },
-          setAll(cookiesToSet) {
-            cookiesToSet.forEach(({ name, value, options }) => {
-              response.cookies.set(name, value, options);
-              cookiesWritten.push(name);
-            });
-          },
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        getAll() {
+          return request.cookies.getAll();
         },
-      }
-    );
-
-    const { error } = await supabase.auth.exchangeCodeForSession(code);
-    console.log("[auth/callback] exchangeCodeForSession error:", error ? `${error.name}: ${error.message}` : "null");
-    console.log("[auth/callback] cookies written to response:", cookiesWritten.join(", ") || "(none)");
-
-    if (!error) {
-      // Ensure a profiles row exists for this user. There is no database
-      // trigger on auth.users, so OAuth sign-ins (e.g. Discord) won't have
-      // a row yet. ignoreDuplicates means this is a no-op for returning users.
-      const { data: { user }, error: userError } = await supabase.auth.getUser();
-      console.log("[auth/callback] getUser result:", user ? `uid=${user.id}` : `null (err=${userError?.message})`);
-      if (user) {
-        await supabase
-          .from("profiles")
-          .upsert({ id: user.id }, { onConflict: "id", ignoreDuplicates: true });
-      }
-
-      return response;
+        setAll(cookiesToSet) {
+          cookiesToSet.forEach(({ name, value, options }) => {
+            response.cookies.set(name, value, options);
+            cookiesWritten.push(name);
+          });
+        },
+      },
     }
+  );
+
+  let error: { name?: string; message: string } | null = null;
+  let flow: "code" | "token_hash" | "none" = "none";
+
+  if (tokenHash && type) {
+    flow = "token_hash";
+    const result = await supabase.auth.verifyOtp({ type, token_hash: tokenHash });
+    error = result.error;
+  } else if (code) {
+    flow = "code";
+    const result = await supabase.auth.exchangeCodeForSession(code);
+    error = result.error;
   }
 
-  // Something went wrong — send them back to sign-in with an error flag.
-  console.log("[auth/callback] falling through to error redirect (no code or exchange failed)");
+  // Single-line log so Vercel doesn't drop subsequent console.log entries.
+  console.log(
+    `[auth/callback] flow=${flow} host=${forwardedHost} cookies_in=[${incomingCookieNames.join(",")}] cookies_out=[${cookiesWritten.join(",")}] err=${error ? `${error.name ?? "?"}:${error.message}` : "null"}`
+  );
+
+  if (flow !== "none" && !error) {
+    // Ensure a profiles row exists. There is no DB trigger on auth.users,
+    // so OAuth sign-ins won't have a row yet. ignoreDuplicates is a no-op
+    // for returning users.
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user) {
+      await supabase
+        .from("profiles")
+        .upsert({ id: user.id }, { onConflict: "id", ignoreDuplicates: true });
+    }
+
+    return response;
+  }
+
+  // Either no auth params present, or the auth call returned an error.
   return NextResponse.redirect(`${origin}/sign-in?error=auth_callback_failed`);
 }
