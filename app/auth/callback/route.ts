@@ -19,15 +19,24 @@ export async function GET(request: NextRequest) {
   const code = searchParams.get("code");
   const next = searchParams.get("next") ?? "/profile";
 
+  // ── Debug logging (remove once auth issue is resolved) ───────────────────
+  const forwardedHost = request.headers.get("x-forwarded-host");
+  const incomingCookieNames = request.cookies.getAll().map((c) => c.name);
+  console.log("[auth/callback] origin:", origin);
+  console.log("[auth/callback] x-forwarded-host:", forwardedHost);
+  console.log("[auth/callback] code present:", !!code);
+  console.log("[auth/callback] incoming cookie names:", incomingCookieNames.join(", ") || "(none)");
+  // ─────────────────────────────────────────────────────────────────────────
+
   if (code) {
-    // Respect Vercel's x-forwarded-host for correct preview URL redirects.
-    const forwardedHost = request.headers.get("x-forwarded-host");
     const isLocalEnv = process.env.NODE_ENV === "development";
     const redirectUrl = isLocalEnv
       ? `${origin}${next}`
       : forwardedHost
       ? `https://${forwardedHost}${next}`
       : `${origin}${next}`;
+
+    console.log("[auth/callback] redirectUrl:", redirectUrl);
 
     // Build the redirect response BEFORE exchanging the code so that
     // exchangeCodeForSession writes session cookies directly onto this
@@ -36,6 +45,7 @@ export async function GET(request: NextRequest) {
     // copied onto the NextResponse we return — the browser never sees them.
     const response = NextResponse.redirect(redirectUrl);
 
+    const cookiesWritten: string[] = [];
     const supabase = createServerClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -45,20 +55,25 @@ export async function GET(request: NextRequest) {
             return request.cookies.getAll();
           },
           setAll(cookiesToSet) {
-            cookiesToSet.forEach(({ name, value, options }) =>
-              response.cookies.set(name, value, options)
-            );
+            cookiesToSet.forEach(({ name, value, options }) => {
+              response.cookies.set(name, value, options);
+              cookiesWritten.push(name);
+            });
           },
         },
       }
     );
 
     const { error } = await supabase.auth.exchangeCodeForSession(code);
+    console.log("[auth/callback] exchangeCodeForSession error:", error ? `${error.name}: ${error.message}` : "null");
+    console.log("[auth/callback] cookies written to response:", cookiesWritten.join(", ") || "(none)");
+
     if (!error) {
       // Ensure a profiles row exists for this user. There is no database
       // trigger on auth.users, so OAuth sign-ins (e.g. Discord) won't have
       // a row yet. ignoreDuplicates means this is a no-op for returning users.
-      const { data: { user } } = await supabase.auth.getUser();
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      console.log("[auth/callback] getUser result:", user ? `uid=${user.id}` : `null (err=${userError?.message})`);
       if (user) {
         await supabase
           .from("profiles")
@@ -70,5 +85,6 @@ export async function GET(request: NextRequest) {
   }
 
   // Something went wrong — send them back to sign-in with an error flag.
+  console.log("[auth/callback] falling through to error redirect (no code or exchange failed)");
   return NextResponse.redirect(`${origin}/sign-in?error=auth_callback_failed`);
 }
