@@ -104,20 +104,20 @@ export default async function MetaDeckDetailPage({
 
       {/* Stats — single card, 4-column row */}
       <div className="rounded-2xl border border-black/8 bg-white/90 backdrop-blur-xl shadow-sm px-5 py-4">
-        <div className="grid grid-cols-4 divide-x divide-black/8">
-          <div className="pr-4">
+        <div className="grid grid-cols-4">
+          <div className="text-center">
             <p className="text-lg font-bold text-[#D91E0D]">{`${(arch.representation_pct * 100).toFixed(1)}%`}</p>
             <p className="text-xs text-text-muted mt-0.5">Meta Share</p>
           </div>
-          <div className="px-4">
+          <div className="text-center">
             <p className="text-lg font-bold text-[#F2A20C]">{String(arch.top_cut_entries)}</p>
             <p className="text-xs text-text-muted mt-0.5">Top Cut</p>
           </div>
-          <div className="px-4">
+          <div className="text-center">
             <p className="text-lg font-bold text-emerald-600">{`${(arch.conversion_rate * 100).toFixed(1)}%`}</p>
             <p className="text-xs text-text-muted mt-0.5">Conversion</p>
           </div>
-          <div className="pl-4">
+          <div className="text-center">
             <p className={`text-lg font-bold ${winRate >= 0.55 ? "text-[#F2A20C]" : "text-text-secondary"}`}>{`${(winRate * 100).toFixed(0)}%`}</p>
             <p className="text-xs text-text-muted mt-0.5">Win Rate</p>
           </div>
