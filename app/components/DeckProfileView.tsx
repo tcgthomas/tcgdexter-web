@@ -420,22 +420,17 @@ function CollapsibleSection({
 function LegendItem({
   label,
   count,
-  sample,
 }: {
   label: string;
   count: number;
-  sample: React.ReactNode;
 }) {
   return (
     <div className="flex items-center gap-2">
-      <div className="w-4 h-4 rounded-[3px] flex-shrink-0 overflow-hidden">
-        {sample}
-      </div>
+      <span className="text-sm font-semibold text-text-primary tabular-nums w-[1.5ch] text-right inline-block">
+        {count}
+      </span>
       <span className="text-[11px] font-semibold uppercase tracking-widest text-text-secondary">
         {label}
-      </span>
-      <span className="text-sm font-semibold text-text-primary tabular-nums">
-        {count}
       </span>
     </div>
   );
@@ -695,15 +690,11 @@ export default function DeckProfileView({
         <div className={`${CARD_CLS} p-5`}>
           <div className="flex items-baseline justify-between mb-5">
             <h2 className="text-lg font-semibold">Overview</h2>
-            <span
-              className={`text-sm font-mono tabular-nums ${
-                result.deckSize === 60
-                  ? "text-text-muted"
-                  : "text-[#D91E0D]"
-              }`}
-            >
-              {result.deckSize} / 60
-            </span>
+            {result.deckSize !== 60 && (
+              <span className="text-sm font-mono tabular-nums text-[#D91E0D]">
+                {result.deckSize} / 60
+              </span>
+            )}
           </div>
 
           <div
@@ -716,54 +707,15 @@ export default function DeckProfileView({
           {/* Legend — supertype counts with a mini sample tile
               matching the matrix styling. */}
           <div className="flex flex-wrap items-center justify-between gap-4 border-t border-black/5 pt-4">
-            <LegendItem
-              label="Pokémon"
-              count={result.sections.pokemon}
-              sample={
-                <div
-                  className="w-full h-full rounded-[1px]"
-                  style={{ background: hexToRgba(pokemonSwatch, 0.5) }}
-                />
-              }
-            />
-            <LegendItem
-              label="Trainer"
-              count={result.sections.trainer}
-              sample={
-                <div
-                  className="w-full h-full rounded-[1px]"
-                  style={{ background: "#E6E6E6" }}
-                />
-              }
-            />
-            <LegendItem
-              label="Energy"
-              count={result.sections.energy}
-              sample={
-                <div
-                  className="w-full h-full rounded-[1px]"
-                  style={{
-                    background: MATRIX_ENERGY_PALETTE.Lightning,
-                  }}
-                />
-              }
-            />
+            <LegendItem label="Pokémon" count={result.sections.pokemon} />
+            <LegendItem label="Trainer" count={result.sections.trainer} />
+            <LegendItem label="Energy" count={result.sections.energy} />
             {hasAce && (
               <LegendItem
                 label="ACE SPEC"
-                count={
-                  slots.filter(
-                    (s) =>
-                      s.kind === "trainer-ace" ||
-                      s.kind === "energy-ace",
-                  ).length
-                }
-                sample={
-                  <div
-                    className="w-full h-full rounded-[1px]"
-                    style={{ background: "#ED008C" }}
-                  />
-                }
+                count={slots.filter(
+                  (s) => s.kind === "trainer-ace" || s.kind === "energy-ace",
+                ).length}
               />
             )}
           </div>
