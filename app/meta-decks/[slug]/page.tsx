@@ -102,48 +102,26 @@ export default async function MetaDeckDetailPage({
         #{rank} in Standard
       </p>
 
-      {/* 2×2 stat grid */}
-      <div className="grid grid-cols-2 gap-3">
-        <StatCard
-          icon={
-            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 0 1 3 19.875v-6.75ZM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V8.625ZM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V4.125Z" />
-            </svg>
-          }
-          value={`${(arch.representation_pct * 100).toFixed(1)}%`}
-          label="Meta Share"
-          color="text-[#D91E0D]"
-        />
-        <StatCard
-          icon={
-            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 18.75h-9m9 0a3 3 0 0 1 3 3h-15a3 3 0 0 1 3-3m9 0v-3.375c0-.621-.503-1.125-1.125-1.125h-.871M7.5 18.75v-3.375c0-.621.504-1.125 1.125-1.125h.872m5.007 0H9.497m5.007 0a7.454 7.454 0 0 1-.982-3.172M9.497 14.25a7.454 7.454 0 0 0 .981-3.172M5.25 4.236c-.982.143-1.954.317-2.916.52A6.003 6.003 0 0 0 7.73 9.728M5.25 4.236V4.5c0 2.108.966 3.99 2.48 5.228M5.25 4.236V2.721C7.456 2.41 9.71 2.25 12 2.25c2.291 0 4.545.16 6.75.47v1.516M18.75 4.236c.982.143 1.954.317 2.916.52A6.003 6.003 0 0 1 16.27 9.728M18.75 4.236V4.5c0 2.108-.966 3.99-2.48 5.228m0 0a6.023 6.023 0 0 1-2.52.587 6.023 6.023 0 0 1-2.52-.587" />
-            </svg>
-          }
-          value={String(arch.top_cut_entries)}
-          label="Top Cut"
-          color="text-[#F2A20C]"
-        />
-        <StatCard
-          icon={
-            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M3 7.5 7.5 3m0 0L12 7.5M7.5 3v13.5m13.5-6L16.5 15m0 0L12 10.5m4.5 4.5V6" />
-            </svg>
-          }
-          value={`${(arch.conversion_rate * 100).toFixed(1)}%`}
-          label="Conversion"
-          color="text-emerald-600"
-        />
-        <StatCard
-          icon={
-            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M15.362 5.214A8.252 8.252 0 0 1 12 21 8.25 8.25 0 0 1 6.038 7.047 8.287 8.287 0 0 0 9 9.601a8.983 8.983 0 0 1 3.361-6.867 8.21 8.21 0 0 0 3 2.48Z" />
-            </svg>
-          }
-          value={`${(winRate * 100).toFixed(0)}%`}
-          label="Win Rate"
-          color={winRate >= 0.55 ? "text-[#F2A20C]" : "text-text-secondary"}
-        />
+      {/* Stats — single card, 4-column row */}
+      <div className="rounded-2xl border border-black/8 bg-white/90 backdrop-blur-xl shadow-sm px-5 py-4">
+        <div className="grid grid-cols-4 divide-x divide-black/8">
+          <div className="pr-4">
+            <p className="text-lg font-bold text-[#D91E0D]">{`${(arch.representation_pct * 100).toFixed(1)}%`}</p>
+            <p className="text-xs text-text-muted mt-0.5">Meta Share</p>
+          </div>
+          <div className="px-4">
+            <p className="text-lg font-bold text-[#F2A20C]">{String(arch.top_cut_entries)}</p>
+            <p className="text-xs text-text-muted mt-0.5">Top Cut</p>
+          </div>
+          <div className="px-4">
+            <p className="text-lg font-bold text-emerald-600">{`${(arch.conversion_rate * 100).toFixed(1)}%`}</p>
+            <p className="text-xs text-text-muted mt-0.5">Conversion</p>
+          </div>
+          <div className="pl-4">
+            <p className={`text-lg font-bold ${winRate >= 0.55 ? "text-[#F2A20C]" : "text-text-secondary"}`}>{`${(winRate * 100).toFixed(0)}%`}</p>
+            <p className="text-xs text-text-muted mt-0.5">Win Rate</p>
+          </div>
+        </div>
       </div>
 
       {/* Tournament record */}
@@ -184,25 +162,5 @@ export default async function MetaDeckDetailPage({
       topSlot={topSlot}
       footerCta={null}
     />
-  );
-}
-
-function StatCard({
-  icon,
-  value,
-  label,
-  color,
-}: {
-  icon: React.ReactNode;
-  value: string;
-  label: string;
-  color: string;
-}) {
-  return (
-    <div className="rounded-2xl border border-black/8 bg-white/90 backdrop-blur-xl shadow-sm p-4">
-      <div className={`mb-2 ${color}`}>{icon}</div>
-      <p className={`text-2xl font-bold ${color}`}>{value}</p>
-      <p className="text-xs text-text-muted mt-0.5">{label}</p>
-    </div>
   );
 }
