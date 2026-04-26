@@ -332,11 +332,24 @@ function buildMatrixSlots(
     }
   }
 
-  // ── Trainers: alphabetical, Ace Spec at end ──
+  // ── Trainers: grouped by subtype, alphabetical within group, Ace Spec last ──
+  const TRAINER_SUBTYPE_ORDER: Record<string, number> = {
+    "Supporter": 0, "Item": 1, "Pokémon Tool": 2, "Stadium": 3,
+  };
+  const trainerSubtypeOrder = (name: string): number => {
+    const s = subtypesByName[name] ?? [];
+    for (const [subtype, order] of Object.entries(TRAINER_SUBTYPE_ORDER)) {
+      if (s.includes(subtype)) return order;
+    }
+    return 1; // unknown defaults to Item
+  };
   const trainerCards = cards.filter((c) => c.section === "trainer");
   const regularTrainers = trainerCards
     .filter((c) => !ACE_SPEC_NAMES.has(c.name))
-    .sort((a, b) => a.name.localeCompare(b.name));
+    .sort((a, b) => {
+      const sd = trainerSubtypeOrder(a.name) - trainerSubtypeOrder(b.name);
+      return sd !== 0 ? sd : a.name.localeCompare(b.name);
+    });
   const aceTrainers = trainerCards
     .filter((c) => ACE_SPEC_NAMES.has(c.name))
     .sort((a, b) => a.name.localeCompare(b.name));
