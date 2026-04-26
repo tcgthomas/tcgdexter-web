@@ -4,7 +4,7 @@ import DeckListCard from "@/app/components/DeckListCard";
 import SaveDeckButton from "@/app/components/SaveDeckButton";
 import ShareButton from "@/app/components/ShareButton";
 import StandardFormatInfo from "@/app/components/StandardFormatInfo";
-import { buildTypesByName } from "@/lib/cardTypes";
+import { buildTypesByName, buildSubtypesByName } from "@/lib/cardTypes";
 
 /* ─── Types ──────────────────────────────────────────────────── */
 
@@ -224,6 +224,37 @@ interface MatrixSlot {
   kind: "pokemon" | "trainer" | "trainer-ace" | "energy-basic" | "energy-special" | "energy-ace" | "empty";
   energyType?: string;
   name?: string;
+  subtypes?: string[];
+}
+
+function matrixLabel(slot: MatrixSlot): string {
+  if (slot.kind === "pokemon") {
+    const s = slot.subtypes ?? [];
+    const mega = s.includes("Mega") ? "M" : "";
+    if (s.includes("Stage 2")) return `${mega}2`;
+    if (s.includes("Stage 1")) return `${mega}1`;
+    return `${mega}B`;
+  }
+  if (slot.kind === "trainer-ace" || slot.kind === "energy-ace") return "A";
+  if (slot.kind === "trainer") {
+    const s = slot.subtypes ?? [];
+    if (s.includes("Supporter")) return "SU";
+    if (s.includes("Stadium")) return "ST";
+    if (s.includes("Pokémon Tool")) return "T";
+    return "I";
+  }
+  if (slot.kind === "energy-special") return "SE";
+  if (slot.kind === "energy-basic") return "E";
+  return "";
+}
+
+/** Returns true if the hex color is dark enough to warrant white text. */
+function isDarkHex(hex: string): boolean {
+  const h = hex.replace("#", "");
+  const r = parseInt(h.slice(0, 2), 16);
+  const g = parseInt(h.slice(2, 4), 16);
+  const b = parseInt(h.slice(4, 6), 16);
+  return (0.299 * r + 0.587 * g + 0.114 * b) / 255 < 0.55;
 }
 
 /** Build a name → primary elemental type map from the analyze response's
@@ -243,10 +274,9 @@ function pokemonPrimaryTypes(
 function buildMatrixSlots(
   cards: Array<{ qty: number; name: string; section: string }>,
   pokemonTypes: Map<string, string>,
+  subtypesByName: Record<string, string[]>,
 ): MatrixSlot[] {
   const slots: MatrixSlot[] = [];
-  // Fill Pokémon first, then Trainer, then Energy — matches the card-order
-  // convention players write their lists in.
   const byOrder: Array<[string, MatrixSlot["kind"] | "energy-maybe"]> = [
     ["pokemon", "pokemon"],
     ["trainer", "trainer"],
@@ -281,10 +311,12 @@ function buildMatrixSlots(
         : cards.filter((c) => c.section === section);
     for (const card of sectionCards) {
       for (let i = 0; i < card.qty; i++) {
+        const subtypes = subtypesByName[card.name];
         if (section === "trainer") {
           slots.push({
             kind: ACE_SPEC_NAMES.has(card.name) ? "trainer-ace" : "trainer",
             name: card.name,
+            subtypes,
           });
         } else if (section === "energy") {
           const isAce = ACE_SPEC_NAMES.has(card.name);
@@ -298,12 +330,14 @@ function buildMatrixSlots(
                 : "energy-special",
             energyType,
             name: card.name,
+            subtypes,
           });
         } else {
           slots.push({
             kind: defaultKind as MatrixSlot["kind"],
             energyType: lookupType(card.name),
             name: card.name,
+            subtypes,
           });
         }
       }
@@ -369,7 +403,7 @@ function LegendItem({
 }) {
   return (
     <div className="flex items-center gap-2">
-      <div className="w-4 h-4 rounded-[3px] p-[1.5px] bg-[#F2F2F2] flex-shrink-0">
+      <div className="w-4 h-4 rounded-[3px] flex-shrink-0 overflow-hidden">
         {sample}
       </div>
       <span className="text-[11px] font-semibold uppercase tracking-widest text-text-secondary">
@@ -513,7 +547,8 @@ export default function DeckProfileView({
       const pokemonTypes = pokemonPrimaryTypes(
         buildTypesByName(result.cards),
       );
-      const slots = buildMatrixSlots(result.cards, pokemonTypes);
+      const subtypesByName = buildSubtypesByName(result.cards);
+      const slots = buildMatrixSlots(result.cards, pokemonTypes, subtypesByName);
       const hasAce = slots.some(
         (s) => s.kind === "trainer-ace" || s.kind === "energy-ace",
       );
@@ -534,12 +569,9 @@ export default function DeckProfileView({
       const pokemonSwatch = dominantPokemonType
         ? MATRIX_ENERGY_PALETTE[dominantPokemonType]
         : MATRIX_ENERGY_PALETTE.Colorless;
-      // Render each 60-square card with a 2px #F2F2F2 "trim" plus
-      // content that visually references the real card face.
       const renderSlot = (slot: MatrixSlot, i: number) => {
-        const frame =
-          "aspect-square rounded-[4px] p-[4px] bg-[#F2F2F2]";
-        const inner = "w-full h-full rounded-[2px]";
+        const tile = "aspect-square rounded-[4px] flex items-center justify-center";
+        const labelCls = "text-[7px] font-black leading-none select-none";
         if (slot.kind === "empty") {
           return (
             <div
@@ -549,34 +581,40 @@ export default function DeckProfileView({
             />
           );
         }
+        const label = matrixLabel(slot);
         if (slot.kind === "pokemon") {
-          // Pokémon get their primary attack-energy type at 50%
-          // opacity, so they read as softer/tinted compared to the
-          // fully-saturated Energy cards below.
           const baseColor = slot.energyType
             ? MATRIX_ENERGY_PALETTE[slot.energyType]
             : MATRIX_ENERGY_PALETTE.Colorless;
+          const bg = hexToRgba(baseColor, 0.5);
           return (
             <div
               key={i}
-              className={frame}
+              className={tile}
+              style={{ background: bg }}
               title={
                 slot.energyType
                   ? `${slot.name ?? "Pokémon"} (${slot.energyType})`
                   : slot.name ?? "Pokémon"
               }
             >
-              <div
-                className={inner}
-                style={{ background: hexToRgba(baseColor, 0.5) }}
-              />
+              <span className={labelCls} style={{ color: "rgba(0,0,0,0.55)" }}>
+                {label}
+              </span>
             </div>
           );
         }
         if (slot.kind === "trainer") {
           return (
-            <div key={i} className={frame} title={slot.name ?? "Trainer"}>
-              <div className={inner} style={{ background: "#E6E6E6" }} />
+            <div
+              key={i}
+              className={tile}
+              style={{ background: "#E6E6E6" }}
+              title={slot.name ?? "Trainer"}
+            >
+              <span className={labelCls} style={{ color: "rgba(0,0,0,0.55)" }}>
+                {label}
+              </span>
             </div>
           );
         }
@@ -584,10 +622,13 @@ export default function DeckProfileView({
           return (
             <div
               key={i}
-              className={frame}
+              className={tile}
+              style={{ background: "#ED008C" }}
               title={`${slot.name ?? ""} (ACE SPEC)`}
             >
-              <div className={inner} style={{ background: "#ED008C" }} />
+              <span className={labelCls} style={{ color: "rgba(255,255,255,0.9)" }}>
+                {label}
+              </span>
             </div>
           );
         }
@@ -595,13 +636,19 @@ export default function DeckProfileView({
           const color = slot.energyType
             ? MATRIX_ENERGY_PALETTE[slot.energyType]
             : MATRIX_ENERGY_PALETTE.Colorless;
+          const textColor = isDarkHex(color)
+            ? "rgba(255,255,255,0.9)"
+            : "rgba(0,0,0,0.55)";
           return (
             <div
               key={i}
-              className={frame}
+              className={tile}
+              style={{ background: color }}
               title={`${slot.energyType ?? "Energy"}${slot.name ? ` — ${slot.name}` : ""}`}
             >
-              <div className={inner} style={{ background: color }} />
+              <span className={labelCls} style={{ color: textColor }}>
+                {label}
+              </span>
             </div>
           );
         }
@@ -609,16 +656,13 @@ export default function DeckProfileView({
         return (
           <div
             key={i}
-            className={frame}
+            className={tile}
+            style={{ background: "linear-gradient(135deg,#C9C5BC 0%,#A8A8A8 100%)" }}
             title={slot.name ?? "Special Energy"}
           >
-            <div
-              className={inner}
-              style={{
-                background:
-                  "linear-gradient(135deg,#C9C5BC 0%,#A8A8A8 100%)",
-              }}
-            />
+            <span className={labelCls} style={{ color: "rgba(0,0,0,0.55)" }}>
+              {label}
+            </span>
           </div>
         );
       };
