@@ -1,6 +1,7 @@
 import Link from "next/link";
 import DeckPriceModule from "@/app/components/DeckPriceModule";
 import DeckListCard from "@/app/components/DeckListCard";
+import MetaDeckListCarousel from "@/app/components/MetaDeckListCarousel";
 import SaveDeckButton from "@/app/components/SaveDeckButton";
 import ShareButton from "@/app/components/ShareButton";
 import StandardFormatInfo from "@/app/components/StandardFormatInfo";
@@ -484,6 +485,12 @@ interface Props {
    */
   variant: "fresh" | "saved" | "shared" | "meta";
   deckList: string;
+  /**
+   * Optional sibling deck-list strings to render as a horizontal carousel
+   * alongside the primary `deckList`. Currently only consumed by the meta
+   * variant. The first entry should be `deckList` itself (or an equivalent).
+   */
+  deckLists?: string[];
   analysis: AnalysisResult;
   profiledAt: string;
   /** Page heading; defaults to "Deck Profile". */
@@ -532,6 +539,7 @@ interface Props {
 export default function DeckProfileView({
   variant,
   deckList,
+  deckLists,
   analysis,
   profiledAt,
   pageTitle = "Deck Profile",
@@ -1003,7 +1011,12 @@ export default function DeckProfileView({
 
           {/* Meta variant shows the live Deck List in this position so
               visitors see the actual sample list Limitless is showing. */}
-          {variant === "meta" && <DeckListCard deckList={deckList} />}
+          {variant === "meta" &&
+            (deckLists && deckLists.length > 1 ? (
+              <MetaDeckListCarousel deckLists={deckLists} />
+            ) : (
+              <DeckListCard deckList={deckList} />
+            ))}
 
           {/* Pokemon */}
           <CollapsibleSection

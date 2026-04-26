@@ -26,10 +26,16 @@ interface DeckCard {
   category: "pokemon" | "trainer" | "energy";
 }
 
+interface MetaDeckVariant {
+  listId?: number;
+  cards: DeckCard[];
+}
+
 interface MetaDeck {
   id: string;
   name: string;
   cards: DeckCard[];
+  variants?: MetaDeckVariant[];
 }
 
 const archetypes = (archetypesRaw as Archetype[]).sort(
@@ -79,8 +85,18 @@ export default async function MetaDeckDetailPage({
   const rank = getRank(arch.id);
   const winRate = getWinRate(arch);
   const deckData = (metaDecksRaw as MetaDeck[]).find((d) => d.id === arch.id);
-  const cards = deckData?.cards ?? [];
+  // Prefer the new `variants` shape; fall back to the legacy single `cards`
+  // array for archetypes that haven't been re-scraped yet.
+  const variantCardSets: DeckCard[][] =
+    deckData?.variants && deckData.variants.length > 0
+      ? deckData.variants.map((v) => v.cards)
+      : deckData?.cards
+        ? [deckData.cards]
+        : [];
+
+  const cards = variantCardSets[0] ?? [];
   const deckList = buildDeckList(cards);
+  const deckLists = variantCardSets.map(buildDeckList);
 
   const analysis = buildMetaAnalysis(cards, {
     name: arch.name,
@@ -157,6 +173,7 @@ export default async function MetaDeckDetailPage({
     <DeckProfileView
       variant="meta"
       deckList={deckList}
+      deckLists={deckLists}
       analysis={analysis}
       profiledAt={profiledAt}
       pageTitle={arch.name}
