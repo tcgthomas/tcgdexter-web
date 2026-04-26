@@ -571,7 +571,7 @@ export default function DeckProfileView({
         : MATRIX_ENERGY_PALETTE.Colorless;
       const renderSlot = (slot: MatrixSlot, i: number) => {
         const tile = "aspect-square rounded-[4px] flex items-center justify-center";
-        const labelCls = "text-[7px] font-black leading-none select-none";
+        const labelCls = "text-sm font-semibold leading-none select-none";
         if (slot.kind === "empty") {
           return (
             <div
