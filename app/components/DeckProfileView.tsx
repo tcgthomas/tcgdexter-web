@@ -507,9 +507,10 @@ interface Props {
    */
   topSlot?: React.ReactNode;
   /**
-   * Content injected BEFORE the Overview matrix on the saved variant.
-   * Use this for action buttons + match log so the Overview can sit
-   * between them and the rest of the saved-deck content.
+   * Content injected immediately before the Overview matrix on all variants.
+   * - saved: action buttons + match log
+   * - meta: "#N in Standard" rank eyebrow
+   * - fresh/shared: unused
    */
   preOverviewSlot?: React.ReactNode;
   /**
@@ -862,11 +863,13 @@ export default function DeckProfileView({
             </div>
           )}
 
-          {/* ── Saved variant: action buttons + match log go above Overview ── */}
-          {variant === "saved" && preOverviewSlot}
-          {variant === "saved" && overviewNode}
+          {/* ── Pre-overview slot: action buttons (saved), rank label (meta) ── */}
+          {preOverviewSlot}
 
-          {/* ── Top slot (remaining saved content; stat cards + scouting on meta) ── */}
+          {/* ── Overview — always at the top across all variants ── */}
+          {overviewNode}
+
+          {/* ── Top slot: deck notes + list (saved); stat cards + record (meta) ── */}
           {topSlot}
 
           {/* Estimated Deck Price */}
@@ -997,8 +1000,6 @@ export default function DeckProfileView({
             </div>
           )}
 
-          {/* Overview */}
-          {variant !== "saved" && overviewNode}
 
           {/* Meta variant shows the live Deck List in this position so
               visitors see the actual sample list Limitless is showing. */}

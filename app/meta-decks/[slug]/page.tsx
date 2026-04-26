@@ -94,14 +94,16 @@ export default async function MetaDeckDetailPage({
     ? new Date(arch.last_updated).toISOString()
     : new Date().toISOString();
 
-  // topSlot: meta-specific modules above the price module
+  // preOverviewSlot: rank label sits above the Overview matrix
+  const preOverviewSlot = (
+    <p className="text-xs font-semibold uppercase tracking-widest text-[#D91E0D]">
+      #{rank} in Standard
+    </p>
+  );
+
+  // topSlot: stat cards + tournament record sit below the Overview matrix
   const topSlot = (
     <div className="flex flex-col gap-4">
-      {/* Rank eyebrow */}
-      <p className="text-xs font-semibold uppercase tracking-widest text-[#D91E0D]">
-        #{rank} in Standard
-      </p>
-
       {/* Stats — single card, 4-column row */}
       <div className="rounded-2xl border border-black/8 bg-white/90 backdrop-blur-xl shadow-sm px-5 py-4">
         <div className="grid grid-cols-4">
@@ -159,6 +161,7 @@ export default async function MetaDeckDetailPage({
       profiledAt={profiledAt}
       pageTitle={arch.name}
       subtitle={false}
+      preOverviewSlot={preOverviewSlot}
       topSlot={topSlot}
       footerCta={null}
     />
