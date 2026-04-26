@@ -706,7 +706,7 @@ export default function DeckProfileView({
 
           {/* Legend — supertype counts with a mini sample tile
               matching the matrix styling. */}
-          <div className="flex flex-wrap items-center justify-between gap-4 border-t border-black/5 pt-4">
+          <div className="grid grid-cols-2 gap-x-4 gap-y-2 border-t border-black/5 pt-4">
             <LegendItem label="Pokémon" count={result.sections.pokemon} />
             <LegendItem label="Trainer" count={result.sections.trainer} />
             <LegendItem label="Energy" count={result.sections.energy} />
