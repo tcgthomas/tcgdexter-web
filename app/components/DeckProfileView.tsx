@@ -271,18 +271,22 @@ function pokemonPrimaryTypes(
   return out;
 }
 
+/** Sort key for Pokémon stage: B < 1 < 2, then Mega variants (MB < M1 < M2). */
+function pokemonStageOrder(subtypes: string[] | undefined): number {
+  if (!subtypes) return 0;
+  const mega = subtypes.includes("Mega");
+  const base = subtypes.includes("Stage 2") ? 2 : subtypes.includes("Stage 1") ? 1 : 0;
+  return mega ? base + 3 : base;
+}
+
 function buildMatrixSlots(
   cards: Array<{ qty: number; name: string; section: string }>,
   pokemonTypes: Map<string, string>,
   subtypesByName: Record<string, string[]>,
 ): MatrixSlot[] {
   const slots: MatrixSlot[] = [];
-  const byOrder: Array<[string, MatrixSlot["kind"] | "energy-maybe"]> = [
-    ["pokemon", "pokemon"],
-    ["trainer", "trainer"],
-    ["energy", "energy-maybe"],
-  ];
-  // Pre-sort attack map keys by length descending so longer names
+
+  // Pre-sort lookup keys by length descending so longer names
   // ("Marnie's Grimmsnarl ex") win over shorter ones ("Grimmsnarl").
   const sortedNames = Array.from(pokemonTypes.keys()).sort(
     (a, b) => b.length - a.length,
@@ -294,55 +298,76 @@ function buildMatrixSlots(
     }
     return undefined;
   };
-  for (const [section, defaultKind] of byOrder) {
-    // Within the trainer section, push ACE SPEC trainers last so they sit
-    // immediately before the energy section — ACE SPECs are the transitional
-    // band between trainers and energy in the matrix.
-    const sectionCards =
-      section === "trainer"
-        ? [
-            ...cards.filter(
-              (c) => c.section === "trainer" && !ACE_SPEC_NAMES.has(c.name),
-            ),
-            ...cards.filter(
-              (c) => c.section === "trainer" && ACE_SPEC_NAMES.has(c.name),
-            ),
-          ]
-        : cards.filter((c) => c.section === section);
-    for (const card of sectionCards) {
+
+  // ── Pokémon: group by primary type, within each group sort by stage ──
+  const pokemonCards = cards.filter((c) => c.section === "pokemon");
+  // Bucket by type
+  const byType = new Map<string, typeof pokemonCards>();
+  for (const card of pokemonCards) {
+    const type = lookupType(card.name) ?? "\xff"; // unknowns sort last
+    if (!byType.has(type)) byType.set(type, []);
+    byType.get(type)!.push(card);
+  }
+  // Sort type groups by total card count descending (primary type leads)
+  const typeGroups = Array.from(byType.entries()).sort(
+    (a, b) =>
+      b[1].reduce((s, c) => s + c.qty, 0) -
+      a[1].reduce((s, c) => s + c.qty, 0),
+  );
+  for (const [, group] of typeGroups) {
+    // Within each type: sort by stage, then alphabetically as tiebreak
+    const sorted = [...group].sort((a, b) => {
+      const sd = pokemonStageOrder(subtypesByName[a.name]) - pokemonStageOrder(subtypesByName[b.name]);
+      return sd !== 0 ? sd : a.name.localeCompare(b.name);
+    });
+    for (const card of sorted) {
       for (let i = 0; i < card.qty; i++) {
-        const subtypes = subtypesByName[card.name];
-        if (section === "trainer") {
-          slots.push({
-            kind: ACE_SPEC_NAMES.has(card.name) ? "trainer-ace" : "trainer",
-            name: card.name,
-            subtypes,
-          });
-        } else if (section === "energy") {
-          const isAce = ACE_SPEC_NAMES.has(card.name);
-          const energyType = matrixEnergyType(card.name);
-          const isBasic = /basic/i.test(card.name) || !!energyType;
-          slots.push({
-            kind: isAce
-              ? "energy-ace"
-              : isBasic
-                ? "energy-basic"
-                : "energy-special",
-            energyType,
-            name: card.name,
-            subtypes,
-          });
-        } else {
-          slots.push({
-            kind: defaultKind as MatrixSlot["kind"],
-            energyType: lookupType(card.name),
-            name: card.name,
-            subtypes,
-          });
-        }
+        slots.push({
+          kind: "pokemon",
+          energyType: lookupType(card.name),
+          name: card.name,
+          subtypes: subtypesByName[card.name],
+        });
       }
     }
   }
+
+  // ── Trainers: alphabetical, Ace Spec at end ──
+  const trainerCards = cards.filter((c) => c.section === "trainer");
+  const regularTrainers = trainerCards
+    .filter((c) => !ACE_SPEC_NAMES.has(c.name))
+    .sort((a, b) => a.name.localeCompare(b.name));
+  const aceTrainers = trainerCards
+    .filter((c) => ACE_SPEC_NAMES.has(c.name))
+    .sort((a, b) => a.name.localeCompare(b.name));
+  for (const card of [...regularTrainers, ...aceTrainers]) {
+    for (let i = 0; i < card.qty; i++) {
+      slots.push({
+        kind: ACE_SPEC_NAMES.has(card.name) ? "trainer-ace" : "trainer",
+        name: card.name,
+        subtypes: subtypesByName[card.name],
+      });
+    }
+  }
+
+  // ── Energy: alphabetical ──
+  const energyCards = [...cards.filter((c) => c.section === "energy")].sort(
+    (a, b) => a.name.localeCompare(b.name),
+  );
+  for (const card of energyCards) {
+    const isAce = ACE_SPEC_NAMES.has(card.name);
+    const energyType = matrixEnergyType(card.name);
+    const isBasic = /basic/i.test(card.name) || !!energyType;
+    for (let i = 0; i < card.qty; i++) {
+      slots.push({
+        kind: isAce ? "energy-ace" : isBasic ? "energy-basic" : "energy-special",
+        energyType,
+        name: card.name,
+        subtypes: subtypesByName[card.name],
+      });
+    }
+  }
+
   while (slots.length < 60) slots.push({ kind: "empty" });
   return slots.slice(0, 60);
 }
