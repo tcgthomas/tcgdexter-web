@@ -158,7 +158,7 @@ export default function MetaDeckListCarousel({ deckLists }: { deckLists: string[
             onClick={() => scrollTo(i)}
             aria-label={`Show variant ${i + 1}`}
             className={`h-1.5 rounded-full transition-all ${
-              i === active ? "w-6 bg-text-primary" : "w-1.5 bg-text-primary/25 hover:bg-text-primary/40"
+              i === active ? "w-1.5 bg-text-primary" : "w-6 bg-text-primary/25 hover:bg-text-primary/40"
             }`}
           />
         ))}
