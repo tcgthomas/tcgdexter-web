@@ -201,6 +201,7 @@ export default function MobileNavMenu({ isAuthed, displayName }: Props) {
 
   const EXTERNAL_LINKS = [
     { href: "https://tcgdexter.beehiiv.com/", label: "TCG News" },
+    { href: "https://discord.gg/G3VfEzfmJF", label: "Discord" },
     { href: "https://www.tiktok.com/@tcgdexter", label: "TikTok" },
     { href: "https://www.ebay.com/usr/tcgdexter", label: "Card Shop" },
   ];
