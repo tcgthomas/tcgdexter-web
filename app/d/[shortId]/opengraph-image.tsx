@@ -8,7 +8,10 @@ import {
   type MatrixSlot,
 } from "@/lib/deckMatrix";
 
-export const runtime = "edge";
+// Runs on Node.js (default) rather than edge: lib/cardTypes pulls in the full
+// 12MB cards-standard.json for type/subtype lookup, which blows past the 1MB
+// edge function bundle limit. This route is cached for 7 days anyway, so
+// cold-start latency on Node is a non-issue.
 export const alt = "Deck Profile — TCG Dexter";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
@@ -42,10 +45,10 @@ interface DeckRecord {
 }
 
 /**
- * Fetch a deck share from Supabase using a direct REST call. We don't use
- * @supabase/ssr here because this component runs on Edge runtime without
- * access to Next's cookies() API, and we only need a public read. The
- * RLS policy `deck_shares_public_read` allows anon reads.
+ * Fetch a deck share from Supabase using a direct REST call. We only need a
+ * public anon read here, so skip @supabase/ssr to avoid pulling cookies into
+ * what is otherwise a stateless metadata route. The RLS policy
+ * `deck_shares_public_read` allows anon reads.
  */
 async function fetchDeck(shortId: string): Promise<DeckRecord | null> {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
