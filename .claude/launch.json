@@ -2,9 +2,9 @@
   "version": "0.0.1",
   "configurations": [
     {
-      "name": "tcgdexter-worktree",
-      "runtimeExecutable": "npm",
-      "runtimeArgs": ["run", "dev"],
+      "name": "tcgdexter-web",
+      "runtimeExecutable": "node_modules/.bin/next",
+      "runtimeArgs": ["dev"],
       "port": 3000,
       "autoPort": true
     }

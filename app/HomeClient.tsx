@@ -200,29 +200,6 @@ export default function HomeClient({
         />
       ) : (
         <>
-          {/* How it works */}
-          <section className="mx-auto max-w-6xl px-6 py-24">
-            <div className="mb-16">
-              <SectionHeader eyebrow="The flow" title="From list to lineup, in seconds." align="center" />
-            </div>
-            <div className="grid md:grid-cols-3 gap-4">
-              {[
-                { n: "01", t: "Paste", b: "Drop any PTCGL export, TOM list, or scratch-pad brew." },
-                { n: "02", t: "Profile", b: "Dexter runs legality, pricing, and meta match in parallel." },
-                { n: "03", t: "Play", b: "Save, share via QR, and log matches to see what's actually working." },
-              ].map((step) => (
-                <div
-                  key={step.n}
-                  className="relative rounded-2xl border border-black/8 bg-white/60 backdrop-blur-sm p-6 hover:bg-white/90 hover:shadow-lg transition"
-                >
-                  <div className="text-xs font-mono text-text-muted mb-4">{step.n}</div>
-                  <div className="text-xl font-semibold tracking-tight mb-2">{step.t}</div>
-                  <div className="text-sm text-text-secondary leading-relaxed">{step.b}</div>
-                </div>
-              ))}
-            </div>
-          </section>
-
           {/* Stats strip */}
           <section className="mx-auto max-w-2xl px-6 pb-24">
             <StatsStrip stats={stats} />

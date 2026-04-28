@@ -1,10 +1,20 @@
 import Link from "next/link";
 import DeckPriceModule from "@/app/components/DeckPriceModule";
 import DeckListCard from "@/app/components/DeckListCard";
+import MetaDeckListCarousel from "@/app/components/MetaDeckListCarousel";
 import SaveDeckButton from "@/app/components/SaveDeckButton";
 import ShareButton from "@/app/components/ShareButton";
 import StandardFormatInfo from "@/app/components/StandardFormatInfo";
-import { buildTypesByName } from "@/lib/cardTypes";
+import { buildTypesByName, buildSubtypesByName } from "@/lib/cardTypes";
+import {
+  buildMatrixSlots,
+  hexToRgba,
+  isDarkHex,
+  matrixLabel,
+  MATRIX_ENERGY_PALETTE,
+  pokemonPrimaryTypes,
+  type MatrixSlot,
+} from "@/lib/deckMatrix";
 
 /* ─── Types ──────────────────────────────────────────────────── */
 
@@ -160,168 +170,6 @@ function EnergyCostPill({ type }: { type: string }) {
   );
 }
 
-/* ─── Deck composition matrix (experiments theme) ────────────── */
-
-/**
- * Palette for basic-energy-typed squares in the composition matrix.
- * Standalone from ENERGY_HEX above so we can tune the matrix look
- * without rippling changes through every energy chip in the profile.
- */
-const MATRIX_ENERGY_PALETTE: Record<string, string> = {
-  Fire:      "#F1554B",
-  Water:     "#3BBBE7",
-  Grass:     "#57B060",
-  Lightning: "#F3DC67",
-  Psychic:   "#AC84A7",
-  Fighting:  "#DF8524",
-  Darkness:  "#318C98",
-  Colorless: "#E8EDEC",
-  // Not specified in latest palette; kept as reasonable defaults.
-  Metal:     "#A8A8A8",
-  Dragon:    "#D4A93A",
-  Fairy:     "#E879A3",
-};
-
-/** Known ACE SPEC Trainer / Special Energy card names in Standard rotation.
- *  Extend as the list grows. Used to color-flag the square pink in the
- *  composition matrix. */
-const ACE_SPEC_NAMES = new Set<string>([
-  "Master Ball",
-  "Prime Catcher",
-  "Secret Box",
-  "Maximum Belt",
-  "Scoop Up Cyclone",
-  "Unfair Stamp",
-  "Hero's Cape",
-  "Neutralization Zone",
-  "Reboot Pod",
-  "Survival Brace",
-  "Legacy Energy",
-  "Dangerous Laser",
-  "Awakening Drum",
-]);
-
-/** Infer a basic-energy type from a card name ("Basic Fire Energy SVE 2",
- *  "Basic {D} Energy MEE 7", etc). Returns undefined for non-basics / special
- *  energies. */
-function matrixEnergyType(name: string): string | undefined {
-  const n = name.toLowerCase();
-  for (const type of Object.keys(MATRIX_ENERGY_PALETTE)) {
-    if (n.includes(type.toLowerCase())) return type;
-  }
-  const braceMap: Record<string, string> = {
-    "{r}": "Fire", "{w}": "Water", "{g}": "Grass", "{l}": "Lightning",
-    "{p}": "Psychic", "{f}": "Fighting", "{d}": "Darkness", "{m}": "Metal",
-    "{n}": "Dragon", "{y}": "Fairy", "{c}": "Colorless",
-  };
-  for (const [brace, type] of Object.entries(braceMap)) {
-    if (n.includes(brace)) return type;
-  }
-  return undefined;
-}
-
-interface MatrixSlot {
-  kind: "pokemon" | "trainer" | "trainer-ace" | "energy-basic" | "energy-special" | "energy-ace" | "empty";
-  energyType?: string;
-  name?: string;
-}
-
-/** Build a name → primary elemental type map from the analyze response's
- *  `pokemon.typesByName` field. Uses the first listed type when a Pokémon is
- *  dual-typed (rare in TCG) so the matrix has a single color per card. */
-function pokemonPrimaryTypes(
-  typesByName: Record<string, string[]> | undefined,
-): Map<string, string> {
-  const out = new Map<string, string>();
-  if (!typesByName) return out;
-  for (const [name, types] of Object.entries(typesByName)) {
-    if (types && types.length > 0) out.set(name, types[0]);
-  }
-  return out;
-}
-
-function buildMatrixSlots(
-  cards: Array<{ qty: number; name: string; section: string }>,
-  pokemonTypes: Map<string, string>,
-): MatrixSlot[] {
-  const slots: MatrixSlot[] = [];
-  // Fill Pokémon first, then Trainer, then Energy — matches the card-order
-  // convention players write their lists in.
-  const byOrder: Array<[string, MatrixSlot["kind"] | "energy-maybe"]> = [
-    ["pokemon", "pokemon"],
-    ["trainer", "trainer"],
-    ["energy", "energy-maybe"],
-  ];
-  // Pre-sort attack map keys by length descending so longer names
-  // ("Marnie's Grimmsnarl ex") win over shorter ones ("Grimmsnarl").
-  const sortedNames = Array.from(pokemonTypes.keys()).sort(
-    (a, b) => b.length - a.length,
-  );
-  const lookupType = (cardName: string): string | undefined => {
-    const lower = cardName.toLowerCase();
-    for (const n of sortedNames) {
-      if (lower.includes(n.toLowerCase())) return pokemonTypes.get(n);
-    }
-    return undefined;
-  };
-  for (const [section, defaultKind] of byOrder) {
-    // Within the trainer section, push ACE SPEC trainers last so they sit
-    // immediately before the energy section — ACE SPECs are the transitional
-    // band between trainers and energy in the matrix.
-    const sectionCards =
-      section === "trainer"
-        ? [
-            ...cards.filter(
-              (c) => c.section === "trainer" && !ACE_SPEC_NAMES.has(c.name),
-            ),
-            ...cards.filter(
-              (c) => c.section === "trainer" && ACE_SPEC_NAMES.has(c.name),
-            ),
-          ]
-        : cards.filter((c) => c.section === section);
-    for (const card of sectionCards) {
-      for (let i = 0; i < card.qty; i++) {
-        if (section === "trainer") {
-          slots.push({
-            kind: ACE_SPEC_NAMES.has(card.name) ? "trainer-ace" : "trainer",
-            name: card.name,
-          });
-        } else if (section === "energy") {
-          const isAce = ACE_SPEC_NAMES.has(card.name);
-          const energyType = matrixEnergyType(card.name);
-          const isBasic = /basic/i.test(card.name) || !!energyType;
-          slots.push({
-            kind: isAce
-              ? "energy-ace"
-              : isBasic
-                ? "energy-basic"
-                : "energy-special",
-            energyType,
-            name: card.name,
-          });
-        } else {
-          slots.push({
-            kind: defaultKind as MatrixSlot["kind"],
-            energyType: lookupType(card.name),
-            name: card.name,
-          });
-        }
-      }
-    }
-  }
-  while (slots.length < 60) slots.push({ kind: "empty" });
-  return slots.slice(0, 60);
-}
-
-/** Convert a #RRGGBB hex to an rgba() string at the given alpha. */
-function hexToRgba(hex: string, alpha: number): string {
-  const h = hex.replace("#", "");
-  const r = parseInt(h.slice(0, 2), 16);
-  const g = parseInt(h.slice(2, 4), 16);
-  const b = parseInt(h.slice(4, 6), 16);
-  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
-}
-
 function CollapsibleSection({
   title,
   children,
@@ -361,22 +209,17 @@ function CollapsibleSection({
 function LegendItem({
   label,
   count,
-  sample,
 }: {
   label: string;
   count: number;
-  sample: React.ReactNode;
 }) {
   return (
     <div className="flex items-center gap-2">
-      <div className="w-4 h-4 rounded-[3px] p-[1.5px] bg-[#F2F2F2] flex-shrink-0">
-        {sample}
-      </div>
+      <span className="text-sm font-semibold text-text-primary tabular-nums w-[1.5ch] text-right inline-block">
+        {count}
+      </span>
       <span className="text-[11px] font-semibold uppercase tracking-widest text-text-secondary">
         {label}
-      </span>
-      <span className="text-sm font-semibold text-text-primary tabular-nums">
-        {count}
       </span>
     </div>
   );
@@ -417,6 +260,12 @@ interface Props {
    */
   variant: "fresh" | "saved" | "shared" | "meta";
   deckList: string;
+  /**
+   * Optional sibling deck-list strings to render as a horizontal carousel
+   * alongside the primary `deckList`. Currently only consumed by the meta
+   * variant. The first entry should be `deckList` itself (or an equivalent).
+   */
+  deckLists?: string[];
   analysis: AnalysisResult;
   profiledAt: string;
   /** Page heading; defaults to "Deck Profile". */
@@ -440,9 +289,10 @@ interface Props {
    */
   topSlot?: React.ReactNode;
   /**
-   * Content injected BEFORE the Overview matrix on the saved variant.
-   * Use this for action buttons + match log so the Overview can sit
-   * between them and the rest of the saved-deck content.
+   * Content injected immediately before the Overview matrix on all variants.
+   * - saved: action buttons + match log
+   * - meta: "#N in Standard" rank eyebrow
+   * - fresh/shared: unused
    */
   preOverviewSlot?: React.ReactNode;
   /**
@@ -464,6 +314,7 @@ interface Props {
 export default function DeckProfileView({
   variant,
   deckList,
+  deckLists,
   analysis,
   profiledAt,
   pageTitle = "Deck Profile",
@@ -513,7 +364,8 @@ export default function DeckProfileView({
       const pokemonTypes = pokemonPrimaryTypes(
         buildTypesByName(result.cards),
       );
-      const slots = buildMatrixSlots(result.cards, pokemonTypes);
+      const subtypesByName = buildSubtypesByName(result.cards);
+      const slots = buildMatrixSlots(result.cards, pokemonTypes, subtypesByName);
       const hasAce = slots.some(
         (s) => s.kind === "trainer-ace" || s.kind === "energy-ace",
       );
@@ -534,12 +386,9 @@ export default function DeckProfileView({
       const pokemonSwatch = dominantPokemonType
         ? MATRIX_ENERGY_PALETTE[dominantPokemonType]
         : MATRIX_ENERGY_PALETTE.Colorless;
-      // Render each 60-square card with a 2px #F2F2F2 "trim" plus
-      // content that visually references the real card face.
       const renderSlot = (slot: MatrixSlot, i: number) => {
-        const frame =
-          "aspect-square rounded-[4px] p-[4px] bg-[#F2F2F2]";
-        const inner = "w-full h-full rounded-[2px]";
+        const tile = "aspect-square rounded-[4px] flex items-center justify-center";
+        const labelCls = "text-[10px] sm:text-sm font-semibold leading-none select-none";
         if (slot.kind === "empty") {
           return (
             <div
@@ -549,34 +398,40 @@ export default function DeckProfileView({
             />
           );
         }
+        const label = matrixLabel(slot);
         if (slot.kind === "pokemon") {
-          // Pokémon get their primary attack-energy type at 50%
-          // opacity, so they read as softer/tinted compared to the
-          // fully-saturated Energy cards below.
           const baseColor = slot.energyType
             ? MATRIX_ENERGY_PALETTE[slot.energyType]
             : MATRIX_ENERGY_PALETTE.Colorless;
+          const bg = hexToRgba(baseColor, 0.5);
           return (
             <div
               key={i}
-              className={frame}
+              className={tile}
+              style={{ background: bg }}
               title={
                 slot.energyType
                   ? `${slot.name ?? "Pokémon"} (${slot.energyType})`
                   : slot.name ?? "Pokémon"
               }
             >
-              <div
-                className={inner}
-                style={{ background: hexToRgba(baseColor, 0.5) }}
-              />
+              <span className={labelCls} style={{ color: "rgba(0,0,0,0.55)" }}>
+                {label}
+              </span>
             </div>
           );
         }
         if (slot.kind === "trainer") {
           return (
-            <div key={i} className={frame} title={slot.name ?? "Trainer"}>
-              <div className={inner} style={{ background: "#E6E6E6" }} />
+            <div
+              key={i}
+              className={tile}
+              style={{ background: "#E6E6E6" }}
+              title={slot.name ?? "Trainer"}
+            >
+              <span className={labelCls} style={{ color: "rgba(0,0,0,0.55)" }}>
+                {label}
+              </span>
             </div>
           );
         }
@@ -584,10 +439,13 @@ export default function DeckProfileView({
           return (
             <div
               key={i}
-              className={frame}
+              className={tile}
+              style={{ background: "#ED008C" }}
               title={`${slot.name ?? ""} (ACE SPEC)`}
             >
-              <div className={inner} style={{ background: "#ED008C" }} />
+              <span className={labelCls} style={{ color: "rgba(255,255,255,0.9)" }}>
+                {label}
+              </span>
             </div>
           );
         }
@@ -595,13 +453,19 @@ export default function DeckProfileView({
           const color = slot.energyType
             ? MATRIX_ENERGY_PALETTE[slot.energyType]
             : MATRIX_ENERGY_PALETTE.Colorless;
+          const textColor = isDarkHex(color)
+            ? "rgba(255,255,255,0.9)"
+            : "rgba(0,0,0,0.55)";
           return (
             <div
               key={i}
-              className={frame}
+              className={tile}
+              style={{ background: color }}
               title={`${slot.energyType ?? "Energy"}${slot.name ? ` — ${slot.name}` : ""}`}
             >
-              <div className={inner} style={{ background: color }} />
+              <span className={labelCls} style={{ color: textColor }}>
+                {label}
+              </span>
             </div>
           );
         }
@@ -609,16 +473,13 @@ export default function DeckProfileView({
         return (
           <div
             key={i}
-            className={frame}
+            className={tile}
+            style={{ background: "linear-gradient(135deg,#C9C5BC 0%,#A8A8A8 100%)" }}
             title={slot.name ?? "Special Energy"}
           >
-            <div
-              className={inner}
-              style={{
-                background:
-                  "linear-gradient(135deg,#C9C5BC 0%,#A8A8A8 100%)",
-              }}
-            />
+            <span className={labelCls} style={{ color: "rgba(0,0,0,0.55)" }}>
+              {label}
+            </span>
           </div>
         );
       };
@@ -626,15 +487,11 @@ export default function DeckProfileView({
         <div className={`${CARD_CLS} p-5`}>
           <div className="flex items-baseline justify-between mb-5">
             <h2 className="text-lg font-semibold">Overview</h2>
-            <span
-              className={`text-sm font-mono tabular-nums ${
-                result.deckSize === 60
-                  ? "text-text-muted"
-                  : "text-[#D91E0D]"
-              }`}
-            >
-              {result.deckSize} / 60
-            </span>
+            {result.deckSize !== 60 && (
+              <span className="text-sm font-mono tabular-nums text-[#D91E0D]">
+                {result.deckSize} / 60
+              </span>
+            )}
           </div>
 
           <div
@@ -646,55 +503,16 @@ export default function DeckProfileView({
 
           {/* Legend — supertype counts with a mini sample tile
               matching the matrix styling. */}
-          <div className="flex flex-wrap items-center justify-between gap-4 border-t border-black/5 pt-4">
-            <LegendItem
-              label="Pokémon"
-              count={result.sections.pokemon}
-              sample={
-                <div
-                  className="w-full h-full rounded-[1px]"
-                  style={{ background: hexToRgba(pokemonSwatch, 0.5) }}
-                />
-              }
-            />
-            <LegendItem
-              label="Trainer"
-              count={result.sections.trainer}
-              sample={
-                <div
-                  className="w-full h-full rounded-[1px]"
-                  style={{ background: "#E6E6E6" }}
-                />
-              }
-            />
-            <LegendItem
-              label="Energy"
-              count={result.sections.energy}
-              sample={
-                <div
-                  className="w-full h-full rounded-[1px]"
-                  style={{
-                    background: MATRIX_ENERGY_PALETTE.Lightning,
-                  }}
-                />
-              }
-            />
+          <div className="grid grid-cols-2 gap-x-4 gap-y-2 border-t border-black/5 pt-4">
+            <LegendItem label="Pokémon" count={result.sections.pokemon} />
+            <LegendItem label="Trainer" count={result.sections.trainer} />
+            <LegendItem label="Energy" count={result.sections.energy} />
             {hasAce && (
               <LegendItem
                 label="ACE SPEC"
-                count={
-                  slots.filter(
-                    (s) =>
-                      s.kind === "trainer-ace" ||
-                      s.kind === "energy-ace",
-                  ).length
-                }
-                sample={
-                  <div
-                    className="w-full h-full rounded-[1px]"
-                    style={{ background: "#ED008C" }}
-                  />
-                }
+                count={slots.filter(
+                  (s) => s.kind === "trainer-ace" || s.kind === "energy-ace",
+                ).length}
               />
             )}
           </div>
@@ -828,11 +646,13 @@ export default function DeckProfileView({
             </div>
           )}
 
-          {/* ── Saved variant: action buttons + match log go above Overview ── */}
-          {variant === "saved" && preOverviewSlot}
-          {variant === "saved" && overviewNode}
+          {/* ── Pre-overview slot: action buttons (saved), rank label (meta) ── */}
+          {preOverviewSlot}
 
-          {/* ── Top slot (remaining saved content; stat cards + scouting on meta) ── */}
+          {/* ── Overview — always at the top across all variants ── */}
+          {overviewNode}
+
+          {/* ── Top slot: deck notes + list (saved); stat cards + record (meta) ── */}
           {topSlot}
 
           {/* Estimated Deck Price */}
@@ -963,12 +783,15 @@ export default function DeckProfileView({
             </div>
           )}
 
-          {/* Overview */}
-          {variant !== "saved" && overviewNode}
 
           {/* Meta variant shows the live Deck List in this position so
               visitors see the actual sample list Limitless is showing. */}
-          {variant === "meta" && <DeckListCard deckList={deckList} />}
+          {variant === "meta" &&
+            (deckLists && deckLists.length > 1 ? (
+              <MetaDeckListCarousel deckLists={deckLists} />
+            ) : (
+              <DeckListCard deckList={deckList} />
+            ))}
 
           {/* Pokemon */}
           <CollapsibleSection

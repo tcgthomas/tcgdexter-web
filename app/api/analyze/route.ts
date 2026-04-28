@@ -26,6 +26,8 @@ interface CardDataEntry {
   name: string;
   set_id: string;
   set_name: string;
+  /** ptcgo set code as it appears in deck lists (e.g. "POR" for Perfect Order). */
+  ptcgo_code?: string;
   number: string;
   supertype: string;
   subtypes: string[];
@@ -57,6 +59,7 @@ interface Card {
   qty: number;
   name: string;
   number: string;  // card number from deck list (e.g. "284")
+  setCode: string; // ptcgo set code from deck list (e.g. "POR"); "" if absent
   section: "pokemon" | "trainer" | "energy";
 }
 
@@ -177,6 +180,7 @@ function parseDeckList(raw: string): Card[] {
         qty: parseInt(cardMatch[1], 10),
         name: cardMatch[2],
         number: cardMatch[4],
+        setCode: cardMatch[3],
         section: currentSection,
       });
       continue;
@@ -188,6 +192,7 @@ function parseDeckList(raw: string): Card[] {
         qty: parseInt(simpleMatch[1], 10),
         name: simpleMatch[2].trim(),
         number: "",
+        setCode: "",
         section: currentSection,
       });
     }
@@ -242,9 +247,42 @@ function detectArchetypeName(cards: Card[]): string | null {
 
 /* ─── Static Card Lookup ─────────────────────────────────────── */
 
-function lookupCard(name: string): CardDataEntry | null {
+/**
+ * Pick the right printing for a card given the optional set code and
+ * collector number from the deck list. Falls back to number-only match,
+ * then to the first printing, mirroring how decklists are typed:
+ *   "4 Charizard ex POR 247" → match by ptcgo_code + number
+ *   "4 Charizard ex"         → first printing (best-effort)
+ */
+function pickPrinting(
+  name: string,
+  number = "",
+  setCode = ""
+): CardDataEntry | null {
   const entries = CARD_DB_LOWER.get(name.toLowerCase());
-  return entries?.[0] ?? null;
+  if (!entries || entries.length === 0) return null;
+  if (setCode) {
+    const codeUpper = setCode.toUpperCase();
+    const bySetAndNum = entries.find(
+      (e) =>
+        e.ptcgo_code?.toUpperCase() === codeUpper &&
+        (!number || e.number === number)
+    );
+    if (bySetAndNum) return bySetAndNum;
+    const bySet = entries.find(
+      (e) => e.ptcgo_code?.toUpperCase() === codeUpper
+    );
+    if (bySet) return bySet;
+  }
+  if (number) {
+    const byNum = entries.find((e) => e.number === number);
+    if (byNum) return byNum;
+  }
+  return entries[0];
+}
+
+function pickPrintingForCard(c: Card): CardDataEntry | null {
+  return pickPrinting(c.name, c.number, c.setCode);
 }
 
 /* ─── Meta Archetypes (static, bundled at build time) ────────── */
@@ -315,8 +353,10 @@ export async function POST(req: NextRequest) {
     let stage2Count = 0;
 
     for (const pokemonName of uniquePokemonNames) {
-      const card = lookupCard(pokemonName);
       const deckCard = pokemonCards.find((c) => c.name === pokemonName);
+      const card = deckCard
+        ? pickPrintingForCard(deckCard)
+        : pickPrinting(pokemonName);
       const qty = deckCard?.qty ?? 1;
       if (card) {
         const subtypes: string[] = card.subtypes ?? [];
@@ -408,7 +448,7 @@ export async function POST(req: NextRequest) {
     const uniqueTrainerNames = new Set(trainerCards.map((c) => c.name));
     let supporterCount = 0, itemCount = 0, toolCount = 0, stadiumCount = 0;
     for (const tc of trainerCards) {
-      const data = CARD_DB_LOWER.get(tc.name.toLowerCase())?.[0];
+      const data = pickPrintingForCard(tc);
       const subtypes: string[] = data?.subtypes ?? [];
       if (subtypes.includes("Supporter")) supporterCount += tc.qty;
       else if (subtypes.includes("Stadium")) stadiumCount += tc.qty;
@@ -427,7 +467,7 @@ export async function POST(req: NextRequest) {
     for (const tc of trainerCards) {
       if (seenTrainers.has(tc.name)) continue;
       seenTrainers.add(tc.name);
-      const data = CARD_DB_LOWER.get(tc.name.toLowerCase())?.[0];
+      const data = pickPrintingForCard(tc);
       const effect = data?.rules?.[0] ?? data?.attacks?.[0]?.text ?? data?.abilities?.[0]?.text ?? "";
       if (effect) trainerDetails.push({ name: tc.name, description: effect });
     }
@@ -438,7 +478,7 @@ export async function POST(req: NextRequest) {
     const specialEnergyDetails: Array<{ name: string; qty: number; description: string }> = [];
     let energySpecialCount = 0;
     for (const ec of energyCards) {
-      const data = CARD_DB_LOWER.get(ec.name.toLowerCase())?.[0];
+      const data = pickPrintingForCard(ec);
       const subtypes: string[] = data?.subtypes ?? [];
       const isBasic = subtypes.includes("Basic") || ec.name.toLowerCase().includes("basic");
       if (isBasic) {
@@ -458,17 +498,10 @@ export async function POST(req: NextRequest) {
     const energyBasicCount = Object.values(basicByType).reduce((s, n) => s + n, 0);
 
     // ── Deck Price ─────────────────────────────────────────────
-    // Try to find the exact printing by number first, then fall back to any printing
+    // pickPrintingForCard already handles set-code → number → first-printing fallback.
     const deckPrice = cards.reduce((sum, card) => {
-      const printings = CARD_DB_LOWER.get(card.name.toLowerCase()) ?? [];
-      let price = 0;
-      if (card.number && printings.length > 0) {
-        // Find the printing matching this card number
-        const exact = printings.find((p) => p.number === card.number);
-        price = exact?.market_price ?? printings[0]?.market_price ?? 0;
-      } else {
-        price = printings[0]?.market_price ?? 0;
-      }
+      const printing = pickPrintingForCard(card);
+      const price = printing?.market_price ?? 0;
       return sum + price * card.qty;
     }, 0);
 
@@ -476,7 +509,7 @@ export async function POST(req: NextRequest) {
     const ROTATING_MARKS = new Set(["A", "B", "C", "D", "E", "F", "G"]);
     const rotatingCards: Array<{ name: string; qty: number }> = [];
     for (const card of cards) {
-      const data = CARD_DB_LOWER.get(card.name.toLowerCase())?.[0];
+      const data = pickPrintingForCard(card);
       const mark = data?.regulation_mark ?? null;
       if (mark && ROTATING_MARKS.has(mark.toUpperCase())) {
         rotatingCards.push({ name: card.name, qty: card.qty });
@@ -525,7 +558,10 @@ export async function POST(req: NextRequest) {
     const stage1Names: string[] = [];
     const basicNames: string[] = [];
     for (const pokemonName of uniquePokemonNames) {
-      const card = CARD_DB_LOWER.get(pokemonName.toLowerCase())?.[0];
+      const deckCard = pokemonCards.find((c) => c.name === pokemonName);
+      const card = deckCard
+        ? pickPrintingForCard(deckCard)
+        : pickPrinting(pokemonName);
       const subtypes: string[] = card?.subtypes ?? [];
       if (subtypes.includes("Stage 2")) stage2Names.push(pokemonName);
       else if (subtypes.includes("Stage 1")) stage1Names.push(pokemonName);

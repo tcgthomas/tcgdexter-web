@@ -191,8 +191,16 @@ def is_standard_legal(cards: list[dict], card_db: dict[str, list[dict]] | None) 
     return len(issues) == 0, issues
 
 
-def scrape_deck_for_archetype(name: str, card_db: dict | None) -> list[dict]:
-    """Try to find and parse a Standard-legal deck list for a given archetype name."""
+MAX_VARIANTS = 5
+LIST_SCAN_LIMIT = 25
+
+
+def scrape_variants_for_archetype(name: str, card_db: dict | None) -> list[dict]:
+    """Try to find and parse up to MAX_VARIANTS Standard-legal deck lists for an archetype.
+
+    Returns a list of {"listId": int, "cards": [...]} entries, ordered by Limitless
+    ranking (top-placing list first).
+    """
     keyword = name.split()[0]
     print(f"  Searching for '{keyword}'...")
 
@@ -208,7 +216,12 @@ def scrape_deck_for_archetype(name: str, card_db: dict | None) -> list[dict]:
 
     time.sleep(DELAY)
 
+    variants: list[dict] = []
+    seen_list_ids: set[int] = set()
+
     for arch_id in arch_ids:
+        if len(variants) >= MAX_VARIANTS:
+            break
         try:
             list_ids = find_list_ids(arch_id)
         except Exception as e:
@@ -221,7 +234,13 @@ def scrape_deck_for_archetype(name: str, card_db: dict | None) -> list[dict]:
 
         time.sleep(DELAY)
 
-        for list_id in list_ids[:8]:
+        for list_id in list_ids[:LIST_SCAN_LIMIT]:
+            if len(variants) >= MAX_VARIANTS:
+                break
+            if list_id in seen_list_ids:
+                continue
+            seen_list_ids.add(list_id)
+
             try:
                 html = fetch(f"https://limitlesstcg.com/decks/list/{list_id}")
             except Exception as e:
@@ -233,14 +252,17 @@ def scrape_deck_for_archetype(name: str, card_db: dict | None) -> list[dict]:
             legal, issues = is_standard_legal(cards, card_db)
             if legal:
                 total = sum(c["qty"] for c in cards)
-                print(f"  ✓ Standard-legal list {list_id}: {len(cards)} unique cards ({total} total)")
-                return cards
+                print(f"  ✓ Variant {len(variants) + 1}/{MAX_VARIANTS} list {list_id}: {len(cards)} unique cards ({total} total)")
+                variants.append({"listId": list_id, "cards": cards})
             else:
-                print(f"  · List {list_id} not Standard ({issues}) — trying next...")
+                print(f"  · List {list_id} not Standard ({issues}) — skipping...")
             time.sleep(DELAY)
 
-    print(f"  ⚠ No Standard-legal list found after exhausting all options")
-    return []
+    if not variants:
+        print(f"  ⚠ No Standard-legal lists found after exhausting all options")
+    elif len(variants) < MAX_VARIANTS:
+        print(f"  · Only found {len(variants)} legal variant(s); fewer than target {MAX_VARIANTS}")
+    return variants
 
 
 # ─── Git ──────────────────────────────────────────────────────────────────────
@@ -296,11 +318,15 @@ def main() -> None:
 
     for i, arch in enumerate(top30, 1):
         print(f"[{i}/30] {arch['name']} (id={arch['id']}, entries={arch['total_entries']})")
-        cards = scrape_deck_for_archetype(arch["name"], card_db)
+        variants = scrape_variants_for_archetype(arch["name"], card_db)
+        # `cards` mirrors the top variant for backward compatibility with any
+        # consumer that still reads the single-deck shape.
+        primary_cards = variants[0]["cards"] if variants else []
         results.append({
             "id": arch["id"],
             "name": arch["name"],
-            "cards": cards,
+            "cards": primary_cards,
+            "variants": variants,
         })
         if i < len(top30):
             time.sleep(DELAY)
@@ -310,7 +336,11 @@ def main() -> None:
         json.dump(results, f, indent=2)
 
     found = sum(1 for r in results if r["cards"])
-    print(f"\n[export_meta_decks] Done! {found}/30 decks scraped. Saved to {OUT_FILE}")
+    total_variants = sum(len(r.get("variants", [])) for r in results)
+    print(
+        f"\n[export_meta_decks] Done! {found}/30 archetypes scraped, "
+        f"{total_variants} total variants. Saved to {OUT_FILE}"
+    )
 
     if args.no_push:
         print("[export_meta_decks] Skipping git push (--no-push).")
