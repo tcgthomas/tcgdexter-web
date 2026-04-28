@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "build:card-types": "node scripts/build_card_types.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.10.0",
