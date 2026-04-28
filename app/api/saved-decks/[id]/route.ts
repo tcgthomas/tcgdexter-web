@@ -58,7 +58,7 @@ export async function PATCH(
     );
   }
 
-  let body: { name?: string; notes?: string };
+  let body: { name?: string; notes?: string; is_public?: boolean };
   try {
     body = await req.json();
   } catch {
@@ -66,7 +66,7 @@ export async function PATCH(
   }
 
   // Build the update payload — only include provided fields
-  const updates: Record<string, string> = {};
+  const updates: Record<string, string | boolean> = {};
 
   if (typeof body.name === "string") {
     const name = body.name.trim();
@@ -81,6 +81,10 @@ export async function PATCH(
 
   if (typeof body.notes === "string") {
     updates.notes = body.notes;
+  }
+
+  if (typeof body.is_public === "boolean") {
+    updates.is_public = body.is_public;
   }
 
   if (Object.keys(updates).length === 0) {

@@ -2,6 +2,9 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { TRAINER_TIERS, getTierByTitle, getNextTier } from "@/lib/trainer-tiers";
 import EditDisplayName from "@/app/profile/EditDisplayName";
+import EditAvatar from "@/app/profile/EditAvatar";
+import EditBio from "@/app/profile/EditBio";
+import EditPublicToggle from "@/app/profile/EditPublicToggle";
 import SignOutButton from "@/app/profile/SignOutButton";
 import SectionHeader from "@/app/components/ui/SectionHeader";
 import MatchHeatMap from "@/app/profile/MatchHeatMap";
@@ -21,7 +24,9 @@ export default async function ProfilePage() {
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("display_name, tier, trainer_title, highest_deck_count, created_at")
+    .select(
+      "display_name, tier, trainer_title, highest_deck_count, created_at, is_public, avatar_url, bio"
+    )
     .eq("id", user.id)
     .single();
 
@@ -55,6 +60,12 @@ export default async function ProfilePage() {
 
       {/* Row 1 — Combined account + trainer title card */}
       <div className="rounded-2xl border border-black/8 bg-white/90 backdrop-blur-xl shadow-sm overflow-hidden">
+        {/* Avatar */}
+        <EditAvatar
+          initialAvatarUrl={profile?.avatar_url ?? null}
+          displayName={profile?.display_name ?? ""}
+        />
+
         {/* Display name | Joined (Joined hides while editing) */}
         <EditDisplayName
           initialName={profile?.display_name ?? "—"}
@@ -62,7 +73,7 @@ export default async function ProfilePage() {
         />
 
         {/* Trainer title */}
-        <div className="p-5">
+        <div className="p-5 border-b border-black/5">
           <div className="flex items-center gap-3">
             <img
               src={`/badges/${currentTier.slug}.svg`}
@@ -105,6 +116,15 @@ export default async function ProfilePage() {
             </div>
           )}
         </div>
+
+        {/* Bio */}
+        <EditBio initialBio={profile?.bio ?? null} />
+
+        {/* Public profile toggle */}
+        <EditPublicToggle
+          initialIsPublic={profile?.is_public ?? false}
+          hasDisplayName={Boolean(profile?.display_name)}
+        />
       </div>
 
       {/* Row 2 — Overall W/L (full width, conditional) */}

@@ -23,7 +23,7 @@ export default async function MyDeckDetailPage({
 
   const { data: deck } = await supabase
     .from("saved_decks")
-    .select("id, name, deck_list, analysis, notes, updated_at")
+    .select("id, name, deck_list, analysis, notes, updated_at, is_public")
     .eq("id", id)
     .maybeSingle();
 
@@ -70,6 +70,7 @@ export default async function MyDeckDetailPage({
       initialNotes={deck.notes ?? ""}
       pageTitle={deck.name}
       profiledAt={deck.updated_at}
+      initialIsPublic={deck.is_public ?? false}
     />
   );
 }
