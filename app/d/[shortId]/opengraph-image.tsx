@@ -258,6 +258,46 @@ export default async function Image({
     year: "numeric",
   });
 
+  // TEMP DEBUG — surface render failures as a visible PNG so we can see
+  // them via iMessage/Discord previews. Remove once OG is verified working.
+  try {
+    return buildDeckImage(analysis, title, dateStr);
+  } catch (err) {
+    const msg = err instanceof Error ? `${err.name}: ${err.message}` : String(err);
+    return new ImageResponse(
+      (
+        <div
+          style={{
+            width: "100%",
+            height: "100%",
+            display: "flex",
+            flexDirection: "column",
+            backgroundColor: "#fef3c7",
+            border: "4px solid #fde68a",
+            borderRadius: 24,
+            padding: 48,
+          }}
+        >
+          <div style={{ display: "flex", fontSize: 32, fontWeight: 700, color: "#92400e", marginBottom: 16 }}>
+            OG render error
+          </div>
+          <div style={{ display: "flex", fontSize: 20, color: "#92400e", lineHeight: 1.4 }}>
+            {msg.slice(0, 600)}
+          </div>
+        </div>
+      ),
+      { ...size },
+    );
+  }
+}
+
+/** The successful matrix-rendering branch, factored out so the route handler
+ *  above can wrap it in a try/catch and surface failures as a debug PNG. */
+function buildDeckImage(
+  analysis: AnalysisResult,
+  title: string,
+  dateStr: string,
+): ImageResponse {
   // Build the matrix slots from the frozen analysis
   const cards = analysis.cards ?? [];
   const pokemonTypes = pokemonPrimaryTypes(buildTypesByName(cards));
