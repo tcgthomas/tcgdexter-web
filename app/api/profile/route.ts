@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { validateDisplayName } from "@/lib/display-name-rules";
+import { validateUsername } from "@/lib/username-rules";
 
 const BIO_MAX_LENGTH = 240;
 
@@ -23,12 +24,13 @@ export async function GET() {
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("display_name, is_public, avatar_url, bio")
+    .select("display_name, username, is_public, avatar_url, bio")
     .eq("id", user.id)
     .single();
 
   return NextResponse.json({
     display_name: profile?.display_name ?? null,
+    username: profile?.username ?? null,
     is_public: profile?.is_public ?? false,
     avatar_url: profile?.avatar_url ?? null,
     bio: profile?.bio ?? null,
@@ -62,6 +64,7 @@ export async function PATCH(req: Request) {
 
   let body: {
     display_name?: string;
+    username?: string;
     is_public?: boolean;
     avatar_url?: string | null;
     bio?: string | null;
@@ -106,6 +109,43 @@ export async function PATCH(req: Request) {
     updates.display_name = displayName;
   }
 
+  // ── username (immutable, set-once) ────────────────────────────
+  if (typeof body.username === "string") {
+    const username = body.username.trim().toLowerCase();
+    const validation = validateUsername(username);
+    if (!validation.valid) {
+      return NextResponse.json({ error: validation.error }, { status: 400 });
+    }
+
+    // Reject if already set — username is immutable.
+    const { data: current } = await supabase
+      .from("profiles")
+      .select("username")
+      .eq("id", user.id)
+      .single();
+    if (current?.username) {
+      return NextResponse.json(
+        { error: "Username can only be set once." },
+        { status: 409 },
+      );
+    }
+
+    // Friendly uniqueness check; the unique index is the real guard.
+    const { data: taken } = await supabase
+      .from("profiles")
+      .select("id")
+      .eq("username", username)
+      .maybeSingle();
+    if (taken && taken.id !== user.id) {
+      return NextResponse.json(
+        { error: "That username is already taken." },
+        { status: 409 },
+      );
+    }
+
+    updates.username = username;
+  }
+
   // ── is_public ─────────────────────────────────────────────────
   if (typeof body.is_public === "boolean") {
     updates.is_public = body.is_public;
@@ -144,8 +184,10 @@ export async function PATCH(req: Request) {
 
   if (error) {
     if (error.code === "23505") {
+      // Could be either display_name or username — message reads naturally
+      // for both.
       return NextResponse.json(
-        { error: "That display name is already taken." },
+        { error: "That handle is already taken." },
         { status: 409 }
       );
     }

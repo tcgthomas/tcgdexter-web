@@ -1,18 +1,56 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { createClient } from "@/lib/supabase/client";
+import { stashDeckList } from "@/lib/home-restore";
 
 interface Props {
   deckList: string;
   analysis: unknown;
+  /**
+   * When provided, this URL is used directly for system-share / clipboard
+   * fallback instead of POSTing to any API. Set on public deck pages where
+   * the canonical /u/[username]/[deckId] URL is already known by the
+   * server-rendered parent.
+   */
+  shareUrl?: string;
+  /**
+   * Treat Share as Save+Publish — the home-page "compose a fresh deck"
+   * flow. POSTs to /api/saved-decks with publish=true, then routes the
+   * user to their new /u/[username]/[id] post. When the user is signed
+   * out, prompts sign-in and stashes the deck for restore.
+   */
+  publishMode?: boolean;
   className?: string;
 }
 
-export default function ShareButton({ deckList, analysis, className }: Props) {
+export default function ShareButton({
+  deckList,
+  analysis,
+  shareUrl: presetUrl,
+  publishMode,
+  className,
+}: Props) {
+  const router = useRouter();
   const [sharing, setSharing] = useState(false);
   const [shareUrl, setShareUrl] = useState<string | null>(null);
   const [shareError, setShareError] = useState<string | null>(null);
   const [shareToast, setShareToast] = useState(false);
+  const [signedIn, setSignedIn] = useState<boolean | null>(null);
+  const [signInPrompt, setSignInPrompt] = useState(false);
+
+  useEffect(() => {
+    if (!publishMode) return;
+    const supabase = createClient();
+    supabase.auth.getUser().then(({ data: { user } }) => setSignedIn(!!user));
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSignedIn(!!session?.user);
+    });
+    return () => subscription.unsubscribe();
+  }, [publishMode]);
 
   async function handleShare() {
     if (sharing) return;
@@ -20,17 +58,54 @@ export default function ShareButton({ deckList, analysis, className }: Props) {
     setShareError(null);
     setShareUrl(null);
     try {
-      const res = await fetch("/api/deck-share", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ deckList, analysis }),
-      });
-      const data = await res.json();
-      if (!res.ok || !data.url) {
-        setShareError(data.error ?? "Failed to create share link.");
+      let url: string;
+      if (presetUrl) {
+        // Public deck page: skip the API; the server already knows the
+        // canonical URL.
+        url = presetUrl;
+      } else if (publishMode) {
+        // Home-page "fresh" flow: signed-in user presses Share → publish
+        // the deck and route to its trainer URL.
+        if (signedIn === null) {
+          setSharing(false);
+          return; // still resolving auth state
+        }
+        if (!signedIn) {
+          setSignInPrompt(true);
+          setSharing(false);
+          return;
+        }
+        const res = await fetch("/api/saved-decks", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ deckList, analysis, publish: true }),
+        });
+        const data = await res.json();
+        if (!res.ok) {
+          setShareError(data.error ?? "Failed to publish deck.");
+          return;
+        }
+        if (!data.publicUrl) {
+          // Profile wasn't ready (no username, or not public) — server
+          // returned 422 with a hint above. This branch is a safety net.
+          setShareError("Couldn't publish — make your profile public first.");
+          return;
+        }
+        router.push(data.publicUrl);
         return;
+      } else {
+        const res = await fetch("/api/deck-share", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ deckList, analysis }),
+        });
+        const data = await res.json();
+        if (!res.ok || !data.url) {
+          setShareError(data.error ?? "Failed to create share link.");
+          return;
+        }
+        url = data.url;
       }
-      const url: string = data.url;
 
       // Try the system share sheet first.
       if (typeof navigator.share === "function") {
@@ -156,6 +231,58 @@ export default function ShareButton({ deckList, analysis, className }: Props) {
       {shareToast && (
         <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 rounded-lg bg-accent px-5 py-2.5 text-sm font-semibold text-white shadow-lg animate-fade-toast">
           Link copied!
+        </div>
+      )}
+
+      {/* ── Sign-in prompt (publishMode + signed-out) ──────── */}
+      {signInPrompt && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm"
+          onClick={() => setSignInPrompt(false)}
+        >
+          <div
+            className="w-full max-w-sm rounded-2xl border border-black/8 bg-white/90 backdrop-blur-xl p-6 shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-start justify-between mb-4">
+              <h2 className="text-lg font-semibold text-text-primary">
+                Sign in to share decks
+              </h2>
+              <button
+                onClick={() => setSignInPrompt(false)}
+                aria-label="Close"
+                className="text-text-muted hover:text-text-primary transition-colors -mt-1 -mr-1 p-1"
+              >
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            <p className="text-sm text-text-secondary mb-5 leading-relaxed">
+              Sharing publishes your deck to your trainer profile so anyone
+              can like and discover it. Sign in with a magic link — no
+              password required.
+            </p>
+
+            <div className="flex flex-col gap-2">
+              <button
+                onClick={() => {
+                  stashDeckList(deckList);
+                  router.push(`/sign-in?next=${encodeURIComponent("/")}`);
+                }}
+                className="inline-flex items-center justify-center rounded-full bg-accent px-5 py-2.5 text-sm font-semibold text-white transition-all hover:bg-accent-light"
+              >
+                Sign in
+              </button>
+              <button
+                onClick={() => setSignInPrompt(false)}
+                className="text-xs text-text-muted hover:text-text-secondary transition-colors"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </>

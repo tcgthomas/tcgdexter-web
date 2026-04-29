@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { TRAINER_TIERS, getTierByTitle, getNextTier } from "@/lib/trainer-tiers";
 import EditDisplayName from "@/app/profile/EditDisplayName";
+import EditUsername from "@/app/profile/EditUsername";
 import EditAvatar from "@/app/profile/EditAvatar";
 import EditBio from "@/app/profile/EditBio";
 import EditPublicToggle from "@/app/profile/EditPublicToggle";
@@ -25,7 +26,7 @@ export default async function ProfilePage() {
   const { data: profile } = await supabase
     .from("profiles")
     .select(
-      "display_name, tier, trainer_title, highest_deck_count, created_at, is_public, avatar_url, bio"
+      "display_name, username, tier, trainer_title, highest_deck_count, created_at, is_public, avatar_url, bio"
     )
     .eq("id", user.id)
     .single();
@@ -70,6 +71,12 @@ export default async function ProfilePage() {
         <EditDisplayName
           initialName={profile?.display_name ?? "—"}
           joinedDate={joinedDate}
+        />
+
+        {/* Username — immutable URL handle, set once */}
+        <EditUsername
+          initialUsername={profile?.username ?? null}
+          displayNameForSuggestion={profile?.display_name ?? ""}
         />
 
         {/* Trainer title */}

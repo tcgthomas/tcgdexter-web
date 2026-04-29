@@ -105,8 +105,9 @@ const BLOCKED_NAMES: string[] = [
   "suicide",
 ];
 
-/** Pre-computed lowercase set for O(1) lookup. */
-const BLOCKED_SET = new Set(BLOCKED_NAMES.map((n) => n.toLowerCase()));
+/** Pre-computed lowercase set for O(1) lookup. Exported so other handle-like
+ *  rule sets (e.g. username-rules.ts) can share the blocklist. */
+export const BLOCKED_SET = new Set(BLOCKED_NAMES.map((n) => n.toLowerCase()));
 
 /** Characters allowed in display names. */
 const VALID_CHARS = /^[a-zA-Z0-9 _-]+$/;

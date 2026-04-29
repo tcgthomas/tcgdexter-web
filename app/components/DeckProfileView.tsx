@@ -302,6 +302,14 @@ interface Props {
   postCtaSlot?: React.ReactNode;
   /** Visual theme. "experiments" adopts the new design-identity styling. */
   theme?: "default" | "experiments";
+  /**
+   * Canonical share URL for this deck profile. When provided, ShareButton
+   * uses it directly (skipping POST /api/deck-share) so all share/copy/QR
+   * flows surface the trainer-namespaced URL instead of minting a fresh
+   * /d/[shortId]. Set on /u/[username]/[deckId] and on /my-decks/[id]
+   * when the deck is public.
+   */
+  shareUrl?: string;
 }
 
 /**
@@ -326,6 +334,7 @@ export default function DeckProfileView({
   preOverviewSlot,
   postCtaSlot,
   theme = "experiments",
+  shareUrl,
 }: Props) {
   const result = analysis;
   // Theme-aware class strings. Default preserves prod look verbatim;
@@ -664,6 +673,7 @@ export default function DeckProfileView({
             <ShareButton
               deckList={deckList}
               analysis={result}
+              shareUrl={shareUrl}
               className="w-full inline-flex items-center justify-center gap-2 rounded-full bg-[linear-gradient(90deg,#F2A20C_0%,#D91E0D_50%,#A60D0D_100%)] px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-[#D91E0D]/30 hover:shadow-[#D91E0D]/50 transition disabled:opacity-50 disabled:cursor-not-allowed"
             />
           ) : (
@@ -677,6 +687,8 @@ export default function DeckProfileView({
               <ShareButton
                 deckList={deckList}
                 analysis={result}
+                shareUrl={shareUrl}
+                publishMode={variant === "fresh"}
                 className="flex-1 inline-flex items-center justify-center gap-2 rounded-full bg-[linear-gradient(90deg,#F2A20C_0%,#D91E0D_50%,#A60D0D_100%)] px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-[#D91E0D]/30 hover:shadow-[#D91E0D]/50 transition disabled:opacity-50 disabled:cursor-not-allowed"
               />
             </div>

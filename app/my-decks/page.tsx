@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { headers } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 import SavedDeckRow from "@/app/my-decks/SavedDeckRow";
 import SectionHeader from "@/app/components/ui/SectionHeader";
@@ -21,6 +22,7 @@ interface SavedDeck {
   notes?: string;
   created_at: string;
   updated_at: string;
+  is_public: boolean;
 }
 
 export default async function MyDecksPage() {
@@ -33,10 +35,22 @@ export default async function MyDecksPage() {
 
   const { data: decks, error } = await supabase
     .from("saved_decks")
-    .select("id, name, deck_list, analysis, notes, created_at, updated_at")
+    .select("id, name, deck_list, analysis, notes, created_at, updated_at, is_public")
     .order("updated_at", { ascending: false });
 
   if (error) console.error("[experiments/my-decks] fetch failed:", error);
+
+  // Owner username + origin power per-row canonical share URLs for public decks.
+  const { data: ownerProfile } = await supabase
+    .from("profiles")
+    .select("username")
+    .eq("id", user.id)
+    .maybeSingle();
+  const headersList = await headers();
+  const host =
+    headersList.get("x-forwarded-host") ?? headersList.get("host") ?? "tcgdexter.com";
+  const proto = headersList.get("x-forwarded-proto") ?? "https";
+  const origin = `${proto}://${host}`;
 
   const { data: matchRows } = await supabase
     .from("matches")
@@ -92,12 +106,17 @@ export default async function MyDecksPage() {
         <div className="rounded-2xl border border-black/8 bg-white/90 backdrop-blur-xl shadow-sm overflow-hidden">
           {savedDecks.map((deck, i) => {
             const stats = deckMatchStats.get(deck.id);
+            const shareUrl =
+              deck.is_public && ownerProfile?.username
+                ? `${origin}/u/${ownerProfile.username}/${deck.id}`
+                : null;
             return (
               <SavedDeckRow
                 key={deck.id}
                 deck={deck}
                 isLast={i === savedDecks.length - 1}
                 matchStats={stats ?? null}
+                shareUrl={shareUrl}
               />
             );
           })}

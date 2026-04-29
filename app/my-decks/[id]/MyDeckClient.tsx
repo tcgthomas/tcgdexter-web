@@ -30,6 +30,11 @@ interface Props {
   pageTitle: string;
   profiledAt: string;
   initialIsPublic: boolean;
+  /**
+   * Pre-built canonical /u/[username]/[deckId] URL. Only used when the deck
+   * is currently public; null when the owner hasn't set a username yet.
+   */
+  canonicalShareUrl: string | null;
 }
 
 interface ParsedCard {
@@ -90,6 +95,7 @@ export default function MyDeckClient({
   pageTitle,
   profiledAt,
   initialIsPublic,
+  canonicalShareUrl,
 }: Props) {
   const router = useRouter();
   const [logOpen, setLogOpen] = useState(false);
@@ -230,6 +236,11 @@ export default function MyDeckClient({
     </div>
   ) : false;
 
+  // Surface the canonical share URL only when the deck is currently public.
+  // Private decks fall back to the /api/deck-share snapshot path so the
+  // owner can still QR/copy something without flipping public.
+  const shareUrl = isPublic && canonicalShareUrl ? canonicalShareUrl : undefined;
+
   return (
     <DeckProfileView
       variant="saved"
@@ -239,6 +250,7 @@ export default function MyDeckClient({
       pageTitle={deckName}
       titleAction={titleAction}
       subtitle={subtitle}
+      shareUrl={shareUrl}
       preOverviewSlot={
         <>
           {/* Action buttons */}

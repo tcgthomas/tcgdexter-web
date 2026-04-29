@@ -1,4 +1,5 @@
 import { Metadata } from "next";
+import { headers } from "next/headers";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import DeckProfileView, {
@@ -24,16 +25,17 @@ interface PublicDeckRecord {
 interface OwnerProfile {
   id: string;
   display_name: string;
+  username: string;
   avatar_url: string | null;
   trainer_title: string | null;
 }
 
-async function fetchOwner(name: string): Promise<OwnerProfile | null> {
+async function fetchOwner(username: string): Promise<OwnerProfile | null> {
   const supabase = await createClient();
   const { data } = await supabase
     .from("profiles")
-    .select("id, display_name, avatar_url, trainer_title, is_public")
-    .ilike("display_name", name)
+    .select("id, display_name, username, avatar_url, trainer_title, is_public")
+    .eq("username", username.toLowerCase())
     .eq("is_public", true)
     .maybeSingle();
   if (!data) return null;
@@ -59,19 +61,18 @@ async function fetchDeck(deckId: string, ownerId: string): Promise<PublicDeckRec
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<{ displayName: string; deckId: string }>;
+  params: Promise<{ username: string; deckId: string }>;
 }): Promise<Metadata> {
-  const { displayName, deckId } = await params;
-  const decoded = decodeURIComponent(displayName);
-  const owner = await fetchOwner(decoded);
+  const { username, deckId } = await params;
+  const owner = await fetchOwner(username);
   if (!owner) return { title: "Deck Not Found — TCG Dexter" };
   const deck = await fetchDeck(deckId, owner.id);
   if (!deck) return { title: "Deck Not Found — TCG Dexter" };
 
   const archetype = deck.analysis.metaMatch?.archetypeName ?? null;
   const title = archetype
-    ? `${archetype} by ${owner.display_name} — TCG Dexter`
-    : `${deck.name} by ${owner.display_name} — TCG Dexter`;
+    ? `${archetype} by @${owner.username} — TCG Dexter`
+    : `${deck.name} by @${owner.username} — TCG Dexter`;
   const description = `${deck.name} — a public deck shared by ${owner.display_name}.`;
   return {
     title,
@@ -84,11 +85,10 @@ export async function generateMetadata({
 export default async function PublicDeckPage({
   params,
 }: {
-  params: Promise<{ displayName: string; deckId: string }>;
+  params: Promise<{ username: string; deckId: string }>;
 }) {
-  const { displayName, deckId } = await params;
-  const decoded = decodeURIComponent(displayName);
-  const owner = await fetchOwner(decoded);
+  const { username, deckId } = await params;
+  const owner = await fetchOwner(username);
   if (!owner) notFound();
 
   const deck = await fetchDeck(deckId, owner.id);
@@ -126,6 +126,14 @@ export default async function PublicDeckPage({
     rotation: live.rotation,
   };
 
+  // Canonical URL for share/copy/QR — every share path on this page produces
+  // this exact string instead of minting a new /d/[shortId].
+  const headersList = await headers();
+  const host =
+    headersList.get("x-forwarded-host") ?? headersList.get("host") ?? "tcgdexter.com";
+  const proto = headersList.get("x-forwarded-proto") ?? "https";
+  const canonicalUrl = `${proto}://${host}/u/${owner.username}/${deck.id}`;
+
   return (
     <DeckProfileView
       variant="shared"
@@ -134,13 +142,14 @@ export default async function PublicDeckPage({
       profiledAt={deck.updated_at}
       pageTitle={deck.name}
       creator={creator}
+      shareUrl={canonicalUrl}
       subtitle={
         <div className="flex items-center gap-2 flex-wrap">
           <Link
-            href={`/u/${encodeURIComponent(owner.display_name)}`}
+            href={`/u/${owner.username}`}
             className="text-xs font-semibold text-text-secondary hover:text-text-primary transition-colors underline-offset-2 hover:underline"
           >
-            ← {owner.display_name}&apos;s decks
+            ← @{owner.username}&apos;s decks
           </Link>
           <LikeButton
             deckId={deck.id}

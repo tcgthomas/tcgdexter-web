@@ -1,4 +1,5 @@
 import { redirect, notFound } from "next/navigation";
+import { headers } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 import { type AnalysisResult } from "@/app/components/DeckProfileView";
 import archetypesRaw from "@/data/meta-archetypes.json";
@@ -28,6 +29,24 @@ export default async function MyDeckDetailPage({
     .maybeSingle();
 
   if (!deck) notFound();
+
+  // Owner username powers the canonical share URL when the deck is public.
+  const { data: ownerProfile } = await supabase
+    .from("profiles")
+    .select("username")
+    .eq("id", user.id)
+    .maybeSingle();
+
+  // Build the canonical /u/[username]/[deckId] URL on the server so it's
+  // hydration-stable. MyDeckClient decides at render time whether to surface
+  // it (only when the deck is currently public).
+  const headersList = await headers();
+  const host =
+    headersList.get("x-forwarded-host") ?? headersList.get("host") ?? "tcgdexter.com";
+  const proto = headersList.get("x-forwarded-proto") ?? "https";
+  const canonicalShareUrl = ownerProfile?.username
+    ? `${proto}://${host}/u/${ownerProfile.username}/${deck.id}`
+    : null;
 
   const analysis = deck.analysis as AnalysisResult | null;
   if (!analysis) redirect("/my-decks");
@@ -71,6 +90,7 @@ export default async function MyDeckDetailPage({
       pageTitle={deck.name}
       profiledAt={deck.updated_at}
       initialIsPublic={deck.is_public ?? false}
+      canonicalShareUrl={canonicalShareUrl}
     />
   );
 }

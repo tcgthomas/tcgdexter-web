@@ -1,10 +1,11 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import DeckProfileView, {
   type AnalysisResult,
 } from "@/app/components/DeckProfileView";
+import { popDeckList } from "@/lib/home-restore";
 import SectionHeader from "@/app/components/ui/SectionHeader";
 import GradientButton from "@/app/components/ui/GradientButton";
 import StatsStrip from "@/app/components/ui/StatsStrip";
@@ -70,6 +71,13 @@ export default function HomeClient({
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const profileAnchor = useRef<HTMLDivElement>(null);
+
+  // After a sign-in bounce, restore whatever the user pasted before. The
+  // stash is cleared on read, so a manual refresh won't keep restoring it.
+  useEffect(() => {
+    const restored = popDeckList();
+    if (restored) setDeckList(restored);
+  }, []);
 
   async function handleAnalyze() {
     if (!deckList.trim()) {

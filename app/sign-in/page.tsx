@@ -12,6 +12,11 @@ import GradientButton from "@/app/components/ui/GradientButton";
 function SignInForm() {
   const searchParams = useSearchParams();
   const errorParam = searchParams.get("error");
+  // Where to land after successful auth. Defaults to "/" so the rebuilt
+  // post-auth flow has a sensible home, but callers can pass any path
+  // (e.g. /?restore=1 from the home stash flow, or /u/alice from a
+  // future Like-on-public-deck redirect).
+  const nextParam = searchParams.get("next") ?? "/";
 
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState<"idle" | "loading" | "sent" | "error">("idle");
@@ -24,7 +29,7 @@ function SignInForm() {
   );
 
   const redirectTo = () =>
-    `${window.location.origin}/auth/callback?next=/`;
+    `${window.location.origin}/auth/callback?next=${encodeURIComponent(nextParam)}`;
 
   async function handleDiscordSignIn() {
     setDiscordLoading(true);

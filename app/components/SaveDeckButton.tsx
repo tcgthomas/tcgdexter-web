@@ -1,8 +1,9 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { stashDeckList } from "@/lib/home-restore";
 
 interface Props {
   deckList: string;
@@ -34,6 +35,7 @@ export default function SaveDeckButton({
   analysis,
   className,
 }: Props) {
+  const router = useRouter();
   const [signedIn, setSignedIn] = useState<boolean | null>(null);
   const [status, setStatus] = useState<SaveStatus>("idle");
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
@@ -190,12 +192,20 @@ export default function SaveDeckButton({
             </p>
 
             <div className="flex flex-col gap-2">
-              <Link
-                href="/sign-in"
+              <button
+                onClick={() => {
+                  // Persist the user's deck across the sign-in redirect so
+                  // they don't lose their paste; the home page checks
+                  // sessionStorage on mount and restores the textarea
+                  // regardless of which auth path the user took (OAuth,
+                  // magic link, etc.).
+                  stashDeckList(deckList);
+                  router.push(`/sign-in?next=${encodeURIComponent("/")}`);
+                }}
                 className="inline-flex items-center justify-center rounded-full bg-accent px-5 py-2.5 text-sm font-semibold text-white transition-all hover:bg-accent-light"
               >
                 Sign in
-              </Link>
+              </button>
               <button
                 onClick={() => setSignInPrompt(false)}
                 className="text-xs text-text-muted hover:text-text-secondary transition-colors"

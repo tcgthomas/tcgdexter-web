@@ -29,6 +29,8 @@ interface Props {
   deck: SavedDeck;
   isLast: boolean;
   matchStats: MatchStats | null;
+  /** Pre-built /u/[username]/[id] URL when the deck is public. Null otherwise. */
+  shareUrl: string | null;
 }
 
 /**
@@ -43,6 +45,7 @@ export default function SavedDeckRow({
   deck,
   isLast,
   matchStats,
+  shareUrl,
 }: Props) {
   const router = useRouter();
   const [quicklogOpen, setQuicklogOpen] = useState(false);
@@ -134,6 +137,7 @@ export default function SavedDeckRow({
               Log Match
             </button>
             <QRCodeButton
+              shareUrl={shareUrl ?? undefined}
               deckList={deck.deck_list}
               analysis={deck.analysis as unknown}
             />

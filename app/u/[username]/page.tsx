@@ -8,6 +8,7 @@ import SectionHeader from "@/app/components/ui/SectionHeader";
 interface PublicProfile {
   id: string;
   display_name: string;
+  username: string;
   avatar_url: string | null;
   bio: string | null;
   trainer_title: string | null;
@@ -26,14 +27,13 @@ interface PublicDeck {
   like_count: number;
 }
 
-async function fetchProfile(name: string): Promise<PublicProfile | null> {
+async function fetchProfile(username: string): Promise<PublicProfile | null> {
   const supabase = await createClient();
-  // ilike with no wildcards = case-insensitive equality. display_name is
-  // unique case-insensitively (enforced in /api/profile).
+  // Username is always stored lowercase; URLs are case-insensitive at lookup.
   const { data } = await supabase
     .from("profiles")
-    .select("id, display_name, avatar_url, bio, trainer_title, created_at, is_public")
-    .ilike("display_name", name)
+    .select("id, display_name, username, avatar_url, bio, trainer_title, created_at, is_public")
+    .eq("username", username.toLowerCase())
     .eq("is_public", true)
     .maybeSingle();
   if (!data) return null;
@@ -55,13 +55,12 @@ async function fetchPublicDecks(userId: string): Promise<PublicDeck[]> {
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<{ displayName: string }>;
+  params: Promise<{ username: string }>;
 }): Promise<Metadata> {
-  const { displayName } = await params;
-  const decoded = decodeURIComponent(displayName);
-  const profile = await fetchProfile(decoded);
+  const { username } = await params;
+  const profile = await fetchProfile(username);
   if (!profile) return { title: "Trainer Not Found — TCG Dexter" };
-  const title = `${profile.display_name} — TCG Dexter`;
+  const title = `${profile.display_name} (@${profile.username}) — TCG Dexter`;
   const description = profile.bio?.trim() || `Public deck collection by ${profile.display_name}.`;
   return {
     title,
@@ -74,11 +73,10 @@ export async function generateMetadata({
 export default async function PublicProfilePage({
   params,
 }: {
-  params: Promise<{ displayName: string }>;
+  params: Promise<{ username: string }>;
 }) {
-  const { displayName } = await params;
-  const decoded = decodeURIComponent(displayName);
-  const profile = await fetchProfile(decoded);
+  const { username } = await params;
+  const profile = await fetchProfile(username);
   if (!profile) notFound();
 
   const decks = await fetchPublicDecks(profile.id);
@@ -91,7 +89,7 @@ export default async function PublicProfilePage({
   return (
     <main className="mx-auto max-w-2xl px-6 pt-[calc(env(safe-area-inset-top)_+_1.68rem)] md:pt-[calc(env(safe-area-inset-top)_+_3rem)] pb-24">
       <div className="mb-6">
-        <SectionHeader eyebrow="Trainer" title={profile.display_name} />
+        <SectionHeader eyebrow={`@${profile.username}`} title={profile.display_name} />
       </div>
 
       {/* Header card */}
@@ -154,7 +152,7 @@ export default async function PublicProfilePage({
               return (
                 <Link
                   key={deck.id}
-                  href={`/u/${encodeURIComponent(profile.display_name)}/${deck.id}`}
+                  href={`/u/${profile.username}/${deck.id}`}
                   className={`block px-5 py-3.5 flex items-center gap-3 hover:bg-black/[0.02] transition-colors ${
                     i === decks.length - 1 ? "" : "border-b border-bg"
                   }`}
