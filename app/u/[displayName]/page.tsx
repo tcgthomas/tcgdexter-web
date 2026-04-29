@@ -23,6 +23,7 @@ interface PublicDeck {
     rotation?: { ready?: boolean };
   } | null;
   updated_at: string;
+  like_count: number;
 }
 
 async function fetchProfile(name: string): Promise<PublicProfile | null> {
@@ -43,9 +44,10 @@ async function fetchPublicDecks(userId: string): Promise<PublicDeck[]> {
   const supabase = await createClient();
   const { data } = await supabase
     .from("saved_decks")
-    .select("id, name, analysis, updated_at")
+    .select("id, name, analysis, updated_at, like_count")
     .eq("user_id", userId)
     .eq("is_public", true)
+    .order("like_count", { ascending: false })
     .order("updated_at", { ascending: false });
   return (data ?? []) as PublicDeck[];
 }
@@ -175,6 +177,18 @@ export default async function PublicProfilePage({
                       )}
                     </div>
                   </div>
+                  {deck.like_count > 0 && (
+                    <div className="flex-shrink-0 flex items-center gap-1 text-xs font-semibold text-text-muted tabular-nums">
+                      <svg
+                        className="w-3.5 h-3.5"
+                        viewBox="0 0 24 24"
+                        fill="currentColor"
+                      >
+                        <path d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
+                      </svg>
+                      {deck.like_count}
+                    </div>
+                  )}
                   <svg
                     className="flex-shrink-0 w-4 h-4 text-text-muted"
                     fill="none"

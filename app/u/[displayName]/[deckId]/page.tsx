@@ -9,6 +9,7 @@ import { createClient } from "@/lib/supabase/server";
 import { getTierByTitle } from "@/lib/trainer-tiers";
 import { repriceDeck } from "@/lib/reprice-deck";
 import CopyDeckListButton from "@/app/components/CopyDeckListButton";
+import LikeButton from "@/app/components/LikeButton";
 
 interface PublicDeckRecord {
   id: string;
@@ -17,6 +18,7 @@ interface PublicDeckRecord {
   analysis: AnalysisResult;
   updated_at: string;
   user_id: string;
+  like_count: number;
 }
 
 interface OwnerProfile {
@@ -45,7 +47,7 @@ async function fetchDeck(deckId: string, ownerId: string): Promise<PublicDeckRec
   // silently rendering bob's deck under alice's URL.
   const { data } = await supabase
     .from("saved_decks")
-    .select("id, name, deck_list, analysis, updated_at, user_id, is_public")
+    .select("id, name, deck_list, analysis, updated_at, user_id, like_count, is_public")
     .eq("id", deckId)
     .eq("user_id", ownerId)
     .eq("is_public", true)
@@ -92,6 +94,23 @@ export default async function PublicDeckPage({
   const deck = await fetchDeck(deckId, owner.id);
   if (!deck) notFound();
 
+  // Viewer state for the like button — anonymous viewers see the count
+  // and are bounced to /sign-in on click.
+  const supabase = await createClient();
+  const {
+    data: { user: viewer },
+  } = await supabase.auth.getUser();
+  let initialLiked = false;
+  if (viewer) {
+    const { data: likeRow } = await supabase
+      .from("deck_likes")
+      .select("user_id")
+      .eq("user_id", viewer.id)
+      .eq("saved_deck_id", deck.id)
+      .maybeSingle();
+    initialLiked = Boolean(likeRow);
+  }
+
   const tier = getTierByTitle(owner.trainer_title ?? "Rookie Trainer");
   const creator: DeckCreator = {
     displayName: owner.display_name,
@@ -116,13 +135,19 @@ export default async function PublicDeckPage({
       pageTitle={deck.name}
       creator={creator}
       subtitle={
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
           <Link
             href={`/u/${encodeURIComponent(owner.display_name)}`}
             className="text-xs font-semibold text-text-secondary hover:text-text-primary transition-colors underline-offset-2 hover:underline"
           >
             ← {owner.display_name}&apos;s decks
           </Link>
+          <LikeButton
+            deckId={deck.id}
+            initialLiked={initialLiked}
+            initialCount={deck.like_count ?? 0}
+            isAuthenticated={Boolean(viewer)}
+          />
           <CopyDeckListButton deckList={deck.deck_list} />
         </div>
       }
