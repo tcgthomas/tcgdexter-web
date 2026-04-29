@@ -196,6 +196,7 @@ export default function MobileNavMenu({ isAuthed, displayName }: Props) {
   const INTERNAL_LINKS = [
     { href: "/", label: "Create a Deck Profile" },
     { href: "/meta-decks", label: "Top 30 Meta Decks" },
+    { href: "/leaderboard", label: "Leaderboard" },
     { href: "/my-decks", label: "My Decks" },
   ];
 
