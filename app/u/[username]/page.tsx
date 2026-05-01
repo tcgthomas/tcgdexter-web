@@ -89,37 +89,21 @@ export default async function PublicProfilePage({
   return (
     <main className="mx-auto max-w-2xl px-6 pt-[calc(env(safe-area-inset-top)_+_1.68rem)] md:pt-[calc(env(safe-area-inset-top)_+_3rem)] pb-24">
       <div className="mb-6">
-        <SectionHeader eyebrow={`@${profile.username}`} title={profile.display_name} />
+        <SectionHeader title={profile.display_name} />
       </div>
 
       {/* Header card */}
       <div className="rounded-2xl border border-black/8 bg-white/90 backdrop-blur-xl shadow-sm p-5">
-        <div className="flex items-center gap-4">
-          {profile.avatar_url ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={profile.avatar_url}
-              alt={profile.display_name}
-              className="w-16 h-16 rounded-full object-cover flex-shrink-0"
-            />
-          ) : (
-            <div className="w-16 h-16 rounded-full bg-black/5 flex-shrink-0 flex items-center justify-center text-text-muted text-xl font-semibold">
-              {profile.display_name.charAt(0).toUpperCase()}
-            </div>
-          )}
-          <div className="min-w-0 flex-1">
-            <div className="flex items-center gap-2">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={`/badges/${tier.slug}.svg`}
-                alt={tier.title}
-                className="w-5 h-5 flex-shrink-0"
-              />
-              <p className={`text-sm font-bold ${tier.color}`}>{tier.title}</p>
-            </div>
-            <p className="text-xs text-text-muted mt-0.5">Joined {joinedDate}</p>
-          </div>
+        <div className="flex items-center gap-2">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={`/badges/${tier.slug}.svg`}
+            alt={tier.title}
+            className="w-5 h-5 flex-shrink-0"
+          />
+          <p className={`text-sm font-bold ${tier.color}`}>{tier.title}</p>
         </div>
+        <p className="text-xs text-text-muted mt-0.5">Joined {joinedDate}</p>
 
         {profile.bio && (
           <p className="text-sm text-text-secondary leading-relaxed mt-4 whitespace-pre-wrap">
