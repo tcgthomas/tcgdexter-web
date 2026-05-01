@@ -1,0 +1,172 @@
+name: Update Meta Decks
+
+on:
+  workflow_dispatch:
+    inputs:
+      target_branch:
+        description: 'Branch to commit updated data to (default: main)'
+        required: false
+        default: 'main'
+
+permissions:
+  contents: write
+
+jobs:
+  update-meta-decks:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.target_branch || 'main' }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Fetch and generate meta-decks.json
+        run: |
+          python3 - <<'PYEOF'
+          import json, time, sys, os
+          from urllib.request import Request, urlopen
+          from urllib.error import URLError
+          from collections import defaultdict
+          from pathlib import Path
+
+          REPO      = Path(os.environ.get("GITHUB_WORKSPACE", "."))
+          META_FILE = REPO / "data" / "meta-archetypes.json"
+          OUT_FILE  = REPO / "data" / "meta-decks.json"
+
+          TOURNAMENTS_URL = "https://play.limitlesstcg.com/api/tournaments?game=PTCG&format=standard&limit=50"
+          STANDINGS_URL   = "https://play.limitlesstcg.com/api/tournaments/{id}/standings"
+          HEADERS         = {"User-Agent": "TCGDexter-MetaDeckScraper/2.0 (educational)"}
+          DELAY           = 0.3
+          MAX_VARIANTS    = 5
+
+          def fetch_json(url):
+              req = Request(url, headers=HEADERS)
+              try:
+                  with urlopen(req, timeout=15) as resp:
+                      return json.loads(resp.read().decode("utf-8"))
+              except (URLError, TimeoutError, json.JSONDecodeError) as e:
+                  print(f"  WARNING fetch error {url}: {e}", file=sys.stderr)
+                  return None
+
+          def flatten_decklist(dl):
+              out = []
+              for category in ("pokemon", "trainer", "energy"):
+                  for c in dl.get(category) or []:
+                      out.append({
+                          "qty":      c.get("count", 0),
+                          "name":     c.get("name", ""),
+                          "setCode":  c.get("set", ""),
+                          "number":   str(c.get("number", "")),
+                          "category": category,
+                      })
+              return out
+
+          def _neg_str(s):
+              return tuple(-ord(ch) for ch in s)
+
+          def _sig(cards):
+              return tuple(sorted(
+                  (c["name"], c["setCode"], c["number"], c["qty"], c["category"])
+                  for c in cards
+              ))
+
+          def pick_top_variants(candidates, limit):
+              if not candidates:
+                  return []
+              ordered = sorted(candidates, key=lambda c: (c[0], _neg_str(c[1])))
+              seen, variants = set(), []
+              for placing, date, dl in ordered:
+                  cards = flatten_decklist(dl)
+                  if not cards:
+                      continue
+                  sig = _sig(cards)
+                  if sig in seen:
+                      continue
+                  seen.add(sig)
+                  variants.append({"placing": placing, "date": date, "cards": cards})
+                  if len(variants) >= limit:
+                      break
+              return variants
+
+          with open(META_FILE) as f:
+              archetypes = json.load(f)
+
+          top30 = sorted(archetypes, key=lambda a: a["total_entries"], reverse=True)[:30]
+          print(f"[update-meta-decks] Top 30 archetypes from meta-archetypes.json:")
+          for i, a in enumerate(top30, 1):
+              print(f"  {i:2d}. {a['name']:<30} (entries={a['total_entries']})")
+
+          tournaments = fetch_json(TOURNAMENTS_URL)
+          if not tournaments:
+              print("ERROR: Failed to fetch tournament list", file=sys.stderr)
+              sys.exit(1)
+
+          print(f"\n[update-meta-decks] Walking {len(tournaments)} Standard tournaments...")
+          buckets = defaultdict(list)
+
+          for i, t in enumerate(tournaments, 1):
+              t_id   = t.get("id")
+              t_date = t.get("date", "")
+              if not t_id:
+                  continue
+              standings = fetch_json(STANDINGS_URL.format(id=t_id))
+              if not isinstance(standings, list):
+                  time.sleep(DELAY)
+                  continue
+              added = 0
+              for s in standings:
+                  deck    = s.get("deck") or {}
+                  deck_id = deck.get("id")
+                  if not deck_id or deck_id == "other":
+                      continue
+                  dl      = s.get("decklist")
+                  placing = s.get("placing")
+                  if not dl or placing is None:
+                      continue
+                  buckets[deck_id].append((placing, t_date, dl))
+                  added += 1
+              print(f"  [{i}/{len(tournaments)}] {t.get('name', t_id)[:50]:<50} +{added}")
+              time.sleep(DELAY)
+
+          results = []
+          for arch in top30:
+              variants = pick_top_variants(buckets.get(arch["id"], []), MAX_VARIANTS)
+              primary  = variants[0]["cards"] if variants else []
+              results.append({
+                  "id":             arch["id"],
+                  "name":           arch["name"],
+                  "cards":          primary,
+                  "variants":       variants,
+                  "hasRotatedCards": False,
+              })
+
+          OUT_FILE.parent.mkdir(parents=True, exist_ok=True)
+          with open(OUT_FILE, "w") as f:
+              json.dump(results, f, indent=2)
+
+          found   = sum(1 for r in results if r["cards"])
+          missing = sum(1 for r in results if not r["cards"])
+          total_v = sum(len(r["variants"]) for r in results)
+          print(f"\n[update-meta-decks] Done! {found}/{len(top30)} archetypes resolved, {total_v} total variants, {missing} missing.")
+          for i, r in enumerate(results, 1):
+              status = "+" if r["cards"] else "."
+              print(f"  {status} {i:2d}. {r['name']:<30} ({len(r['variants'])} variants)")
+          PYEOF
+
+      - name: Commit and push if changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/meta-decks.json
+          if git diff --cached --quiet; then
+            echo "No changes to meta-decks.json — already up to date."
+          else
+            git commit -m "chore: update meta-decks.json (manual trigger)"
+            git push
+            echo "Pushed updated meta-decks.json to ${{ inputs.target_branch || 'main' }}"
+          fi
