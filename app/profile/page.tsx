@@ -3,7 +3,6 @@ import { createClient } from "@/lib/supabase/server";
 import { TRAINER_TIERS, getTierByTitle, getNextTier } from "@/lib/trainer-tiers";
 import EditDisplayName from "@/app/profile/EditDisplayName";
 import EditUsername from "@/app/profile/EditUsername";
-import EditAvatar from "@/app/profile/EditAvatar";
 import EditBio from "@/app/profile/EditBio";
 import EditPublicToggle from "@/app/profile/EditPublicToggle";
 import SignOutButton from "@/app/profile/SignOutButton";
@@ -56,15 +55,15 @@ export default async function ProfilePage() {
   return (
     <main className="mx-auto max-w-2xl px-6 pt-[calc(env(safe-area-inset-top)_+_1.68rem)] md:pt-[calc(env(safe-area-inset-top)_+_3rem)] pb-24">
       <div className="mb-8">
-        <SectionHeader title="Profile" />
+        <SectionHeader title={profile?.display_name || profile?.username || "Profile"} />
       </div>
 
       {/* Row 1 — Combined account + trainer title card */}
       <div className="rounded-2xl border border-black/8 bg-white/90 backdrop-blur-xl shadow-sm overflow-hidden">
-        {/* Avatar */}
-        <EditAvatar
-          initialAvatarUrl={profile?.avatar_url ?? null}
-          displayName={profile?.display_name ?? ""}
+        {/* Public profile toggle */}
+        <EditPublicToggle
+          initialIsPublic={profile?.is_public ?? false}
+          hasDisplayName={Boolean(profile?.display_name)}
         />
 
         {/* Display name | Joined (Joined hides while editing) */}
@@ -126,12 +125,6 @@ export default async function ProfilePage() {
 
         {/* Bio */}
         <EditBio initialBio={profile?.bio ?? null} />
-
-        {/* Public profile toggle */}
-        <EditPublicToggle
-          initialIsPublic={profile?.is_public ?? false}
-          hasDisplayName={Boolean(profile?.display_name)}
-        />
       </div>
 
       {/* Row 2 — Overall W/L (full width, conditional) */}
