@@ -26,6 +26,7 @@ export default async function MyDeckDetailPage({
     .from("saved_decks")
     .select("id, name, deck_list, analysis, notes, updated_at, is_public")
     .eq("id", id)
+    .eq("user_id", user.id)
     .maybeSingle();
 
   if (!deck) notFound();

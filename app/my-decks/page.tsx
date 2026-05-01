@@ -36,6 +36,7 @@ export default async function MyDecksPage() {
   const { data: decks, error } = await supabase
     .from("saved_decks")
     .select("id, name, deck_list, analysis, notes, created_at, updated_at, is_public")
+    .eq("user_id", user.id)
     .order("updated_at", { ascending: false });
 
   if (error) console.error("[experiments/my-decks] fetch failed:", error);
@@ -55,6 +56,7 @@ export default async function MyDecksPage() {
   const { data: matchRows } = await supabase
     .from("matches")
     .select("saved_deck_id, result, played_at")
+    .eq("user_id", user.id)
     .order("played_at", { ascending: false });
 
   const deckMatchStats = new Map<
