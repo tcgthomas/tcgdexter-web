@@ -143,14 +143,16 @@ export default async function PublicDeckPage({
       pageTitle={deck.name}
       creator={creator}
       shareUrl={canonicalUrl}
+      preTitle={
+        <Link
+          href={`/u/${owner.username}`}
+          className="text-xs font-semibold text-text-secondary hover:text-text-primary transition-colors underline-offset-2 hover:underline"
+        >
+          ← @{owner.username}&apos;s decks
+        </Link>
+      }
       subtitle={
-        <div className="flex items-center gap-2 flex-wrap">
-          <Link
-            href={`/u/${owner.username}`}
-            className="text-xs font-semibold text-text-secondary hover:text-text-primary transition-colors underline-offset-2 hover:underline"
-          >
-            ← @{owner.username}&apos;s decks
-          </Link>
+        <div className="flex items-center gap-2">
           <LikeButton
             deckId={deck.id}
             initialLiked={initialLiked}
