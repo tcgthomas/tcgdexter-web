@@ -64,14 +64,13 @@ async function fetchLeaderboard(): Promise<Array<ProfileRow & { totalLikes: numb
 export default async function LeaderboardPage() {
   const trainers = await fetchLeaderboard();
   const top3 = trainers.slice(0, 3);
-  const rest = trainers.slice(3);
 
   const rankMedal = ["🥇", "🥈", "🥉"];
 
   return (
-    <main className="mx-auto max-w-4xl px-6 pt-10 pb-32">
+    <main className="mx-auto max-w-2xl px-6 pt-10 pb-32">
       {/* Header */}
-      <div className="mb-10">
+      <div className="mb-8">
         <div className="text-xs uppercase tracking-widest text-[#D91E0D] mb-3 flex items-center gap-2">
           <span className="relative flex h-2 w-2">
             <span className="absolute inline-flex h-full w-full rounded-full bg-[#ff8a3d] opacity-75 animate-ping" />
@@ -85,77 +84,28 @@ export default async function LeaderboardPage() {
         </p>
       </div>
 
-      {/* Top 3 podium */}
+      {/* Top 3 list */}
       {top3.length > 0 && (
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+        <div className="rounded-xl border border-black/8 bg-white shadow-sm overflow-hidden mb-8">
           {top3.map((trainer, i) => {
             const tier = getTierByTitle(trainer.trainer_title ?? "Rookie Trainer");
             return (
-              <Link key={trainer.id} href={`/u/${trainer.username}`}>
-                <div className="rounded-xl border border-black/8 bg-white p-5 shadow-sm hover:shadow-md hover:bg-white/90 transition h-full flex flex-col items-center text-center gap-3">
-                  <div className="text-2xl">{rankMedal[i]}</div>
-                  {trainer.avatar_url ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img
-                      src={trainer.avatar_url}
-                      alt={trainer.display_name}
-                      className="w-16 h-16 rounded-full object-cover border-2 border-black/8"
-                    />
-                  ) : (
-                    <div className="w-16 h-16 rounded-full bg-black/[0.06] flex items-center justify-center text-2xl font-semibold text-text-muted">
-                      {trainer.display_name.charAt(0).toUpperCase()}
-                    </div>
-                  )}
-                  <div>
-                    <div className="font-semibold text-text-primary leading-tight">{trainer.display_name}</div>
-                    <div className="text-xs text-text-muted mt-0.5">@{trainer.username}</div>
-                  </div>
-                  <div className={`text-xs font-semibold px-2 py-0.5 rounded-full border ${tier.color} ${tier.borderColor} ${tier.bgColor}`}>
-                    {tier.title}
-                  </div>
-                  <div className="mt-auto pt-2 border-t border-black/5 w-full grid grid-cols-2 gap-2">
-                    <div>
-                      <div className="text-lg font-semibold tabular-nums text-text-primary">{trainer.totalLikes}</div>
-                      <div className="text-[10px] text-text-muted uppercase tracking-wide">likes</div>
-                    </div>
-                    <div>
-                      <div className="text-lg font-semibold tabular-nums text-text-primary">{trainer.deckCount}</div>
-                      <div className="text-[10px] text-text-muted uppercase tracking-wide">decks</div>
-                    </div>
-                  </div>
-                </div>
-              </Link>
-            );
-          })}
-        </div>
-      )}
-
-      {/* Ranks 4–20 */}
-      {rest.length > 0 && (
-        <div className="rounded-xl border border-black/8 bg-white shadow-sm overflow-hidden mb-12">
-          {rest.map((trainer, i) => {
-            const tier = getTierByTitle(trainer.trainer_title ?? "Rookie Trainer");
-            return (
-              <Link key={trainer.id} href={`/u/${trainer.username}`} className="flex items-center gap-4 px-5 py-4 hover:bg-black/[0.02] transition border-b border-black/5 last:border-b-0">
-                <span className="w-6 text-sm font-mono text-text-muted text-right flex-shrink-0">#{i + 4}</span>
-                {trainer.avatar_url ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img src={trainer.avatar_url} alt="" className="w-9 h-9 rounded-full object-cover flex-shrink-0" />
-                ) : (
-                  <div className="w-9 h-9 rounded-full bg-black/[0.06] flex items-center justify-center text-sm font-semibold text-text-muted flex-shrink-0">
-                    {trainer.display_name.charAt(0).toUpperCase()}
-                  </div>
-                )}
+              <Link
+                key={trainer.id}
+                href={`/u/${trainer.username}`}
+                className="flex items-center gap-3 px-5 py-4 hover:bg-black/[0.02] transition border-b border-black/5 last:border-b-0"
+              >
+                <span className="text-xl w-7 flex-shrink-0">{rankMedal[i]}</span>
                 <div className="min-w-0 flex-1">
                   <div className="text-sm font-semibold text-text-primary truncate">{trainer.display_name}</div>
-                  <div className="text-xs text-text-muted">@{trainer.username}</div>
                 </div>
-                <div className={`hidden sm:block text-xs font-semibold px-2 py-0.5 rounded-full border ${tier.color} ${tier.borderColor} ${tier.bgColor}`}>
+                <div className={`hidden sm:flex text-xs font-semibold px-2 py-0.5 rounded-full border flex-shrink-0 ${tier.color} ${tier.borderColor} ${tier.bgColor}`}>
                   {tier.title}
                 </div>
-                <div className="text-right flex-shrink-0">
-                  <div className="text-sm font-semibold tabular-nums text-text-primary">{trainer.totalLikes}</div>
-                  <div className="text-[10px] text-text-muted">likes</div>
+                <div className="text-xs text-text-muted flex-shrink-0">
+                  <span className="font-semibold tabular-nums text-text-primary">{trainer.totalLikes}</span> likes
+                  {" · "}
+                  <span className="font-semibold tabular-nums text-text-primary">{trainer.deckCount}</span> decks
                 </div>
               </Link>
             );
@@ -170,7 +120,7 @@ export default async function LeaderboardPage() {
         </div>
       )}
 
-      {/* Search divider */}
+      {/* Search */}
       <div className="flex items-center gap-4 mb-8">
         <div className="flex-1 h-px bg-black/10" />
         <span className="text-sm font-semibold text-text-muted">Find a trainer</span>
