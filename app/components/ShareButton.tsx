@@ -41,7 +41,10 @@ export default function ShareButton({
   const [signInPrompt, setSignInPrompt] = useState(false);
 
   useEffect(() => {
-    if (!publishMode) return;
+    // Auth state is needed for both publish and default share flows now
+    // that anonymous sharing has been removed. Skip only for presetUrl,
+    // which bypasses the API entirely.
+    if (presetUrl) return;
     const supabase = createClient();
     supabase.auth.getUser().then(({ data: { user } }) => setSignedIn(!!user));
     const {
@@ -50,7 +53,7 @@ export default function ShareButton({
       setSignedIn(!!session?.user);
     });
     return () => subscription.unsubscribe();
-  }, [publishMode]);
+  }, [presetUrl]);
 
   async function handleShare() {
     if (sharing) return;
@@ -94,6 +97,15 @@ export default function ShareButton({
         router.push(data.publicUrl);
         return;
       } else {
+        if (signedIn === null) {
+          setSharing(false);
+          return; // still resolving auth state
+        }
+        if (!signedIn) {
+          setSignInPrompt(true);
+          setSharing(false);
+          return;
+        }
         const res = await fetch("/api/deck-share", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -260,16 +272,20 @@ export default function ShareButton({
             </div>
 
             <p className="text-sm text-text-secondary mb-5 leading-relaxed">
-              Sharing publishes your deck to your trainer profile so anyone
-              can like and discover it. Sign in with a magic link — no
-              password required.
+              {publishMode
+                ? "Sharing publishes your deck to your trainer profile so anyone can like and discover it. Sign in with a magic link — no password required."
+                : "Sharing creates a short link anyone can open to view this deck profile. Sign in with a magic link — no password required."}
             </p>
 
             <div className="flex flex-col gap-2">
               <button
                 onClick={() => {
                   stashDeckList(deckList);
-                  router.push(`/sign-in?next=${encodeURIComponent("/")}`);
+                  const next =
+                    publishMode || typeof window === "undefined"
+                      ? "/"
+                      : window.location.pathname + window.location.search;
+                  router.push(`/sign-in?next=${encodeURIComponent(next)}`);
                 }}
                 className="inline-flex items-center justify-center rounded-full bg-accent px-5 py-2.5 text-sm font-semibold text-white transition-all hover:bg-accent-light"
               >
