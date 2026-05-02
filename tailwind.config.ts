@@ -21,31 +21,17 @@ const config: Config = {
           light:   "var(--accent-light)",
           dark:    "var(--accent-dark)",
         },
-        // Warm tan backgrounds
-        tan: {
-          50:  "#fdf8f2",
-          100: "#f5ede0",
-          200: "#ecdcc8",
-          300: "#d9c4a8",
-          400: "#b89d7e",
-        },
-        // Deep warm brown for text
-        brown: {
-          900: "#2c1f0e",
-          700: "#5c3d1e",
-          500: "#8b6040",
-          300: "#b89d7e",
-        },
-        // Energy accent — deeper/warmer for light bg readability
-        energy: {
-          DEFAULT: "#c0392b",
-          light:   "#e74c3c",
-          dark:    "#922b21",
-        },
       },
       fontFamily: {
         sans: ["var(--font-geist-sans)"],
         mono: ["var(--font-geist-mono)"],
+      },
+      backgroundImage: {
+        "gradient-brand": "linear-gradient(90deg, #F2A20C 0%, #D91E0D 50%, #A60D0D 100%)",
+      },
+      boxShadow: {
+        "brand":    "0 4px 20px -4px rgba(217,30,13,0.35)",
+        "brand-lg": "0 20px 60px -15px rgba(217,30,13,0.25)",
       },
     },
   },

@@ -15,16 +15,17 @@
 /* ─── Design tokens ───────────────────────────────────────────── */
 
 :root {
-  --bg:             #f2f2f2;
-  --surface:        #e8e8e8;
-  --surface-2:      #d8d8d8;
-  --border:         #d95555;
-  --text-primary:   #1a1a1a;
-  --text-secondary: #4a4a4a;
-  --text-muted:     #888888;
-  --accent:         #d95555;
-  --accent-light:   #f55050;
-  --accent-dark:    #c02020;
+  --bg:              #f2f2f2;
+  --surface:         #e8e8e8;
+  --surface-2:       #d8d8d8;
+  --border:          #d4d4d4;
+  --text-primary:    #1a1a1a;
+  --text-secondary:  #4a4a4a;
+  --text-muted:      #888888;
+  --accent:          #D91E0D;
+  --accent-light:    #e74c3c;
+  --accent-dark:     #A60D0D;
+  --gradient-brand:  linear-gradient(90deg, #F2A20C 0%, #D91E0D 50%, #A60D0D 100%);
 }
 
 @layer base {
@@ -42,7 +43,7 @@
 
   /* Custom selection color */
   ::selection {
-    background-color: rgba(242, 48, 48, 0.2);
+    background-color: rgba(217, 30, 13, 0.2);
     color: var(--text-primary);
   }
 

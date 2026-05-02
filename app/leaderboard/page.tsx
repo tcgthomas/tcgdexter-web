@@ -71,7 +71,7 @@ export default async function LeaderboardPage() {
     <main className="mx-auto max-w-2xl px-6 pt-10 pb-32">
       {/* Header */}
       <div className="mb-8">
-        <div className="text-xs uppercase tracking-widest text-[#D91E0D] mb-3 flex items-center gap-2">
+        <div className="text-xs uppercase tracking-widest text-accent mb-3 flex items-center gap-2">
           <span className="relative flex h-2 w-2">
             <span className="absolute inline-flex h-full w-full rounded-full bg-[#ff8a3d] opacity-75 animate-ping" />
             <span className="relative inline-flex h-2 w-2 rounded-full bg-[#ff8a3d]" />

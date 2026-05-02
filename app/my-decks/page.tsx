@@ -77,7 +77,7 @@ export default async function MyDecksPage() {
   const savedDecks = (decks ?? []) as SavedDeck[];
 
   return (
-    <main className="mx-auto max-w-2xl px-6 pt-[calc(env(safe-area-inset-top)_+_1.68rem)] md:pt-[calc(env(safe-area-inset-top)_+_3rem)] pb-24">
+    <main className="mx-auto max-w-2xl px-6 pt-[calc(env(safe-area-inset-top)_+_1.75rem)] md:pt-[calc(env(safe-area-inset-top)_+_3rem)] pb-24">
       <div className="mb-8">
         <SectionHeader eyebrow="Your library" title="My Decks" />
       </div>
@@ -99,7 +99,7 @@ export default async function MyDecksPage() {
           </p>
           <Link
             href="/"
-            className="inline-flex items-center justify-center rounded-full bg-[linear-gradient(90deg,#F2A20C_0%,#D91E0D_50%,#A60D0D_100%)] px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-[#D91E0D]/30 hover:shadow-[#D91E0D]/50 transition"
+            className="inline-flex items-center justify-center rounded-full bg-gradient-brand px-4 py-2 text-sm font-semibold text-white shadow-brand hover:shadow-brand-lg transition"
           >
             Profile a deck
           </Link>

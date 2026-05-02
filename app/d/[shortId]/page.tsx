@@ -122,7 +122,7 @@ export default async function SharedDeckPage({
         </p>
         <Link
           href="/"
-          className="inline-flex items-center justify-center gap-2 mt-6 rounded-full bg-[linear-gradient(90deg,#F2A20C_0%,#D91E0D_50%,#A60D0D_100%)] px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-[#D91E0D]/30 hover:shadow-[#D91E0D]/50 transition"
+          className="inline-flex items-center justify-center gap-2 mt-6 rounded-full bg-gradient-brand px-6 py-3 text-sm font-semibold text-white shadow-brand hover:shadow-brand-lg transition"
         >
           Profile your own deck
         </Link>

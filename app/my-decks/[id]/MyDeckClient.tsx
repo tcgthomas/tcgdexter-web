@@ -262,8 +262,8 @@ export default function MyDeckClient({
               }`}
               style={{
                 backgroundImage: logOpen
-                  ? "linear-gradient(var(--accent), var(--accent)), linear-gradient(90deg, #F2A20C, #D91E0D, #A60D0D)"
-                  : "linear-gradient(var(--bg), var(--bg)), linear-gradient(90deg, #F2A20C, #D91E0D, #A60D0D)",
+                  ? "linear-gradient(var(--accent), var(--accent)), var(--gradient-brand)"
+                  : "linear-gradient(var(--bg), var(--bg)), var(--gradient-brand)",
                 backgroundOrigin: "border-box",
                 backgroundClip: "padding-box, border-box",
               }}
@@ -358,7 +358,7 @@ export default function MyDeckClient({
               role="dialog"
               aria-modal="true"
               aria-labelledby="delete-deck-title"
-              className="fixed inset-0 z-[120] flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm"
+              className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm"
               onClick={() => setConfirmingDelete(false)}
             >
               <div

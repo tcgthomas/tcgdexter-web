@@ -17,7 +17,7 @@ export default function SectionHeader({
   return (
     <div className={align === "center" ? "text-center" : ""}>
       {eyebrow && (
-        <div className="text-xs uppercase tracking-widest text-[#D91E0D] mb-3">
+        <div className="text-xs uppercase tracking-widest text-accent mb-3">
           {eyebrow}
         </div>
       )}

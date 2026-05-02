@@ -109,7 +109,7 @@ export default async function ProfilePage() {
               </div>
               <div className="h-2 rounded-full bg-black/5 overflow-hidden">
                 <div
-                  className="h-full rounded-full bg-[linear-gradient(90deg,#F2A20C_0%,#D91E0D_50%,#A60D0D_100%)] transition-all"
+                  className="h-full rounded-full bg-gradient-brand transition-all"
                   style={{
                     width: `${Math.min((highWaterMark / nextTier.threshold) * 100, 100)}%`,
                   }}
@@ -190,7 +190,7 @@ export default async function ProfilePage() {
                   </p>
                 </div>
                 {isCurrent && (
-                  <span className="flex-shrink-0 text-xs font-semibold uppercase tracking-wider text-[#D91E0D]">
+                  <span className="flex-shrink-0 text-xs font-semibold uppercase tracking-wider text-accent">
                     Current
                   </span>
                 )}
