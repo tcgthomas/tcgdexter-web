@@ -112,7 +112,7 @@ export default async function MetaDeckDetailPage({
 
   // preOverviewSlot: rank label sits above the Overview matrix
   const preOverviewSlot = (
-    <p className="text-xs font-semibold uppercase tracking-widest text-[#D91E0D]">
+    <p className="text-xs font-semibold uppercase tracking-widest text-accent">
       #{rank} in Standard
     </p>
   );
@@ -124,11 +124,11 @@ export default async function MetaDeckDetailPage({
       <div className="rounded-2xl border border-black/8 bg-white/90 backdrop-blur-xl shadow-sm px-5 py-4">
         <div className="grid grid-cols-4">
           <div className="text-center">
-            <p className="text-lg font-bold text-[#D91E0D]">{`${(arch.representation_pct * 100).toFixed(1)}%`}</p>
+            <p className="text-lg font-bold text-accent">{`${(arch.representation_pct * 100).toFixed(1)}%`}</p>
             <p className="text-xs text-text-muted mt-0.5">Meta Share</p>
           </div>
           <div className="text-center">
-            <p className="text-lg font-bold text-[#F2A20C]">{String(arch.top_cut_entries)}</p>
+            <p className="text-lg font-bold text-amber-500">{String(arch.top_cut_entries)}</p>
             <p className="text-xs text-text-muted mt-0.5">Top Cut</p>
           </div>
           <div className="text-center">
@@ -136,7 +136,7 @@ export default async function MetaDeckDetailPage({
             <p className="text-xs text-text-muted mt-0.5">Conversion</p>
           </div>
           <div className="text-center">
-            <p className={`text-lg font-bold ${winRate >= 0.55 ? "text-[#F2A20C]" : "text-text-secondary"}`}>{`${(winRate * 100).toFixed(0)}%`}</p>
+            <p className={`text-lg font-bold ${winRate >= 0.55 ? "text-amber-500" : "text-text-secondary"}`}>{`${(winRate * 100).toFixed(0)}%`}</p>
             <p className="text-xs text-text-muted mt-0.5">Win Rate</p>
           </div>
         </div>

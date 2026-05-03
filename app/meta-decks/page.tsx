@@ -51,7 +51,7 @@ export default function MetaDecksPage() {
               </span>
             </span>
             <svg
-              className="flex-shrink-0 w-4 h-4 text-text-muted group-hover:text-[#D91E0D] group-hover:translate-x-0.5 transition-all"
+              className="flex-shrink-0 w-4 h-4 text-text-muted group-hover:text-accent group-hover:translate-x-0.5 transition-all"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"

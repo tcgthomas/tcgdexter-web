@@ -98,12 +98,12 @@ function SignInForm() {
       </p>
 
       <div className="relative">
-        <div className="absolute -inset-px rounded-2xl bg-[linear-gradient(90deg,#F2A20C_0%,#D91E0D_50%,#A60D0D_100%)] opacity-20 blur-xl" />
-        <div className="relative rounded-2xl bg-white/90 backdrop-blur-xl border border-black/8 shadow-[0_20px_60px_-15px_rgba(217,30,13,0.2)] p-6">
+        <div className="absolute -inset-px rounded-2xl bg-gradient-brand opacity-20 blur-xl" />
+        <div className="relative rounded-2xl bg-white/90 backdrop-blur-xl border border-black/8 shadow-brand-lg p-6">
           {status === "sent" ? (
             <div className="text-center">
               <svg
-                className="w-10 h-10 mx-auto text-[#D91E0D] mb-3"
+                className="w-10 h-10 mx-auto text-accent mb-3"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -120,7 +120,7 @@ function SignInForm() {
                   setStatus("idle");
                   setEmail("");
                 }}
-                className="mt-4 text-xs text-[#D91E0D] hover:opacity-80 transition"
+                className="mt-4 text-xs text-accent hover:opacity-80 transition"
               >
                 Use a different email
               </button>

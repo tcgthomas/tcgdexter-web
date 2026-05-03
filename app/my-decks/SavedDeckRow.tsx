@@ -115,8 +115,8 @@ export default function SavedDeckRow({
               }`}
               style={{
                 backgroundImage: quicklogOpen
-                  ? "linear-gradient(var(--accent), var(--accent)), linear-gradient(90deg, #F2A20C, #D91E0D, #A60D0D)"
-                  : "linear-gradient(var(--bg), var(--bg)), linear-gradient(90deg, #F2A20C, #D91E0D, #A60D0D)",
+                  ? "linear-gradient(var(--accent), var(--accent)), var(--gradient-brand)"
+                  : "linear-gradient(var(--bg), var(--bg)), var(--gradient-brand)",
                 backgroundOrigin: "border-box",
                 backgroundClip: "padding-box, border-box",
               }}

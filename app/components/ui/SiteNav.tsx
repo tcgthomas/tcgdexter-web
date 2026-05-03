@@ -14,20 +14,22 @@ export default async function SiteNav() {
     data: { user },
   } = await supabase.auth.getUser();
 
-  const displayName = user
-    ? (
-        await supabase
-          .from("profiles")
-          .select("display_name")
-          .eq("id", user.id)
-          .single()
-      ).data?.display_name ?? null
-    : null;
+  let displayName: string | null = null;
+  let username: string | null = null;
+  if (user) {
+    const { data } = await supabase
+      .from("profiles")
+      .select("display_name, username")
+      .eq("id", user.id)
+      .single();
+    displayName = data?.display_name ?? null;
+    username = data?.username ?? null;
+  }
 
   return (
     <nav data-site-toolbar className="sticky top-0 z-30 backdrop-blur-xl bg-bg/70">
       <div className="mx-auto max-w-6xl px-6 h-14 flex items-center">
-        <MobileNavMenu isAuthed={!!user} displayName={displayName} />
+        <MobileNavMenu isAuthed={!!user} displayName={displayName} username={username} />
       </div>
     </nav>
   );

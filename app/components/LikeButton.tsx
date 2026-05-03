@@ -68,7 +68,7 @@ export default function LikeButton({
         aria-label={liked ? "Unlike deck" : "Like deck"}
         className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-semibold transition-all ${
           liked
-            ? "border-[#D91E0D] bg-[#D91E0D]/10 text-[#D91E0D]"
+            ? "border-accent bg-accent/10 text-accent"
             : "border-black/10 bg-white text-text-secondary hover:border-black/20"
         }`}
       >

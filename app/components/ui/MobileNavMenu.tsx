@@ -13,6 +13,8 @@ interface Props {
   isAuthed: boolean;
   /** User's display name from the profiles table; null for anon users. */
   displayName: string | null;
+  /** User's username handle; used to build the profile link. */
+  username: string | null;
 }
 
 /**
@@ -34,7 +36,7 @@ interface Props {
  * so there is zero layout shift on open or close. scrollLockedRef guards
  * against double-lock/unlock so unlockScroll() is safe from any code path.
  */
-export default function MobileNavMenu({ isAuthed, displayName }: Props) {
+export default function MobileNavMenu({ isAuthed, displayName, username }: Props) {
   const [isOpen, setIsOpen] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
 
@@ -197,7 +199,6 @@ export default function MobileNavMenu({ isAuthed, displayName }: Props) {
     { href: "/", label: "Create a Deck Profile" },
     { href: "/meta-decks", label: "Top 30 Meta Decks" },
     { href: "/leaderboard", label: "Leaderboard" },
-    { href: "/my-decks", label: "My Decks" },
   ];
 
   const EXTERNAL_LINKS = [
@@ -272,7 +273,11 @@ export default function MobileNavMenu({ isAuthed, displayName }: Props) {
             {/* Auth item — top of nav */}
             <li>
               {isAuthed ? (
-                <Link href="/profile" className={linkClass} onClick={closeMenu}>
+                <Link
+                  href={username ? `/u/${username}` : "/settings"}
+                  className={linkClass}
+                  onClick={closeMenu}
+                >
                   {displayName ?? "Profile"}
                 </Link>
               ) : (

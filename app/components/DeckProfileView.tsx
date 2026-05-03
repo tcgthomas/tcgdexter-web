@@ -174,7 +174,7 @@ function CollapsibleSection({
   title,
   children,
   badge,
-  cardClass = "rounded-xl bg-white backdrop-blur-sm",
+  cardClass = "rounded-2xl border border-black/8 bg-white/90 backdrop-blur-xl shadow-sm",
 }: {
   title: string;
   children: React.ReactNode;
@@ -302,8 +302,6 @@ interface Props {
    * Used by /meta-decks/[slug] to place the Scouting Note after the CTAs.
    */
   postCtaSlot?: React.ReactNode;
-  /** Visual theme. "experiments" adopts the new design-identity styling. */
-  theme?: "default" | "experiments";
   /**
    * Canonical share URL for this deck profile. When provided, ShareButton
    * uses it directly (skipping POST /api/deck-share) so all share/copy/QR
@@ -336,21 +334,13 @@ export default function DeckProfileView({
   topSlot,
   preOverviewSlot,
   postCtaSlot,
-  theme = "experiments",
   shareUrl,
 }: Props) {
   const result = analysis;
-  // Theme-aware class strings. Default preserves prod look verbatim;
-  // "experiments" adopts the new design-identity treatment.
-  const isExp = theme === "experiments";
-  const CARD_CLS = isExp
-    ? "rounded-2xl border border-black/8 bg-white/90 backdrop-blur-xl shadow-sm"
-    : "rounded-xl bg-white backdrop-blur-sm";
-  const TRACK_CLS = isExp ? "bg-black/5" : "bg-surface-2";
-  const SUBCARD_CLS = isExp
-    ? "border border-black/8 rounded-xl overflow-hidden"
-    : "border border-border rounded-xl overflow-hidden";
-  const SUBHEADER_CLS = isExp ? "bg-[#fafafa]" : "bg-surface-2";
+  const CARD_CLS = "rounded-2xl border border-black/8 bg-white/90 backdrop-blur-xl shadow-sm";
+  const TRACK_CLS = "bg-black/5";
+  const SUBCARD_CLS = "border border-black/8 rounded-xl overflow-hidden";
+  const SUBHEADER_CLS = "bg-[#fafafa]";
   const dateStr = new Date(profiledAt).toLocaleDateString("en-US", {
     month: "long",
     day: "numeric",
@@ -361,18 +351,13 @@ export default function DeckProfileView({
   const defaultFooterCta = (
     <Link
       href="/"
-      className={
-        isExp
-          ? "inline-flex items-center justify-center gap-2 rounded-full bg-[linear-gradient(90deg,#F2A20C_0%,#D91E0D_50%,#A60D0D_100%)] px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-[#D91E0D]/30 hover:shadow-[#D91E0D]/50 transition"
-          : "inline-flex items-center justify-center gap-2 rounded-full bg-accent px-6 py-3 text-sm font-semibold text-white transition-all hover:bg-accent-light"
-      }
+      className="inline-flex items-center justify-center gap-2 rounded-full bg-gradient-brand px-6 py-3 text-sm font-semibold text-white shadow-brand hover:shadow-brand-lg transition"
     >
       Profile your own deck
     </Link>
   );
 
-  const overviewNode = isExp ? (
-    (() => {
+  const overviewNode = (() => {
       const pokemonTypes = pokemonPrimaryTypes(
         buildTypesByName(result.cards),
       );
@@ -500,7 +485,7 @@ export default function DeckProfileView({
           <div className="flex items-baseline justify-between mb-5">
             <h2 className="text-lg font-semibold">Overview</h2>
             {result.deckSize !== 60 && (
-              <span className="text-sm font-mono tabular-nums text-[#D91E0D]">
+              <span className="text-sm font-mono tabular-nums text-accent">
                 {result.deckSize} / 60
               </span>
             )}
@@ -530,85 +515,14 @@ export default function DeckProfileView({
           </div>
         </div>
       );
-    })()
-  ) : (
-    <div className={`${CARD_CLS} p-5`}>
-      <div className="flex items-baseline justify-between mb-4">
-        <h2 className="text-lg font-semibold">Overview</h2>
-        <span className="text-xs text-text-muted">
-          {result.deckSize} cards
-        </span>
-      </div>
-      <div className={`flex h-1.5 rounded-full overflow-hidden ${TRACK_CLS} mb-4`}>
-        {result.sections.pokemon > 0 && (
-          <div
-            className="bg-blue-400 transition-all"
-            style={{
-              width: `${(result.sections.pokemon / result.deckSize) * 100}%`,
-            }}
-          />
-        )}
-        {result.sections.trainer > 0 && (
-          <div
-            className="bg-stone-400 transition-all"
-            style={{
-              width: `${(result.sections.trainer / result.deckSize) * 100}%`,
-            }}
-          />
-        )}
-        {result.sections.energy > 0 && (
-          <div
-            className="bg-yellow-400 transition-all"
-            style={{
-              width: `${(result.sections.energy / result.deckSize) * 100}%`,
-            }}
-          />
-        )}
-      </div>
-      <div className="grid grid-cols-3 divide-x divide-border">
-        <div className="pr-4">
-          <p className="text-xs text-text-muted uppercase tracking-wide mb-1">
-            Pok&eacute;mon
-          </p>
-          <p className="text-2xl font-bold text-text-primary">
-            {result.sections.pokemon}
-          </p>
-          <p className="text-xs text-text-muted mt-0.5">
-            {result.sections.pokemonRatio}
-          </p>
-        </div>
-        <div className="px-4">
-          <p className="text-xs text-text-muted uppercase tracking-wide mb-1">
-            Trainers
-          </p>
-          <p className="text-2xl font-bold text-text-primary">
-            {result.sections.trainer}
-          </p>
-          <p className="text-xs text-text-muted mt-0.5">
-            {result.sections.trainerRatio}
-          </p>
-        </div>
-        <div className="pl-4">
-          <p className="text-xs text-text-muted uppercase tracking-wide mb-1">
-            Energy
-          </p>
-          <p className="text-2xl font-bold text-text-primary">
-            {result.sections.energy}
-          </p>
-          <p className="text-xs text-text-muted mt-0.5">
-            {result.sections.energyRatio}
-          </p>
-        </div>
-      </div>
-    </div>
-  );
+    })();
 
   return (
     <div className="min-h-dvh flex flex-col bg-bg">
 
       {/* ── Header ─────────────────────────────────────────── */}
       <header
-        className={`flex-shrink-0 px-6 pt-[calc(env(safe-area-inset-top)_+_1.68rem)] md:pt-[calc(env(safe-area-inset-top)_+_3rem)] ${effectiveSubtitle ? "pb-8" : "pb-4"}`}
+        className={`flex-shrink-0 px-6 pt-[calc(env(safe-area-inset-top)_+_1.75rem)] md:pt-[calc(env(safe-area-inset-top)_+_3rem)] ${effectiveSubtitle ? "pb-8" : "pb-4"}`}
       >
         {variant === "shared" && (
           <div className="flex justify-center mb-4">
@@ -669,7 +583,7 @@ export default function DeckProfileView({
           {topSlot}
 
           {/* Estimated Deck Price */}
-          <DeckPriceModule deckPrice={result.deckPrice} theme={theme} />
+          <DeckPriceModule deckPrice={result.deckPrice} />
 
           {/* Save + Share buttons — layout depends on variant */}
           {variant === "saved" ? (
@@ -678,7 +592,7 @@ export default function DeckProfileView({
               deckList={deckList}
               analysis={result}
               shareUrl={shareUrl}
-              className="w-full inline-flex items-center justify-center gap-2 rounded-full bg-[linear-gradient(90deg,#F2A20C_0%,#D91E0D_50%,#A60D0D_100%)] px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-[#D91E0D]/30 hover:shadow-[#D91E0D]/50 transition disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full inline-flex items-center justify-center gap-2 rounded-full bg-gradient-brand px-5 py-2.5 text-sm font-semibold text-white shadow-brand hover:shadow-brand-lg transition disabled:opacity-50 disabled:cursor-not-allowed"
             />
           ) : (
             /* All other variants: Save (black) + Share side by side */
@@ -693,7 +607,7 @@ export default function DeckProfileView({
                 analysis={result}
                 shareUrl={shareUrl}
                 publishMode={variant === "fresh"}
-                className="flex-1 inline-flex items-center justify-center gap-2 rounded-full bg-[linear-gradient(90deg,#F2A20C_0%,#D91E0D_50%,#A60D0D_100%)] px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-[#D91E0D]/30 hover:shadow-[#D91E0D]/50 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex-1 inline-flex items-center justify-center gap-2 rounded-full bg-gradient-brand px-5 py-2.5 text-sm font-semibold text-white shadow-brand hover:shadow-brand-lg transition disabled:opacity-50 disabled:cursor-not-allowed"
               />
             </div>
           )}
@@ -704,11 +618,7 @@ export default function DeckProfileView({
           {/* Standard Format legality warning (only when not legal) */}
           {!result.rotation.ready && (
             <div
-              className={
-                isExp
-                  ? `${CARD_CLS} px-5 py-4`
-                  : "rounded-xl border border-amber-500/40 bg-amber-500/10 px-5 py-4"
-              }
+              className={`${CARD_CLS} px-5 py-4`}
             >
               <div className="flex items-center gap-3 mb-3">
                 <svg
@@ -742,11 +652,7 @@ export default function DeckProfileView({
                 {result.rotation.rotatingCards.map((c) => (
                   <span
                     key={c.name}
-                    className={
-                      isExp
-                        ? "inline-flex items-center gap-1 rounded-full border border-amber-500/30 bg-amber-500/[0.08] px-2.5 py-0.5 text-xs text-text-secondary"
-                        : "inline-flex items-center gap-1 rounded-full border border-amber-500/50 bg-amber-500/10 px-2.5 py-0.5 text-xs text-text-secondary"
-                    }
+                    className="inline-flex items-center gap-1 rounded-full border border-amber-500/30 bg-amber-500/[0.08] px-2.5 py-0.5 text-xs text-text-secondary"
                   >
                     <span className="font-semibold">{c.qty}</span>
                     <span>{c.name}</span>
@@ -760,19 +666,13 @@ export default function DeckProfileView({
               "things to fix" live together near the top. */}
           {result.warnings.length > 0 && (
             <div
-              className={
-                isExp
-                  ? `${CARD_CLS} p-5`
-                  : "rounded-xl border border-amber-600/30 bg-amber-50 p-4"
-              }
+              className={`${CARD_CLS} p-5`}
             >
               <h3
-                className={`text-sm font-semibold mb-2 flex items-center gap-2 ${
-                  isExp ? "text-text-primary" : "text-amber-800"
-                }`}
+                className="text-sm font-semibold mb-2 flex items-center gap-2 text-text-primary"
               >
                 <svg
-                  className={`w-4 h-4 ${isExp ? "text-amber-600" : ""}`}
+                  className="w-4 h-4 text-amber-600"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -790,7 +690,7 @@ export default function DeckProfileView({
                 {result.warnings.map((w, i) => (
                   <li
                     key={i}
-                    className={`text-sm ${isExp ? "text-text-secondary" : "text-amber-700"}`}
+                    className="text-sm text-text-secondary"
                   >
                     {w}
                   </li>
@@ -1076,18 +976,10 @@ export default function DeckProfileView({
           {/* Shop Matches */}
           {result.shopMatches.length > 0 && (
             <div
-              className={
-                isExp
-                  ? "rounded-2xl p-[1.5px] bg-[linear-gradient(90deg,#F2A20C_0%,#D91E0D_50%,#A60D0D_100%)] shadow-sm"
-                  : ""
-              }
+              className="rounded-2xl p-[1.5px] bg-gradient-brand shadow-sm"
             >
             <details
-              className={
-                isExp
-                  ? "rounded-[14.5px] bg-white/95 backdrop-blur-xl p-5 group"
-                  : "rounded-xl border border-[#d8b460]/40 bg-[#d8b460]/10 p-5 group"
-              }
+              className="rounded-[14.5px] bg-white/95 backdrop-blur-xl p-5 group"
             >
               <summary className="flex items-center justify-between cursor-pointer list-none [&::-webkit-details-marker]:hidden">
                 <div>
@@ -1138,11 +1030,7 @@ export default function DeckProfileView({
                         href={listing.listingUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className={
-                          isExp
-                            ? "flex-shrink-0 inline-flex items-center gap-1 rounded-full border border-black/10 bg-white px-3 py-1 text-xs font-semibold text-text-primary hover:border-[#D91E0D]/40 hover:text-[#D91E0D] transition-colors"
-                            : "flex-shrink-0 inline-flex items-center gap-1 rounded-full border border-[#d8b460]/50 bg-[#d8b460]/10 px-3 py-1 text-xs font-semibold text-[#d8b460] hover:bg-[#d8b460]/20 transition-colors"
-                        }
+                        className="flex-shrink-0 inline-flex items-center gap-1 rounded-full border border-black/10 bg-white px-3 py-1 text-xs font-semibold text-text-primary hover:border-accent/40 hover:text-accent transition-colors"
                       >
                         View
                         <svg

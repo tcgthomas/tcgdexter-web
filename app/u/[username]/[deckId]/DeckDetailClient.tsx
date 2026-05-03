@@ -5,11 +5,13 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import DeckProfileView, {
   type AnalysisResult,
+  type DeckCreator,
 } from "@/app/components/DeckProfileView";
 import QRCodeButton from "@/app/components/QRCodeButton";
 import CopyDeckListButton from "@/app/components/CopyDeckListButton";
-import MatchLog from "./MatchLog";
-import DeckNotes from "./DeckNotes";
+import LikeButton from "@/app/components/LikeButton";
+import MatchLog from "@/app/my-decks/[id]/MatchLog";
+import DeckNotes from "@/app/my-decks/[id]/DeckNotes";
 
 interface Match {
   id: string;
@@ -19,22 +21,6 @@ interface Match {
   opponent_deck_list: string | null;
   notes: string | null;
   played_at: string;
-}
-
-interface Props {
-  savedDeckId: string;
-  deckList: string;
-  analysis: AnalysisResult;
-  initialMatches: Match[];
-  initialNotes: string;
-  pageTitle: string;
-  profiledAt: string;
-  initialIsPublic: boolean;
-  /**
-   * Pre-built canonical /u/[username]/[deckId] URL. Only used when the deck
-   * is currently public; null when the owner hasn't set a username yet.
-   */
-  canonicalShareUrl: string | null;
 }
 
 interface ParsedCard {
@@ -86,27 +72,49 @@ function parseDeckList(raw: string): ParsedSection[] {
   return sections;
 }
 
-export default function MyDeckClient({
+interface Props {
+  isOwner: boolean;
+  username: string;
+  savedDeckId: string;
+  deckList: string;
+  analysis: AnalysisResult;
+  profiledAt: string;
+  pageTitle: string;
+  initialIsPublic: boolean;
+  canonicalShareUrl: string;
+  initialMatches: Match[];
+  initialNotes: string;
+  initialLiked: boolean;
+  initialLikeCount: number;
+  isAuthenticated: boolean;
+  creator: DeckCreator | null;
+}
+
+export default function DeckDetailClient({
+  isOwner,
+  username,
   savedDeckId,
   deckList,
   analysis,
-  initialMatches,
-  initialNotes,
-  pageTitle,
   profiledAt,
+  pageTitle,
   initialIsPublic,
   canonicalShareUrl,
+  initialMatches,
+  initialNotes,
+  initialLiked,
+  initialLikeCount,
+  isAuthenticated,
+  creator,
 }: Props) {
   const router = useRouter();
   const [logOpen, setLogOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [confirmingDelete, setConfirmingDelete] = useState(false);
 
-  // Public/private state
   const [isPublic, setIsPublic] = useState(initialIsPublic);
   const [visibilityBusy, setVisibilityBusy] = useState(false);
 
-  // Rename state
   const [deckName, setDeckName] = useState(pageTitle);
   const [editingTitle, setEditingTitle] = useState(false);
   const [titleInput, setTitleInput] = useState(pageTitle);
@@ -124,9 +132,7 @@ export default function MyDeckClient({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ is_public: next }),
       });
-      if (!res.ok) {
-        setIsPublic(!next);
-      }
+      if (!res.ok) setIsPublic(!next);
     } catch {
       setIsPublic(!next);
     } finally {
@@ -170,9 +176,7 @@ export default function MyDeckClient({
       const res = await fetch(`/api/saved-decks/${savedDeckId}`, {
         method: "DELETE",
       });
-      if (res.ok) {
-        router.push("/my-decks");
-      }
+      if (res.ok) router.push(`/u/${username}`);
     } catch {
       // silent — user can retry
     } finally {
@@ -180,10 +184,53 @@ export default function MyDeckClient({
     }
   }
 
-  // Pencil button shown inline after the title when not editing
+  const shareUrl = isOwner
+    ? isPublic
+      ? canonicalShareUrl
+      : undefined
+    : canonicalShareUrl;
+
+  // Visitor rendering
+  if (!isOwner) {
+    return (
+      <DeckProfileView
+        variant="shared"
+        deckList={deckList}
+        analysis={analysis}
+        profiledAt={profiledAt}
+        pageTitle={pageTitle}
+        creator={creator ?? undefined}
+        shareUrl={canonicalShareUrl}
+        preTitle={
+          <Link
+            href={`/u/${username}`}
+            className="text-xs font-semibold text-text-secondary hover:text-text-primary transition-colors underline-offset-2 hover:underline"
+          >
+            ← @{username}&apos;s decks
+          </Link>
+        }
+        subtitle={
+          <div className="flex items-center gap-2">
+            <LikeButton
+              deckId={savedDeckId}
+              initialLiked={initialLiked}
+              initialCount={initialLikeCount}
+              isAuthenticated={isAuthenticated}
+            />
+            <CopyDeckListButton deckList={deckList} />
+          </div>
+        }
+      />
+    );
+  }
+
+  // Owner rendering
   const titleAction = !editingTitle ? (
     <button
-      onClick={() => { setEditingTitle(true); setTitleInput(deckName); }}
+      onClick={() => {
+        setEditingTitle(true);
+        setTitleInput(deckName);
+      }}
       aria-label="Rename deck"
       className="flex-shrink-0 text-on-gradient opacity-50 hover:opacity-100 transition-opacity"
     >
@@ -203,8 +250,6 @@ export default function MyDeckClient({
     </button>
   ) : null;
 
-  // Rename form shown in the subtitle slot when editing.
-  // Pass `false` when not editing so DeckProfileView's "Created on" fallback is suppressed.
   const subtitle: React.ReactNode = editingTitle ? (
     <div className="flex flex-col gap-1.5 mt-1">
       <div className="flex items-center gap-2">
@@ -225,7 +270,11 @@ export default function MyDeckClient({
           {renameBusy ? "…" : "Save"}
         </button>
         <button
-          onClick={() => { setEditingTitle(false); setTitleInput(deckName); setRenameError(null); }}
+          onClick={() => {
+            setEditingTitle(false);
+            setTitleInput(deckName);
+            setRenameError(null);
+          }}
           disabled={renameBusy}
           className="rounded-full border border-border bg-bg px-3 py-1.5 text-xs font-semibold text-text-secondary hover:bg-surface-2 disabled:opacity-50"
         >
@@ -235,11 +284,6 @@ export default function MyDeckClient({
       {renameError && <p className="text-xs text-accent">{renameError}</p>}
     </div>
   ) : false;
-
-  // Surface the canonical share URL only when the deck is currently public.
-  // Private decks fall back to the /api/deck-share snapshot path so the
-  // owner can still QR/copy something without flipping public.
-  const shareUrl = isPublic && canonicalShareUrl ? canonicalShareUrl : undefined;
 
   return (
     <DeckProfileView
@@ -251,9 +295,16 @@ export default function MyDeckClient({
       titleAction={titleAction}
       subtitle={subtitle}
       shareUrl={shareUrl}
+      preTitle={
+        <Link
+          href={`/u/${username}`}
+          className="text-xs font-semibold text-text-secondary hover:text-text-primary transition-colors underline-offset-2 hover:underline"
+        >
+          ← @{username}&apos;s decks
+        </Link>
+      }
       preOverviewSlot={
         <>
-          {/* Action buttons */}
           <div className="flex items-center gap-2">
             <button
               onClick={() => setLogOpen((o) => !o)}
@@ -275,16 +326,11 @@ export default function MyDeckClient({
                 stroke="currentColor"
                 strokeWidth={2}
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M12 4.5v15m7.5-7.5h-15"
-                />
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
               </svg>
               Log Match
             </button>
             <QRCodeButton deckList={deckList} analysis={analysis} />
-            {/* Public / Private toggle */}
             <button
               type="button"
               onClick={toggleVisibility}
@@ -320,7 +366,6 @@ export default function MyDeckClient({
               </svg>
               {isPublic ? "Public" : "Private"}
             </button>
-            {/* Delete — icon-only, same visual weight as QR button */}
             <button
               type="button"
               onClick={() => setConfirmingDelete(true)}
@@ -371,9 +416,7 @@ export default function MyDeckClient({
                 >
                   Delete this deck?
                 </h2>
-                <p className="mt-2 text-sm text-text-secondary">
-                  This cannot be undone.
-                </p>
+                <p className="mt-2 text-sm text-text-secondary">This cannot be undone.</p>
                 <div className="mt-5 flex items-center justify-end gap-2">
                   <button
                     type="button"
@@ -400,12 +443,9 @@ export default function MyDeckClient({
         <>
           <DeckNotes savedDeckId={savedDeckId} initialNotes={initialNotes} />
 
-          {/* Deck list */}
           <div className="rounded-2xl border border-black/8 bg-white/90 backdrop-blur-xl shadow-sm p-5">
             <div className="flex items-center justify-between mb-3">
-              <h2 className="text-sm font-semibold text-text-primary">
-                Deck List
-              </h2>
+              <h2 className="text-sm font-semibold text-text-primary">Deck List</h2>
               <CopyDeckListButton deckList={deckList} iconOnly />
             </div>
             {parseDeckList(deckList).map((section) => (
@@ -418,7 +458,9 @@ export default function MyDeckClient({
                     <div key={i} className="flex items-baseline gap-2 text-sm">
                       <span className="text-text-muted w-5 text-right flex-shrink-0">×{c.qty}</span>
                       <span className="text-text-primary">{c.name}</span>
-                      <span className="text-text-muted text-xs">{c.setCode} {c.number}</span>
+                      <span className="text-text-muted text-xs">
+                        {c.setCode} {c.number}
+                      </span>
                     </div>
                   ))}
                 </div>
@@ -426,14 +468,6 @@ export default function MyDeckClient({
             ))}
           </div>
         </>
-      }
-      footerCta={
-        <Link
-          href="/my-decks"
-          className="inline-flex items-center justify-center gap-2 rounded-full border border-border bg-bg px-6 py-3 text-sm font-semibold text-text-primary transition-all hover:bg-surface-2"
-        >
-          Back to My Decks
-        </Link>
       }
     />
   );

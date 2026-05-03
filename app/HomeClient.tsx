@@ -135,7 +135,7 @@ export default function HomeClient({
         <h1 className="text-3xl md:text-7xl font-semibold tracking-tight leading-[1.02] max-w-4xl mx-auto">
           The deckbuilder&apos;s
           <br />
-          <span className="bg-[linear-gradient(90deg,#F2A20C_0%,#D91E0D_50%,#A60D0D_100%)] bg-clip-text text-transparent">
+          <span className="bg-gradient-brand bg-clip-text text-transparent">
             dex for Pokémon TCG.
           </span>
         </h1>
@@ -149,8 +149,8 @@ export default function HomeClient({
         <div className="mt-12 max-w-3xl mx-auto">
           <div className="relative group">
             {/* Gradient glow */}
-            <div className="absolute -inset-px rounded-2xl bg-[linear-gradient(90deg,#F2A20C_0%,#D91E0D_50%,#A60D0D_100%)] opacity-30 group-focus-within:opacity-70 blur-xl transition-opacity" />
-            <div className="relative rounded-2xl bg-white/90 backdrop-blur-xl border border-black/5 p-2 shadow-[0_20px_60px_-15px_rgba(217,30,13,0.3)]">
+            <div className="absolute -inset-px rounded-2xl bg-gradient-brand opacity-30 group-focus-within:opacity-70 blur-xl transition-opacity" />
+            <div className="relative rounded-2xl bg-white/90 backdrop-blur-xl border border-black/5 p-2 shadow-brand-lg">
               <div className="flex items-center justify-between px-3 pt-2 pb-1.5">
                 <span className="text-xs font-semibold text-text-primary">Deck List</span>
                 <button
@@ -224,7 +224,7 @@ export default function HomeClient({
           <section className="mx-auto max-w-6xl px-6 py-6">
             <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-8">
               <div>
-                <div className="text-xs uppercase tracking-widest text-[#D91E0D] mb-3 flex items-center gap-2">
+                <div className="text-xs uppercase tracking-widest text-accent mb-3 flex items-center gap-2">
                   <span className="relative flex h-2 w-2">
                     <span className="absolute inline-flex h-full w-full rounded-full bg-[#ff8a3d] opacity-75 animate-ping" />
                     <span className="relative inline-flex h-2 w-2 rounded-full bg-[#ff8a3d]" />
@@ -288,7 +288,7 @@ export default function HomeClient({
           {/* Top Trainers + Search */}
           <section className="mx-auto max-w-2xl px-6 pb-24">
             <div className="mb-6">
-              <div className="text-xs uppercase tracking-widest text-[#D91E0D] mb-3 flex items-center gap-2">
+              <div className="text-xs uppercase tracking-widest text-accent mb-3 flex items-center gap-2">
                 <span className="relative flex h-2 w-2">
                   <span className="absolute inline-flex h-full w-full rounded-full bg-[#ff8a3d] opacity-75 animate-ping" />
                   <span className="relative inline-flex h-2 w-2 rounded-full bg-[#ff8a3d]" />
@@ -338,7 +338,7 @@ export default function HomeClient({
           {/* Final CTA */}
           <section className="mx-auto max-w-5xl px-6 pb-32">
             <div className="relative rounded-3xl overflow-hidden border border-black/8 shadow-xl">
-              <div className="absolute inset-0 bg-[linear-gradient(90deg,#F2A20C_0%,#D91E0D_50%,#A60D0D_100%)] opacity-20" />
+              <div className="absolute inset-0 bg-gradient-brand opacity-20" />
               <div className="relative p-12 md:p-20 text-center">
                 <h2 className="text-4xl md:text-6xl font-semibold tracking-tight leading-[1.05] max-w-3xl mx-auto text-text-primary">
                   Ready to see what your deck is really made of?

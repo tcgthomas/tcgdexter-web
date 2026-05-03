@@ -99,7 +99,7 @@ export default function QRCodeButton({ shareUrl, deckList, analysis }: Props) {
         onClick={handleOpen}
         disabled={loading}
         title="Share via QR code"
-        className="inline-flex items-center gap-1.5 rounded-full border border-transparent bg-[linear-gradient(90deg,#F2A20C_0%,#D91E0D_50%,#A60D0D_100%)] bg-origin-border px-3 py-1.5 text-xs font-semibold text-white shadow-lg shadow-[#D91E0D]/30 hover:shadow-[#D91E0D]/50 transition disabled:opacity-50"
+        className="inline-flex items-center gap-1.5 rounded-full border border-transparent bg-gradient-brand bg-origin-border px-3 py-1.5 text-xs font-semibold text-white shadow-brand hover:shadow-brand-lg transition disabled:opacity-50"
       >
         {loading ? (
           <>
@@ -158,7 +158,7 @@ export default function QRCodeButton({ shareUrl, deckList, analysis }: Props) {
           onClick={() => setOpen(false)}
         >
           <div
-            className="w-full max-w-sm rounded-2xl bg-white/90 backdrop-blur-xl border border-black/5 p-6 shadow-[0_20px_60px_-15px_rgba(217,30,13,0.3)]"
+            className="w-full max-w-sm rounded-2xl bg-white/90 backdrop-blur-xl border border-black/5 p-6 shadow-brand-lg"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header */}
@@ -191,7 +191,7 @@ export default function QRCodeButton({ shareUrl, deckList, analysis }: Props) {
             <div className="flex justify-center mb-5">
               <div className="relative">
                 {/* Gradient glow */}
-                <div className="absolute -inset-px rounded-xl bg-[linear-gradient(90deg,#F2A20C_0%,#D91E0D_50%,#A60D0D_100%)] opacity-60 blur-xl pointer-events-none" />
+                <div className="absolute -inset-px rounded-xl bg-gradient-brand opacity-60 blur-xl pointer-events-none" />
                 <div className="relative rounded-xl border border-black/5 bg-white p-3">
                   {qrSrc && (
                     // eslint-disable-next-line @next/next/no-img-element
