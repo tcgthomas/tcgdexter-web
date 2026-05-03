@@ -1,7 +1,6 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
-import EditAvatar from "@/app/profile/EditAvatar";
 import EditDisplayName from "@/app/profile/EditDisplayName";
 import EditUsername from "@/app/profile/EditUsername";
 import EditBio from "@/app/profile/EditBio";
@@ -17,7 +16,7 @@ export default async function SettingsPage() {
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("display_name, username, avatar_url, bio, is_public, created_at")
+    .select("display_name, username, bio, is_public, created_at")
     .eq("id", user.id)
     .single();
 
@@ -56,10 +55,6 @@ export default async function SettingsPage() {
           Account
         </p>
         <div className="rounded-2xl border border-black/8 bg-white/90 backdrop-blur-xl shadow-sm overflow-hidden">
-          <EditAvatar
-            initialAvatarUrl={profile?.avatar_url ?? null}
-            displayName={profile?.display_name ?? ""}
-          />
           <EditDisplayName
             initialName={profile?.display_name ?? "—"}
             joinedDate={joinedDate}

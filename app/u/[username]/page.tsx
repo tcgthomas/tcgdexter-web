@@ -9,7 +9,6 @@ interface ProfileRow {
   id: string;
   display_name: string;
   username: string;
-  avatar_url: string | null;
   bio: string | null;
   trainer_title: string | null;
   created_at: string;
@@ -70,7 +69,7 @@ export default async function ProfilePage({
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("id, display_name, username, avatar_url, bio, trainer_title, created_at, is_public")
+    .select("id, display_name, username, bio, trainer_title, created_at, is_public")
     .eq("username", username.toLowerCase())
     .maybeSingle();
   if (!profile) notFound();
@@ -132,18 +131,12 @@ export default async function ProfilePage({
       <div className="rounded-2xl border border-black/8 bg-white/90 backdrop-blur-xl shadow-sm p-5 mb-6">
         <div className="flex items-start gap-4">
           <div className="flex-shrink-0">
-            {profile.avatar_url ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={profile.avatar_url}
-                alt={profile.display_name}
-                className="w-14 h-14 rounded-full object-cover border border-black/10"
-              />
-            ) : (
-              <div className="w-14 h-14 rounded-full bg-surface flex items-center justify-center text-xl font-bold text-text-secondary border border-black/10">
-                {profile.display_name.trim().charAt(0).toUpperCase()}
-              </div>
-            )}
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={`/badges/${tier.slug}.svg`}
+              alt={tier.title}
+              className="w-14 h-14"
+            />
           </div>
 
           <div className="flex-1 min-w-0">
