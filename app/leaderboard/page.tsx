@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { getTierByTitle } from "@/lib/trainer-tiers";
-import TrainerSearch from "./TrainerSearch";
+import UnifiedSearch from "./UnifiedSearch";
 
 export const revalidate = 300; // 5-minute cache
 
@@ -128,6 +128,9 @@ export default async function LeaderboardPage() {
         <p className="mt-3 text-base text-text-secondary max-w-lg">
           Ranked by total deck likes. Find established players and browse their public collections.
         </p>
+        <div className="mt-6">
+          <UnifiedSearch />
+        </div>
       </div>
 
       {/* Top 3 list */}
@@ -165,15 +168,6 @@ export default async function LeaderboardPage() {
           <p className="text-sm">No public decks yet. Be the first to share yours!</p>
         </div>
       )}
-
-      {/* Find a trainer */}
-      <div className="flex items-center gap-4 mb-8">
-        <div className="flex-1 h-px bg-black/10" />
-        <span className="text-sm font-semibold text-text-muted">Find a trainer</span>
-        <div className="flex-1 h-px bg-black/10" />
-      </div>
-
-      <TrainerSearch />
 
       {/* Top Decks */}
       {topDecks.length > 0 && (
