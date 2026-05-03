@@ -78,7 +78,7 @@ export default async function LeaderboardPage() {
           </span>
           Live leaderboard
         </div>
-        <h1 className="text-4xl md:text-5xl font-semibold tracking-tight leading-tight">Top Trainers.</h1>
+        <h1 className="text-4xl md:text-5xl font-semibold tracking-tight leading-tight">Top Trainers</h1>
         <p className="mt-3 text-base text-text-secondary max-w-lg">
           Ranked by total deck likes. Find established players and browse their public collections.
         </p>
