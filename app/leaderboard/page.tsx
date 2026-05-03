@@ -145,6 +145,8 @@ export default async function LeaderboardPage() {
                 className="flex items-center gap-3 px-5 py-4 hover:bg-black/[0.02] transition border-b border-black/5 last:border-b-0"
               >
                 <span className="text-xl w-7 flex-shrink-0">{rankMedal[i]}</span>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={`/badges/${tier.slug}.svg`} alt={tier.title} className="w-8 h-8 flex-shrink-0" />
                 <div className="min-w-0 flex-1">
                   <div className="text-sm font-semibold text-text-primary truncate">{trainer.display_name}</div>
                 </div>
