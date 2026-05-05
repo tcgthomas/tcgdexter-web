@@ -16,20 +16,27 @@ export default async function SiteNav() {
 
   let displayName: string | null = null;
   let username: string | null = null;
+  let isAdmin = false;
   if (user) {
     const { data } = await supabase
       .from("profiles")
-      .select("display_name, username")
+      .select("display_name, username, is_admin")
       .eq("id", user.id)
       .single();
     displayName = data?.display_name ?? null;
     username = data?.username ?? null;
+    isAdmin = data?.is_admin ?? false;
   }
 
   return (
     <nav data-site-toolbar className="sticky top-0 z-30 backdrop-blur-xl bg-bg/70">
       <div className="mx-auto max-w-6xl px-6 h-14 flex items-center">
-        <MobileNavMenu isAuthed={!!user} displayName={displayName} username={username} />
+        <MobileNavMenu
+          isAuthed={!!user}
+          displayName={displayName}
+          username={username}
+          isAdmin={isAdmin}
+        />
       </div>
     </nav>
   );

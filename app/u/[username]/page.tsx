@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { getTierByTitle } from "@/lib/trainer-tiers";
 import MatchHeatMap from "@/app/profile/MatchHeatMap";
+import { deckResult, viewerResult, type SharedMatchCore } from "@/lib/shared-matches";
 
 interface ProfileRow {
   id: string;
@@ -96,16 +97,30 @@ export default async function ProfilePage({
         .order("updated_at", { ascending: false });
   const decks = (decksRaw ?? []) as DeckRow[];
 
-  let matchStats: MatchRow[] = [];
+  let manualMatches: MatchRow[] = [];
   if (isOwner) {
     const { data: matches } = await supabase
       .from("matches")
       .select("saved_deck_id, result, played_at, created_at");
-    matchStats = (matches ?? []) as MatchRow[];
+    manualMatches = (matches ?? []) as MatchRow[];
   }
 
+  // Verified shared matches involving this user, finalized only.
+  // Public to all viewers; we count both creator-side and opponent-side.
+  const { data: sharedRaw } = await supabase
+    .from("shared_matches")
+    .select(
+      `id, creator_user_id, opponent_user_id, creator_decklist_id, opponent_decklist_id,
+       creator_result, opponent_result, status, final_outcome, final_winner_user_id,
+       judge_ruled, finalized_at`
+    )
+    .eq("status", "finalized")
+    .or(`creator_user_id.eq.${profile.id},opponent_user_id.eq.${profile.id}`);
+  const sharedMatches = (sharedRaw ?? []) as SharedMatchCore[];
+
+  // Per-deck W-L: manual (owner only) + verified (everyone)
   const deckWL = new Map<string, { w: number; l: number; d: number }>();
-  for (const m of matchStats) {
+  for (const m of manualMatches) {
     if (!m.saved_deck_id) continue;
     const prev = deckWL.get(m.saved_deck_id) ?? { w: 0, l: 0, d: 0 };
     if (m.result === "win") prev.w++;
@@ -113,11 +128,58 @@ export default async function ProfilePage({
     else if (m.result === "draw") prev.d++;
     deckWL.set(m.saved_deck_id, prev);
   }
+  for (const sm of sharedMatches) {
+    // Identify which deck belongs to this profile and bump its W-L bucket.
+    const deckId =
+      sm.creator_user_id === profile.id
+        ? sm.creator_decklist_id
+        : sm.opponent_decklist_id;
+    if (!deckId) continue;
+    const r = deckResult(sm, deckId);
+    if (!r) continue;
+    const prev = deckWL.get(deckId) ?? { w: 0, l: 0, d: 0 };
+    if (r === "win") prev.w++;
+    else if (r === "loss") prev.l++;
+    else prev.d++;
+    deckWL.set(deckId, prev);
+  }
 
-  const globalWins = matchStats.filter((m) => m.result === "win").length;
-  const globalLosses = matchStats.filter((m) => m.result === "loss").length;
-  const globalDraws = matchStats.filter((m) => m.result === "draw").length;
+  // Global W-L: manual (owner only) + verified (public)
+  const verifiedWins = sharedMatches.filter(
+    (m) => viewerResult(m, profile.id) === "win"
+  ).length;
+  const verifiedLosses = sharedMatches.filter(
+    (m) => viewerResult(m, profile.id) === "loss"
+  ).length;
+  const verifiedDraws = sharedMatches.filter(
+    (m) => viewerResult(m, profile.id) === "draw"
+  ).length;
+
+  const manualWins = manualMatches.filter((m) => m.result === "win").length;
+  const manualLosses = manualMatches.filter((m) => m.result === "loss").length;
+  const manualDraws = manualMatches.filter((m) => m.result === "draw").length;
+
+  const globalWins = (isOwner ? manualWins : 0) + verifiedWins;
+  const globalLosses = (isOwner ? manualLosses : 0) + verifiedLosses;
+  const globalDraws = (isOwner ? manualDraws : 0) + verifiedDraws;
   const globalTotal = globalWins + globalLosses + globalDraws;
+
+  // Heatmap dates: manual played_at + verified finalized_at (owner only)
+  const heatmapMatches: MatchRow[] = isOwner
+    ? [
+        ...manualMatches,
+        ...sharedMatches.map<MatchRow>((m) => ({
+          saved_deck_id:
+            m.creator_user_id === profile.id
+              ? m.creator_decklist_id
+              : m.opponent_decklist_id,
+          result:
+            viewerResult(m, profile.id) ?? "draw",
+          played_at: m.finalized_at ?? null,
+          created_at: m.finalized_at ?? new Date().toISOString(),
+        })),
+      ]
+    : [];
 
   const tier = getTierByTitle(profile.trainer_title ?? "Rookie Trainer");
   const joinedDate = new Date(profile.created_at).toLocaleDateString("en-US", {
@@ -211,9 +273,9 @@ export default async function ProfilePage({
         </div>
       </div>
 
-      {/* Match heatmap — only for owner (match data is private) */}
-      {isOwner && matchStats.length > 0 && (
-        <MatchHeatMap matches={matchStats} />
+      {/* Match heatmap — only for owner (manual match data is private) */}
+      {isOwner && heatmapMatches.length > 0 && (
+        <MatchHeatMap matches={heatmapMatches} />
       )}
 
       {/* Deck feed */}
@@ -273,7 +335,7 @@ export default async function ProfilePage({
                           <span>Standard</span>
                         </>
                       )}
-                      {isOwner && wl && wl.w + wl.l + wl.d > 0 && (
+                      {wl && wl.w + wl.l + wl.d > 0 && (
                         <>
                           <span>·</span>
                           <span className="font-semibold text-emerald-700">{wl.w}W</span>

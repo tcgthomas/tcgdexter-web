@@ -15,6 +15,8 @@ interface Props {
   displayName: string | null;
   /** User's username handle; used to build the profile link. */
   username: string | null;
+  /** Whether the user has admin/judge privileges. */
+  isAdmin?: boolean;
 }
 
 /**
@@ -36,7 +38,7 @@ interface Props {
  * so there is zero layout shift on open or close. scrollLockedRef guards
  * against double-lock/unlock so unlockScroll() is safe from any code path.
  */
-export default function MobileNavMenu({ isAuthed, displayName, username }: Props) {
+export default function MobileNavMenu({ isAuthed, displayName, username, isAdmin }: Props) {
   const [isOpen, setIsOpen] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
 
@@ -199,6 +201,13 @@ export default function MobileNavMenu({ isAuthed, displayName, username }: Props
     { href: "/", label: "Create a Deck Profile" },
     { href: "/meta-decks", label: "Top 30 Meta Decks" },
     { href: "/leaderboard", label: "Leaderboard" },
+    ...(isAuthed
+      ? [
+          { href: "/matches/new", label: "Start a Match" },
+          { href: "/matches/join", label: "Join a Match" },
+        ]
+      : []),
+    ...(isAdmin ? [{ href: "/admin/matches/disputes", label: "Match Disputes" }] : []),
   ];
 
   const EXTERNAL_LINKS = [
