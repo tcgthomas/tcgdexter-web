@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { redirect } from "next/navigation";
+import { redirect, notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { createClient } from "@/lib/supabase/server";
 
@@ -8,6 +8,11 @@ export const metadata: Metadata = {
 };
 
 export default async function DisputesQueuePage() {
+  notFound();
+}
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+async function _DisputesQueuePageImpl() {
   const supabase = await createClient();
 
   const {

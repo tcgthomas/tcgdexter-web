@@ -1,4 +1,4 @@
-import { redirect } from "next/navigation";
+import { redirect, notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { createClient } from "@/lib/supabase/server";
 import JoinCodeForm, { type JoinDeck } from "./JoinCodeForm";
@@ -9,6 +9,11 @@ export const metadata: Metadata = {
 };
 
 export default async function JoinMatchPage() {
+  notFound();
+}
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+async function _JoinMatchPageImpl() {
   const supabase = await createClient();
 
   const {

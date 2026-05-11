@@ -201,13 +201,6 @@ export default function MobileNavMenu({ isAuthed, displayName, username, isAdmin
     { href: "/", label: "Create a Deck Profile" },
     { href: "/meta-decks", label: "Top 30 Meta Decks" },
     { href: "/leaderboard", label: "Leaderboard" },
-    ...(isAuthed
-      ? [
-          { href: "/matches/new", label: "Start a Match" },
-          { href: "/matches/join", label: "Join a Match" },
-        ]
-      : []),
-    ...(isAdmin ? [{ href: "/admin/matches/disputes", label: "Match Disputes" }] : []),
   ];
 
   const EXTERNAL_LINKS = [
