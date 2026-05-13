@@ -15,19 +15,19 @@ interface Props {
 }
 
 /**
- * Persistent left sidebar — desktop / landscape-tablet only.
+ * Leading-edge (left) sidebar — desktop / landscape-tablet only.
  *
- * Rendered alongside the mobile top toolbar by SiteNav. Visibility is purely
- * a Tailwind responsive concern: the sidebar is `hidden lg:flex` and the
- * mobile toolbar is `lg:hidden`, so there's never a moment where both
- * occupy the viewport.
+ * Paired with SiteSidebarRight, which carries the external links. Both rails
+ * are `hidden lg:flex`; the mobile toolbar is `lg:hidden`, so the three
+ * surfaces never overlap. Root layout reserves space with `lg:pl-64
+ * lg:pr-64` on the page wrapper.
  *
- * Layout contract: the root layout adds `lg:pl-64` to the page wrapper so
- * page content (and footer) shift right of the sidebar. The sidebar itself
- * is fixed-positioned, so it does not participate in document flow.
+ * Contents: centered logo, then auth item, then internal app routes.
+ * No horizontal dividers — visual grouping is carried by the vertical
+ * border alone.
  *
- * Link sections mirror MobileNavMenu exactly — keep them in sync when nav
- * items change.
+ * Keep the internal link list in sync with MobileNavMenu when nav items
+ * change.
  */
 export default function SiteSidebar({
   isAuthed,
@@ -43,16 +43,8 @@ export default function SiteSidebar({
     { href: "/learn", label: "Learn to Play" },
   ];
 
-  const EXTERNAL_LINKS = [
-    { href: "https://tcgdexter.beehiiv.com/", label: "TCG News" },
-    { href: "https://discord.gg/G3VfEzfmJF", label: "Discord" },
-    { href: "https://www.tiktok.com/@tcgdexter", label: "TikTok" },
-    { href: "https://www.ebay.com/usr/tcgdexter", label: "Card Shop" },
-  ];
-
-  // Match against pathname for the active-link indicator. "/" gets exact
-  // match so it doesn't light up on every page; other internals match by
-  // prefix so nested routes (e.g. /meta-decks/[slug]) still highlight.
+  // "/" gets exact match so it doesn't light up on every page; others match
+  // by prefix so nested routes (e.g. /meta-decks/[slug]) still highlight.
   const isActive = (href: string) =>
     href === "/" ? pathname === "/" : pathname === href || pathname.startsWith(`${href}/`);
 
@@ -63,12 +55,13 @@ export default function SiteSidebar({
 
   return (
     <aside
-      aria-label="Site navigation"
+      aria-label="Primary navigation"
       className="hidden lg:flex fixed inset-y-0 left-0 z-30 w-64 flex-col bg-bg border-r border-[var(--border)]"
     >
-      {/* Brand mark — matches the 14-unit toolbar height on mobile for
-          visual continuity, with extra breathing room beneath. */}
-      <div className="flex-shrink-0 h-14 px-5 flex items-center">
+      {/* Brand mark — centered. Height matches the mobile toolbar (h-14)
+          for visual continuity, with extra breathing room beneath via the
+          nav's pt-4. */}
+      <div className="flex-shrink-0 h-14 px-5 flex items-center justify-center">
         <Link href="/" aria-label="TCG Dexter — home" className="inline-flex">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
@@ -103,8 +96,6 @@ export default function SiteSidebar({
             )}
           </li>
 
-          <li role="separator" className="my-3 border-t border-[var(--border)]" />
-
           {INTERNAL_LINKS.map(({ href, label }) => (
             <li key={href}>
               <Link
@@ -113,21 +104,6 @@ export default function SiteSidebar({
               >
                 {label}
               </Link>
-            </li>
-          ))}
-
-          <li role="separator" className="my-3 border-t border-[var(--border)]" />
-
-          {EXTERNAL_LINKS.map(({ href, label }) => (
-            <li key={href}>
-              <a
-                href={href}
-                target="_blank"
-                rel="noopener noreferrer"
-                className={`${linkBase} ${linkInactive}`}
-              >
-                {label}
-              </a>
             </li>
           ))}
         </ul>

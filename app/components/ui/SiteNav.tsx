@@ -1,20 +1,21 @@
 import { createClient } from "@/lib/supabase/server";
 import MobileNavMenu from "./MobileNavMenu";
 import SiteSidebar from "./SiteSidebar";
+import SiteSidebarRight from "./SiteSidebarRight";
 
 /**
  * Site chrome rendered by the root layout on every page.
  *
  * Auth-aware (server component): fetches the user + display name once and
- * passes the payload to both the mobile toolbar (hamburger + full-screen
- * panel) and the desktop sidebar. Responsive visibility is handled by the
- * children:
+ * passes the payload to the mobile toolbar and the leading-edge sidebar.
+ * The trailing-edge sidebar carries only external links and needs no auth
+ * context. Responsive visibility is handled by the children:
  *   - MobileNavMenu lives inside a `lg:hidden` toolbar → hidden on lg+.
- *   - SiteSidebar is `hidden lg:flex` → hidden below lg.
+ *   - SiteSidebar + SiteSidebarRight are `hidden lg:flex` → hidden below lg.
  *
- * Mobile nav UI is intentionally unchanged. The desktop sidebar is the
- * only addition; root layout pairs it with `lg:pl-64` on the page wrapper
- * so content shifts right of the rail.
+ * Mobile nav UI is intentionally unchanged. Root layout pairs the dual
+ * rails with `lg:pl-64 lg:pr-64` on the page wrapper so content sits
+ * between them.
  */
 export default async function SiteNav() {
   const supabase = await createClient();
@@ -53,13 +54,14 @@ export default async function SiteNav() {
         </div>
       </nav>
 
-      {/* Desktop / landscape-tablet: persistent left sidebar. */}
+      {/* Desktop / landscape-tablet: persistent dual sidebars. */}
       <SiteSidebar
         isAuthed={!!user}
         displayName={displayName}
         username={username}
         isAdmin={isAdmin}
       />
+      <SiteSidebarRight />
     </>
   );
 }
