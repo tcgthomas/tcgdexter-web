@@ -345,7 +345,6 @@ export default function DeckDetailClient({
               </svg>
               Log Match
             </button>
-            <QRCodeButton deckList={deckList} analysis={analysis} />
             <button
               type="button"
               onClick={toggleVisibility}
@@ -381,6 +380,7 @@ export default function DeckDetailClient({
               </svg>
               {isPublic ? "Public" : "Private"}
             </button>
+            <QRCodeButton deckList={deckList} analysis={analysis} />
             <button
               type="button"
               onClick={() => setConfirmingDelete(true)}
