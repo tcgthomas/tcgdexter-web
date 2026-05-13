@@ -65,10 +65,6 @@ export default function CertifiedTrainerBadge({
         strokeLinecap="round"
         strokeLinejoin="round"
       />
-
-      {/* Ribbon notches at the bottom */}
-      <path d="M30 96 L40 86 L46 96 Z" fill="#7A0808" />
-      <path d="M66 96 L72 86 L82 96 Z" fill="#7A0808" />
     </svg>
   );
 }
