@@ -110,14 +110,14 @@ export const QUESTIONS: QuizQuestion[] = [
     id: 10,
     sourceLesson: "knockouts-prize-trading",
     prompt:
-      "Why is it often worth knocking out a benched support Pokémon like Pidgeot ex, even for only 1 prize?",
+      "When your opponent's Active is knocked out, what happens if they have no Pokémon on the Bench to promote?",
     options: [
-      "It draws extra cards for you",
-      "It doubles damage to other Pokémon",
-      "Its Ability stops working once it's knocked out",
-      "It gives a bonus prize card",
+      "The game continues with their next draw",
+      "You win the game immediately",
+      "A coin flip decides the next Active",
+      "You take a bonus prize card but the match continues",
     ],
-    answerIndex: 2,
+    answerIndex: 1,
   },
 ];
 
