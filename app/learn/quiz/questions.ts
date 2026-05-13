@@ -52,7 +52,7 @@ export const QUESTIONS: QuizQuestion[] = [
     id: 4,
     sourceLesson: "anatomy-pokemon-card",
     prompt: "Which kind of Pokémon can you play directly from your hand to the Bench?",
-    options: ["Stage 1", "Stage 2", "Basic"],
+    options: ["Stage 1", "Stage 2", "Basic", "Any Evolution may be played"],
     answerIndex: 2,
   },
   {
