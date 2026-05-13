@@ -100,7 +100,7 @@ export default function QRCodeButton({ shareUrl, deckList, analysis }: Props) {
         disabled={loading}
         title="Share via QR code"
         className="inline-flex items-center gap-1.5 rounded-full border border-transparent px-3 py-1.5 text-xs font-semibold text-white shadow-brand hover:shadow-brand-lg transition disabled:opacity-50"
-        style={{ background: "linear-gradient(90deg, #A60D0D 0%, #D91E0D 50%, #F2A20C 100%)" }}
+        style={{ background: "radial-gradient(circle at 30% 50%, #F2A20C 0%, #D91E0D 50%, #A60D0D 100%)" }}
       >
         {loading ? (
           <>
