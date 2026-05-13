@@ -257,7 +257,7 @@ export default async function LessonPage({
               </Link>
               <Link
                 href={nextHref}
-                className="inline-flex items-center justify-center gap-2 rounded-full bg-accent px-5 py-2.5 text-sm font-semibold text-white transition-all hover:bg-accent-light"
+                className="inline-flex items-center justify-center gap-2 rounded-full bg-gradient-brand px-5 py-2.5 text-sm font-semibold text-white shadow-brand hover:shadow-brand-lg transition"
               >
                 {nextLabel}
                 <svg
