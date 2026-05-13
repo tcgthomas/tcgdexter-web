@@ -1,0 +1,71 @@
+---
+slug: reading-a-deck-list
+title: Reading a deck list
+module: basics
+moduleTitle: The Basics
+order: 8
+estimatedMinutes: 3
+---
+
+# Reading a deck list
+
+Every competitive Pokémon TCG community shares decks the same way — a plain text list, one card per line, with a count, a name, a set abbreviation, and a collector number. Once you can read this format, you can read every deck on Reddit, every tournament report, every share link.
+
+## The basic format
+
+Each line looks like this:
+
+```
+4 Charizard ex OBF 125
+```
+
+That's: **quantity** + **card name** + **set code** + **collector number**.
+
+- **4** — how many copies are in the deck
+- **Charizard ex** — the card name
+- **OBF** — the set abbreviation (Obsidian Flames, in this case)
+- **125** — the card's number in that set
+
+The set code and number are there because some cards have been printed in multiple sets. Specifying which version helps tournament software (and Dexter) know exactly which printing you mean.
+
+## Sections
+
+A full deck list usually has three sections:
+
+```
+Pokémon: 12
+4 Charmander OBF 26
+3 Charmeleon OBF 27
+4 Charizard ex OBF 125
+1 Pidgeot ex OBF 164
+
+Trainer: 36
+4 Rare Candy SVI 191
+4 Ultra Ball SVI 196
+4 Iono PAL 185
+... (and so on)
+
+Energy: 12
+12 Fire Energy SVE 2
+```
+
+The numbers next to each section header tell you how many cards total are in that section. The whole deck has to add up to **exactly 60**.
+
+## The 4-copy rule
+
+You can have at most **4 copies** of any card with the same name. Two exceptions:
+
+- **Basic Energy** — unlimited copies allowed
+- **ACE SPEC cards** — only 1 ACE SPEC per deck, total (not per name)
+
+## Why deck lists matter for Dexter
+
+Dexter is built around this format. When you paste a deck list on the home page, Dexter parses every line, looks up each card, and runs analysis on:
+
+- Rotation legality — any cards leaving Standard?
+- Energy ratios
+- Evolution lines — do you have the right Basics for your Stage 1s/2s?
+- Archetype match — does this look like a known meta deck?
+- Price
+
+In the next lesson, we'll actually do it.
