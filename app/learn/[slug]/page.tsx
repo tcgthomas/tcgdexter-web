@@ -169,50 +169,118 @@ export default async function LessonPage({
 
       <article>{mdx}</article>
 
-      <nav className="mt-10 pt-6 border-t border-border grid grid-cols-2 gap-3">
-        {prev ? (
-          <Link
-            href={`/learn/${prev.slug}`}
-            className="bg-white border border-border rounded-lg px-4 py-3 hover:border-accent transition-colors min-w-0"
-          >
-            <div className="text-xs text-text-muted mb-1">← Previous</div>
-            <div className="text-sm font-medium text-text-primary truncate">
-              {prev.title}
+      {(() => {
+        const isLast = !next;
+        const backHref = prev ? `/learn/${prev.slug}` : "/learn";
+        const nextHref = isLast ? "/learn/quiz" : `/learn/${next!.slug}`;
+        const nextLabel = isLast ? "Quiz" : "Next";
+
+        /* On the final lesson, the "next" slot in the context list becomes the
+           invitation to profile a deck — same visual rhythm, but the CTA points
+           at the analyzer instead of another lesson. */
+        const nextContextItem = isLast
+          ? { href: "/", label: "Profile your first deck", order: null as null | number }
+          : { href: `/learn/${next!.slug}`, label: next!.title, order: next!.order };
+
+        return (
+          <>
+            <nav
+              aria-label="Lesson context"
+              className="mt-10 pt-6 border-t border-border"
+            >
+              <ol className="space-y-2">
+                {prev && (
+                  <li>
+                    <Link
+                      href={`/learn/${prev.slug}`}
+                      className="flex items-baseline gap-3 px-3 py-2 rounded-lg opacity-50 hover:opacity-100 hover:bg-white transition-all"
+                    >
+                      <span className="text-xs font-mono text-text-muted shrink-0 tabular-nums">
+                        {String(prev.order).padStart(2, "0")}
+                      </span>
+                      <span className="text-sm text-text-secondary truncate">
+                        {prev.title}
+                      </span>
+                    </Link>
+                  </li>
+                )}
+                <li>
+                  <div className="flex items-baseline gap-3 px-3 py-2 rounded-lg bg-white border border-border">
+                    <span className="text-xs font-mono text-text-muted shrink-0 tabular-nums">
+                      {String(lesson.order).padStart(2, "0")}
+                    </span>
+                    <span className="text-sm font-semibold text-text-primary truncate">
+                      {lesson.title}
+                    </span>
+                  </div>
+                </li>
+                <li>
+                  <Link
+                    href={nextContextItem.href}
+                    className="flex items-baseline gap-3 px-3 py-2 rounded-lg opacity-50 hover:opacity-100 hover:bg-white transition-all"
+                  >
+                    <span className="text-xs font-mono text-text-muted shrink-0 tabular-nums">
+                      {nextContextItem.order !== null
+                        ? String(nextContextItem.order).padStart(2, "0")
+                        : "→"}
+                    </span>
+                    <span className="text-sm text-text-secondary truncate">
+                      {nextContextItem.label}
+                    </span>
+                  </Link>
+                </li>
+              </ol>
+            </nav>
+
+            <div className="mt-6 grid grid-cols-2 gap-3">
+              <Link
+                href={backHref}
+                className="inline-flex items-center justify-center gap-2 rounded-full bg-black px-5 py-2.5 text-sm font-semibold text-white transition-all hover:bg-black/85"
+              >
+                <svg
+                  className="w-4 h-4"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth={2}
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M15 19l-7-7 7-7"
+                  />
+                </svg>
+                Back
+              </Link>
+              <Link
+                href={nextHref}
+                className="inline-flex items-center justify-center gap-2 rounded-full bg-accent px-5 py-2.5 text-sm font-semibold text-white transition-all hover:bg-accent-light"
+              >
+                {nextLabel}
+                <svg
+                  className="w-4 h-4"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth={2}
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M9 5l7 7-7 7"
+                  />
+                </svg>
+              </Link>
             </div>
-          </Link>
-        ) : (
-          <Link
-            href="/learn"
-            className="bg-white border border-border rounded-lg px-4 py-3 hover:border-accent transition-colors min-w-0"
-          >
-            <div className="text-xs text-text-muted mb-1">← Back</div>
-            <div className="text-sm font-medium text-text-primary truncate">
-              Trainer School index
-            </div>
-          </Link>
-        )}
-        {next ? (
-          <Link
-            href={`/learn/${next.slug}`}
-            className="bg-white border border-border rounded-lg px-4 py-3 hover:border-accent transition-colors text-right min-w-0"
-          >
-            <div className="text-xs text-text-muted mb-1">Next →</div>
-            <div className="text-sm font-medium text-text-primary truncate">
-              {next.title}
-            </div>
-          </Link>
-        ) : (
-          <Link
-            href="/"
-            className="bg-accent text-white rounded-lg px-4 py-3 hover:bg-accent-dark transition-colors text-right min-w-0"
-          >
-            <div className="text-xs text-white/80 mb-1">You're ready →</div>
-            <div className="text-sm font-semibold truncate">
-              Profile your first deck
-            </div>
-          </Link>
-        )}
-      </nav>
+
+            {isLast && (
+              <p className="mt-4 text-center text-sm text-text-secondary">
+                Take the quiz to earn your Rookie Trainer Badge
+              </p>
+            )}
+          </>
+        );
+      })()}
     </main>
   );
 }
