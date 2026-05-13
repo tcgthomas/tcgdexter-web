@@ -55,7 +55,9 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} font-sans antialiased text-[var(--text-primary)]`}
       >
         <ThemeProvider>
-          <div className="min-h-dvh bg-bg text-text-primary antialiased overflow-x-hidden">
+          {/* `lg:pl-64` reserves space for the fixed desktop sidebar
+              rendered inside <SiteNav />. Mobile keeps the original layout. */}
+          <div className="min-h-dvh bg-bg text-text-primary antialiased overflow-x-hidden lg:pl-64">
             <SiteNav />
             {children}
             <SiteFooter />
