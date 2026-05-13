@@ -24,7 +24,7 @@ export type Module = {
 export const modules: Module[] = [
   {
     id: "basics",
-    title: "Say Hello to Pokémon TCG",
+    title: "The Basics",
     description: "Cards, turns, and how a game of Pokémon TCG is won.",
     order: 1,
   },
@@ -37,7 +37,7 @@ export const modules: Module[] = [
 ];
 
 export const lessons: Lesson[] = [
-  { slug: "what-is-pokemon-tcg",     title: "What is the Pokémon TCG?",        module: "basics",     order: 1,  estimatedMinutes: 3 },
+  { slug: "what-is-pokemon-tcg",     title: "Say Hello to Pokémon TCG",        module: "basics",     order: 1,  estimatedMinutes: 3 },
   { slug: "anatomy-pokemon-card",    title: "Anatomy of a Pokémon card",       module: "basics",     order: 2,  estimatedMinutes: 4 },
   { slug: "anatomy-trainer-card",    title: "Anatomy of a Trainer card",       module: "basics",     order: 3,  estimatedMinutes: 3 },
   { slug: "anatomy-energy-card",     title: "Anatomy of an Energy card",       module: "basics",     order: 4,  estimatedMinutes: 3 },
