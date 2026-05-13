@@ -99,7 +99,7 @@ export default function QRCodeButton({ shareUrl, deckList, analysis }: Props) {
         onClick={handleOpen}
         disabled={loading}
         title="Share via QR code"
-        className="inline-flex items-center gap-1.5 rounded-full border border-transparent bg-gradient-brand-reverse px-3 py-1.5 text-xs font-semibold text-white shadow-brand hover:shadow-brand-lg transition disabled:opacity-50"
+        className="inline-flex items-center gap-1.5 rounded-full border border-transparent bg-gradient-brand-reverse bg-origin-border px-3 py-1.5 text-xs font-semibold text-white shadow-brand hover:shadow-brand-lg transition disabled:opacity-50"
       >
         {loading ? (
           <>
