@@ -61,7 +61,7 @@ interface UnifiedRow {
 /* ─── Result styling ─────────────────────────────────────────── */
 
 const RESULT_STYLE = {
-  win:  { label: "W", bg: "bg-gradient-brand", text: "text-white",        border: "border-transparent" },
+  win:  { label: "W", bg: "bg-gradient-to-br from-[#F2A20C] via-[#D91E0D] to-[#A60D0D]", text: "text-white", border: "border-transparent" },
   loss: { label: "L", bg: "bg-black",          text: "text-white",        border: "border-transparent" },
   draw: { label: "D", bg: "bg-white",          text: "text-text-primary", border: "border-black" },
 };
