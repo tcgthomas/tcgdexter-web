@@ -238,7 +238,7 @@ export default async function LessonPage({
             <div className="mt-6 grid grid-cols-2 gap-3">
               <Link
                 href={backHref}
-                className="inline-flex items-center justify-center gap-2 rounded-full bg-black px-5 py-2.5 text-sm font-semibold text-white transition-all hover:bg-black/85"
+                className="flex items-center justify-center gap-2 rounded-full bg-black px-5 py-2.5 text-sm font-semibold text-white transition-all hover:bg-black/85"
               >
                 <svg
                   className="w-4 h-4"
@@ -257,7 +257,7 @@ export default async function LessonPage({
               </Link>
               <Link
                 href={nextHref}
-                className="inline-flex items-center justify-center gap-2 rounded-full bg-gradient-brand px-5 py-2.5 text-sm font-semibold text-white shadow-brand hover:shadow-brand-lg transition"
+                className="flex items-center justify-center gap-2 rounded-full bg-gradient-brand px-5 py-2.5 text-sm font-semibold text-white shadow-brand hover:shadow-brand-lg transition"
               >
                 {nextLabel}
                 <svg
