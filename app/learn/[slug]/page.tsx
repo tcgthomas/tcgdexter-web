@@ -8,6 +8,7 @@ import matter from "gray-matter";
 import {
   lessons,
   getLesson,
+  getLessonsByModule,
   getNextLesson,
   getPreviousLesson,
 } from "@/lib/learn/curriculum";
@@ -170,17 +171,49 @@ export default async function LessonPage({
       <article>{mdx}</article>
 
       {(() => {
+        const basicsLessons = getLessonsByModule("basics");
+        const isBasicsEnd =
+          lesson.module === "basics" &&
+          lesson.order === basicsLessons[basicsLessons.length - 1].order;
         const isLast = !next;
-        const backHref = prev ? `/learn/${prev.slug}` : "/learn";
-        const nextHref = isLast ? "/learn/quiz" : `/learn/${next!.slug}`;
-        const nextLabel = isLast ? "Quiz" : "Next";
 
-        /* On the final lesson, the "next" slot in the context list becomes the
-           invitation to profile a deck — same visual rhythm, but the CTA points
-           at the analyzer instead of another lesson. */
-        const nextContextItem = isLast
-          ? { href: "/", label: "Profile your first deck", order: null as null | number }
-          : { href: `/learn/${next!.slug}`, label: next!.title, order: next!.order };
+        const backHref = prev ? `/learn/${prev.slug}` : "/learn";
+
+        /* Three routing outcomes after a lesson:
+           - End of the "basics" module → Trainer Quiz
+           - Final lesson overall (last of "first-deck") → Profile a deck
+           - Anything else → next lesson in order */
+        let nextHref: string;
+        let nextLabel: string;
+        let nextContextItem: { href: string; label: string; order: number | null };
+        let footerCaption: string | null = null;
+
+        if (isBasicsEnd) {
+          nextHref = "/learn/quiz";
+          nextLabel = "Take the quiz";
+          nextContextItem = {
+            href: "/learn/quiz",
+            label: "Certified Trainer quiz",
+            order: null,
+          };
+          footerCaption = "Take the quiz to earn your Certified Trainer Badge";
+        } else if (isLast) {
+          nextHref = "/";
+          nextLabel = "Profile a deck";
+          nextContextItem = {
+            href: "/",
+            label: "Profile your first deck",
+            order: null,
+          };
+        } else {
+          nextHref = `/learn/${next!.slug}`;
+          nextLabel = "Next";
+          nextContextItem = {
+            href: `/learn/${next!.slug}`,
+            label: next!.title,
+            order: next!.order,
+          };
+        }
 
         return (
           <>
@@ -276,9 +309,9 @@ export default async function LessonPage({
               </Link>
             </div>
 
-            {isLast && (
+            {footerCaption && (
               <p className="mt-4 text-center text-sm text-text-secondary">
-                Take the quiz to earn your Rookie Trainer Badge
+                {footerCaption}
               </p>
             )}
           </>

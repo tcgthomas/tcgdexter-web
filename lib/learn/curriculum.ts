@@ -44,7 +44,7 @@ export const lessons: Lesson[] = [
   { slug: "how-a-turn-works",        title: "How a turn works",                module: "basics",     order: 5,  estimatedMinutes: 4 },
   { slug: "win-conditions",          title: "How you win",                     module: "basics",     order: 6,  estimatedMinutes: 2 },
   { slug: "knockouts-prize-trading", title: "Knockout strategy",               module: "basics",     order: 7,  estimatedMinutes: 4 },
-  { slug: "reading-a-deck-list",     title: "Reading a deck list",             module: "basics",     order: 8,  estimatedMinutes: 3 },
+  { slug: "reading-a-deck-list",     title: "Reading a deck list",             module: "first-deck", order: 8,  estimatedMinutes: 3 },
   { slug: "profile-your-first-deck", title: "Profile your first deck",         module: "first-deck", order: 9,  estimatedMinutes: 3 },
   { slug: "save-to-library",         title: "Save your deck and join the gym", module: "first-deck", order: 10, estimatedMinutes: 3 },
 ];

@@ -5,6 +5,11 @@ import { createClient } from "@/lib/supabase/server";
 import { getTierByTitle } from "@/lib/trainer-tiers";
 import MatchHeatMap from "@/app/profile/MatchHeatMap";
 import { deckResult, viewerResult, type SharedMatchCore } from "@/lib/shared-matches";
+import {
+  CERTIFIED_TRAINER,
+  listAchievements,
+} from "@/lib/learn/achievements";
+import CertifiedTrainerBadge from "@/app/learn/quiz/CertifiedTrainerBadge";
 
 interface ProfileRow {
   id: string;
@@ -187,6 +192,17 @@ export default async function ProfilePage({
     year: "numeric",
   });
 
+  const achievements = await listAchievements(supabase, profile.id);
+  const certifiedTrainer = achievements.find((a) => a.key === CERTIFIED_TRAINER);
+  const certifiedDate = certifiedTrainer
+    ? new Date(certifiedTrainer.earned_at).toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+      })
+    : null;
+  const showAchievementsCard = isOwner || achievements.length > 0;
+
   return (
     <main className="mx-auto max-w-2xl px-6 pt-[calc(env(safe-area-inset-top)_+_1.68rem)] md:pt-[calc(env(safe-area-inset-top)_+_3rem)] pb-24">
       {/* Profile module */}
@@ -272,6 +288,41 @@ export default async function ProfilePage({
           </div>
         </div>
       </div>
+
+      {/* Achievements — earned badges (owner sees an empty state nudge) */}
+      {showAchievementsCard && (
+        <div className="rounded-2xl border border-black/8 bg-white/90 backdrop-blur-xl shadow-sm p-5 mb-6">
+          <h2 className="text-sm font-semibold text-text-primary mb-3">
+            Achievements
+          </h2>
+          {certifiedTrainer ? (
+            <div className="flex items-center gap-3">
+              <CertifiedTrainerBadge size="sm" />
+              <div className="min-w-0">
+                <p className="text-sm font-semibold text-text-primary">
+                  Certified Trainer
+                </p>
+                <p className="text-xs text-text-muted">
+                  Earned {certifiedDate}
+                </p>
+              </div>
+            </div>
+          ) : (
+            isOwner && (
+              <p className="text-sm text-text-secondary">
+                Pass the{" "}
+                <Link
+                  href="/learn/quiz"
+                  className="text-accent hover:underline"
+                >
+                  Trainer Quiz
+                </Link>{" "}
+                to earn your first badge.
+              </p>
+            )
+          )}
+        </div>
+      )}
 
       {/* Match heatmap — only for owner (manual match data is private) */}
       {isOwner && heatmapMatches.length > 0 && (
