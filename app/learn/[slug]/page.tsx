@@ -238,10 +238,10 @@ export default async function LessonPage({
             <div className="mt-6 grid grid-cols-2 gap-3">
               <Link
                 href={backHref}
-                className="flex items-center justify-center gap-2 rounded-full bg-black px-5 py-2.5 text-sm font-semibold text-white transition-all hover:bg-black/85"
+                className="relative flex items-center justify-center rounded-full bg-black px-5 py-2.5 text-sm font-semibold text-white transition-all hover:bg-black/85"
               >
                 <svg
-                  className="w-4 h-4"
+                  className="absolute left-5 w-4 h-4"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -257,11 +257,11 @@ export default async function LessonPage({
               </Link>
               <Link
                 href={nextHref}
-                className="flex items-center justify-center gap-2 rounded-full bg-gradient-brand px-5 py-2.5 text-sm font-semibold text-white shadow-brand hover:shadow-brand-lg transition"
+                className="relative flex items-center justify-center rounded-full bg-gradient-brand px-5 py-2.5 text-sm font-semibold text-white shadow-brand hover:shadow-brand-lg transition"
               >
                 {nextLabel}
                 <svg
-                  className="w-4 h-4"
+                  className="absolute right-5 w-4 h-4"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
