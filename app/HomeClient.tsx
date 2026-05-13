@@ -14,35 +14,40 @@ import { getTierByTitle } from "@/lib/trainer-tiers";
 import TrainerSearch from "@/app/leaderboard/TrainerSearch";
 import type { TopTrainer } from "@/app/page";
 
-const EXAMPLE_DECK = `Pokémon: 8
-4 Marnie's Impidimp DRI 134
-2 Pecharunt ex SFA 39
-2 Munkidori SFA 72
-1 Fezandipiti ex ASC 288
-2 Marnie's Grimmsnarl ex ASC 287
-2 Okidogi ex SFA 82
-1 Marnie's Grimmsnarl ex DRI 136
-2 Marnie's Morgrem DRI 135
+const EXAMPLE_DECK = `Pokémon: 13
+1 Meowth ex POR 62
+1 N's Darmanitan JTG 27
+3 N's Zoroark ex JTG 175
+1 Munkidori TWM 95
+1 Pecharunt ex SFA 39
+1 N's Zorua PR-SV 189
+1 Fezandipiti ex ASC 142
+3 N's Zorua ASC 136
+1 N's Zoroark ex JTG 189
+2 N's Reshiram ASC 154
+2 N's Zekrom ASC 155
+1 Budew ASC 16
+1 N's Darumaka JTG 26
 
 Trainer: 15
-3 Boss's Orders PAL 265
-3 Brock's Scouting JTG 179
-2 Black Belt's Training ASC 255
+2 Poké Pad ASC 198
+4 N's PP Up ASC 195
+3 Lillie's Determination ASC 192
 1 Night Stretcher MEG 173
-3 Spikemuth Gym DRI 169
-2 Rare Candy MEG 175
-1 Night Stretcher SSP 251
-3 Energy Switch MEG 115
-2 Punk Helmet PFL 92
-2 Janine's Secret Art PRE 173
-1 Janine's Secret Art SFA 88
-1 Secret Box TWM 163
-2 Team Rocket's Petrel DRI 226
-3 Lillie's Determination MEG 184
-3 Binding Mochi SFA 55
+2 Janine's Secret Art SFA 59
+2 Boss's Orders MEG 114
+1 Night Stretcher SFA 61
+2 Black Belt's Training PRE 96
+4 Ultra Ball MEG 131
+1 Air Balloon MEG 166
+4 Buddy-Buddy Poffin MEG 167
+2 N's Castle JTG 152
+1 Hyper Aroma TWM 152
+2 Team Rocket's Petrel DRI 176
+2 Binding Mochi SFA 55
 
 Energy: 1
-12 Basic {D} Energy MEE 7
+8 Basic {D} Energy MEE 7
 
 Total Cards: 60`;
 
@@ -163,7 +168,7 @@ export default function HomeClient({
               <textarea
                 value={deckList}
                 onChange={(e) => setDeckList(e.target.value)}
-                placeholder="Pokémon: 12&#10;4 Charizard ex OBF 125&#10;2 Charmander OBF 26&#10;..."
+                placeholder={"Pokémon: 13\n3 N's Zoroark ex JTG 175\n2 N's Reshiram ASC 154\n..."}
                 className="w-full h-48 bg-transparent resize-none px-3 py-2 font-mono text-sm text-text-primary placeholder:text-text-muted/60 outline-none"
                 spellCheck={false}
               />
