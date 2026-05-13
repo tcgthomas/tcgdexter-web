@@ -212,6 +212,9 @@ export default async function LessonPage({
                     <span className="text-sm font-semibold text-text-primary truncate">
                       {lesson.title}
                     </span>
+                    <span className="ml-auto text-xs text-text-secondary opacity-50 shrink-0">
+                      Current
+                    </span>
                   </div>
                 </li>
                 <li>
