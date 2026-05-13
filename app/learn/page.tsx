@@ -14,7 +14,7 @@ export default function LearnIndexPage() {
   const orderedModules = [...modules].sort((a, b) => a.order - b.order);
 
   return (
-    <main className="mx-auto max-w-2xl px-4 py-10 sm:py-14">
+    <main className="mx-auto max-w-2xl px-6 py-10 sm:py-14">
       <header className="mb-10">
         <p className="text-xs font-semibold text-accent uppercase tracking-[0.15em] mb-2">
           Trainer School

@@ -155,7 +155,7 @@ export default async function LessonPage({
   const next = getNextLesson(params.slug);
 
   return (
-    <main className="mx-auto max-w-2xl px-4 py-8 sm:py-12">
+    <main className="mx-auto max-w-2xl px-6 py-8 sm:py-12">
       <nav className="text-xs text-text-muted mb-6 flex items-center gap-2 flex-wrap">
         <Link href="/learn" className="hover:text-text-secondary">
           Trainer School
