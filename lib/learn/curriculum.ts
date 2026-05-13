@@ -24,7 +24,7 @@ export type Module = {
 export const modules: Module[] = [
   {
     id: "basics",
-    title: "The Basics",
+    title: "Say Hello to Pokémon TCG",
     description: "Cards, turns, and how a game of Pokémon TCG is won.",
     order: 1,
   },

@@ -26,8 +26,8 @@ export async function generateMetadata({
   const lesson = getLesson(params.slug);
   if (!lesson) return {};
   return {
-    title: `${lesson.title} | Trainer School`,
-    description: `${lesson.title} — a Trainer School lesson on TCG Dexter.`,
+    title: `${lesson.title} | Learn to Play`,
+    description: `${lesson.title} — a Learn to Play lesson on TCG Dexter.`,
   };
 }
 
@@ -158,7 +158,7 @@ export default async function LessonPage({
     <main className="mx-auto max-w-2xl px-6 py-8 sm:py-12">
       <nav className="text-xs text-text-muted mb-6 flex items-center gap-2 flex-wrap">
         <Link href="/learn" className="hover:text-text-secondary">
-          Trainer School
+          Learn to Play
         </Link>
         <span aria-hidden>›</span>
         <span>

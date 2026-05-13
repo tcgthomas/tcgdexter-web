@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import { modules, getLessonsByModule, lessons } from "@/lib/learn/curriculum";
 
 export const metadata: Metadata = {
-  title: "Trainer School | TCG Dexter",
+  title: "Learn to Play | TCG Dexter",
   description:
     "Ten short lessons to learn the Pokémon TCG. By the end you'll have profiled and saved your first deck.",
 };
@@ -17,10 +17,10 @@ export default function LearnIndexPage() {
     <main className="mx-auto max-w-2xl px-6 py-10 sm:py-14">
       <header className="mb-10">
         <p className="text-xs font-semibold text-accent uppercase tracking-[0.15em] mb-2">
-          Trainer School
+          Learn to Play
         </p>
         <h1 className="text-3xl sm:text-4xl font-bold text-text-primary mb-3 leading-tight">
-          Learn the Pokémon TCG.
+          Pokémon Trading Card Game
         </h1>
         <p className="text-base sm:text-lg text-text-secondary leading-relaxed">
           {lessons.length} short lessons, about {totalMinutes} minutes total. By
@@ -69,7 +69,7 @@ export default function LearnIndexPage() {
       </div>
 
       <p className="mt-12 text-xs text-text-muted text-center">
-        Trainer School is a v1 preview. More modules — deck building, beginner
+        Learn to Play is a v1 preview. More modules — deck building, beginner
         strategy, and getting plugged into the community — are coming soon.
       </p>
     </main>
