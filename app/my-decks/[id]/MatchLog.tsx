@@ -61,9 +61,9 @@ interface UnifiedRow {
 /* ─── Result styling ─────────────────────────────────────────── */
 
 const RESULT_STYLE = {
-  win:  { label: "W", bg: "bg-green-100", text: "text-green-800", border: "border-green-200" },
-  loss: { label: "L", bg: "bg-red-100",   text: "text-red-800",   border: "border-red-200" },
-  draw: { label: "D", bg: "bg-stone-100", text: "text-stone-600", border: "border-stone-200" },
+  win:  { label: "W", bg: "bg-gradient-brand", text: "text-white",        border: "border-transparent" },
+  loss: { label: "L", bg: "bg-black",          text: "text-white",        border: "border-transparent" },
+  draw: { label: "D", bg: "bg-white",          text: "text-text-primary", border: "border-black" },
 };
 
 /* ─── Component ──────────────────────────────────────────────── */
