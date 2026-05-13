@@ -61,9 +61,9 @@ interface UnifiedRow {
 /* ─── Result styling ─────────────────────────────────────────── */
 
 const RESULT_STYLE = {
-  win:  { label: "W", bg: "bg-gradient-to-br from-[#F2A20C] via-[#D91E0D] to-[#A60D0D]", text: "text-white", border: "border-transparent" },
-  loss: { label: "L", bg: "bg-black",          text: "text-white",        border: "border-transparent" },
-  draw: { label: "D", bg: "bg-white",          text: "text-text-primary", border: "border-black" },
+  win:  { label: "W", bg: "",         text: "text-white",        border: "border-transparent", style: { background: "radial-gradient(circle, #F2A20C 0%, #D91E0D 60%, #A60D0D 100%)" } },
+  loss: { label: "L", bg: "bg-black", text: "text-white",        border: "border-transparent", style: undefined },
+  draw: { label: "D", bg: "bg-white", text: "text-text-primary", border: "border-black",        style: undefined },
 };
 
 /* ─── Component ──────────────────────────────────────────────── */
@@ -322,7 +322,7 @@ export default function MatchLog({
                   }`}
                 >
                   <span
-                    className={`flex-shrink-0 inline-flex items-center justify-center w-8 h-8 rounded-full text-xs font-bold ${s.bg} ${s.text} ${s.border} border`}
+                    className={`flex-shrink-0 inline-flex items-center justify-center w-8 h-8 rounded-full text-xs font-bold ${s.bg} ${s.text} ${s.border} border`} style={s.style}
                   >
                     {s.label}
                   </span>
@@ -395,7 +395,7 @@ export default function MatchLog({
                 }`}
               >
                 <span
-                  className={`flex-shrink-0 inline-flex items-center justify-center w-8 h-8 rounded-full text-xs font-bold ${s.bg} ${s.text} ${s.border} border`}
+                  className={`flex-shrink-0 inline-flex items-center justify-center w-8 h-8 rounded-full text-xs font-bold ${s.bg} ${s.text} ${s.border} border`} style={s.style}
                 >
                   {s.label}
                 </span>
