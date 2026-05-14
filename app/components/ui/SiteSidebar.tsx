@@ -2,6 +2,13 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import {
+  StackIcon,
+  TrophyIcon,
+  ChartBarIcon,
+  BookOpenIcon,
+  UserIcon,
+} from "./nav-icons";
 
 interface Props {
   /** Passed from the server component so the auth item renders correctly. */
@@ -22,9 +29,10 @@ interface Props {
  * surfaces never overlap. Root layout reserves space with `lg:pl-64
  * lg:pr-64` on the page wrapper.
  *
- * Contents: centered logo, then auth item, then internal app routes.
- * No horizontal dividers — visual grouping is carried by the vertical
- * border alone.
+ * Layout follows the x.com signed-in shell: the brand mark hugs the
+ * leading edge of the rail (aligning with the icon column of the nav
+ * rows below), the internal app routes stack at the top, and the auth
+ * row is anchored at the bottom via `mt-auto`.
  *
  * Keep the internal link list in sync with MobileNavMenu when nav items
  * change.
@@ -36,11 +44,14 @@ export default function SiteSidebar({
 }: Props) {
   const pathname = usePathname();
 
+  // Each row pairs a route with the icon that fronts its label. Adding a
+  // new internal route? Pick an icon from ./nav-icons (or add one there)
+  // and append below.
   const INTERNAL_LINKS = [
-    { href: "/", label: "Create a Deck Profile" },
-    { href: "/meta-decks", label: "Top 30 Meta Decks" },
-    { href: "/leaderboard", label: "Leaderboard" },
-    { href: "/learn", label: "Learn to Play" },
+    { href: "/", label: "Create a Deck Profile", Icon: StackIcon },
+    { href: "/meta-decks", label: "Top 30 Meta Decks", Icon: TrophyIcon },
+    { href: "/leaderboard", label: "Leaderboard", Icon: ChartBarIcon },
+    { href: "/learn", label: "Learn to Play", Icon: BookOpenIcon },
   ];
 
   // "/" gets exact match so it doesn't light up on every page; others match
@@ -48,68 +59,77 @@ export default function SiteSidebar({
   const isActive = (href: string) =>
     href === "/" ? pathname === "/" : pathname === href || pathname.startsWith(`${href}/`);
 
+  // Rows are now icon + label. `gap-3` matches the visual rhythm of the
+  // logo's leading edge → icon column → label column alignment.
   const linkBase =
-    "block px-3 py-2 rounded-md text-sm font-medium transition-colors";
+    "flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors";
   const linkInactive = "text-text-secondary hover:text-text-primary hover:bg-surface";
   const linkActive = "text-text-primary bg-surface";
+
+  const profileHref = username ? `/u/${username}` : "/settings";
+  const profileActive = username ? isActive(`/u/${username}`) : isActive("/settings");
 
   return (
     <aside
       aria-label="Primary navigation"
       className="hidden lg:flex fixed inset-y-0 left-0 z-30 w-64 flex-col bg-bg border-r border-[var(--border)]"
     >
-      {/* Brand mark — circular icon, centered. Source is 256×256 (down-
-          sampled from the original 2000² master); rendered at 64px so it
-          stays sharp on retina without leaning heavy in the rail. The right
-          rail mirrors this block height with a spacer so its first link
-          still aligns with the auth item below. */}
-      <div className="flex-shrink-0 h-20 px-5 flex items-center justify-center">
+      {/* Brand mark — circular icon, leading-edge aligned. `pl-6` puts the
+          logo's left edge at 24px from the rail border, the same X that the
+          nav rows' icon column sits at (nav's px-3 + row's px-3 = 24px).
+          Rendered at 48px (25% smaller than the original 64px landing). */}
+      <div className="flex-shrink-0 h-20 pl-6 pr-3 flex items-center">
         <Link href="/" aria-label="TCG Dexter — home" className="inline-flex">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src="/logo-circle.png"
             alt="TCG Dexter"
-            width={64}
-            height={64}
-            style={{ width: "64px", height: "64px" }}
+            width={48}
+            height={48}
+            style={{ width: "48px", height: "48px" }}
           />
         </Link>
       </div>
 
-      {/* Scrollable link well — shrinks gracefully on short viewports. */}
-      <nav className="flex-1 overflow-y-auto px-3 pt-4 pb-6">
+      {/* Link well — internal routes stack at top, auth pinned at bottom
+          via `mt-auto` on the trailing list. `flex flex-col` on <nav> is
+          what lets `mt-auto` do its work. */}
+      <nav className="flex-1 flex flex-col overflow-y-auto px-3 pt-4 pb-4">
         <ul className="flex flex-col gap-0.5">
-          {/* Auth item — top of nav, matches MobileNavMenu order. */}
+          {INTERNAL_LINKS.map(({ href, label, Icon }) => (
+            <li key={href}>
+              <Link
+                href={href}
+                className={`${linkBase} ${isActive(href) ? linkActive : linkInactive}`}
+              >
+                <Icon />
+                <span>{label}</span>
+              </Link>
+            </li>
+          ))}
+        </ul>
+
+        {/* Auth row — anchored to the bottom of the rail. */}
+        <ul className="mt-auto flex flex-col gap-0.5 pt-4">
           <li>
             {isAuthed ? (
               <Link
-                href={username ? `/u/${username}` : "/settings"}
-                className={`${linkBase} ${
-                  username && isActive(`/u/${username}`) ? linkActive : linkInactive
-                }`}
+                href={profileHref}
+                className={`${linkBase} ${profileActive ? linkActive : linkInactive}`}
               >
-                {displayName ?? "Profile"}
+                <UserIcon />
+                <span>{displayName ?? "Profile"}</span>
               </Link>
             ) : (
               <Link
                 href="/sign-in"
                 className={`${linkBase} ${isActive("/sign-in") ? linkActive : linkInactive}`}
               >
-                Sign in
+                <UserIcon />
+                <span>Sign in</span>
               </Link>
             )}
           </li>
-
-          {INTERNAL_LINKS.map(({ href, label }) => (
-            <li key={href}>
-              <Link
-                href={href}
-                className={`${linkBase} ${isActive(href) ? linkActive : linkInactive}`}
-              >
-                {label}
-              </Link>
-            </li>
-          ))}
         </ul>
       </nav>
     </aside>
