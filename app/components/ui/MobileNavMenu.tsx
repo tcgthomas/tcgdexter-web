@@ -4,6 +4,17 @@ import { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import {
+  StackIcon,
+  TrophyIcon,
+  ChartBarIcon,
+  BookOpenIcon,
+  UserIcon,
+  NewspaperIcon,
+  DiscordIcon,
+  TikTokIcon,
+  ShoppingBagIcon,
+} from "./nav-icons";
 
 /** Must match the CSS transition-duration on the panel div below. */
 const TRANSITION_MS = 200;
@@ -197,22 +208,25 @@ export default function MobileNavMenu({ isAuthed, displayName, username, isAdmin
 
   // ── Nav link data ─────────────────────────────────────────────────────────────
 
+  // Icons are shared with the desktop sidebars (see ./nav-icons). Keep the
+  // icon assignments in sync with SiteSidebar / SiteSidebarRight so the two
+  // surfaces tell the same visual story.
   const INTERNAL_LINKS = [
-    { href: "/", label: "Create a Deck Profile" },
-    { href: "/meta-decks", label: "Top 30 Meta Decks" },
-    { href: "/leaderboard", label: "Leaderboard" },
-    { href: "/learn", label: "Learn to Play" },
+    { href: "/", label: "Create a Deck Profile", Icon: StackIcon },
+    { href: "/meta-decks", label: "Top 30 Meta Decks", Icon: TrophyIcon },
+    { href: "/leaderboard", label: "Leaderboard", Icon: ChartBarIcon },
+    { href: "/learn", label: "Learn to Play", Icon: BookOpenIcon },
   ];
 
   const EXTERNAL_LINKS = [
-    { href: "https://tcgdexter.beehiiv.com/", label: "TCG News" },
-    { href: "https://discord.gg/G3VfEzfmJF", label: "Discord" },
-    { href: "https://www.tiktok.com/@tcgdexter", label: "TikTok" },
-    { href: "https://www.ebay.com/usr/tcgdexter", label: "Card Shop" },
+    { href: "https://tcgdexter.beehiiv.com/", label: "TCG News", Icon: NewspaperIcon },
+    { href: "https://discord.gg/G3VfEzfmJF", label: "Discord", Icon: DiscordIcon },
+    { href: "https://www.tiktok.com/@tcgdexter", label: "TikTok", Icon: TikTokIcon },
+    { href: "https://www.ebay.com/usr/tcgdexter", label: "Card Shop", Icon: ShoppingBagIcon },
   ];
 
   const linkClass =
-    "block py-2 text-lg font-medium text-text-secondary hover:text-text-primary transition-colors";
+    "flex items-center gap-4 py-2 text-lg font-medium text-text-secondary hover:text-text-primary transition-colors";
 
   // ── Hamburger icon (reused in trigger + panel close button) ──────────────────
 
@@ -281,28 +295,31 @@ export default function MobileNavMenu({ isAuthed, displayName, username, isAdmin
                   className={linkClass}
                   onClick={closeMenu}
                 >
-                  {displayName ?? "Profile"}
+                  <UserIcon />
+                  <span>{displayName ?? "Profile"}</span>
                 </Link>
               ) : (
                 <Link href="/sign-in" className={linkClass} onClick={closeMenu}>
-                  Sign in
+                  <UserIcon />
+                  <span>Sign in</span>
                 </Link>
               )}
             </li>
 
             <li role="separator" className="my-4" />
 
-            {INTERNAL_LINKS.map(({ href, label }) => (
+            {INTERNAL_LINKS.map(({ href, label, Icon }) => (
               <li key={href}>
                 <Link href={href} className={linkClass} onClick={closeMenu}>
-                  {label}
+                  <Icon />
+                  <span>{label}</span>
                 </Link>
               </li>
             ))}
 
             <li role="separator" className="my-4" />
 
-            {EXTERNAL_LINKS.map(({ href, label }) => (
+            {EXTERNAL_LINKS.map(({ href, label, Icon }) => (
               <li key={href}>
                 <a
                   href={href}
@@ -311,7 +328,8 @@ export default function MobileNavMenu({ isAuthed, displayName, username, isAdmin
                   className={linkClass}
                   onClick={closeMenu}
                 >
-                  {label}
+                  <Icon />
+                  <span>{label}</span>
                 </a>
               </li>
             ))}

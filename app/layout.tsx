@@ -55,10 +55,10 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} font-sans antialiased text-[var(--text-primary)]`}
       >
         <ThemeProvider>
-          {/* `lg:pl-64 lg:pr-64` reserves space for the two fixed desktop
-              sidebars rendered inside <SiteNav />. Mobile keeps the
-              original layout. */}
-          <div className="min-h-dvh bg-bg text-text-primary antialiased overflow-x-hidden lg:pl-64 lg:pr-64">
+          {/* `lg:pl-80 lg:pr-80` reserves space for the two fixed desktop
+              sidebars rendered inside <SiteNav /> (each at w-80 = 320 px).
+              Mobile keeps the original layout. */}
+          <div className="min-h-dvh bg-bg text-text-primary antialiased overflow-x-hidden lg:pl-80 lg:pr-80">
             <SiteNav />
             {children}
             <SiteFooter />

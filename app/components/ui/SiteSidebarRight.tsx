@@ -10,7 +10,7 @@ import {
  *
  * Carries the external links that used to sit in the bottom block of the
  * mobile nav panel. Paired with SiteSidebar on the leading edge; both rails
- * are `hidden lg:flex`. Root layout reserves space with `lg:pr-64` on the
+ * are `hidden lg:flex`. Root layout reserves space with `lg:pr-80` on the
  * page wrapper.
  *
  * No brand mark here by design — the logo lives on the left rail only.
@@ -28,15 +28,15 @@ export default function SiteSidebarRight() {
     { href: "https://www.ebay.com/usr/tcgdexter", label: "Card Shop", Icon: ShoppingBagIcon },
   ];
 
-  // Rows match SiteSidebar's geometry: gap-3 between icon and label, same
-  // rounded-md pill on hover.
+  // Rows match SiteSidebar's geometry: gap-4 between icon and label, same
+  // rounded-md pill on hover, text-lg label.
   const linkClass =
-    "flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium text-text-secondary hover:text-text-primary hover:bg-surface transition-colors";
+    "flex items-center gap-4 px-3 py-2 rounded-md text-lg font-medium text-text-secondary hover:text-text-primary hover:bg-surface transition-colors";
 
   return (
     <aside
       aria-label="External links"
-      className="hidden lg:flex fixed inset-y-0 right-0 z-30 w-64 flex-col bg-bg border-l border-[var(--border)]"
+      className="hidden lg:flex fixed inset-y-0 right-0 z-30 w-80 flex-col bg-bg border-l border-[var(--border)]"
     >
       {/* Header spacer — same height as the logo block on the left rail,
           so the first link here visually lines up with the first internal

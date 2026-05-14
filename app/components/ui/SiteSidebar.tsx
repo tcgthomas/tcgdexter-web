@@ -26,8 +26,8 @@ interface Props {
  *
  * Paired with SiteSidebarRight, which carries the external links. Both rails
  * are `hidden lg:flex`; the mobile toolbar is `lg:hidden`, so the three
- * surfaces never overlap. Root layout reserves space with `lg:pl-64
- * lg:pr-64` on the page wrapper.
+ * surfaces never overlap. Root layout reserves space with `lg:pl-80
+ * lg:pr-80` on the page wrapper.
  *
  * Layout follows the x.com signed-in shell: the brand mark hugs the
  * leading edge of the rail (aligning with the icon column of the nav
@@ -59,10 +59,10 @@ export default function SiteSidebar({
   const isActive = (href: string) =>
     href === "/" ? pathname === "/" : pathname === href || pathname.startsWith(`${href}/`);
 
-  // Rows are now icon + label. `gap-3` matches the visual rhythm of the
-  // logo's leading edge → icon column → label column alignment.
+  // Rows are icon + label. `gap-4` keeps the icon column from crowding
+  // the larger text-lg label.
   const linkBase =
-    "flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors";
+    "flex items-center gap-4 px-3 py-2 rounded-md text-lg font-medium transition-colors";
   const linkInactive = "text-text-secondary hover:text-text-primary hover:bg-surface";
   const linkActive = "text-text-primary bg-surface";
 
@@ -72,7 +72,7 @@ export default function SiteSidebar({
   return (
     <aside
       aria-label="Primary navigation"
-      className="hidden lg:flex fixed inset-y-0 left-0 z-30 w-64 flex-col bg-bg border-r border-[var(--border)]"
+      className="hidden lg:flex fixed inset-y-0 left-0 z-30 w-80 flex-col bg-bg border-r border-[var(--border)]"
     >
       {/* Brand mark — circular icon, leading-edge aligned. `pl-6` puts the
           logo's left edge at 24px from the rail border, the same X that the
