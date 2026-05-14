@@ -161,8 +161,11 @@ export default function UnifiedSearch({ dropdownPosition = "below" }: Props = {}
           type="text"
           value={query}
           onChange={handleChange}
-          placeholder="Search trainers, decks, meta archetypes…"
-          className="w-full rounded-xl border border-black/10 bg-white px-4 py-3 pl-10 text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:border-black/20 [font-size:16px] sm:text-sm"
+          // `data-global-search-input` is the hook for the sitewide "/"
+          // hotkey wired up by GlobalSearchHotkey at the layout level.
+          data-global-search-input
+          placeholder="Search [ / ]"
+          className="w-full rounded-full border border-black/10 bg-white px-4 py-3 pl-10 text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:border-black/20 [font-size:16px] sm:text-sm"
         />
       </div>
 

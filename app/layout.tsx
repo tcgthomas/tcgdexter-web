@@ -4,6 +4,7 @@ import "./globals.css";
 import ThemeProvider from "./components/ThemeProvider";
 import SiteNav from "./components/ui/SiteNav";
 import SiteFooter from "./components/ui/SiteFooter";
+import GlobalSearchHotkey from "./components/ui/GlobalSearchHotkey";
 
 /* Geist Sans — clean, modern typeface from Vercel */
 const geistSans = localFont({
@@ -63,6 +64,7 @@ export default function RootLayout({
             <SiteNav />
             {children}
             <SiteFooter />
+            <GlobalSearchHotkey />
           </div>
         </ThemeProvider>
       </body>

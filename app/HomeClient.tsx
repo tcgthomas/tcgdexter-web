@@ -300,7 +300,7 @@ export default function HomeClient({
                 </span>
                 Live leaderboard
               </div>
-              <h2 className="text-4xl font-semibold tracking-tight">Top Trainers.</h2>
+              <h2 className="text-4xl font-semibold tracking-tight">Top Trainers</h2>
             </div>
 
             {topTrainers.length > 0 && (
