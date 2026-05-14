@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import UnifiedSearch from "@/app/leaderboard/UnifiedSearch";
 import {
   StackIcon,
   TrophyIcon,
@@ -171,7 +172,7 @@ export default function MobileNavMenu({ isAuthed, displayName, username, isAdmin
     const getFocusable = () =>
       Array.from(
         panel.querySelectorAll<HTMLElement>(
-          'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])',
+          'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
         ),
       );
 
@@ -275,17 +276,19 @@ export default function MobileNavMenu({ isAuthed, displayName, username, isAdmin
         </div>
       </div>
 
-      {/* Nav body — bg + links fade as a unit. At opacity 0 the page
-          content is visible beneath; at opacity 1 the takeover is fully
-          opaque. Header above stays fixed, so the divider never flickers. */}
+      {/* Nav body — bg + links + search fade as a unit. At opacity 0 the
+          page content is visible beneath; at opacity 1 the takeover is
+          fully opaque. Header above stays fixed, so the divider never
+          flickers. `flex-col` here is what lets the search footer pin to
+          the bottom of the panel via `mt-auto`. */}
       <div
         className={[
-          "flex-1 bg-bg overflow-y-auto",
+          "flex-1 bg-bg overflow-y-auto flex flex-col",
           "transition-opacity duration-200 ease-out",
           isOpen ? "opacity-100" : "opacity-0",
         ].join(" ")}
       >
-        <nav className="mx-auto max-w-6xl px-6 pt-10 pb-12">
+        <nav className="mx-auto max-w-6xl w-full px-6 pt-10 pb-6">
           <ul className="flex flex-col gap-1">
             {/* Auth item — top of nav */}
             <li>
@@ -335,6 +338,14 @@ export default function MobileNavMenu({ isAuthed, displayName, username, isAdmin
             ))}
           </ul>
         </nav>
+
+        {/* Global search — anchored to the bottom of the panel via
+            `mt-auto`. `dropdownPosition="above"` flips the results dropdown
+            so it opens upward over the link list instead of off-screen
+            past the panel's bottom edge. */}
+        <div className="mt-auto mx-auto max-w-6xl w-full px-6 pb-8 pt-4">
+          <UnifiedSearch dropdownPosition="above" />
+        </div>
       </div>
     </div>
   );

@@ -38,7 +38,18 @@ interface SearchState {
 
 const EMPTY: SearchState = { trainers: [], decks: [], archetypes: [] };
 
-export default function UnifiedSearch() {
+interface Props {
+  /**
+   * Where the results dropdown should render relative to the input.
+   * Default "below" suits the desktop sidebar (search at the top of the
+   * rail, plenty of room beneath); the mobile nav panel uses "above"
+   * because the search is anchored to the bottom of the panel and the
+   * dropdown would otherwise overflow off-screen.
+   */
+  dropdownPosition?: "below" | "above";
+}
+
+export default function UnifiedSearch({ dropdownPosition = "below" }: Props = {}) {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<SearchState>(EMPTY);
   const [loading, setLoading] = useState(false);
@@ -156,7 +167,11 @@ export default function UnifiedSearch() {
       </div>
 
       {searched && query.length >= 2 && (
-        <div className="mt-2 rounded-xl border border-black/8 bg-white shadow-lg overflow-hidden">
+        <div
+          className={`absolute left-0 right-0 z-30 rounded-xl border border-black/8 bg-white shadow-lg overflow-hidden ${
+            dropdownPosition === "above" ? "bottom-full mb-2" : "top-full mt-2"
+          }`}
+        >
           {!hasResults ? (
             <p className="px-4 py-3 text-sm text-text-muted">
               No results for &ldquo;{query}&rdquo;

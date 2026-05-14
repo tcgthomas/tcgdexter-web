@@ -1,7 +1,10 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { getTierByTitle } from "@/lib/trainer-tiers";
-import UnifiedSearch from "./UnifiedSearch";
+// Note: the global UnifiedSearch (./UnifiedSearch) used to live here in the
+// page header. It now ships in the site chrome — desktop right sidebar +
+// mobile nav panel footer — so it's reachable from every route, not just
+// /leaderboard.
 
 export const revalidate = 300; // 5-minute cache
 
@@ -128,9 +131,6 @@ export default async function LeaderboardPage() {
         <p className="mt-3 text-base text-text-secondary max-w-lg">
           Ranked by total deck likes. Find established players and browse their public collections.
         </p>
-        <div className="mt-6">
-          <UnifiedSearch />
-        </div>
       </div>
 
       {/* Top 3 list */}
