@@ -75,10 +75,10 @@ export default function SiteSidebar({
       aria-label="Primary navigation"
       className="hidden xl:flex fixed inset-y-0 left-0 z-30 w-80 flex-col bg-bg border-r border-[var(--border)]"
     >
-      {/* Brand mark — circular icon, leading-edge aligned. `pl-6` puts the
-          logo's left edge at 24px from the rail border, the same X that the
-          nav rows' icon column sits at (nav's px-3 + row's px-3 = 24px).
-          Rendered at 48px (25% smaller than the original 64px landing). */}
+      {/* Brand mark — square source clipped into a circle via
+          `rounded-full`. `pl-6` puts the logo's left edge at 24px from
+          the rail border, the same X that the nav rows' icon column sits
+          at (nav's px-3 + row's px-3 = 24px). Rendered at 48px. */}
       <div className="flex-shrink-0 h-20 pl-6 pr-3 flex items-center">
         <Link href="/" aria-label="TCG Dexter — home" className="inline-flex">
           {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -87,6 +87,7 @@ export default function SiteSidebar({
             alt="TCG Dexter"
             width={48}
             height={48}
+            className="rounded-full"
             style={{ width: "48px", height: "48px" }}
           />
         </Link>
