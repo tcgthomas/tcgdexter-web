@@ -14,10 +14,19 @@ const META_ARCHETYPES = [
   "Steven's Metagross", "Tera Box",
 ];
 
+// Mirrors the logged-match result pills in app/my-decks/[id]/MatchLog.tsx so
+// the form's selected state previews exactly how the row will eventually
+// render. Keep them in sync.
+//
+// Win uses an inline radial gradient (no Tailwind class can express it),
+// hence the separate `style` field. Every variant ships a `border` color —
+// even the gradient and black ones get `border-transparent` so the three
+// pills always render at identical pixel dimensions; without that, the
+// bordered Draw pill would be 2 px wider than its siblings.
 const RESULT_STYLE = {
-  win:  { bg: "bg-green-100", text: "text-green-800", border: "border-green-200" },
-  loss: { bg: "bg-red-100",   text: "text-red-800",   border: "border-red-200" },
-  draw: { bg: "bg-stone-100", text: "text-stone-600", border: "border-stone-200" },
+  win:  { bg: "",         text: "text-white",        border: "border-transparent", style: { background: "radial-gradient(circle, #F2A20C 0%, #D91E0D 60%, #A60D0D 100%)" } },
+  loss: { bg: "bg-black", text: "text-white",        border: "border-transparent", style: undefined },
+  draw: { bg: "bg-white", text: "text-text-primary", border: "border-black",        style: undefined },
 };
 
 export interface MatchFormData {
@@ -151,9 +160,13 @@ export default function MatchForm({
             <button
               key={r}
               onClick={() => setResult(r)}
+              // `style` only takes effect on the selected Win — that's the
+              // only variant with a gradient. Black and white-bordered
+              // siblings paint from Tailwind classes alone.
+              style={selected ? s.style : undefined}
               className={`flex-1 rounded-full border py-2.5 text-sm font-bold transition-all ${
                 selected
-                  ? `${s.bg} ${s.text} ${s.border} ring-2 ring-offset-1 ring-current`
+                  ? `${s.bg} ${s.text} ${s.border}`
                   : "border-border bg-bg text-text-secondary hover:bg-surface-2"
               }`}
             >

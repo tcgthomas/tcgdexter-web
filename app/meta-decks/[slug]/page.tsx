@@ -145,15 +145,25 @@ export default async function MetaDeckDetailPage({
       {/* Tournament record */}
       <div className="rounded-2xl border border-black/8 bg-white/90 backdrop-blur-xl shadow-sm px-5 py-4">
         <h3 className="text-sm font-semibold text-text-primary mb-2">Tournament Record</h3>
+        {/* Pills mirror the logged-match result style in
+            app/my-decks/[id]/MatchLog.tsx — radial gradient for wins,
+            black for losses, white-with-black-border for ties. Every pill
+            ships a `border` + explicit border color so the gradient and
+            black variants (border-transparent) stay the same pixel width
+            as the bordered tie pill; without that they'd render 2px
+            narrower. */}
         <div className="flex items-center gap-2">
-          <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-700">
+          <span
+            className="inline-flex items-center px-2.5 py-1 rounded-full border border-transparent text-xs font-bold text-white"
+            style={{ background: "radial-gradient(circle, #F2A20C 0%, #D91E0D 60%, #A60D0D 100%)" }}
+          >
             {arch.wins}W
           </span>
-          <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-rose-100 text-rose-700">
+          <span className="inline-flex items-center px-2.5 py-1 rounded-full border border-transparent text-xs font-bold bg-black text-white">
             {arch.losses}L
           </span>
           {arch.ties > 0 && (
-            <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-black/5 text-text-muted">
+            <span className="inline-flex items-center px-2.5 py-1 rounded-full border border-black text-xs font-bold bg-white text-text-primary">
               {arch.ties}T
             </span>
           )}
