@@ -146,23 +146,23 @@ export default async function MetaDeckDetailPage({
       <div className="rounded-2xl border border-black/8 bg-white/90 backdrop-blur-xl shadow-sm px-5 py-4">
         <h3 className="text-sm font-semibold text-text-primary mb-2">Tournament Record</h3>
         {/* Pills mirror the logged-match result style in
-            app/my-decks/[id]/MatchLog.tsx — brand gradient with a
-            same-gradient 1 px border-image for wins, black for losses,
-            white-with-black-border for ties. The
-            `.bg-gradient-brand-bordered` utility (globals.css) is what
-            gives the win pill its framed edge — without it, the
-            gradient's saturated endpoints sit raw at the rounded chip
-            edge. Every pill ships a `border` + explicit color so the
-            three render at identical pixel widths. */}
+            app/my-decks/[id]/MatchLog.tsx and the gradient-button pattern
+            from ShareButton: rounded-full + bg-gradient-brand for wins,
+            bg-black for losses, white with an inset 1 px shadow outline
+            for ties. No real `border` on any pill — that's what made the
+            earlier border-image attempt fail to clip against
+            border-radius. The tie's inset shadow gives it the visible
+            outline without adding to the box dimensions, so the three
+            chips still line up. */}
         <div className="flex items-center gap-2">
-          <span className="inline-flex items-center px-2.5 py-1 rounded-full border border-transparent text-xs font-bold bg-gradient-brand-bordered text-white">
+          <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-gradient-brand text-white">
             {arch.wins}W
           </span>
-          <span className="inline-flex items-center px-2.5 py-1 rounded-full border border-transparent text-xs font-bold bg-black text-white">
+          <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-black text-white">
             {arch.losses}L
           </span>
           {arch.ties > 0 && (
-            <span className="inline-flex items-center px-2.5 py-1 rounded-full border border-black text-xs font-bold bg-white text-text-primary">
+            <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-white text-text-primary shadow-[inset_0_0_0_1px_black]">
               {arch.ties}T
             </span>
           )}

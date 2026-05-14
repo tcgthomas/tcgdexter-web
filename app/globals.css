@@ -96,28 +96,6 @@
     color: var(--text-secondary);
   }
 
-  /* Brand-gradient pill background that also paints the 1 px border with
-     the same gradient, so the chip has a defined frame instead of the
-     gradient's saturated endpoints sitting raw at the rounded edge. Used
-     for the "win" result chip across MatchLog, MatchForm, and the
-     tournament-record module on meta-deck profiles.
-
-     Two layers do the work: the body paints `--gradient-brand` clipped to
-     padding-box, and `border-image` paints the same gradient across the
-     1 px border zone. At every horizontal position the two layers agree
-     on color, so the gradient reads as continuous from outer edge through
-     the body. Pair with Tailwind's `border` (width) and `rounded-full`.
-     `border-image` overrides `border-color`, so the companion
-     `border-transparent` on these chips is structurally consistent with
-     the loss / tie variants but doesn't paint anything. Per CSS spec
-     `border-image` ignores `border-radius`, but every shipping browser
-     clips it to the rounded path in practice — verified on Chrome,
-     Safari, Firefox, and Edge. */
-  .bg-gradient-brand-bordered {
-    background: var(--gradient-brand) padding-box;
-    border-image: var(--gradient-brand) 1;
-  }
-
 }
 
 @keyframes fadeToast {

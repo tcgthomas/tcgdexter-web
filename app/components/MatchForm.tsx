@@ -16,16 +16,16 @@ const META_ARCHETYPES = [
 
 // Mirrors the logged-match result pills in app/my-decks/[id]/MatchLog.tsx
 // so the form's selected state previews exactly how the row will eventually
-// render. Win uses `.bg-gradient-brand-bordered` (globals.css) — body
-// gradient plus a same-gradient 1 px `border-image`, so the chip has a
-// defined frame instead of the gradient's saturated endpoints sitting raw
-// at the rounded edge. Every variant ships a `border` color; the gradient
-// and black variants get `border-transparent` (just for width
-// consistency — border-image overrides the color on the win pill anyway).
+// render. Pattern follows ShareButton in DeckProfileView's footer:
+// `rounded-full` + `bg-gradient-brand`, no real `border` — that's the only
+// configuration that paints cleanly against the rounded shape. Win and
+// loss therefore ship pure bgs; the tie chip's 1 px black outline comes
+// from `shadow-[inset_0_0_0_1px_black]`, which doesn't grow the box
+// (so all three render at identical pixel dimensions).
 const RESULT_STYLE = {
-  win:  { bg: "bg-gradient-brand-bordered", text: "text-white",        border: "border-transparent" },
-  loss: { bg: "bg-black",                   text: "text-white",        border: "border-transparent" },
-  draw: { bg: "bg-white",                   text: "text-text-primary", border: "border-black"       },
+  win:  { bg: "bg-gradient-brand",                       text: "text-white"        },
+  loss: { bg: "bg-black",                                text: "text-white"        },
+  draw: { bg: "bg-white shadow-[inset_0_0_0_1px_black]", text: "text-text-primary" },
 };
 
 export interface MatchFormData {
@@ -159,10 +159,15 @@ export default function MatchForm({
             <button
               key={r}
               onClick={() => setResult(r)}
-              className={`flex-1 rounded-full border py-2.5 text-sm font-bold transition-all ${
+              // Unselected uses an inset shadow for its 1 px outline so it
+              // stays dimensionally identical to the selected variants
+              // (which carry no real `border`). A real `border-border` here
+              // would push the button out by 2 px and shift the row's
+              // baseline whenever the selection changes.
+              className={`flex-1 rounded-full py-2.5 text-sm font-bold transition-all ${
                 selected
-                  ? `${s.bg} ${s.text} ${s.border}`
-                  : "border-border bg-bg text-text-secondary hover:bg-surface-2"
+                  ? `${s.bg} ${s.text}`
+                  : "bg-bg text-text-secondary shadow-[inset_0_0_0_1px_var(--border)] hover:bg-surface-2"
               }`}
             >
               {r === "win" ? "Win" : r === "loss" ? "Loss" : "Draw"}

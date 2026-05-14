@@ -60,19 +60,22 @@ interface UnifiedRow {
 
 /* ─── Result styling ─────────────────────────────────────────── */
 
-// Win uses `.bg-gradient-brand-bordered` (defined in globals.css), which
-// paints the canonical brand gradient as both the chip body AND a 1 px
-// border-image — without that border layer the gradient's saturated
-// endpoints (#F2A20C / #A60D0D) hit the rounded chip edge raw, making
-// the chip read as a fragment "clipped" out of a larger gradient panel.
-// Every variant ships a `border` class plus an explicit color so the three
-// render at identical pixel dimensions. Mirrored in
-// app/components/MatchForm.tsx and app/meta-decks/[slug]/page.tsx — keep
-// them in sync.
+// Mirrors the gradient-button pattern from ShareButton in
+// DeckProfileView's footer (rounded-full + bg-gradient-brand, no border
+// at all) — that's the only configuration that renders cleanly with the
+// rounded shape in every browser. The earlier border-image attempt failed
+// to clip to border-radius on the meta-deck profile and rendered as a
+// visible rectangle around the chip.
+//
+// Win and loss therefore ship no border; tie keeps its 1 px black outline
+// via `shadow-[inset_0_0_0_1px_black]` (inset box-shadow doesn't grow the
+// box the way a real `border` does, so the three chips still render at
+// identical pixel dimensions). Mirrored in app/components/MatchForm.tsx
+// and app/meta-decks/[slug]/page.tsx — keep them in sync.
 const RESULT_STYLE = {
-  win:  { label: "W", bg: "bg-gradient-brand-bordered", text: "text-white",        border: "border-transparent" },
-  loss: { label: "L", bg: "bg-black",                   text: "text-white",        border: "border-transparent" },
-  draw: { label: "D", bg: "bg-white",                   text: "text-text-primary", border: "border-black"       },
+  win:  { label: "W", bg: "bg-gradient-brand",                       text: "text-white"        },
+  loss: { label: "L", bg: "bg-black",                                text: "text-white"        },
+  draw: { label: "D", bg: "bg-white shadow-[inset_0_0_0_1px_black]", text: "text-text-primary" },
 };
 
 /* ─── Component ──────────────────────────────────────────────── */
@@ -331,7 +334,7 @@ export default function MatchLog({
                   }`}
                 >
                   <span
-                    className={`flex-shrink-0 inline-flex items-center justify-center w-8 h-8 rounded-full text-xs font-bold ${s.bg} ${s.text} ${s.border} border`}
+                    className={`flex-shrink-0 inline-flex items-center justify-center w-8 h-8 rounded-full text-xs font-bold ${s.bg} ${s.text}`}
                   >
                     {s.label}
                   </span>
@@ -404,7 +407,7 @@ export default function MatchLog({
                 }`}
               >
                 <span
-                  className={`flex-shrink-0 inline-flex items-center justify-center w-8 h-8 rounded-full text-xs font-bold ${s.bg} ${s.text} ${s.border} border`}
+                  className={`flex-shrink-0 inline-flex items-center justify-center w-8 h-8 rounded-full text-xs font-bold ${s.bg} ${s.text}`}
                 >
                   {s.label}
                 </span>
