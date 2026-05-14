@@ -22,12 +22,13 @@ interface Props {
 }
 
 /**
- * Leading-edge (left) sidebar — desktop / landscape-tablet only.
+ * Leading-edge (left) sidebar — desktop only (xl+, 1280 px).
  *
  * Paired with SiteSidebarRight, which carries the external links. Both rails
- * are `hidden lg:flex`; the mobile toolbar is `lg:hidden`, so the three
- * surfaces never overlap. Root layout reserves space with `lg:pl-80
- * lg:pr-80` on the page wrapper.
+ * are `hidden xl:flex`; the mobile toolbar is `xl:hidden`, so the three
+ * surfaces never overlap. Root layout reserves space with `xl:pl-80
+ * xl:pr-80` on the page wrapper. Landscape iPad and smaller laptops stay
+ * on the mobile hamburger.
  *
  * Layout follows the x.com signed-in shell: the brand mark hugs the
  * leading edge of the rail (aligning with the icon column of the nav
@@ -72,7 +73,7 @@ export default function SiteSidebar({
   return (
     <aside
       aria-label="Primary navigation"
-      className="hidden lg:flex fixed inset-y-0 left-0 z-30 w-80 flex-col bg-bg border-r border-[var(--border)]"
+      className="hidden xl:flex fixed inset-y-0 left-0 z-30 w-80 flex-col bg-bg border-r border-[var(--border)]"
     >
       {/* Brand mark — circular icon, leading-edge aligned. `pl-6` puts the
           logo's left edge at 24px from the rail border, the same X that the

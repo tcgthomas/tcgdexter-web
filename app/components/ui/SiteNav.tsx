@@ -10,11 +10,14 @@ import SiteSidebarRight from "./SiteSidebarRight";
  * passes the payload to the mobile toolbar and the leading-edge sidebar.
  * The trailing-edge sidebar carries only external links and needs no auth
  * context. Responsive visibility is handled by the children:
- *   - MobileNavMenu lives inside a `lg:hidden` toolbar → hidden on lg+.
- *   - SiteSidebar + SiteSidebarRight are `hidden lg:flex` → hidden below lg.
+ *   - MobileNavMenu lives inside an `xl:hidden` toolbar → hidden on xl+.
+ *   - SiteSidebar + SiteSidebarRight are `hidden xl:flex` → hidden below xl.
+ *
+ * Breakpoint sits at `xl` (1280 px) — landscape iPad and small laptops
+ * keep the mobile hamburger; larger desktops get the dual-rail layout.
  *
  * Mobile nav UI is intentionally unchanged. Root layout pairs the dual
- * rails with `lg:pl-64 lg:pr-64` on the page wrapper so content sits
+ * rails with `xl:pl-80 xl:pr-80` on the page wrapper so content sits
  * between them.
  */
 export default async function SiteNav() {
@@ -42,7 +45,7 @@ export default async function SiteNav() {
       {/* Mobile / portrait-tablet: sticky top toolbar with hamburger. */}
       <nav
         data-site-toolbar
-        className="lg:hidden sticky top-0 z-30 backdrop-blur-xl bg-bg/70"
+        className="xl:hidden sticky top-0 z-30 backdrop-blur-xl bg-bg/70"
       >
         <div className="mx-auto max-w-6xl px-6 h-14 flex items-center">
           <MobileNavMenu

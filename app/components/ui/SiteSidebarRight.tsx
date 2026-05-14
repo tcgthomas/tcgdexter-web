@@ -6,12 +6,13 @@ import {
 } from "./nav-icons";
 
 /**
- * Trailing-edge (right) sidebar — desktop / landscape-tablet only.
+ * Trailing-edge (right) sidebar — desktop only (xl+, 1280 px).
  *
  * Carries the external links that used to sit in the bottom block of the
  * mobile nav panel. Paired with SiteSidebar on the leading edge; both rails
- * are `hidden lg:flex`. Root layout reserves space with `lg:pr-80` on the
- * page wrapper.
+ * are `hidden xl:flex`. Root layout reserves space with `xl:pr-80` on the
+ * page wrapper. Landscape iPad and smaller laptops stay on the mobile
+ * hamburger.
  *
  * No brand mark here by design — the logo lives on the left rail only.
  * A header-height spacer matches the left rail's logo block so the first
@@ -36,7 +37,7 @@ export default function SiteSidebarRight() {
   return (
     <aside
       aria-label="External links"
-      className="hidden lg:flex fixed inset-y-0 right-0 z-30 w-80 flex-col bg-bg border-l border-[var(--border)]"
+      className="hidden xl:flex fixed inset-y-0 right-0 z-30 w-80 flex-col bg-bg border-l border-[var(--border)]"
     >
       {/* Header spacer — same height as the logo block on the left rail,
           so the first link here visually lines up with the first internal
