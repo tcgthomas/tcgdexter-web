@@ -16,16 +16,16 @@ const META_ARCHETYPES = [
 
 // Mirrors the logged-match result pills in app/my-decks/[id]/MatchLog.tsx
 // so the form's selected state previews exactly how the row will eventually
-// render. Win uses the canonical brand gradient (`bg-gradient-brand`,
-// defined in tailwind.config.ts as linear 90deg gold → red → dark red).
-// Every variant ships a `border` color — even the gradient and black ones
-// get `border-transparent` so the three pills always render at identical
-// pixel dimensions; without that, the bordered Draw pill would be 2 px
-// wider than its siblings.
+// render. Win uses `.bg-gradient-brand-bordered` (globals.css) — body
+// gradient plus a same-gradient 1 px `border-image`, so the chip has a
+// defined frame instead of the gradient's saturated endpoints sitting raw
+// at the rounded edge. Every variant ships a `border` color; the gradient
+// and black variants get `border-transparent` (just for width
+// consistency — border-image overrides the color on the win pill anyway).
 const RESULT_STYLE = {
-  win:  { bg: "bg-gradient-brand", text: "text-white",        border: "border-transparent" },
-  loss: { bg: "bg-black",          text: "text-white",        border: "border-transparent" },
-  draw: { bg: "bg-white",          text: "text-text-primary", border: "border-black"       },
+  win:  { bg: "bg-gradient-brand-bordered", text: "text-white",        border: "border-transparent" },
+  loss: { bg: "bg-black",                   text: "text-white",        border: "border-transparent" },
+  draw: { bg: "bg-white",                   text: "text-text-primary", border: "border-black"       },
 };
 
 export interface MatchFormData {

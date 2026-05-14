@@ -60,17 +60,19 @@ interface UnifiedRow {
 
 /* ─── Result styling ─────────────────────────────────────────── */
 
-// Win uses the canonical brand gradient (defined as `bg-gradient-brand` in
-// tailwind.config.ts — linear, 90deg, gold → red → dark red). Every variant
-// ships a `border` class plus an explicit color so the three render at
-// identical pixel dimensions; without `border-transparent` on the gradient
-// and black pills, the bordered Draw pill would be 2 px wider than its
-// siblings. Mirrored in app/components/MatchForm.tsx and
-// app/meta-decks/[slug]/page.tsx — keep them in sync.
+// Win uses `.bg-gradient-brand-bordered` (defined in globals.css), which
+// paints the canonical brand gradient as both the chip body AND a 1 px
+// border-image — without that border layer the gradient's saturated
+// endpoints (#F2A20C / #A60D0D) hit the rounded chip edge raw, making
+// the chip read as a fragment "clipped" out of a larger gradient panel.
+// Every variant ships a `border` class plus an explicit color so the three
+// render at identical pixel dimensions. Mirrored in
+// app/components/MatchForm.tsx and app/meta-decks/[slug]/page.tsx — keep
+// them in sync.
 const RESULT_STYLE = {
-  win:  { label: "W", bg: "bg-gradient-brand", text: "text-white",        border: "border-transparent" },
-  loss: { label: "L", bg: "bg-black",          text: "text-white",        border: "border-transparent" },
-  draw: { label: "D", bg: "bg-white",          text: "text-text-primary", border: "border-black"       },
+  win:  { label: "W", bg: "bg-gradient-brand-bordered", text: "text-white",        border: "border-transparent" },
+  loss: { label: "L", bg: "bg-black",                   text: "text-white",        border: "border-transparent" },
+  draw: { label: "D", bg: "bg-white",                   text: "text-text-primary", border: "border-black"       },
 };
 
 /* ─── Component ──────────────────────────────────────────────── */

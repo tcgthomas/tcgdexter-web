@@ -146,14 +146,16 @@ export default async function MetaDeckDetailPage({
       <div className="rounded-2xl border border-black/8 bg-white/90 backdrop-blur-xl shadow-sm px-5 py-4">
         <h3 className="text-sm font-semibold text-text-primary mb-2">Tournament Record</h3>
         {/* Pills mirror the logged-match result style in
-            app/my-decks/[id]/MatchLog.tsx — brand gradient (linear) for
-            wins, black for losses, white-with-black-border for ties.
-            Every pill ships a `border` + explicit border color so the
-            gradient and black variants (border-transparent) stay the
-            same pixel width as the bordered tie pill; without that
-            they'd render 2 px narrower. */}
+            app/my-decks/[id]/MatchLog.tsx — brand gradient with a
+            same-gradient 1 px border-image for wins, black for losses,
+            white-with-black-border for ties. The
+            `.bg-gradient-brand-bordered` utility (globals.css) is what
+            gives the win pill its framed edge — without it, the
+            gradient's saturated endpoints sit raw at the rounded chip
+            edge. Every pill ships a `border` + explicit color so the
+            three render at identical pixel widths. */}
         <div className="flex items-center gap-2">
-          <span className="inline-flex items-center px-2.5 py-1 rounded-full border border-transparent text-xs font-bold bg-gradient-brand text-white">
+          <span className="inline-flex items-center px-2.5 py-1 rounded-full border border-transparent text-xs font-bold bg-gradient-brand-bordered text-white">
             {arch.wins}W
           </span>
           <span className="inline-flex items-center px-2.5 py-1 rounded-full border border-transparent text-xs font-bold bg-black text-white">
