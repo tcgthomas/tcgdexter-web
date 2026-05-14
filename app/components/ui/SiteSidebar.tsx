@@ -50,8 +50,8 @@ export default function SiteSidebar({
   // and append below.
   const INTERNAL_LINKS = [
     { href: "/", label: "Create a Deck Profile", Icon: StackIcon },
-    { href: "/meta-decks", label: "Top 30 Meta Decks", Icon: TrophyIcon },
-    { href: "/leaderboard", label: "Leaderboard", Icon: ChartBarIcon },
+    { href: "/meta-decks", label: "Top 30 Meta Decks", Icon: ChartBarIcon },
+    { href: "/leaderboard", label: "Leaderboard", Icon: TrophyIcon },
     { href: "/learn", label: "Learn to Play", Icon: BookOpenIcon },
   ];
 
