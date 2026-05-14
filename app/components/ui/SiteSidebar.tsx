@@ -58,16 +58,20 @@ export default function SiteSidebar({
       aria-label="Primary navigation"
       className="hidden lg:flex fixed inset-y-0 left-0 z-30 w-64 flex-col bg-bg border-r border-[var(--border)]"
     >
-      {/* Brand mark — centered, with breathing room above and below. The
-          right rail mirrors this height with a spacer so its first link
+      {/* Brand mark — circular icon, centered. Source is 256×256 (down-
+          sampled from the original 2000² master); rendered at 64px so it
+          stays sharp on retina without leaning heavy in the rail. The right
+          rail mirrors this block height with a spacer so its first link
           still aligns with the auth item below. */}
       <div className="flex-shrink-0 h-20 px-5 flex items-center justify-center">
         <Link href="/" aria-label="TCG Dexter — home" className="inline-flex">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="/logo-light.png"
+            src="/logo-circle.png"
             alt="TCG Dexter"
-            style={{ width: "140px", height: "auto" }}
+            width={64}
+            height={64}
+            style={{ width: "64px", height: "64px" }}
           />
         </Link>
       </div>
