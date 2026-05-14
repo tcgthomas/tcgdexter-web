@@ -58,10 +58,10 @@ export default function SiteSidebar({
       aria-label="Primary navigation"
       className="hidden lg:flex fixed inset-y-0 left-0 z-30 w-64 flex-col bg-bg border-r border-[var(--border)]"
     >
-      {/* Brand mark — centered. Height matches the mobile toolbar (h-14)
-          for visual continuity, with extra breathing room beneath via the
-          nav's pt-4. */}
-      <div className="flex-shrink-0 h-14 px-5 flex items-center justify-center">
+      {/* Brand mark — centered, with breathing room above and below. The
+          right rail mirrors this height with a spacer so its first link
+          still aligns with the auth item below. */}
+      <div className="flex-shrink-0 h-20 px-5 flex items-center justify-center">
         <Link href="/" aria-label="TCG Dexter — home" className="inline-flex">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img

@@ -30,7 +30,7 @@ export default function SiteSidebarRight() {
     >
       {/* Header spacer — same height as the logo block on the left rail,
           so the first link here visually lines up with the auth item there. */}
-      <div className="flex-shrink-0 h-14" aria-hidden="true" />
+      <div className="flex-shrink-0 h-20" aria-hidden="true" />
 
       <nav className="flex-1 overflow-y-auto px-3 pt-4 pb-6">
         <ul className="flex flex-col gap-0.5">
