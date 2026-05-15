@@ -12,7 +12,7 @@ import StatsStrip from "@/app/components/ui/StatsStrip";
 import archetypesRaw from "@/data/meta-archetypes.json";
 import { getTierByTitle } from "@/lib/trainer-tiers";
 import TrainerSearch from "@/app/leaderboard/TrainerSearch";
-import type { TopTrainer } from "@/app/(home)/page";
+import type { TopTrainer } from "@/app/page";
 
 const EXAMPLE_DECK = `Pokémon: 13
 1 Meowth ex POR 62
