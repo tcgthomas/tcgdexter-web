@@ -28,6 +28,7 @@ interface DeckCard {
 
 interface MetaDeckVariant {
   listId?: number;
+  creator?: string;
   cards: DeckCard[];
 }
 
@@ -97,6 +98,10 @@ export default async function MetaDeckDetailPage({
   const cards = variantCardSets[0] ?? [];
   const deckList = buildDeckList(cards);
   const deckLists = variantCardSets.map(buildDeckList);
+  const deckListCreators: string[] =
+    deckData?.variants && deckData.variants.length > 0
+      ? deckData.variants.map((v) => (v.creator ?? "").trim() || "Trainer")
+      : ["Trainer"];
 
   const analysis = buildMetaAnalysis(cards, {
     name: arch.name,
@@ -145,15 +150,24 @@ export default async function MetaDeckDetailPage({
       {/* Tournament record */}
       <div className="rounded-2xl border border-black/8 bg-white/90 backdrop-blur-xl shadow-sm px-5 py-4">
         <h3 className="text-sm font-semibold text-text-primary mb-2">Tournament Record</h3>
+        {/* Pills mirror the logged-match result style in
+            app/my-decks/[id]/MatchLog.tsx and the gradient-button pattern
+            from ShareButton: rounded-full + bg-gradient-brand for wins,
+            bg-black for losses, white with an inset 1 px shadow outline
+            for ties. No real `border` on any pill — that's what made the
+            earlier border-image attempt fail to clip against
+            border-radius. The tie's inset shadow gives it the visible
+            outline without adding to the box dimensions, so the three
+            chips still line up. */}
         <div className="flex items-center gap-2">
-          <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-700">
+          <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-gradient-brand text-white">
             {arch.wins}W
           </span>
-          <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-rose-100 text-rose-700">
+          <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-black text-white">
             {arch.losses}L
           </span>
           {arch.ties > 0 && (
-            <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-black/5 text-text-muted">
+            <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-white text-text-primary shadow-[inset_0_0_0_1px_black]">
               {arch.ties}T
             </span>
           )}
@@ -174,6 +188,7 @@ export default async function MetaDeckDetailPage({
       variant="meta"
       deckList={deckList}
       deckLists={deckLists}
+      deckListCreators={deckListCreators}
       analysis={analysis}
       profiledAt={profiledAt}
       pageTitle={arch.name}

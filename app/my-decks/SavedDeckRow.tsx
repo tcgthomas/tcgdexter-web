@@ -105,7 +105,7 @@ export default function SavedDeckRow({
 
           {/* Row 2: action buttons */}
           <div
-            className="flex items-center gap-2"
+            className="flex w-full items-center justify-around"
             onClick={(e) => e.stopPropagation()}
           >
             <button

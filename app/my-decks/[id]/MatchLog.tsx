@@ -1,8 +1,15 @@
 "use client";
 
-import { useState } from "react";
+import Link from "next/link";
+import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import MatchForm, { type MatchFormData } from "@/app/components/MatchForm";
+import {
+  deckResult,
+  viewerLost,
+  type SharedMatchCore,
+  type SharedResult,
+} from "@/lib/shared-matches";
 
 /* ─── Types ──────────────────────────────────────────────────── */
 
@@ -16,26 +23,72 @@ interface Match {
   played_at: string | null;
 }
 
+export interface SharedDeckMatchRow extends SharedMatchCore {
+  /** Display name for the *other* participant on this deck profile. */
+  opponent_display_name: string | null;
+  opponent_username: string | null;
+  opponent_deck_name: string | null;
+  opponent_deck_archetype: string | null;
+}
+
 interface Props {
   savedDeckId: string;
   initialMatches: Match[];
+  /** Verified shared matches involving this deck. Public to all viewers. */
+  initialSharedMatches?: SharedDeckMatchRow[];
+  /** When true, hides log/edit/delete affordances (visitor view). */
+  readOnly?: boolean;
+  /** Viewer's user id, or null for unauthenticated. Used for judge-note visibility. */
+  viewerId?: string | null;
   /** Controlled form-open state. When provided the parent drives open/close. */
   open?: boolean;
   /** Called when the form should open or close (controlled mode). */
   onOpenChange?: (open: boolean) => void;
 }
 
+interface UnifiedRow {
+  kind: "manual" | "verified";
+  id: string;
+  result: SharedResult;
+  date: string | null;
+  // manual-only
+  manual?: Match;
+  // verified-only
+  verified?: SharedDeckMatchRow;
+  showJudgeNote?: boolean;
+}
+
 /* ─── Result styling ─────────────────────────────────────────── */
 
+// Mirrors the gradient-button pattern from ShareButton in
+// DeckProfileView's footer (rounded-full + bg-gradient-brand, no border
+// at all) — that's the only configuration that renders cleanly with the
+// rounded shape in every browser. The earlier border-image attempt failed
+// to clip to border-radius on the meta-deck profile and rendered as a
+// visible rectangle around the chip.
+//
+// Win and loss therefore ship no border; tie keeps its 1 px black outline
+// via `shadow-[inset_0_0_0_1px_black]` (inset box-shadow doesn't grow the
+// box the way a real `border` does, so the three chips still render at
+// identical pixel dimensions). Mirrored in app/components/MatchForm.tsx
+// and app/meta-decks/[slug]/page.tsx — keep them in sync.
 const RESULT_STYLE = {
-  win:  { label: "W", bg: "bg-green-100", text: "text-green-800", border: "border-green-200" },
-  loss: { label: "L", bg: "bg-red-100",   text: "text-red-800",   border: "border-red-200" },
-  draw: { label: "D", bg: "bg-stone-100", text: "text-stone-600", border: "border-stone-200" },
+  win:  { label: "W", bg: "bg-gradient-brand",                       text: "text-white"        },
+  loss: { label: "L", bg: "bg-black",                                text: "text-white"        },
+  draw: { label: "D", bg: "bg-white shadow-[inset_0_0_0_1px_black]", text: "text-text-primary" },
 };
 
 /* ─── Component ──────────────────────────────────────────────── */
 
-export default function MatchLog({ savedDeckId, initialMatches, open, onOpenChange }: Props) {
+export default function MatchLog({
+  savedDeckId,
+  initialMatches,
+  initialSharedMatches = [],
+  readOnly = false,
+  viewerId = null,
+  open,
+  onOpenChange,
+}: Props) {
   const router = useRouter();
   const [matches, setMatches] = useState<Match[]>(initialMatches);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -51,21 +104,52 @@ export default function MatchLog({ savedDeckId, initialMatches, open, onOpenChan
     else setInternalOpen(false);
   }
 
-  // ── Stats ───────────────────────────────────────────────────
-  const wins = matches.filter((m) => m.result === "win").length;
-  const losses = matches.filter((m) => m.result === "loss").length;
-  const draws = matches.filter((m) => m.result === "draw").length;
+  // ── Unified rows (manual + verified), sorted by date desc ──
+  const rows: UnifiedRow[] = useMemo(() => {
+    const out: UnifiedRow[] = [];
+    for (const m of matches) {
+      out.push({
+        kind: "manual",
+        id: m.id,
+        result: m.result,
+        date: m.played_at,
+        manual: m,
+      });
+    }
+    for (const sm of initialSharedMatches) {
+      const r = deckResult(sm, savedDeckId);
+      if (!r) continue;
+      out.push({
+        kind: "verified",
+        id: sm.id,
+        result: r,
+        date: sm.finalized_at ?? null,
+        verified: sm,
+        showJudgeNote: viewerLost(sm, viewerId) && sm.judge_ruled,
+      });
+    }
+    return out.sort((a, b) => {
+      const at = a.date ? Date.parse(a.date) : 0;
+      const bt = b.date ? Date.parse(b.date) : 0;
+      return bt - at;
+    });
+  }, [matches, initialSharedMatches, savedDeckId, viewerId]);
+
+  // ── Stats (combined manual + verified) ─────────────────────
+  const wins = rows.filter((r) => r.result === "win").length;
+  const losses = rows.filter((r) => r.result === "loss").length;
+  const draws = rows.filter((r) => r.result === "draw").length;
   const total = wins + losses + draws;
   const winRate = total > 0 ? ((wins / total) * 100).toFixed(1) : "0.0";
 
   // ── Streak ──────────────────────────────────────────────────
   let streak = 0;
   let streakType: "win" | "loss" | null = null;
-  for (const m of matches) {
+  for (const r of rows) {
     if (streakType === null) {
-      streakType = m.result === "win" ? "win" : m.result === "loss" ? "loss" : null;
+      streakType = r.result === "win" ? "win" : r.result === "loss" ? "loss" : null;
       if (streakType) streak = 1;
-    } else if (m.result === streakType) {
+    } else if (r.result === streakType) {
       streak++;
     } else {
       break;
@@ -187,7 +271,7 @@ export default function MatchLog({ savedDeckId, initialMatches, open, onOpenChan
       </div>
 
       {/* ── New match form (shown when formOpen) ─────────── */}
-      {formOpen && (
+      {!readOnly && formOpen && (
         <div className="mb-4">
           <MatchForm
             onSubmit={handleNewMatch}
@@ -197,84 +281,153 @@ export default function MatchLog({ savedDeckId, initialMatches, open, onOpenChan
       )}
 
       {/* ── Empty state ───────────────────────────────────── */}
-      {matches.length === 0 && !formOpen && (
+      {rows.length === 0 && !formOpen && (
         <p className="text-sm text-text-muted mt-3 text-center">
-          No matches logged yet. Tap Log Match after your next game.
+          {readOnly
+            ? "No verified matches yet."
+            : "No matches logged yet. Tap Log Match after your next game."}
         </p>
       )}
 
       {/* ── Match List ────────────────────────────────────── */}
-      {matches.length > 0 && (
+      {rows.length > 0 && (
         <div className="mt-4 flex flex-col">
-          {(historyExpanded ? matches : matches.slice(0, 3)).map((match, i, arr) => {
-            const s = RESULT_STYLE[match.result];
-            const dateStr = match.played_at
-              ? new Date(match.played_at).toLocaleDateString("en-US", {
+          {(historyExpanded ? rows : rows.slice(0, 3)).map((row, i, arr) => {
+            const s = RESULT_STYLE[row.result];
+            const dateStr = row.date
+              ? new Date(row.date).toLocaleDateString("en-US", {
                   month: "short",
                   day: "numeric",
                 })
               : null;
-            const isEditing = editingId === match.id;
 
-            if (isEditing) {
+            if (row.kind === "manual") {
+              const match = row.manual!;
+              const isEditing = editingId === match.id;
+              if (isEditing && !readOnly) {
+                return (
+                  <div
+                    key={match.id}
+                    className={`py-3 ${i < arr.length - 1 ? "border-b border-border/50" : ""}`}
+                  >
+                    <MatchForm
+                      initial={{
+                        result: match.result,
+                        opponent_name: match.opponent_name,
+                        opponent_archetype: match.opponent_archetype,
+                        opponent_deck_list: match.opponent_deck_list,
+                        notes: match.notes,
+                        played_at: match.played_at,
+                      }}
+                      onSubmit={(data) => handleEditMatch(match.id, data)}
+                      onCancel={() => setEditingId(null)}
+                      submitLabel="Update Match"
+                    />
+                  </div>
+                );
+              }
               return (
                 <div
                   key={match.id}
-                  className={`py-3 ${i < arr.length - 1 ? "border-b border-border/50" : ""}`}
+                  className={`flex items-start gap-3 px-1 py-3 ${
+                    i < arr.length - 1 ? "border-b border-border/50" : ""
+                  }`}
                 >
-                  <MatchForm
-                    initial={{
-                      result: match.result,
-                      opponent_name: match.opponent_name,
-                      opponent_archetype: match.opponent_archetype,
-                      opponent_deck_list: match.opponent_deck_list,
-                      notes: match.notes,
-                      played_at: match.played_at,
-                    }}
-                    onSubmit={(data) => handleEditMatch(match.id, data)}
-                    onCancel={() => setEditingId(null)}
-                    submitLabel="Update Match"
-                  />
+                  <span
+                    className={`flex-shrink-0 inline-flex items-center justify-center w-8 h-8 rounded-full text-xs font-bold ${s.bg} ${s.text}`}
+                  >
+                    {s.label}
+                  </span>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 text-sm">
+                      {match.opponent_archetype && (
+                        <span className="font-semibold text-text-primary truncate">
+                          vs {match.opponent_archetype}
+                        </span>
+                      )}
+                      {match.opponent_name && !match.opponent_archetype && (
+                        <span className="font-semibold text-text-primary truncate">
+                          vs {match.opponent_name}
+                        </span>
+                      )}
+                      {match.opponent_name && match.opponent_archetype && (
+                        <span className="text-xs text-text-muted truncate">
+                          ({match.opponent_name})
+                        </span>
+                      )}
+                      {!match.opponent_archetype && !match.opponent_name && (
+                        <span className="text-text-muted text-sm">Match logged</span>
+                      )}
+                    </div>
+                    {match.notes && (
+                      <p className="text-xs text-text-muted mt-0.5 leading-relaxed">
+                        {match.notes}
+                      </p>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-2 flex-shrink-0">
+                    {dateStr && (
+                      <span className="text-xs text-text-muted">{dateStr}</span>
+                    )}
+                    {!readOnly && (
+                      <>
+                        <button
+                          onClick={() => { setEditingId(match.id); closeForm(); }}
+                          className="text-text-muted/50 hover:text-accent transition-colors"
+                          title="Edit match"
+                        >
+                          <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
+                          </svg>
+                        </button>
+                        <button
+                          onClick={() => handleDelete(match.id)}
+                          className="text-text-muted/50 hover:text-accent transition-colors"
+                          title="Delete match"
+                        >
+                          <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                          </svg>
+                        </button>
+                      </>
+                    )}
+                  </div>
                 </div>
               );
             }
 
+            // verified row
+            const sm = row.verified!;
             return (
-              <div
-                key={match.id}
-                className={`flex items-start gap-3 px-1 py-3 ${
+              <Link
+                key={sm.id}
+                href={`/matches/${sm.id}`}
+                className={`flex items-start gap-3 px-1 py-3 hover:bg-black/[0.02] transition-colors ${
                   i < arr.length - 1 ? "border-b border-border/50" : ""
                 }`}
               >
                 <span
-                  className={`flex-shrink-0 inline-flex items-center justify-center w-8 h-8 rounded-full text-xs font-bold ${s.bg} ${s.text} ${s.border} border`}
+                  className={`flex-shrink-0 inline-flex items-center justify-center w-8 h-8 rounded-full text-xs font-bold ${s.bg} ${s.text}`}
                 >
                   {s.label}
                 </span>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 text-sm">
-                    {match.opponent_archetype && (
-                      <span className="font-semibold text-text-primary truncate">
-                        vs {match.opponent_archetype}
-                      </span>
-                    )}
-                    {match.opponent_name && !match.opponent_archetype && (
-                      <span className="font-semibold text-text-primary truncate">
-                        vs {match.opponent_name}
-                      </span>
-                    )}
-                    {match.opponent_name && match.opponent_archetype && (
-                      <span className="text-xs text-text-muted truncate">
-                        ({match.opponent_name})
-                      </span>
-                    )}
-                    {!match.opponent_archetype && !match.opponent_name && (
-                      <span className="text-text-muted text-sm">Match logged</span>
-                    )}
+                    <span className="font-semibold text-text-primary truncate">
+                      vs {sm.opponent_display_name ?? "Opponent"}
+                    </span>
+                    <span className="inline-flex items-center text-[10px] font-semibold uppercase tracking-wide px-1.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
+                      Verified
+                    </span>
                   </div>
-                  {match.notes && (
-                    <p className="text-xs text-text-muted mt-0.5 leading-relaxed">
-                      {match.notes}
+                  {sm.opponent_deck_archetype && (
+                    <p className="text-xs text-text-muted mt-0.5 truncate">
+                      {sm.opponent_deck_archetype}
+                    </p>
+                  )}
+                  {row.showJudgeNote && (
+                    <p className="text-xs text-text-secondary mt-0.5 italic">
+                      Result determined by judge ruling.
                     </p>
                   )}
                 </div>
@@ -282,26 +435,8 @@ export default function MatchLog({ savedDeckId, initialMatches, open, onOpenChan
                   {dateStr && (
                     <span className="text-xs text-text-muted">{dateStr}</span>
                   )}
-                  <button
-                    onClick={() => { setEditingId(match.id); closeForm(); }}
-                    className="text-text-muted/50 hover:text-accent transition-colors"
-                    title="Edit match"
-                  >
-                    <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
-                    </svg>
-                  </button>
-                  <button
-                    onClick={() => handleDelete(match.id)}
-                    className="text-text-muted/50 hover:text-accent transition-colors"
-                    title="Delete match"
-                  >
-                    <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                  </button>
                 </div>
-              </div>
+              </Link>
             );
           })}
         </div>

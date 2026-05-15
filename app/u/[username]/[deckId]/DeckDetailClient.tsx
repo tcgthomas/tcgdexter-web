@@ -10,7 +10,7 @@ import DeckProfileView, {
 import QRCodeButton from "@/app/components/QRCodeButton";
 import CopyDeckListButton from "@/app/components/CopyDeckListButton";
 import LikeButton from "@/app/components/LikeButton";
-import MatchLog from "@/app/my-decks/[id]/MatchLog";
+import MatchLog, { type SharedDeckMatchRow } from "@/app/my-decks/[id]/MatchLog";
 import DeckNotes from "@/app/my-decks/[id]/DeckNotes";
 
 interface Match {
@@ -83,6 +83,8 @@ interface Props {
   initialIsPublic: boolean;
   canonicalShareUrl: string;
   initialMatches: Match[];
+  initialSharedMatches: SharedDeckMatchRow[];
+  viewerId: string | null;
   initialNotes: string;
   initialLiked: boolean;
   initialLikeCount: number;
@@ -101,6 +103,8 @@ export default function DeckDetailClient({
   initialIsPublic,
   canonicalShareUrl,
   initialMatches,
+  initialSharedMatches,
+  viewerId,
   initialNotes,
   initialLiked,
   initialLikeCount,
@@ -220,6 +224,17 @@ export default function DeckDetailClient({
             <CopyDeckListButton deckList={deckList} />
           </div>
         }
+        topSlot={
+          initialSharedMatches.length > 0 ? (
+            <MatchLog
+              savedDeckId={savedDeckId}
+              initialMatches={[]}
+              initialSharedMatches={initialSharedMatches}
+              readOnly
+              viewerId={viewerId}
+            />
+          ) : undefined
+        }
       />
     );
   }
@@ -330,7 +345,6 @@ export default function DeckDetailClient({
               </svg>
               Log Match
             </button>
-            <QRCodeButton deckList={deckList} analysis={analysis} />
             <button
               type="button"
               onClick={toggleVisibility}
@@ -366,6 +380,7 @@ export default function DeckDetailClient({
               </svg>
               {isPublic ? "Public" : "Private"}
             </button>
+            <QRCodeButton deckList={deckList} analysis={analysis} />
             <button
               type="button"
               onClick={() => setConfirmingDelete(true)}
@@ -389,10 +404,12 @@ export default function DeckDetailClient({
             </button>
           </div>
 
-          {(initialMatches.length > 0 || logOpen) && (
+          {(initialMatches.length > 0 || initialSharedMatches.length > 0 || logOpen) && (
             <MatchLog
               savedDeckId={savedDeckId}
               initialMatches={initialMatches}
+              initialSharedMatches={initialSharedMatches}
+              viewerId={viewerId}
               open={logOpen}
               onOpenChange={setLogOpen}
             />
