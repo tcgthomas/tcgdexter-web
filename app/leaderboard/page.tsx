@@ -201,6 +201,7 @@ export default async function LeaderboardPage() {
                   counts={sections}
                   likeCount={deck.like_count}
                   imageUrl={imageUrl}
+                  ownerUserId={deck.user_id}
                 />
               );
             })}

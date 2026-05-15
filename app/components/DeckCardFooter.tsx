@@ -5,12 +5,26 @@ import { useRouter } from "next/navigation";
 import { createPortal } from "react-dom";
 import { createClient } from "@/lib/supabase/client";
 
+/**
+ * Footer renders one of three save modes, picked from the props:
+ *   - "user"   — a saved_decks row (deckId set). Clones via /clone endpoint.
+ *               When the viewer owns the deck, the button is locked in the
+ *               saved state and is inert (it's already in their library).
+ *   - "meta"   — a meta-archetype card (metaArchetypeId set). Clones via
+ *               /meta/[archetypeId]/clone, materialising the top variant.
+ *   - "none"   — unsupported caller; the button is hidden.
+ */
 interface Props {
-  /** UUID of the saved_deck row. Undefined for meta-deck cards. */
+  /** saved_decks UUID — present on user-deck cards. */
   deckId?: string;
+  /** Owner's user_id, when known. Used to short-circuit the save state
+   *  to "already in your library" for the deck's author. */
+  ownerUserId?: string;
+  /** Meta-archetype slug (e.g. "dragapult-ex") — present on meta-deck cards. */
+  metaArchetypeId?: string;
   initialLikes: number;
-  /** Canonical URL for the deck — used by Share (QR) and the meta-deck
-   * fallback for Save (which still navigates rather than clones). */
+  /** Canonical URL for the deck — used by Share (QR) and the sign-in
+   *  prompt's redirect target. */
   saveHref: string;
   /** Display name surfaced inside the share modal heading. */
   deckName?: string;
@@ -20,6 +34,8 @@ type PromptKind = "like" | "save" | null;
 
 export default function DeckCardFooter({
   deckId,
+  ownerUserId,
+  metaArchetypeId,
   initialLikes,
   saveHref,
   deckName,
@@ -29,6 +45,7 @@ export default function DeckCardFooter({
   const [likes, setLikes] = useState(initialLikes);
   const [saved, setSaved] = useState(false);
   const [savingPending, setSavingPending] = useState(false);
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [signedIn, setSignedIn] = useState<boolean | null>(null);
   const [prompt, setPrompt] = useState<PromptKind>(null);
   const [shareOpen, setShareOpen] = useState(false);
@@ -37,6 +54,14 @@ export default function DeckCardFooter({
   const [savedToast, setSavedToast] = useState<"saved" | "removed" | null>(
     null,
   );
+
+  const isOwner =
+    !!currentUserId && !!ownerUserId && currentUserId === ownerUserId;
+  const saveMode: "user" | "meta" | "none" = deckId
+    ? "user"
+    : metaArchetypeId
+      ? "meta"
+      : "none";
 
   useEffect(() => {
     setMounted(true);
@@ -49,34 +74,54 @@ export default function DeckCardFooter({
     supabase.auth.getUser().then(({ data: { user } }) => {
       if (cancelled) return;
       setSignedIn(!!user);
-      if (!user || !deckId) return;
+      setCurrentUserId(user?.id ?? null);
+      if (!user) return;
 
-      supabase
-        .from("deck_likes")
-        .select("id")
-        .eq("saved_deck_id", deckId)
-        .eq("user_id", user.id)
-        .maybeSingle()
-        .then(({ data }) => {
-          if (!cancelled) setLiked(!!data);
-        });
+      if (deckId) {
+        supabase
+          .from("deck_likes")
+          .select("user_id")
+          .eq("saved_deck_id", deckId)
+          .eq("user_id", user.id)
+          .maybeSingle()
+          .then(({ data }) => {
+            if (!cancelled) setLiked(!!data);
+          });
 
-      supabase
-        .from("saved_decks")
-        .select("id")
-        .eq("cloned_from_id", deckId)
-        .eq("user_id", user.id)
-        .limit(1)
-        .maybeSingle()
-        .then(({ data }) => {
-          if (!cancelled) setSaved(!!data);
-        });
+        // If the viewer authored this deck, it's already in their library —
+        // surface that immediately and skip the clone-lookup round trip.
+        if (ownerUserId && ownerUserId === user.id) {
+          setSaved(true);
+        } else {
+          supabase
+            .from("saved_decks")
+            .select("id")
+            .eq("cloned_from_id", deckId)
+            .eq("user_id", user.id)
+            .limit(1)
+            .maybeSingle()
+            .then(({ data }) => {
+              if (!cancelled) setSaved(!!data);
+            });
+        }
+      } else if (metaArchetypeId) {
+        supabase
+          .from("saved_decks")
+          .select("id")
+          .eq("meta_archetype_id", metaArchetypeId)
+          .eq("user_id", user.id)
+          .limit(1)
+          .maybeSingle()
+          .then(({ data }) => {
+            if (!cancelled) setSaved(!!data);
+          });
+      }
     });
 
     return () => {
       cancelled = true;
     };
-  }, [deckId]);
+  }, [deckId, ownerUserId, metaArchetypeId]);
 
   // Lock body scroll while the share modal is open.
   useEffect(() => {
@@ -88,7 +133,7 @@ export default function DeckCardFooter({
     };
   }, [shareOpen]);
 
-  // Auto-dismiss the "Saved/Removed" toast.
+  // Auto-dismiss the save toast.
   useEffect(() => {
     if (!savedToast) return;
     const t = setTimeout(() => setSavedToast(null), 1800);
@@ -99,6 +144,7 @@ export default function DeckCardFooter({
     e.preventDefault();
     e.stopPropagation();
     if (!deckId) return;
+    if (signedIn === null) return;
     if (!signedIn) {
       setPrompt("like");
       return;
@@ -125,13 +171,14 @@ export default function DeckCardFooter({
     e.preventDefault();
     e.stopPropagation();
 
-    // Meta-deck cards (no deckId) fall back to navigating to the archetype
-    // page — there's no source saved_deck to clone from.
-    if (!deckId) {
-      router.push(saveHref);
+    if (saveMode === "none") return;
+    // Owned decks are already in the user's library — clicking is a no-op,
+    // we just surface a brief reminder toast.
+    if (saveMode === "user" && isOwner) {
+      setSavedToast("saved");
       return;
     }
-
+    if (signedIn === null) return; // auth state still resolving
     if (!signedIn) {
       setPrompt("save");
       return;
@@ -142,7 +189,12 @@ export default function DeckCardFooter({
     setSaved(newSaved);
     setSavingPending(true);
 
-    const res = await fetch(`/api/saved-decks/${deckId}/clone`, {
+    const endpoint =
+      saveMode === "user"
+        ? `/api/saved-decks/${deckId}/clone`
+        : `/api/saved-decks/meta/${metaArchetypeId}/clone`;
+
+    const res = await fetch(endpoint, {
       method: newSaved ? "POST" : "DELETE",
     });
 
@@ -155,6 +207,9 @@ export default function DeckCardFooter({
     }
 
     setSavedToast(newSaved ? "saved" : "removed");
+    // Refresh server components so the user's /my-decks library reflects
+    // the new state next time they navigate.
+    router.refresh();
   }
 
   function handleShare(e: React.MouseEvent) {
@@ -187,6 +242,15 @@ export default function DeckCardFooter({
       )}&color=1a1a1a&bgcolor=ffffff&margin=1`
     : null;
 
+  const saveLabel =
+    saveMode === "user" && isOwner ? "Saved" : saved ? "Saved" : "Save";
+  const saveAria =
+    saveMode === "user" && isOwner
+      ? "Already in your library"
+      : saved
+        ? "Remove from your library"
+        : "Save to your library";
+
   return (
     <>
       <div className="flex items-center justify-around border-t border-black/5">
@@ -216,30 +280,33 @@ export default function DeckCardFooter({
           </button>
         )}
 
-        <button
-          onClick={handleSave}
-          aria-pressed={saved}
-          aria-label={saved ? "Remove from your library" : "Save to your library"}
-          disabled={savingPending}
-          className={`flex items-center gap-1.5 py-2.5 text-[13px] font-semibold transition-colors disabled:opacity-60 ${
-            saved
-              ? "text-accent"
-              : "text-text-muted hover:text-text-secondary"
-          }`}
-        >
-          <svg
-            className="w-[15px] h-[15px]"
-            viewBox="0 0 24 24"
-            fill={saved ? "currentColor" : "none"}
-            stroke="currentColor"
-            strokeWidth={2}
-            strokeLinecap="round"
-            strokeLinejoin="round"
+        {saveMode !== "none" && (
+          <button
+            onClick={handleSave}
+            aria-pressed={saved || isOwner}
+            aria-label={saveAria}
+            disabled={savingPending}
+            title={isOwner ? "This deck is already in your library" : undefined}
+            className={`flex items-center gap-1.5 py-2.5 text-[13px] font-semibold transition-colors disabled:opacity-60 ${
+              saved || isOwner
+                ? "text-accent"
+                : "text-text-muted hover:text-text-secondary"
+            }`}
           >
-            <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
-          </svg>
-          {saved ? "Saved" : "Save"}
-        </button>
+            <svg
+              className="w-[15px] h-[15px]"
+              viewBox="0 0 24 24"
+              fill={saved || isOwner ? "currentColor" : "none"}
+              stroke="currentColor"
+              strokeWidth={2}
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
+            </svg>
+            {saveLabel}
+          </button>
+        )}
 
         <button
           onClick={handleShare}
@@ -386,7 +453,11 @@ export default function DeckCardFooter({
       {/* ── Save confirmation toast ───────────────────────────────── */}
       {savedToast && mounted && createPortal(
         <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 rounded-lg bg-accent px-5 py-2.5 text-sm font-semibold text-white shadow-lg animate-fade-toast">
-          {savedToast === "saved" ? "Saved to your library" : "Removed from library"}
+          {savedToast === "saved"
+            ? isOwner
+              ? "Already in your library"
+              : "Saved to your library"
+            : "Removed from library"}
         </div>,
         document.body,
       )}

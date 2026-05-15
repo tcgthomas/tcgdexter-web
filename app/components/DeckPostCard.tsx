@@ -167,6 +167,7 @@ export function MetaDeckCard({
       </Link>
 
       <DeckCardFooter
+        metaArchetypeId={id}
         initialLikes={like_count}
         saveHref={href}
         deckName={name}
@@ -189,6 +190,9 @@ export interface UserDeckCardProps {
   wl?: WinLoss | null;
   likeCount?: number;
   isPrivate?: boolean;
+  /** Owner's auth user_id. When this matches the viewer, the card's Save
+   *  button reflects ownership rather than offering a clone toggle. */
+  ownerUserId?: string;
 }
 
 export function UserDeckCard({
@@ -202,6 +206,7 @@ export function UserDeckCard({
   counts,
   wl,
   likeCount = 0,
+  ownerUserId,
 }: UserDeckCardProps) {
   const initials = (displayName ?? username).charAt(0).toUpperCase();
   const bg = avatarBg(username);
@@ -246,6 +251,7 @@ export function UserDeckCard({
 
       <DeckCardFooter
         deckId={id}
+        ownerUserId={ownerUserId}
         initialLikes={likeCount}
         saveHref={href}
         deckName={name}

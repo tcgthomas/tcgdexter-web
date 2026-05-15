@@ -141,6 +141,7 @@ export default async function MyDecksPage() {
                 likeCount={deck.like_count}
                 isPrivate={!deck.is_public}
                 imageUrl={imageUrl}
+                ownerUserId={user.id}
               />
             );
           })}

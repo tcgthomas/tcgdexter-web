@@ -378,6 +378,7 @@ export default async function ProfilePage({
                   likeCount={deck.like_count}
                   isPrivate={isOwner && !deck.is_public}
                   imageUrl={imageUrl}
+                  ownerUserId={profile.id}
                 />
               );
             })}
