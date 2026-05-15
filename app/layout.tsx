@@ -27,11 +27,11 @@ export const viewport = {
 };
 
 export const metadata: Metadata = {
-  title: "TCG Dexter | Pokémon TCG",
+  title: "TCG Dexter",
   description:
     "Pokémon cards. Competitive insight. Community. Shop singles, follow the meta, and profile your deck.",
   openGraph: {
-    title: "TCG Dexter | Pokémon TCG",
+    title: "TCG Dexter",
     description: "Pokémon cards. Competitive insight. Community.",
     url: "https://tcgdexter.com",
     siteName: "TCG Dexter",
@@ -40,7 +40,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "TCG Dexter | Pokémon TCG",
+    title: "TCG Dexter",
     description: "Pokémon cards. Competitive insight. Community.",
   },
 };
