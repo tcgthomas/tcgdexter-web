@@ -61,9 +61,11 @@ export default function SiteSidebar({
     href === "/" ? pathname === "/" : pathname === href || pathname.startsWith(`${href}/`);
 
   // Rows are icon + label. `gap-4` keeps the icon column from crowding
-  // the larger text-lg label.
+  // the larger text-lg label. `rounded-full` matches the capsule shape
+  // used elsewhere in the chrome (search input, result chips, Share
+  // button) so hover/active states read as part of the same family.
   const linkBase =
-    "flex items-center gap-4 px-3 py-2 rounded-md text-lg font-medium transition-colors";
+    "flex items-center gap-4 px-3 py-2 rounded-full text-lg font-medium transition-colors";
   const linkInactive = "text-text-secondary hover:text-text-primary hover:bg-surface";
   const linkActive = "text-text-primary bg-surface";
 

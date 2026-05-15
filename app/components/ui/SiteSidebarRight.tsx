@@ -28,10 +28,10 @@ export default function SiteSidebarRight() {
     { href: "https://www.ebay.com/usr/tcgdexter", label: "Card Shop", Icon: ShoppingBagIcon },
   ];
 
-  // Rows match SiteSidebar's geometry: gap-4 between icon and label, same
-  // rounded-md pill on hover, text-lg label.
+  // Rows match SiteSidebar's geometry: gap-4 between icon and label,
+  // capsule (rounded-full) hover pill, text-lg label.
   const linkClass =
-    "flex items-center gap-4 px-3 py-2 rounded-md text-lg font-medium text-text-secondary hover:text-text-primary hover:bg-surface transition-colors";
+    "flex items-center gap-4 px-3 py-2 rounded-full text-lg font-medium text-text-secondary hover:text-text-primary hover:bg-surface transition-colors";
 
   return (
     <aside
