@@ -12,7 +12,7 @@ import StatsStrip from "@/app/components/ui/StatsStrip";
 import archetypesRaw from "@/data/meta-archetypes.json";
 import { getTierByTitle } from "@/lib/trainer-tiers";
 import TrainerSearch from "@/app/leaderboard/TrainerSearch";
-import type { TopTrainer } from "@/app/page";
+import type { TopTrainer } from "@/app/(home)/page";
 
 const EXAMPLE_DECK = `Pokémon: 8
 4 Marnie's Impidimp DRI 134
