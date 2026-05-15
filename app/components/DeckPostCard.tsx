@@ -169,6 +169,7 @@ export function MetaDeckCard({
       <DeckCardFooter
         initialLikes={like_count}
         saveHref={href}
+        deckName={name}
       />
     </div>
   );
@@ -247,6 +248,7 @@ export function UserDeckCard({
         deckId={id}
         initialLikes={likeCount}
         saveHref={href}
+        deckName={name}
       />
     </div>
   );
