@@ -283,7 +283,6 @@ export default function MyDeckClient({
               </svg>
               Log Match
             </button>
-            <QRCodeButton deckList={deckList} analysis={analysis} />
             {/* Public / Private toggle */}
             <button
               type="button"
@@ -320,6 +319,7 @@ export default function MyDeckClient({
               </svg>
               {isPublic ? "Public" : "Private"}
             </button>
+            <QRCodeButton deckList={deckList} analysis={analysis} />
             {/* Delete — icon-only, same visual weight as QR button */}
             <button
               type="button"

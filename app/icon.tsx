@@ -1,38 +1,29 @@
-import { ImageResponse } from "next/og";
+import { ImageResponse } from 'next/og'
+import { readFileSync } from 'fs'
+import { join } from 'path'
 
-export const runtime = "edge";
-export const size = { width: 512, height: 512 };
-export const contentType = "image/png";
+export const size = { width: 512, height: 512 }
+export const contentType = 'image/png'
 
 export default function Icon() {
+  const src = readFileSync(join(process.cwd(), 'public/favicon-source.png'))
+  const dataUri = `data:image/png;base64,${src.toString('base64')}`
+
   return new ImageResponse(
     (
       <div
         style={{
-          width: "100%",
-          height: "100%",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          backgroundColor: "#fdf8f2",
-          borderRadius: "112px",
+          width: 512,
+          height: 512,
+          borderRadius: '50%',
+          overflow: 'hidden',
+          display: 'flex',
         }}
       >
-        {/* D lettermark */}
-        <div
-          style={{
-            fontSize: "320px",
-            fontWeight: "700",
-            color: "#2c1f0e",
-            lineHeight: 1,
-            letterSpacing: "-8px",
-            marginTop: "20px",
-          }}
-        >
-          D
-        </div>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={dataUri} width={512} height={512} alt="" />
       </div>
     ),
-    { ...size }
-  );
+    { width: 512, height: 512 }
+  )
 }

@@ -27,7 +27,8 @@ const config: Config = {
         mono: ["var(--font-geist-mono)"],
       },
       backgroundImage: {
-        "gradient-brand": "linear-gradient(90deg, #F2A20C 0%, #D91E0D 50%, #A60D0D 100%)",
+        "gradient-brand":         "linear-gradient(90deg, #F2A20C 0%, #D91E0D 50%, #A60D0D 100%)",
+        "gradient-brand-reverse": "linear-gradient(90deg, #A60D0D 0%, #D91E0D 50%, #F2A20C 100%)",
       },
       boxShadow: {
         "brand":    "0 4px 20px -4px rgba(217,30,13,0.35)",

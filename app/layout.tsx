@@ -4,6 +4,7 @@ import "./globals.css";
 import ThemeProvider from "./components/ThemeProvider";
 import SiteNav from "./components/ui/SiteNav";
 import SiteFooter from "./components/ui/SiteFooter";
+import GlobalSearchHotkey from "./components/ui/GlobalSearchHotkey";
 
 /* Geist Sans — clean, modern typeface from Vercel */
 const geistSans = localFont({
@@ -26,11 +27,11 @@ export const viewport = {
 };
 
 export const metadata: Metadata = {
-  title: "TCG Dexter | Pokémon TCG",
+  title: "TCG Dexter",
   description:
     "Pokémon cards. Competitive insight. Community. Shop singles, follow the meta, and profile your deck.",
   openGraph: {
-    title: "TCG Dexter | Pokémon TCG",
+    title: "TCG Dexter",
     description: "Pokémon cards. Competitive insight. Community.",
     url: "https://tcgdexter.com",
     siteName: "TCG Dexter",
@@ -39,7 +40,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "TCG Dexter | Pokémon TCG",
+    title: "TCG Dexter",
     description: "Pokémon cards. Competitive insight. Community.",
   },
 };
@@ -55,10 +56,15 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} font-sans antialiased text-[var(--text-primary)]`}
       >
         <ThemeProvider>
-          <div className="min-h-dvh bg-bg text-text-primary antialiased overflow-x-hidden">
+          {/* `xl:pl-80 xl:pr-80` reserves space for the two fixed desktop
+              sidebars rendered inside <SiteNav /> (each at w-80 = 320 px,
+              kicking in at 1280 px). Mobile, portrait tablet, and landscape
+              iPad / smaller laptops keep the original mobile-nav layout. */}
+          <div className="min-h-dvh bg-bg text-text-primary antialiased overflow-x-hidden xl:pl-80 xl:pr-80">
             <SiteNav />
             {children}
             <SiteFooter />
+            <GlobalSearchHotkey />
           </div>
         </ThemeProvider>
       </body>
