@@ -1,9 +1,9 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useTransition } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 /** Must match the CSS transition-duration on the panel div below. */
 const TRANSITION_MS = 200;
@@ -41,6 +41,12 @@ export default function MobileNavMenu({ isAuthed, displayName, username }: Props
   const [isVisible, setIsVisible] = useState(false);
 
   const pathname = usePathname();
+  const router = useRouter();
+  const [isPending, startTransition] = useTransition();
+  // True while a panel-initiated navigation is in flight. Distinguishes our
+  // navigation from any other transition that might tick isPending (e.g.
+  // refresh from outside). Cleared once isPending falls back to false.
+  const navigatingRef = useRef(false);
   const triggerRef = useRef<HTMLButtonElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
 
@@ -115,27 +121,50 @@ export default function MobileNavMenu({ isAuthed, displayName, username }: Props
     else openMenu();
   };
 
-  // Same-route tap: pathname won't change, so the route-commit effect below
-  // can't close the menu. Detect that case and close eagerly.
-  const handleInternalLinkClick = (href: string) => {
-    if (href === pathname) closeMenu();
-  };
+  // Drive navigation through useTransition so we get an explicit pending
+  // signal that flips false only when the destination's RSC payload is
+  // ready to render. usePathname is no good for this — it updates as soon
+  // as the URL changes, which is before the new tree has committed, so
+  // closing on pathname change reveals a half-rendered page underneath.
+  const handleInternalLinkClick =
+    (href: string) => (e: React.MouseEvent<HTMLAnchorElement>) => {
+      // Let modifier-clicks (new tab, etc.) behave normally.
+      if (
+        e.defaultPrevented ||
+        e.metaKey ||
+        e.ctrlKey ||
+        e.shiftKey ||
+        e.altKey ||
+        (e as React.MouseEvent).button !== 0
+      ) {
+        return;
+      }
+      e.preventDefault();
+
+      // Same-route tap: no transition will fire, just close.
+      if (href === pathname) {
+        closeMenu();
+        return;
+      }
+
+      navigatingRef.current = true;
+      startTransition(() => {
+        router.push(href);
+      });
+    };
 
   // ── Side effects ─────────────────────────────────────────────────────────────
 
-  // Route change: close menu if it was open or mid-animation. This is what
-  // closes the menu after an internal link tap — we deliberately do NOT call
-  // closeMenu from the link's onClick, because closing before Next.js commits
-  // the new route exposes the previous page underneath for the duration of
-  // the RSC fetch + transition, producing a jarring "panel disappears, home
-  // flashes, destination appears" sequence. Keeping the panel open through
-  // the transition means the user sees either the previous route or the new
-  // route's loading.tsx skeleton — never a flash of the wrong page.
+  // Close the panel exactly when our in-flight navigation completes. The
+  // pending → idle edge is the "destination is ready to paint" moment, so
+  // closing here means the panel reveals the new page, never a stale one.
   useEffect(() => {
-    if (!scrollLockedRef.current && !isOpen) return;
-    closeMenu();
+    if (!navigatingRef.current) return;
+    if (isPending) return;
+    navigatingRef.current = false;
+    if (scrollLockedRef.current || isOpen) closeMenu();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pathname]);
+  }, [isPending]);
 
   // Bulletproof unmount cleanup — releases scroll lock even if the component
   // tree unmounts while the menu is open (e.g. hard navigation).
