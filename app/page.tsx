@@ -1,6 +1,6 @@
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
-import HomeClient from "../HomeClient";
+import HomeClient from "./HomeClient";
 
 // Revalidate the home page (and its stat counts) at most once per minute.
 export const revalidate = 60;
