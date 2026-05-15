@@ -2,7 +2,7 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { getTierByTitle } from "@/lib/trainer-tiers";
 import { UserDeckCard } from "@/app/components/DeckPostCard";
-import archetypesRaw from "@/data/meta-archetypes.json";
+import { primaryCardImageUrl } from "@/lib/primaryCardImage";
 // Note: the global UnifiedSearch (./UnifiedSearch) used to live here in the
 // page header. It now ships in the site chrome — desktop right sidebar +
 // mobile nav panel footer — so it's reachable from every route, not just
@@ -33,6 +33,7 @@ interface TopDeck {
     metaMatch?: { archetypeName?: string | null; archetypeId?: string | null };
     rotation?: { ready?: boolean };
     sections?: { pokemon: number; trainer: number; energy: number };
+    cards?: Array<{ qty: number; name: string; number: string; setCode: string; section: "pokemon" | "trainer" | "energy" }>;
   } | null;
   username: string;
   display_name: string;
@@ -187,12 +188,7 @@ export default async function LeaderboardPage() {
             {topDecks.map((deck) => {
               const price = deck.analysis?.deckPrice ?? null;
               const sections = deck.analysis?.sections ?? null;
-              const archetypeId = deck.analysis?.metaMatch?.archetypeId;
-              const imageUrl = archetypeId
-                ? (archetypesRaw as Array<{ id: string; image_url?: string }>).find(
-                    (a) => a.id === archetypeId
-                  )?.image_url ?? null
-                : null;
+              const imageUrl = primaryCardImageUrl(deck.analysis?.cards ?? []);
               return (
                 <UserDeckCard
                   key={deck.id}
