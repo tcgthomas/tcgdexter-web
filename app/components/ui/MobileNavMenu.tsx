@@ -290,7 +290,7 @@ export default function MobileNavMenu({ isAuthed, displayName, username, isAdmin
           isOpen ? "opacity-100" : "opacity-0",
         ].join(" ")}
       >
-        <nav className="mx-auto max-w-6xl w-full px-6 pt-10 pb-6">
+        <nav className="mx-auto max-w-6xl w-full px-6 pt-4 pb-6">
           <ul className="flex flex-col gap-1">
             {/* Auth item — top of nav */}
             <li>
@@ -321,6 +321,8 @@ export default function MobileNavMenu({ isAuthed, displayName, username, isAdmin
                 </Link>
               </li>
             ))}
+
+            <li role="separator" className="my-4" />
 
             {EXTERNAL_LINKS.map(({ href, label, Icon }) => (
               <li key={href}>
