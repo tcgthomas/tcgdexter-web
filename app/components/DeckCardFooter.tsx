@@ -81,32 +81,29 @@ export default function DeckCardFooter({ deckId, initialLikes, saveHref }: Props
 
   return (
     <>
-      <div className="flex items-center border-t border-black/5 px-3.5">
+      <div className="flex items-center justify-around border-t border-black/5">
         {deckId !== undefined && (
-          <>
-            <button
-              onClick={handleLike}
-              className={`flex items-center gap-1.5 py-2.5 text-[13px] font-semibold transition-colors ${
-                liked
-                  ? "text-accent"
-                  : "text-text-muted hover:text-text-secondary"
-              }`}
+          <button
+            onClick={handleLike}
+            className={`flex items-center gap-1.5 py-2.5 text-[13px] font-semibold transition-colors ${
+              liked
+                ? "text-accent"
+                : "text-text-muted hover:text-text-secondary"
+            }`}
+          >
+            <svg
+              className="w-[15px] h-[15px]"
+              viewBox="0 0 24 24"
+              fill={liked ? "currentColor" : "none"}
+              stroke="currentColor"
+              strokeWidth={2}
+              strokeLinecap="round"
+              strokeLinejoin="round"
             >
-              <svg
-                className="w-[15px] h-[15px]"
-                viewBox="0 0 24 24"
-                fill={liked ? "currentColor" : "none"}
-                stroke="currentColor"
-                strokeWidth={2}
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
-              </svg>
-              {likes > 0 && likes}
-            </button>
-            <div className="w-px bg-black/5 mx-3 h-8" />
-          </>
+              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+            </svg>
+            {likes > 0 && likes}
+          </button>
         )}
 
         <button
@@ -126,8 +123,6 @@ export default function DeckCardFooter({ deckId, initialLikes, saveHref }: Props
           </svg>
           Save
         </button>
-
-        <div className="w-px bg-black/5 mx-3 h-8" />
 
         <div className="flex items-center gap-1.5 text-[13px] font-semibold text-text-muted py-2.5">
           <svg
