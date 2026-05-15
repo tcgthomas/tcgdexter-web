@@ -1,7 +1,7 @@
 /**
- * Match Activity heat map — 12-week GitHub-style grid.
+ * Match Activity heat map — 20-week GitHub-style grid.
  *
- * Layout: 12 columns × 7 rows (Sun → Sat). Each column is one calendar
+ * Layout: 20 columns × 7 rows (Sun → Sat). Each column is one calendar
  * week. The rightmost column is the current week; days after today are
  * rendered at 0% opacity to preserve the grid shape. Colors come from
  * the Sign-in gradient stops (#F2A20C → #D91E0D → #A60D0D) + opacity.
@@ -36,14 +36,13 @@ const HEAT_LEVELS: { label: string; count: number }[] = [
   { label: "4+", count: 4 },
 ];
 
-const WEEKS = 12;
+const WEEKS = 20;
 const DAYS_PER_WEEK = 7;
 
 /**
- * Build a 12-column × 7-row grid of day cells.
- * Returned order is row-major (row 0 col 0, row 0 col 1, … row 6 col 11)
- * so children pack naturally into `grid-cols-12`. Row 0 = Sunday,
- * row 6 = Saturday. Rightmost column is the current week.
+ * Build a WEEKS-column × 7-row grid of day cells.
+ * Returned order is row-major so children pack naturally into the CSS grid.
+ * Row 0 = Sunday, row 6 = Saturday. Rightmost column is the current week.
  */
 function buildCells(matches: MatchRow[]): Cell[] {
   const today = new Date();
@@ -71,7 +70,7 @@ function buildCells(matches: MatchRow[]): Cell[] {
     counts[key] = (counts[key] ?? 0) + 1;
   }
 
-  // Emit row-major: for each weekday row (Sun → Sat), walk 12 weeks left → right.
+  // Emit row-major: for each weekday row (Sun → Sat), walk WEEKS columns left → right.
   const cells: Cell[] = [];
   for (let row = 0; row < DAYS_PER_WEEK; row++) {
     for (let col = 0; col < WEEKS; col++) {
@@ -98,10 +97,10 @@ export default function MatchHeatMap({ matches }: { matches: MatchRow[] }) {
     <div className="mt-6 rounded-2xl border border-black/8 bg-white/90 backdrop-blur-xl shadow-sm p-5">
       <div className="flex items-baseline justify-between mb-3">
         <h2 className="text-lg font-semibold text-text-primary">Match Activity</h2>
-        <span className="text-xs text-text-muted">Last 12 weeks</span>
+        <span className="text-xs text-text-muted">Last 20 weeks</span>
       </div>
 
-      <div className="grid grid-cols-12 gap-1.5">
+      <div className="grid gap-1" style={{ gridTemplateColumns: `repeat(${WEEKS}, minmax(0, 1fr))` }}>
         {cells.map((c) => (
           <div
             key={c.key}
