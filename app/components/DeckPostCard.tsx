@@ -101,6 +101,7 @@ export interface MetaDeckCardProps {
   representation_pct: number;
   price?: number | null;
   like_count?: number;
+  creators?: string[];
 }
 
 export function MetaDeckCard({
@@ -112,7 +113,9 @@ export function MetaDeckCard({
   representation_pct,
   price,
   like_count = 0,
+  creators,
 }: MetaDeckCardProps) {
+  const creatorList = (creators && creators.length > 0 ? creators : ["Trainer"]).slice(0, 5);
   const href = `/meta-decks/${id}`;
   return (
     <div className="rounded-2xl border border-black/8 bg-white/90 backdrop-blur-xl shadow-sm overflow-hidden hover:shadow-md transition-shadow">
@@ -134,21 +137,15 @@ export function MetaDeckCard({
         <div className="flex gap-3.5 p-3.5 pt-3">
           <CardArt url={image_url} name={name} />
           <div className="flex-1 min-w-0 flex flex-col">
-            <div className="flex items-center gap-1.5 mb-2">
-              <svg
-                className="w-[13px] h-[13px] shrink-0 text-accent"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth={1.5}
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="M3 21h18M7 17V11M12 17V5M17 17v-7" />
-              </svg>
-              <p className="text-[13px] font-semibold text-accent">
-                Top 30 Meta Decks
-              </p>
+            <div className="flex flex-col gap-0.5 mb-2">
+              {creatorList.map((c, i) => (
+                <p
+                  key={`${c}-${i}`}
+                  className="text-[12px] font-medium text-text-secondary truncate"
+                >
+                  {c}
+                </p>
+              ))}
             </div>
             <div className="mt-auto flex gap-5 pt-2">
               <Stat

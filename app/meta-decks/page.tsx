@@ -25,7 +25,7 @@ interface DeckCard {
 interface MetaDeck {
   id: string;
   cards: DeckCard[];
-  variants?: { cards: DeckCard[] }[];
+  variants?: { cards: DeckCard[]; creator?: string }[];
 }
 
 export default function MetaDecksPage() {
@@ -54,6 +54,12 @@ export default function MetaDecksPage() {
             conversionRate: 0,
             representationPct: arch.representation_pct,
           });
+          const creators: string[] = [];
+          for (const v of deckData?.variants ?? []) {
+            const c = (v.creator ?? "").trim() || "Trainer";
+            if (!creators.includes(c)) creators.push(c);
+            if (creators.length >= 5) break;
+          }
           return (
             <MetaDeckCard
               key={arch.id}
@@ -64,6 +70,7 @@ export default function MetaDecksPage() {
               top_cut_entries={arch.top_cut_entries}
               representation_pct={arch.representation_pct}
               price={analysis.deckPrice}
+              creators={creators}
             />
           );
         })}

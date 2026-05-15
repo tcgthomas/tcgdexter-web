@@ -28,6 +28,7 @@ interface DeckCard {
 
 interface MetaDeckVariant {
   listId?: number;
+  creator?: string;
   cards: DeckCard[];
 }
 
@@ -97,6 +98,10 @@ export default async function MetaDeckDetailPage({
   const cards = variantCardSets[0] ?? [];
   const deckList = buildDeckList(cards);
   const deckLists = variantCardSets.map(buildDeckList);
+  const deckListCreators: string[] =
+    deckData?.variants && deckData.variants.length > 0
+      ? deckData.variants.map((v) => (v.creator ?? "").trim() || "Trainer")
+      : ["Trainer"];
 
   const analysis = buildMetaAnalysis(cards, {
     name: arch.name,
@@ -183,6 +188,7 @@ export default async function MetaDeckDetailPage({
       variant="meta"
       deckList={deckList}
       deckLists={deckLists}
+      deckListCreators={deckListCreators}
       analysis={analysis}
       profiledAt={profiledAt}
       pageTitle={arch.name}
