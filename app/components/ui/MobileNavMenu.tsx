@@ -1,9 +1,9 @@
 "use client";
 
-import { useState, useEffect, useRef, useTransition } from "react";
+import { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 
 /** Must match the CSS transition-duration on the panel div below. */
 const TRANSITION_MS = 200;
@@ -41,12 +41,6 @@ export default function MobileNavMenu({ isAuthed, displayName, username }: Props
   const [isVisible, setIsVisible] = useState(false);
 
   const pathname = usePathname();
-  const router = useRouter();
-  const [isPending, startTransition] = useTransition();
-  // True while a panel-initiated navigation is in flight. Distinguishes our
-  // navigation from any other transition that might tick isPending (e.g.
-  // refresh from outside). Cleared once isPending falls back to false.
-  const navigatingRef = useRef(false);
   const triggerRef = useRef<HTMLButtonElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
 
@@ -121,50 +115,15 @@ export default function MobileNavMenu({ isAuthed, displayName, username }: Props
     else openMenu();
   };
 
-  // Drive navigation through useTransition so we get an explicit pending
-  // signal that flips false only when the destination's RSC payload is
-  // ready to render. usePathname is no good for this — it updates as soon
-  // as the URL changes, which is before the new tree has committed, so
-  // closing on pathname change reveals a half-rendered page underneath.
-  const handleInternalLinkClick =
-    (href: string) => (e: React.MouseEvent<HTMLAnchorElement>) => {
-      // Let modifier-clicks (new tab, etc.) behave normally.
-      if (
-        e.defaultPrevented ||
-        e.metaKey ||
-        e.ctrlKey ||
-        e.shiftKey ||
-        e.altKey ||
-        (e as React.MouseEvent).button !== 0
-      ) {
-        return;
-      }
-      e.preventDefault();
-
-      // Same-route tap: no transition will fire, just close.
-      if (href === pathname) {
-        closeMenu();
-        return;
-      }
-
-      navigatingRef.current = true;
-      startTransition(() => {
-        router.push(href);
-      });
-    };
-
   // ── Side effects ─────────────────────────────────────────────────────────────
 
-  // Close the panel exactly when our in-flight navigation completes. The
-  // pending → idle edge is the "destination is ready to paint" moment, so
-  // closing here means the panel reveals the new page, never a stale one.
+  // Route change safety net: close menu if it was left open or mid-animation
+  // (e.g. programmatic navigation that didn't go through a link).
   useEffect(() => {
-    if (!navigatingRef.current) return;
-    if (isPending) return;
-    navigatingRef.current = false;
-    if (scrollLockedRef.current || isOpen) closeMenu();
+    if (!scrollLockedRef.current && !isOpen) return;
+    closeMenu();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isPending]);
+  }, [pathname]);
 
   // Bulletproof unmount cleanup — releases scroll lock even if the component
   // tree unmounts while the menu is open (e.g. hard navigation).
@@ -314,23 +273,16 @@ export default function MobileNavMenu({ isAuthed, displayName, username }: Props
           <ul className="flex flex-col gap-1">
             {/* Auth item — top of nav */}
             <li>
-              {isAuthed ? (() => {
-                const authHref = username ? `/u/${username}` : "/settings";
-                return (
-                  <Link
-                    href={authHref}
-                    className={linkClass}
-                    onClick={() => handleInternalLinkClick(authHref)}
-                  >
-                    {displayName ?? "Profile"}
-                  </Link>
-                );
-              })() : (
+              {isAuthed ? (
                 <Link
-                  href="/sign-in"
+                  href={username ? `/u/${username}` : "/settings"}
                   className={linkClass}
-                  onClick={() => handleInternalLinkClick("/sign-in")}
+                  onClick={closeMenu}
                 >
+                  {displayName ?? "Profile"}
+                </Link>
+              ) : (
+                <Link href="/sign-in" className={linkClass} onClick={closeMenu}>
                   Sign in
                 </Link>
               )}
@@ -340,11 +292,7 @@ export default function MobileNavMenu({ isAuthed, displayName, username }: Props
 
             {INTERNAL_LINKS.map(({ href, label }) => (
               <li key={href}>
-                <Link
-                  href={href}
-                  className={linkClass}
-                  onClick={() => handleInternalLinkClick(href)}
-                >
+                <Link href={href} className={linkClass} onClick={closeMenu}>
                   {label}
                 </Link>
               </li>
