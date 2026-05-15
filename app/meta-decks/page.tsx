@@ -1,10 +1,8 @@
-import Link from "next/link";
 import archetypesRaw from "@/data/meta-archetypes.json";
+import metaDecksRaw from "@/data/meta-decks.json";
 import SectionHeader from "@/app/components/ui/SectionHeader";
-
-/**
- * Experiment mirror of /meta-decks. Same Top-30 list and JSON source.
- */
+import { MetaDeckCard } from "@/app/components/DeckPostCard";
+import { buildMetaAnalysis } from "@/lib/buildMetaAnalysis";
 
 interface Archetype {
   id: string;
@@ -13,6 +11,21 @@ interface Archetype {
   top_cut_entries: number;
   representation_pct: number;
   last_updated: string;
+  image_url?: string;
+}
+
+interface DeckCard {
+  qty: number;
+  name: string;
+  setCode: string;
+  number: string;
+  category: "pokemon" | "trainer" | "energy";
+}
+
+interface MetaDeck {
+  id: string;
+  cards: DeckCard[];
+  variants?: { cards: DeckCard[] }[];
 }
 
 export default function MetaDecksPage() {
@@ -20,51 +33,44 @@ export default function MetaDecksPage() {
     .sort((a, b) => b.total_entries - a.total_entries)
     .slice(0, 30);
 
+  const metaDecks = metaDecksRaw as MetaDeck[];
   const lastUpdated = archetypes[0]?.last_updated;
 
   return (
-    <main className="mx-auto max-w-2xl px-6 pt-[calc(env(safe-area-inset-top)_+_1.68rem)] md:pt-[calc(env(safe-area-inset-top)_+_3rem)] pb-24">
+    <main className="mx-auto max-w-6xl px-6 pt-[calc(env(safe-area-inset-top)_+_1.68rem)] md:pt-[calc(env(safe-area-inset-top)_+_3rem)] pb-24">
       <div className="flex items-end justify-between mb-8">
         <SectionHeader eyebrow="Live meta" title="Meta Decks" />
         <p className="text-sm text-text-secondary pb-1">Standard · Top 30</p>
       </div>
 
-      <div className="rounded-2xl border border-black/8 bg-white/90 backdrop-blur-xl shadow-sm overflow-hidden">
-        {archetypes.map((arch, i) => (
-          <Link
-            key={arch.id}
-            href={`/meta-decks/${arch.id}`}
-            className={`group flex items-center gap-3 pl-5 pr-5 py-3.5 bg-white transition-colors hover:bg-[#fafafa] ${
-              i < archetypes.length - 1 ? "border-b border-black/5" : ""
-            }`}
-          >
-            <span className="flex-shrink-0 w-6 text-right text-base font-semibold text-text-secondary">
-              {i + 1}
-            </span>
-            <span className="flex-1 min-w-0">
-              <span className="block font-semibold text-text-primary text-lg truncate">
-                {arch.name}
-              </span>
-              <span className="flex items-center gap-3 mt-0.5 text-xs font-semibold text-text-muted">
-                <span>{arch.top_cut_entries} top cuts</span>
-                <span>{arch.total_entries} entries</span>
-              </span>
-            </span>
-            <svg
-              className="flex-shrink-0 w-4 h-4 text-text-muted group-hover:text-accent group-hover:translate-x-0.5 transition-all"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              strokeWidth={2}
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
-            </svg>
-          </Link>
-        ))}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+        {archetypes.map((arch, i) => {
+          const deckData = metaDecks.find((d) => d.id === arch.id);
+          const cards =
+            deckData?.variants?.[0]?.cards ?? deckData?.cards ?? [];
+          const analysis = buildMetaAnalysis(cards, {
+            name: arch.name,
+            rank: i + 1,
+            conversionRate: 0,
+            representationPct: arch.representation_pct,
+          });
+          return (
+            <MetaDeckCard
+              key={arch.id}
+              id={arch.id}
+              name={arch.name}
+              rank={i + 1}
+              image_url={arch.image_url}
+              top_cut_entries={arch.top_cut_entries}
+              representation_pct={arch.representation_pct}
+              price={analysis.deckPrice}
+            />
+          );
+        })}
       </div>
 
       {lastUpdated && (
-        <p className="mt-3 text-xs text-text-muted text-center">
+        <p className="mt-4 text-xs text-text-muted text-center">
           Last updated:{" "}
           {new Date(lastUpdated).toLocaleDateString("en-US", {
             month: "short", day: "numeric", year: "numeric",

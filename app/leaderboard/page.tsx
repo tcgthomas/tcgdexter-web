@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { getTierByTitle } from "@/lib/trainer-tiers";
+import { UserDeckCard } from "@/app/components/DeckPostCard";
 // Note: the global UnifiedSearch (./UnifiedSearch) used to live here in the
 // page header. It now ships in the site chrome — desktop right sidebar +
 // mobile nav panel footer — so it's reachable from every route, not just
@@ -30,6 +31,7 @@ interface TopDeck {
     deckPrice?: number;
     metaMatch?: { archetypeName?: string | null };
     rotation?: { ready?: boolean };
+    sections?: { pokemon: number; trainer: number; energy: number };
   } | null;
   username: string;
   display_name: string;
@@ -117,7 +119,7 @@ export default async function LeaderboardPage() {
   const rankMedal = ["🥇", "🥈", "🥉"];
 
   return (
-    <main className="mx-auto max-w-2xl px-6 pt-10 pb-32">
+    <main className="mx-auto max-w-4xl px-6 pt-10 pb-32">
       {/* Header */}
       <div className="mb-8">
         <div className="text-xs uppercase tracking-widest text-accent mb-3 flex items-center gap-2">
@@ -174,55 +176,28 @@ export default async function LeaderboardPage() {
       {/* Top Decks */}
       {topDecks.length > 0 && (
         <div className="mt-12">
-          <div className="flex items-center gap-4 mb-8">
+          <div className="flex items-center gap-4 mb-6">
             <div className="flex-1 h-px bg-black/10" />
             <span className="text-sm font-semibold text-text-muted">Top decks</span>
             <div className="flex-1 h-px bg-black/10" />
           </div>
 
-          <div className="rounded-2xl border border-black/8 bg-white/90 backdrop-blur-xl shadow-sm overflow-hidden">
-            {topDecks.map((deck, i) => {
-              const archetype = deck.analysis?.metaMatch?.archetypeName ?? null;
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            {topDecks.map((deck) => {
               const price = deck.analysis?.deckPrice ?? null;
-              const standard = deck.analysis?.rotation?.ready ?? null;
+              const sections = deck.analysis?.sections ?? null;
               return (
-                <Link
+                <UserDeckCard
                   key={deck.id}
+                  id={deck.id}
+                  name={deck.name}
                   href={`/u/${deck.username}/${deck.id}`}
-                  className={`flex items-center gap-3 px-5 py-3.5 hover:bg-black/[0.02] transition-colors ${
-                    i === topDecks.length - 1 ? "" : "border-b border-bg"
-                  }`}
-                >
-                  <span className="flex-shrink-0 w-5 text-right text-sm font-semibold text-text-muted tabular-nums">
-                    {i + 1}
-                  </span>
-                  <div className="flex-1 min-w-0">
-                    <p className="font-semibold text-text-primary text-base truncate">{deck.name}</p>
-                    <div className="flex items-center gap-2 mt-0.5 text-xs text-text-muted flex-wrap">
-                      {archetype && <span className="truncate">{archetype}</span>}
-                      {price !== null && price > 0 && (
-                        <>
-                          {archetype && <span>·</span>}
-                          <span className="tabular-nums">${price.toFixed(2)}</span>
-                        </>
-                      )}
-                      {standard === true && (
-                        <>
-                          {(archetype || (price !== null && price > 0)) && <span>·</span>}
-                          <span>Standard</span>
-                        </>
-                      )}
-                      <span>·</span>
-                      <span>@{deck.username}</span>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-1 text-xs font-semibold text-text-muted tabular-nums flex-shrink-0">
-                    <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor">
-                      <path d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
-                    </svg>
-                    {deck.like_count}
-                  </div>
-                </Link>
+                  username={deck.username}
+                  displayName={deck.display_name}
+                  price={price}
+                  counts={sections}
+                  likeCount={deck.like_count}
+                />
               );
             })}
           </div>

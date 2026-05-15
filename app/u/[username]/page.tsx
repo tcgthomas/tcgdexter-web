@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { getTierByTitle } from "@/lib/trainer-tiers";
+import { UserDeckCard } from "@/app/components/DeckPostCard";
 import MatchHeatMap from "@/app/profile/MatchHeatMap";
 import { deckResult, viewerResult, type SharedMatchCore } from "@/lib/shared-matches";
 import {
@@ -28,6 +29,7 @@ interface DeckRow {
     deckPrice?: number;
     metaMatch?: { archetypeName?: string | null };
     rotation?: { ready?: boolean };
+    sections?: { pokemon: number; trainer: number; energy: number };
   } | null;
   updated_at: string;
   like_count: number;
@@ -204,7 +206,7 @@ export default async function ProfilePage({
   const showAchievementsCard = isOwner || achievements.length > 0;
 
   return (
-    <main className="mx-auto max-w-2xl px-6 pt-[calc(env(safe-area-inset-top)_+_1.68rem)] md:pt-[calc(env(safe-area-inset-top)_+_3rem)] pb-24">
+    <main className="mx-auto max-w-4xl px-6 pt-[calc(env(safe-area-inset-top)_+_1.68rem)] md:pt-[calc(env(safe-area-inset-top)_+_3rem)] pb-24">
       {/* Profile module */}
       <div className="rounded-2xl border border-black/8 bg-white/90 backdrop-blur-xl shadow-sm p-5 mb-6">
         <div className="flex items-start gap-4">
@@ -354,83 +356,25 @@ export default async function ProfilePage({
             </p>
           </div>
         ) : (
-          <div className="rounded-2xl border border-black/8 bg-white/90 backdrop-blur-xl shadow-sm overflow-hidden">
-            {decks.map((deck, i) => {
-              const archetype = deck.analysis?.metaMatch?.archetypeName ?? null;
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            {decks.map((deck) => {
               const price = deck.analysis?.deckPrice ?? null;
-              const standard = deck.analysis?.rotation?.ready ?? null;
-              const wl = deckWL.get(deck.id);
+              const sections = deck.analysis?.sections ?? null;
+              const wl = deckWL.get(deck.id) ?? null;
               return (
-                <Link
+                <UserDeckCard
                   key={deck.id}
+                  id={deck.id}
+                  name={deck.name}
                   href={`/u/${profile.username}/${deck.id}`}
-                  className={`flex items-center gap-3 px-5 py-3.5 hover:bg-black/[0.02] transition-colors ${
-                    i === decks.length - 1 ? "" : "border-b border-bg"
-                  }`}
-                >
-                  <div className="flex-1 min-w-0">
-                    <p className="font-semibold text-text-primary text-base truncate">
-                      {deck.name}
-                    </p>
-                    <div className="flex items-center gap-2 mt-0.5 text-xs text-text-muted flex-wrap">
-                      {archetype && <span className="truncate max-w-[160px]">{archetype}</span>}
-                      {price !== null && price > 0 && (
-                        <>
-                          {archetype && <span>·</span>}
-                          <span className="tabular-nums">${price.toFixed(2)}</span>
-                        </>
-                      )}
-                      {standard === true && (
-                        <>
-                          {(archetype || (price !== null && price > 0)) && <span>·</span>}
-                          <span>Standard</span>
-                        </>
-                      )}
-                      {wl && wl.w + wl.l + wl.d > 0 && (
-                        <>
-                          <span>·</span>
-                          <span className="font-semibold text-emerald-700">{wl.w}W</span>
-                          {" "}
-                          <span className="font-semibold text-rose-700">{wl.l}L</span>
-                        </>
-                      )}
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2 flex-shrink-0">
-                    {deck.like_count > 0 && (
-                      <div className="flex items-center gap-1 text-xs font-semibold text-text-muted tabular-nums">
-                        <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor">
-                          <path d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
-                        </svg>
-                        {deck.like_count}
-                      </div>
-                    )}
-                    {isOwner && !deck.is_public && (
-                      <svg
-                        className="w-3.5 h-3.5 text-text-muted"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                        strokeWidth={1.75}
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z"
-                        />
-                      </svg>
-                    )}
-                    <svg
-                      className="w-4 h-4 text-text-muted"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                      strokeWidth={2}
-                    >
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
-                    </svg>
-                  </div>
-                </Link>
+                  username={profile.username}
+                  displayName={profile.display_name}
+                  price={price}
+                  counts={sections}
+                  wl={wl}
+                  likeCount={deck.like_count}
+                  isPrivate={isOwner && !deck.is_public}
+                />
               );
             })}
           </div>

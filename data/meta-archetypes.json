@@ -11,7 +11,8 @@
     "losses": 373,
     "ties": 22,
     "last_updated": "2026-05-11",
-    "velocity": 0.007666
+    "velocity": 0.007666,
+    "image_url": "https://images.pokemontcg.io/sv6/130.png"
   },
   {
     "id": "dragapult-dusknoir",
@@ -25,7 +26,8 @@
     "losses": 300,
     "ties": 29,
     "last_updated": "2026-05-11",
-    "velocity": 0.003431
+    "velocity": 0.003431,
+    "image_url": "https://images.pokemontcg.io/sv6/130.png"
   },
   {
     "id": "dragapult-blaziken",
@@ -39,7 +41,8 @@
     "losses": 240,
     "ties": 23,
     "last_updated": "2026-05-11",
-    "velocity": 0.003382
+    "velocity": 0.003382,
+    "image_url": "https://images.pokemontcg.io/sv6/130.png"
   },
   {
     "id": "n-zoroark",
@@ -53,7 +56,8 @@
     "losses": 202,
     "ties": 18,
     "last_updated": "2026-05-11",
-    "velocity": -0.000306
+    "velocity": -0.000306,
+    "image_url": "https://images.pokemontcg.io/sv9/175.png"
   },
   {
     "id": "festival-lead",
@@ -67,7 +71,8 @@
     "losses": 197,
     "ties": 13,
     "last_updated": "2026-05-11",
-    "velocity": -0.004091
+    "velocity": -0.004091,
+    "image_url": "https://images.pokemontcg.io/sv10/17.png"
   },
   {
     "id": "alakazam-dudunsparce",
@@ -81,7 +86,8 @@
     "losses": 218,
     "ties": 20,
     "last_updated": "2026-05-11",
-    "velocity": 0.00062
+    "velocity": 0.00062,
+    "image_url": "https://images.pokemontcg.io/me1/56.png"
   },
   {
     "id": "dragapult-dudunsparce",
@@ -95,7 +101,8 @@
     "losses": 211,
     "ties": 10,
     "last_updated": "2026-05-11",
-    "velocity": -0.000219
+    "velocity": -0.000219,
+    "image_url": "https://images.pokemontcg.io/sv6/130.png"
   },
   {
     "id": "starmie-froslass",
@@ -109,7 +116,8 @@
     "losses": 169,
     "ties": 17,
     "last_updated": "2026-05-11",
-    "velocity": 6.4e-05
+    "velocity": 0.000064,
+    "image_url": "https://images.pokemontcg.io/me3/21.png"
   },
   {
     "id": "rocket-mewtwo-ex",
@@ -123,7 +131,8 @@
     "losses": 210,
     "ties": 6,
     "last_updated": "2026-05-11",
-    "velocity": -0.001263
+    "velocity": -0.001263,
+    "image_url": "https://images.pokemontcg.io/sv10/213.png"
   },
   {
     "id": "lopunny-dudunsparce",
@@ -137,7 +146,8 @@
     "losses": 185,
     "ties": 15,
     "last_updated": "2026-05-11",
-    "velocity": 0.002043
+    "velocity": 0.002043,
+    "image_url": "https://images.pokemontcg.io/me2/115.png"
   },
   {
     "id": "lucario-hariyama",
@@ -151,7 +161,8 @@
     "losses": 189,
     "ties": 11,
     "last_updated": "2026-05-11",
-    "velocity": 0.001623
+    "velocity": 0.001623,
+    "image_url": "https://images.pokemontcg.io/me1/160.png"
   },
   {
     "id": "cynthia-garchomp-ex",
@@ -165,7 +176,8 @@
     "losses": 149,
     "ties": 8,
     "last_updated": "2026-05-11",
-    "velocity": -0.003068
+    "velocity": -0.003068,
+    "image_url": "https://images.pokemontcg.io/sv10/104.png"
   },
   {
     "id": "ogerpon-meganium",
@@ -179,7 +191,8 @@
     "losses": 132,
     "ties": 9,
     "last_updated": "2026-05-11",
-    "velocity": -0.001372
+    "velocity": -0.001372,
+    "image_url": "https://images.pokemontcg.io/sv6/190.png"
   },
   {
     "id": "hydrapple-ogerpon",
@@ -193,7 +206,8 @@
     "losses": 125,
     "ties": 11,
     "last_updated": "2026-05-11",
-    "velocity": 0.001437
+    "velocity": 0.001437,
+    "image_url": "https://images.pokemontcg.io/sv7/14.png"
   },
   {
     "id": "raging-bolt-ogerpon",
@@ -207,7 +221,8 @@
     "losses": 114,
     "ties": 5,
     "last_updated": "2026-05-11",
-    "velocity": 0.000949
+    "velocity": 0.000949,
+    "image_url": "https://images.pokemontcg.io/sv5/123.png"
   },
   {
     "id": "grimmsnarl-froslass",
@@ -221,7 +236,8 @@
     "losses": 116,
     "ties": 7,
     "last_updated": "2026-05-11",
-    "velocity": -0.001928
+    "velocity": -0.001928,
+    "image_url": "https://images.pokemontcg.io/sv7/96.png"
   },
   {
     "id": "starmie-dusknoir",
@@ -235,7 +251,8 @@
     "losses": 96,
     "ties": 6,
     "last_updated": "2026-05-11",
-    "velocity": 0.000344
+    "velocity": 0.000344,
+    "image_url": "https://images.pokemontcg.io/me3/21.png"
   },
   {
     "id": "rockets-honchkrow",
@@ -249,7 +266,8 @@
     "losses": 103,
     "ties": 7,
     "last_updated": "2026-05-11",
-    "velocity": -0.002182
+    "velocity": -0.002182,
+    "image_url": "https://images.pokemontcg.io/me2pt5/127.png"
   },
   {
     "id": "slowking-scr",
@@ -263,7 +281,8 @@
     "losses": 105,
     "ties": 8,
     "last_updated": "2026-05-11",
-    "velocity": 0.002177
+    "velocity": 0.002177,
+    "image_url": "https://images.pokemontcg.io/sv7/58.png"
   },
   {
     "id": "crustle-dri",
@@ -277,7 +296,8 @@
     "losses": 96,
     "ties": 1,
     "last_updated": "2026-05-11",
-    "velocity": -0.007362
+    "velocity": -0.007362,
+    "image_url": "https://images.pokemontcg.io/sv10/12.png"
   },
   {
     "id": "okidogi-barbaracle",
@@ -291,7 +311,8 @@
     "losses": 74,
     "ties": 10,
     "last_updated": "2026-05-11",
-    "velocity": -0.004972
+    "velocity": -0.004972,
+    "image_url": "https://images.pokemontcg.io/sv6pt5/36.png"
   },
   {
     "id": "ethan-typhlosion",
@@ -305,7 +326,8 @@
     "losses": 60,
     "ties": 1,
     "last_updated": "2026-05-11",
-    "velocity": -0.002992
+    "velocity": -0.002992,
+    "image_url": "https://images.pokemontcg.io/sv10/190.png"
   },
   {
     "id": "greninja-ex",
@@ -319,7 +341,8 @@
     "losses": 53,
     "ties": 3,
     "last_updated": "2026-05-11",
-    "velocity": 0.001435
+    "velocity": 0.001435,
+    "image_url": "https://images.pokemontcg.io/sv6/106.png"
   },
   {
     "id": "hops-trevenant",
@@ -333,7 +356,8 @@
     "losses": 42,
     "ties": 4,
     "last_updated": "2026-05-11",
-    "velocity": -0.00151
+    "velocity": -0.00151,
+    "image_url": "https://images.pokemontcg.io/me2pt5/96.png"
   },
   {
     "id": "diancie-dusknoir",
@@ -347,7 +371,8 @@
     "losses": 43,
     "ties": 1,
     "last_updated": "2026-05-11",
-    "velocity": 4e-05
+    "velocity": 0.00004,
+    "image_url": "https://images.pokemontcg.io/me2/41.png"
   },
   {
     "id": "ogerpon-box",
@@ -361,7 +386,8 @@
     "losses": 32,
     "ties": 7,
     "last_updated": "2026-05-11",
-    "velocity": 0.000391
+    "velocity": 0.000391,
+    "image_url": "https://images.pokemontcg.io/sv6/190.png"
   },
   {
     "id": "mega-venusaur-ex",
@@ -375,7 +401,8 @@
     "losses": 46,
     "ties": 2,
     "last_updated": "2026-05-11",
-    "velocity": 0.001376
+    "velocity": 0.001376,
+    "image_url": "https://images.pokemontcg.io/me1/155.png"
   },
   {
     "id": "clefairy-ogerpon",
@@ -389,7 +416,8 @@
     "losses": 33,
     "ties": 3,
     "last_updated": "2026-05-11",
-    "velocity": 0.000674
+    "velocity": 0.000674,
+    "image_url": "https://images.pokemontcg.io/sv6/78.png"
   },
   {
     "id": "stevens-metagross",
@@ -398,12 +426,13 @@
     "total_entries": 15,
     "top_cut_entries": 0,
     "representation_pct": 0.006292,
-    "conversion_rate": 0.0,
+    "conversion_rate": 0,
     "wins": 27,
     "losses": 43,
     "ties": 0,
     "last_updated": "2026-05-11",
-    "velocity": -0.00073
+    "velocity": -0.00073,
+    "image_url": "https://images.pokemontcg.io/sv10/145.png"
   },
   {
     "id": "flareon-noctowl",
@@ -417,7 +446,8 @@
     "losses": 28,
     "ties": 2,
     "last_updated": "2026-05-11",
-    "velocity": 0.000333
+    "velocity": 0.000333,
+    "image_url": "https://images.pokemontcg.io/sv3pt5/136.png"
   },
   {
     "id": "ursaluna-lunatone",
@@ -478,7 +508,7 @@
     "total_entries": 8,
     "top_cut_entries": 0,
     "representation_pct": 0.003356,
-    "conversion_rate": 0.0,
+    "conversion_rate": 0,
     "wins": 8,
     "losses": 26,
     "ties": 0,
@@ -543,7 +573,7 @@
     "total_entries": 7,
     "top_cut_entries": 0,
     "representation_pct": 0.002936,
-    "conversion_rate": 0.0,
+    "conversion_rate": 0,
     "wins": 3,
     "losses": 23,
     "ties": 0,
@@ -569,7 +599,7 @@
     "total_entries": 6,
     "top_cut_entries": 0,
     "representation_pct": 0.002517,
-    "conversion_rate": 0.0,
+    "conversion_rate": 0,
     "wins": 5,
     "losses": 19,
     "ties": 0,
@@ -595,7 +625,7 @@
     "total_entries": 6,
     "top_cut_entries": 0,
     "representation_pct": 0.002517,
-    "conversion_rate": 0.0,
+    "conversion_rate": 0,
     "wins": 11,
     "losses": 10,
     "ties": 2,
@@ -608,7 +638,7 @@
     "total_entries": 5,
     "top_cut_entries": 0,
     "representation_pct": 0.002097,
-    "conversion_rate": 0.0,
+    "conversion_rate": 0,
     "wins": 6,
     "losses": 16,
     "ties": 0,
@@ -634,7 +664,7 @@
     "total_entries": 5,
     "top_cut_entries": 0,
     "representation_pct": 0.002097,
-    "conversion_rate": 0.0,
+    "conversion_rate": 0,
     "wins": 7,
     "losses": 13,
     "ties": 3,
@@ -660,7 +690,7 @@
     "total_entries": 4,
     "top_cut_entries": 0,
     "representation_pct": 0.001678,
-    "conversion_rate": 0.0,
+    "conversion_rate": 0,
     "wins": 8,
     "losses": 7,
     "ties": 1,
@@ -673,7 +703,7 @@
     "total_entries": 4,
     "top_cut_entries": 0,
     "representation_pct": 0.001678,
-    "conversion_rate": 0.0,
+    "conversion_rate": 0,
     "wins": 4,
     "losses": 16,
     "ties": 0,
@@ -686,7 +716,7 @@
     "total_entries": 4,
     "top_cut_entries": 0,
     "representation_pct": 0.001678,
-    "conversion_rate": 0.0,
+    "conversion_rate": 0,
     "wins": 4,
     "losses": 9,
     "ties": 0,
@@ -699,7 +729,7 @@
     "total_entries": 3,
     "top_cut_entries": 0,
     "representation_pct": 0.001258,
-    "conversion_rate": 0.0,
+    "conversion_rate": 0,
     "wins": 3,
     "losses": 5,
     "ties": 2,
@@ -712,7 +742,7 @@
     "total_entries": 3,
     "top_cut_entries": 0,
     "representation_pct": 0.001258,
-    "conversion_rate": 0.0,
+    "conversion_rate": 0,
     "wins": 2,
     "losses": 9,
     "ties": 1,
@@ -751,7 +781,7 @@
     "total_entries": 3,
     "top_cut_entries": 0,
     "representation_pct": 0.001258,
-    "conversion_rate": 0.0,
+    "conversion_rate": 0,
     "wins": 2,
     "losses": 5,
     "ties": 0,
@@ -777,7 +807,7 @@
     "total_entries": 3,
     "top_cut_entries": 0,
     "representation_pct": 0.001258,
-    "conversion_rate": 0.0,
+    "conversion_rate": 0,
     "wins": 1,
     "losses": 3,
     "ties": 0,
@@ -790,7 +820,7 @@
     "total_entries": 3,
     "top_cut_entries": 0,
     "representation_pct": 0.001258,
-    "conversion_rate": 0.0,
+    "conversion_rate": 0,
     "wins": 6,
     "losses": 12,
     "ties": 1,
@@ -803,7 +833,7 @@
     "total_entries": 3,
     "top_cut_entries": 0,
     "representation_pct": 0.001258,
-    "conversion_rate": 0.0,
+    "conversion_rate": 0,
     "wins": 6,
     "losses": 11,
     "ties": 0,
@@ -829,7 +859,7 @@
     "total_entries": 3,
     "top_cut_entries": 0,
     "representation_pct": 0.001258,
-    "conversion_rate": 0.0,
+    "conversion_rate": 0,
     "wins": 1,
     "losses": 8,
     "ties": 1,
@@ -868,7 +898,7 @@
     "total_entries": 2,
     "top_cut_entries": 0,
     "representation_pct": 0.000839,
-    "conversion_rate": 0.0,
+    "conversion_rate": 0,
     "wins": 3,
     "losses": 7,
     "ties": 0,
@@ -881,7 +911,7 @@
     "total_entries": 2,
     "top_cut_entries": 0,
     "representation_pct": 0.000839,
-    "conversion_rate": 0.0,
+    "conversion_rate": 0,
     "wins": 2,
     "losses": 3,
     "ties": 0,
@@ -894,7 +924,7 @@
     "total_entries": 2,
     "top_cut_entries": 0,
     "representation_pct": 0.000839,
-    "conversion_rate": 0.0,
+    "conversion_rate": 0,
     "wins": 1,
     "losses": 8,
     "ties": 1,
@@ -920,7 +950,7 @@
     "total_entries": 2,
     "top_cut_entries": 0,
     "representation_pct": 0.000839,
-    "conversion_rate": 0.0,
+    "conversion_rate": 0,
     "wins": 3,
     "losses": 3,
     "ties": 1,
@@ -933,7 +963,7 @@
     "total_entries": 2,
     "top_cut_entries": 0,
     "representation_pct": 0.000839,
-    "conversion_rate": 0.0,
+    "conversion_rate": 0,
     "wins": 2,
     "losses": 5,
     "ties": 0,
@@ -946,7 +976,7 @@
     "total_entries": 1,
     "top_cut_entries": 0,
     "representation_pct": 0.000419,
-    "conversion_rate": 0.0,
+    "conversion_rate": 0,
     "wins": 0,
     "losses": 1,
     "ties": 2,
@@ -959,7 +989,7 @@
     "total_entries": 1,
     "top_cut_entries": 0,
     "representation_pct": 0.000419,
-    "conversion_rate": 0.0,
+    "conversion_rate": 0,
     "wins": 1,
     "losses": 2,
     "ties": 0,
@@ -972,7 +1002,7 @@
     "total_entries": 1,
     "top_cut_entries": 0,
     "representation_pct": 0.000419,
-    "conversion_rate": 0.0,
+    "conversion_rate": 0,
     "wins": 0,
     "losses": 1,
     "ties": 0,
@@ -985,7 +1015,7 @@
     "total_entries": 1,
     "top_cut_entries": 0,
     "representation_pct": 0.000419,
-    "conversion_rate": 0.0,
+    "conversion_rate": 0,
     "wins": 3,
     "losses": 3,
     "ties": 0,
@@ -998,7 +1028,7 @@
     "total_entries": 1,
     "top_cut_entries": 0,
     "representation_pct": 0.000419,
-    "conversion_rate": 0.0,
+    "conversion_rate": 0,
     "wins": 6,
     "losses": 2,
     "ties": 0,
@@ -1011,7 +1041,7 @@
     "total_entries": 1,
     "top_cut_entries": 0,
     "representation_pct": 0.000419,
-    "conversion_rate": 0.0,
+    "conversion_rate": 0,
     "wins": 0,
     "losses": 8,
     "ties": 0,
@@ -1024,7 +1054,7 @@
     "total_entries": 1,
     "top_cut_entries": 0,
     "representation_pct": 0.000419,
-    "conversion_rate": 0.0,
+    "conversion_rate": 0,
     "wins": 2,
     "losses": 5,
     "ties": 0,
@@ -1037,7 +1067,7 @@
     "total_entries": 1,
     "top_cut_entries": 0,
     "representation_pct": 0.000419,
-    "conversion_rate": 0.0,
+    "conversion_rate": 0,
     "wins": 1,
     "losses": 1,
     "ties": 1,
@@ -1050,7 +1080,7 @@
     "total_entries": 1,
     "top_cut_entries": 0,
     "representation_pct": 0.000419,
-    "conversion_rate": 0.0,
+    "conversion_rate": 0,
     "wins": 0,
     "losses": 1,
     "ties": 0,
@@ -1063,7 +1093,7 @@
     "total_entries": 1,
     "top_cut_entries": 1,
     "representation_pct": 0.000419,
-    "conversion_rate": 1.0,
+    "conversion_rate": 1,
     "wins": 5,
     "losses": 2,
     "ties": 0,
@@ -1076,7 +1106,7 @@
     "total_entries": 1,
     "top_cut_entries": 0,
     "representation_pct": 0.000419,
-    "conversion_rate": 0.0,
+    "conversion_rate": 0,
     "wins": 0,
     "losses": 1,
     "ties": 0,
@@ -1089,7 +1119,7 @@
     "total_entries": 1,
     "top_cut_entries": 0,
     "representation_pct": 0.000419,
-    "conversion_rate": 0.0,
+    "conversion_rate": 0,
     "wins": 0,
     "losses": 1,
     "ties": 0,
@@ -1102,7 +1132,7 @@
     "total_entries": 1,
     "top_cut_entries": 0,
     "representation_pct": 0.000419,
-    "conversion_rate": 0.0,
+    "conversion_rate": 0,
     "wins": 2,
     "losses": 5,
     "ties": 0,
@@ -1115,7 +1145,7 @@
     "total_entries": 1,
     "top_cut_entries": 0,
     "representation_pct": 0.000419,
-    "conversion_rate": 0.0,
+    "conversion_rate": 0,
     "wins": 1,
     "losses": 3,
     "ties": 0,
@@ -1128,7 +1158,7 @@
     "total_entries": 1,
     "top_cut_entries": 0,
     "representation_pct": 0.000419,
-    "conversion_rate": 0.0,
+    "conversion_rate": 0,
     "wins": 0,
     "losses": 1,
     "ties": 0,
