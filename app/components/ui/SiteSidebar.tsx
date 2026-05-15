@@ -7,6 +7,7 @@ import {
   TrophyIcon,
   ChartBarIcon,
   BookOpenIcon,
+  BookmarkIcon,
   UserIcon,
 } from "./nav-icons";
 
@@ -53,6 +54,7 @@ export default function SiteSidebar({
     { href: "/meta-decks", label: "Top 30 Meta Decks", Icon: ChartBarIcon },
     { href: "/leaderboard", label: "Leaderboard", Icon: TrophyIcon },
     { href: "/learn", label: "Learn to Play", Icon: BookOpenIcon },
+    ...(isAuthed ? [{ href: "/my-decks", label: "My Decks", Icon: BookmarkIcon }] : []),
   ];
 
   // "/" gets exact match so it doesn't light up on every page; others match

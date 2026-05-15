@@ -113,6 +113,15 @@ export function DiscordIcon({ className }: IconProps) {
   );
 }
 
+/** Bookmark — "My Decks". */
+export function BookmarkIcon({ className }: IconProps) {
+  return (
+    <svg {...outlineProps} className={className}>
+      <path d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+    </svg>
+  );
+}
+
 /** TikTok brand mark — filled, currentColor. */
 export function TikTokIcon({ className }: IconProps) {
   return (
