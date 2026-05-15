@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { getTierByTitle } from "@/lib/trainer-tiers";
 import { UserDeckCard } from "@/app/components/DeckPostCard";
+import archetypesRaw from "@/data/meta-archetypes.json";
 import MatchHeatMap from "@/app/profile/MatchHeatMap";
 import { deckResult, viewerResult, type SharedMatchCore } from "@/lib/shared-matches";
 import {
@@ -27,7 +28,7 @@ interface DeckRow {
   name: string;
   analysis: {
     deckPrice?: number;
-    metaMatch?: { archetypeName?: string | null };
+    metaMatch?: { archetypeName?: string | null; archetypeId?: string | null };
     rotation?: { ready?: boolean };
     sections?: { pokemon: number; trainer: number; energy: number };
   } | null;
@@ -361,6 +362,12 @@ export default async function ProfilePage({
               const price = deck.analysis?.deckPrice ?? null;
               const sections = deck.analysis?.sections ?? null;
               const wl = deckWL.get(deck.id) ?? null;
+              const archetypeId = deck.analysis?.metaMatch?.archetypeId;
+              const imageUrl = archetypeId
+                ? (archetypesRaw as Array<{ id: string; image_url?: string }>).find(
+                    (a) => a.id === archetypeId
+                  )?.image_url ?? null
+                : null;
               return (
                 <UserDeckCard
                   key={deck.id}
@@ -374,6 +381,7 @@ export default async function ProfilePage({
                   wl={wl}
                   likeCount={deck.like_count}
                   isPrivate={isOwner && !deck.is_public}
+                  imageUrl={imageUrl}
                 />
               );
             })}
