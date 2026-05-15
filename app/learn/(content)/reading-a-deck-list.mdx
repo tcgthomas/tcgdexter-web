@@ -1,0 +1,73 @@
+---
+slug: reading-a-deck-list
+title: Reading a deck list
+module: basics
+moduleTitle: The Basics
+order: 8
+estimatedMinutes: 3
+---
+
+# Reading a deck list
+
+Every competitive Pokémon TCG community shares decks the same way — a plain text list, one card per line, with a count, a name, a set abbreviation, and a collector number. Once you can read this format, you can read every deck on Reddit, every tournament report, every share link.
+
+## The basic format
+
+Each line looks like this:
+
+```
+3 N's Zoroark ex JTG 175
+```
+
+That's: **quantity** + **card name** + **set code** + **collector number**.
+
+- **3** — how many copies are in the deck
+- **N's Zoroark ex** — the card name
+- **JTG** — the set abbreviation (Journey Together, in this case)
+- **175** — the card's number in that set
+
+The set code and number are there because some cards have been printed in multiple sets — and even within the same name, different printings count toward the same 4-copy limit. Specifying which version helps tournament software (and Dexter) know exactly which printing you mean.
+
+## Sections
+
+A full deck list usually has three sections — Pokémon, Trainer, and Energy:
+
+```
+Pokémon: 13
+3 N's Zoroark ex JTG 175
+3 N's Zorua ASC 136
+2 N's Reshiram ASC 154
+2 N's Zekrom ASC 155
+... (and so on)
+
+Trainer: 15
+4 Ultra Ball MEG 131
+4 N's PP Up ASC 195
+4 Buddy-Buddy Poffin MEG 167
+3 Lillie's Determination ASC 192
+... (and so on)
+
+Energy: 1
+8 Basic {D} Energy MEE 7
+```
+
+The numbers next to each section header are informational. Some exports (like the one above) count distinct entries in the section; others count total cards. Either way, the only count that has to be exact is the deck's overall **60 cards** — most lists include a `Total Cards: 60` line at the bottom to confirm.
+
+## The 4-copy rule
+
+You can have at most **4 copies** of any card with the same name. Two exceptions:
+
+- **Basic Energy** — unlimited copies allowed
+- **ACE SPEC cards** — only 1 ACE SPEC per deck, total (not per name)
+
+## Why deck lists matter for Dexter
+
+Dexter is built around this format. When you paste a deck list on the home page, Dexter parses every line, looks up each card, and runs analysis on:
+
+- Rotation legality — any cards leaving Standard?
+- Energy ratios
+- Evolution lines — do you have the right Basics for your Stage 1s/2s?
+- Archetype match — does this look like a known meta deck?
+- Price
+
+In the next lesson, we'll actually do it.

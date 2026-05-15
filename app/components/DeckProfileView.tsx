@@ -266,6 +266,11 @@ interface Props {
    * variant. The first entry should be `deckList` itself (or an equivalent).
    */
   deckLists?: string[];
+  /**
+   * Per-variant creator/trainer names parallel to `deckLists`. Surfaced
+   * beneath the variant index inside `MetaDeckListCarousel`.
+   */
+  deckListCreators?: string[];
   analysis: AnalysisResult;
   profiledAt: string;
   /** Page heading; defaults to "Deck Profile". */
@@ -323,6 +328,7 @@ export default function DeckProfileView({
   variant,
   deckList,
   deckLists,
+  deckListCreators,
   analysis,
   profiledAt,
   pageTitle = "Deck Profile",
@@ -704,7 +710,10 @@ export default function DeckProfileView({
               visitors see the actual sample list Limitless is showing. */}
           {variant === "meta" &&
             (deckLists && deckLists.length > 1 ? (
-              <MetaDeckListCarousel deckLists={deckLists} />
+              <MetaDeckListCarousel
+                deckLists={deckLists}
+                creators={deckListCreators}
+              />
             ) : (
               <DeckListCard deckList={deckList} />
             ))}

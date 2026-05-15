@@ -77,8 +77,20 @@ function DeckListPanel({ deckList }: { deckList: string }) {
   );
 }
 
-export default function MetaDeckListCarousel({ deckLists }: { deckLists: string[] }) {
-  const lists = deckLists.filter((d) => d.trim().length > 0);
+export default function MetaDeckListCarousel({
+  deckLists,
+  creators,
+}: {
+  deckLists: string[];
+  creators?: string[];
+}) {
+  // Keep creators index-aligned with deckLists *before* the empty-string filter
+  // so the indices we read inside the component still line up.
+  const pairs = deckLists
+    .map((d, i) => ({ list: d, creator: (creators?.[i] ?? "").trim() || "Trainer" }))
+    .filter((p) => p.list.trim().length > 0);
+  const lists = pairs.map((p) => p.list);
+  const creatorNames = pairs.map((p) => p.creator);
   const scrollerRef = useRef<HTMLDivElement | null>(null);
   const [active, setActive] = useState(0);
 
@@ -113,8 +125,11 @@ export default function MetaDeckListCarousel({ deckLists }: { deckLists: string[
     // Single variant — render the same card chrome without carousel affordances.
     return (
       <div className="rounded-2xl border border-black/8 bg-white/90 backdrop-blur-xl shadow-sm p-5">
-        <div className="flex items-center justify-between mb-3">
-          <h2 className="text-sm font-semibold text-text-primary">Deck List</h2>
+        <div className="flex items-start justify-between mb-3">
+          <div>
+            <h2 className="text-sm font-semibold text-text-primary">Deck List</h2>
+            <p className="text-xs text-text-secondary mt-0.5">{creatorNames[0]}</p>
+          </div>
           <CopyDeckListButton deckList={lists[0]} iconOnly />
         </div>
         <DeckListPanel deckList={lists[0]} />
@@ -124,12 +139,17 @@ export default function MetaDeckListCarousel({ deckLists }: { deckLists: string[
 
   return (
     <div className="rounded-2xl border border-black/8 bg-white/90 backdrop-blur-xl shadow-sm p-5">
-      <div className="flex items-center justify-between mb-3">
-        <div className="flex items-baseline gap-2">
-          <h2 className="text-sm font-semibold text-text-primary">Deck List</h2>
-          <span className="text-xs text-text-muted">
-            Variant {active + 1} of {lists.length}
-          </span>
+      <div className="flex items-start justify-between mb-3">
+        <div>
+          <div className="flex items-baseline gap-2">
+            <h2 className="text-sm font-semibold text-text-primary">Deck List</h2>
+            <span className="text-xs text-text-muted">
+              Variant {active + 1} of {lists.length}
+            </span>
+          </div>
+          <p className="text-xs text-text-secondary mt-0.5">
+            {creatorNames[active] ?? "Trainer"}
+          </p>
         </div>
         <CopyDeckListButton deckList={lists[active] ?? lists[0]} iconOnly />
       </div>

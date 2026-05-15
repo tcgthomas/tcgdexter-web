@@ -4,6 +4,19 @@ import { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import UnifiedSearch from "@/app/leaderboard/UnifiedSearch";
+import {
+  StackIcon,
+  TrophyIcon,
+  ChartBarIcon,
+  BookOpenIcon,
+  BookmarkIcon,
+  UserIcon,
+  NewspaperIcon,
+  DiscordIcon,
+  TikTokIcon,
+  ShoppingBagIcon,
+} from "./nav-icons";
 
 /** Must match the CSS transition-duration on the panel div below. */
 const TRANSITION_MS = 200;
@@ -15,6 +28,8 @@ interface Props {
   displayName: string | null;
   /** User's username handle; used to build the profile link. */
   username: string | null;
+  /** Whether the user has admin/judge privileges. */
+  isAdmin?: boolean;
 }
 
 /**
@@ -36,7 +51,7 @@ interface Props {
  * so there is zero layout shift on open or close. scrollLockedRef guards
  * against double-lock/unlock so unlockScroll() is safe from any code path.
  */
-export default function MobileNavMenu({ isAuthed, displayName, username }: Props) {
+export default function MobileNavMenu({ isAuthed, displayName, username, isAdmin }: Props) {
   const [isOpen, setIsOpen] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
 
@@ -117,7 +132,8 @@ export default function MobileNavMenu({ isAuthed, displayName, username }: Props
 
   // ── Side effects ─────────────────────────────────────────────────────────────
 
-  // Route change: close menu if it was open or mid-animation.
+  // Route change safety net: close menu if it was left open or mid-animation
+  // (e.g. programmatic navigation that didn't go through a link).
   useEffect(() => {
     if (!scrollLockedRef.current && !isOpen) return;
     closeMenu();
@@ -158,7 +174,7 @@ export default function MobileNavMenu({ isAuthed, displayName, username }: Props
     const getFocusable = () =>
       Array.from(
         panel.querySelectorAll<HTMLElement>(
-          'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])',
+          'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
         ),
       );
 
@@ -195,21 +211,26 @@ export default function MobileNavMenu({ isAuthed, displayName, username }: Props
 
   // ── Nav link data ─────────────────────────────────────────────────────────────
 
+  // Icons are shared with the desktop sidebars (see ./nav-icons). Keep the
+  // icon assignments in sync with SiteSidebar / SiteSidebarRight so the two
+  // surfaces tell the same visual story.
   const INTERNAL_LINKS = [
-    { href: "/", label: "Create a Deck Profile" },
-    { href: "/meta-decks", label: "Top 30 Meta Decks" },
-    { href: "/leaderboard", label: "Leaderboard" },
+    { href: "/", label: "Create a Deck Profile", Icon: StackIcon },
+    { href: "/meta-decks", label: "Top 30 Meta Decks", Icon: ChartBarIcon },
+    { href: "/leaderboard", label: "Leaderboard", Icon: TrophyIcon },
+    { href: "/learn", label: "Learn to Play", Icon: BookOpenIcon },
+    ...(isAuthed ? [{ href: "/my-decks", label: "My Decks", Icon: BookmarkIcon }] : []),
   ];
 
   const EXTERNAL_LINKS = [
-    { href: "https://tcgdexter.beehiiv.com/", label: "TCG News" },
-    { href: "https://discord.gg/G3VfEzfmJF", label: "Discord" },
-    { href: "https://www.tiktok.com/@tcgdexter", label: "TikTok" },
-    { href: "https://www.ebay.com/usr/tcgdexter", label: "Card Shop" },
+    { href: "https://tcgdexter.beehiiv.com/", label: "TCG News", Icon: NewspaperIcon },
+    { href: "https://discord.gg/G3VfEzfmJF", label: "Discord", Icon: DiscordIcon },
+    { href: "https://www.tiktok.com/@tcgdexter", label: "TikTok", Icon: TikTokIcon },
+    { href: "https://www.ebay.com/usr/tcgdexter", label: "Card Shop", Icon: ShoppingBagIcon },
   ];
 
   const linkClass =
-    "block py-2 text-lg font-medium text-text-secondary hover:text-text-primary transition-colors";
+    "flex items-center gap-4 py-2 text-lg font-medium text-text-secondary hover:text-text-primary transition-colors";
 
   // ── Hamburger icon (reused in trigger + panel close button) ──────────────────
 
@@ -258,17 +279,19 @@ export default function MobileNavMenu({ isAuthed, displayName, username }: Props
         </div>
       </div>
 
-      {/* Nav body — bg + links fade as a unit. At opacity 0 the page
-          content is visible beneath; at opacity 1 the takeover is fully
-          opaque. Header above stays fixed, so the divider never flickers. */}
+      {/* Nav body — bg + links + search fade as a unit. At opacity 0 the
+          page content is visible beneath; at opacity 1 the takeover is
+          fully opaque. Header above stays fixed, so the divider never
+          flickers. `flex-col` here is what lets the search footer pin to
+          the bottom of the panel via `mt-auto`. */}
       <div
         className={[
-          "flex-1 bg-bg overflow-y-auto",
+          "flex-1 bg-bg overflow-y-auto flex flex-col",
           "transition-opacity duration-200 ease-out",
           isOpen ? "opacity-100" : "opacity-0",
         ].join(" ")}
       >
-        <nav className="mx-auto max-w-6xl px-6 pt-10 pb-12">
+        <nav className="mx-auto max-w-6xl w-full px-6 pt-4 pb-6">
           <ul className="flex flex-col gap-1">
             {/* Auth item — top of nav */}
             <li>
@@ -278,28 +301,31 @@ export default function MobileNavMenu({ isAuthed, displayName, username }: Props
                   className={linkClass}
                   onClick={closeMenu}
                 >
-                  {displayName ?? "Profile"}
+                  <UserIcon />
+                  <span>{displayName ?? "Profile"}</span>
                 </Link>
               ) : (
                 <Link href="/sign-in" className={linkClass} onClick={closeMenu}>
-                  Sign in
+                  <UserIcon />
+                  <span>Sign in</span>
                 </Link>
               )}
             </li>
 
             <li role="separator" className="my-4" />
 
-            {INTERNAL_LINKS.map(({ href, label }) => (
+            {INTERNAL_LINKS.map(({ href, label, Icon }) => (
               <li key={href}>
                 <Link href={href} className={linkClass} onClick={closeMenu}>
-                  {label}
+                  <Icon />
+                  <span>{label}</span>
                 </Link>
               </li>
             ))}
 
             <li role="separator" className="my-4" />
 
-            {EXTERNAL_LINKS.map(({ href, label }) => (
+            {EXTERNAL_LINKS.map(({ href, label, Icon }) => (
               <li key={href}>
                 <a
                   href={href}
@@ -308,12 +334,21 @@ export default function MobileNavMenu({ isAuthed, displayName, username }: Props
                   className={linkClass}
                   onClick={closeMenu}
                 >
-                  {label}
+                  <Icon />
+                  <span>{label}</span>
                 </a>
               </li>
             ))}
           </ul>
         </nav>
+
+        {/* Global search — anchored to the bottom of the panel via
+            `mt-auto`. `dropdownPosition="above"` flips the results dropdown
+            so it opens upward over the link list instead of off-screen
+            past the panel's bottom edge. */}
+        <div className="mt-auto mx-auto max-w-6xl w-full px-6 pb-8 pt-4">
+          <UnifiedSearch dropdownPosition="above" />
+        </div>
       </div>
     </div>
   );

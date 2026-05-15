@@ -3,7 +3,15 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { getTierByTitle } from "@/lib/trainer-tiers";
+import { UserDeckCard } from "@/app/components/DeckPostCard";
+import { primaryCardImageUrl } from "@/lib/primaryCardImage";
 import MatchHeatMap from "@/app/profile/MatchHeatMap";
+import { deckResult, viewerResult, type SharedMatchCore } from "@/lib/shared-matches";
+import {
+  CERTIFIED_TRAINER,
+  listAchievements,
+} from "@/lib/learn/achievements";
+import CertifiedTrainerBadge from "@/app/learn/quiz/CertifiedTrainerBadge";
 
 interface ProfileRow {
   id: string;
@@ -20,8 +28,10 @@ interface DeckRow {
   name: string;
   analysis: {
     deckPrice?: number;
-    metaMatch?: { archetypeName?: string | null };
+    metaMatch?: { archetypeName?: string | null; archetypeId?: string | null };
     rotation?: { ready?: boolean };
+    sections?: { pokemon: number; trainer: number; energy: number };
+    cards?: Array<{ qty: number; name: string; number: string; setCode: string; section: "pokemon" | "trainer" | "energy" }>;
   } | null;
   updated_at: string;
   like_count: number;
@@ -96,16 +106,30 @@ export default async function ProfilePage({
         .order("updated_at", { ascending: false });
   const decks = (decksRaw ?? []) as DeckRow[];
 
-  let matchStats: MatchRow[] = [];
+  let manualMatches: MatchRow[] = [];
   if (isOwner) {
     const { data: matches } = await supabase
       .from("matches")
       .select("saved_deck_id, result, played_at, created_at");
-    matchStats = (matches ?? []) as MatchRow[];
+    manualMatches = (matches ?? []) as MatchRow[];
   }
 
+  // Verified shared matches involving this user, finalized only.
+  // Public to all viewers; we count both creator-side and opponent-side.
+  const { data: sharedRaw } = await supabase
+    .from("shared_matches")
+    .select(
+      `id, creator_user_id, opponent_user_id, creator_decklist_id, opponent_decklist_id,
+       creator_result, opponent_result, status, final_outcome, final_winner_user_id,
+       judge_ruled, finalized_at`
+    )
+    .eq("status", "finalized")
+    .or(`creator_user_id.eq.${profile.id},opponent_user_id.eq.${profile.id}`);
+  const sharedMatches = (sharedRaw ?? []) as SharedMatchCore[];
+
+  // Per-deck W-L: manual (owner only) + verified (everyone)
   const deckWL = new Map<string, { w: number; l: number; d: number }>();
-  for (const m of matchStats) {
+  for (const m of manualMatches) {
     if (!m.saved_deck_id) continue;
     const prev = deckWL.get(m.saved_deck_id) ?? { w: 0, l: 0, d: 0 };
     if (m.result === "win") prev.w++;
@@ -113,11 +137,58 @@ export default async function ProfilePage({
     else if (m.result === "draw") prev.d++;
     deckWL.set(m.saved_deck_id, prev);
   }
+  for (const sm of sharedMatches) {
+    // Identify which deck belongs to this profile and bump its W-L bucket.
+    const deckId =
+      sm.creator_user_id === profile.id
+        ? sm.creator_decklist_id
+        : sm.opponent_decklist_id;
+    if (!deckId) continue;
+    const r = deckResult(sm, deckId);
+    if (!r) continue;
+    const prev = deckWL.get(deckId) ?? { w: 0, l: 0, d: 0 };
+    if (r === "win") prev.w++;
+    else if (r === "loss") prev.l++;
+    else prev.d++;
+    deckWL.set(deckId, prev);
+  }
 
-  const globalWins = matchStats.filter((m) => m.result === "win").length;
-  const globalLosses = matchStats.filter((m) => m.result === "loss").length;
-  const globalDraws = matchStats.filter((m) => m.result === "draw").length;
+  // Global W-L: manual (owner only) + verified (public)
+  const verifiedWins = sharedMatches.filter(
+    (m) => viewerResult(m, profile.id) === "win"
+  ).length;
+  const verifiedLosses = sharedMatches.filter(
+    (m) => viewerResult(m, profile.id) === "loss"
+  ).length;
+  const verifiedDraws = sharedMatches.filter(
+    (m) => viewerResult(m, profile.id) === "draw"
+  ).length;
+
+  const manualWins = manualMatches.filter((m) => m.result === "win").length;
+  const manualLosses = manualMatches.filter((m) => m.result === "loss").length;
+  const manualDraws = manualMatches.filter((m) => m.result === "draw").length;
+
+  const globalWins = (isOwner ? manualWins : 0) + verifiedWins;
+  const globalLosses = (isOwner ? manualLosses : 0) + verifiedLosses;
+  const globalDraws = (isOwner ? manualDraws : 0) + verifiedDraws;
   const globalTotal = globalWins + globalLosses + globalDraws;
+
+  // Heatmap dates: manual played_at + verified finalized_at (owner only)
+  const heatmapMatches: MatchRow[] = isOwner
+    ? [
+        ...manualMatches,
+        ...sharedMatches.map<MatchRow>((m) => ({
+          saved_deck_id:
+            m.creator_user_id === profile.id
+              ? m.creator_decklist_id
+              : m.opponent_decklist_id,
+          result:
+            viewerResult(m, profile.id) ?? "draw",
+          played_at: m.finalized_at ?? null,
+          created_at: m.finalized_at ?? new Date().toISOString(),
+        })),
+      ]
+    : [];
 
   const tier = getTierByTitle(profile.trainer_title ?? "Rookie Trainer");
   const joinedDate = new Date(profile.created_at).toLocaleDateString("en-US", {
@@ -125,8 +196,19 @@ export default async function ProfilePage({
     year: "numeric",
   });
 
+  const achievements = await listAchievements(supabase, profile.id);
+  const certifiedTrainer = achievements.find((a) => a.key === CERTIFIED_TRAINER);
+  const certifiedDate = certifiedTrainer
+    ? new Date(certifiedTrainer.earned_at).toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+      })
+    : null;
+  const showAchievementsCard = isOwner || achievements.length > 0;
+
   return (
-    <main className="mx-auto max-w-2xl px-6 pt-[calc(env(safe-area-inset-top)_+_1.68rem)] md:pt-[calc(env(safe-area-inset-top)_+_3rem)] pb-24">
+    <main className="mx-auto max-w-6xl px-6 pt-[calc(env(safe-area-inset-top)_+_1.68rem)] md:pt-[calc(env(safe-area-inset-top)_+_3rem)] pb-24">
       {/* Profile module */}
       <div className="rounded-2xl border border-black/8 bg-white/90 backdrop-blur-xl shadow-sm p-5 mb-6">
         <div className="flex items-start gap-4">
@@ -211,9 +293,44 @@ export default async function ProfilePage({
         </div>
       </div>
 
-      {/* Match heatmap — only for owner (match data is private) */}
-      {isOwner && matchStats.length > 0 && (
-        <MatchHeatMap matches={matchStats} />
+      {/* Achievements — earned badges (owner sees an empty state nudge) */}
+      {showAchievementsCard && (
+        <div className="rounded-2xl border border-black/8 bg-white/90 backdrop-blur-xl shadow-sm p-5 mb-6">
+          <h2 className="text-sm font-semibold text-text-primary mb-3">
+            Achievements
+          </h2>
+          {certifiedTrainer ? (
+            <div className="flex items-center gap-3">
+              <CertifiedTrainerBadge size="sm" />
+              <div className="min-w-0">
+                <p className="text-sm font-semibold text-text-primary">
+                  Certified Trainer
+                </p>
+                <p className="text-xs text-text-muted">
+                  Earned {certifiedDate}
+                </p>
+              </div>
+            </div>
+          ) : (
+            isOwner && (
+              <p className="text-sm text-text-secondary">
+                Pass the{" "}
+                <Link
+                  href="/learn/quiz"
+                  className="text-accent hover:underline"
+                >
+                  Trainer Quiz
+                </Link>{" "}
+                to earn your first badge.
+              </p>
+            )
+          )}
+        </div>
+      )}
+
+      {/* Match heatmap — only for owner (manual match data is private) */}
+      {isOwner && heatmapMatches.length > 0 && (
+        <MatchHeatMap matches={heatmapMatches} />
       )}
 
       {/* Deck feed */}
@@ -241,83 +358,28 @@ export default async function ProfilePage({
             </p>
           </div>
         ) : (
-          <div className="rounded-2xl border border-black/8 bg-white/90 backdrop-blur-xl shadow-sm overflow-hidden">
-            {decks.map((deck, i) => {
-              const archetype = deck.analysis?.metaMatch?.archetypeName ?? null;
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            {decks.map((deck) => {
               const price = deck.analysis?.deckPrice ?? null;
-              const standard = deck.analysis?.rotation?.ready ?? null;
-              const wl = deckWL.get(deck.id);
+              const sections = deck.analysis?.sections ?? null;
+              const wl = deckWL.get(deck.id) ?? null;
+              const imageUrl = primaryCardImageUrl(deck.analysis?.cards ?? []);
               return (
-                <Link
+                <UserDeckCard
                   key={deck.id}
+                  id={deck.id}
+                  name={deck.name}
                   href={`/u/${profile.username}/${deck.id}`}
-                  className={`flex items-center gap-3 px-5 py-3.5 hover:bg-black/[0.02] transition-colors ${
-                    i === decks.length - 1 ? "" : "border-b border-bg"
-                  }`}
-                >
-                  <div className="flex-1 min-w-0">
-                    <p className="font-semibold text-text-primary text-base truncate">
-                      {deck.name}
-                    </p>
-                    <div className="flex items-center gap-2 mt-0.5 text-xs text-text-muted flex-wrap">
-                      {archetype && <span className="truncate max-w-[160px]">{archetype}</span>}
-                      {price !== null && price > 0 && (
-                        <>
-                          {archetype && <span>·</span>}
-                          <span className="tabular-nums">${price.toFixed(2)}</span>
-                        </>
-                      )}
-                      {standard === true && (
-                        <>
-                          {(archetype || (price !== null && price > 0)) && <span>·</span>}
-                          <span>Standard</span>
-                        </>
-                      )}
-                      {isOwner && wl && wl.w + wl.l + wl.d > 0 && (
-                        <>
-                          <span>·</span>
-                          <span className="font-semibold text-emerald-700">{wl.w}W</span>
-                          {" "}
-                          <span className="font-semibold text-rose-700">{wl.l}L</span>
-                        </>
-                      )}
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2 flex-shrink-0">
-                    {deck.like_count > 0 && (
-                      <div className="flex items-center gap-1 text-xs font-semibold text-text-muted tabular-nums">
-                        <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor">
-                          <path d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
-                        </svg>
-                        {deck.like_count}
-                      </div>
-                    )}
-                    {isOwner && !deck.is_public && (
-                      <svg
-                        className="w-3.5 h-3.5 text-text-muted"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                        strokeWidth={1.75}
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z"
-                        />
-                      </svg>
-                    )}
-                    <svg
-                      className="w-4 h-4 text-text-muted"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                      strokeWidth={2}
-                    >
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
-                    </svg>
-                  </div>
-                </Link>
+                  username={profile.username}
+                  displayName={profile.display_name}
+                  price={price}
+                  counts={sections}
+                  wl={wl}
+                  likeCount={deck.like_count}
+                  isPrivate={isOwner && !deck.is_public}
+                  imageUrl={imageUrl}
+                  ownerUserId={profile.id}
+                />
               );
             })}
           </div>
