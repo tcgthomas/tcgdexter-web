@@ -115,9 +115,22 @@ export default function MobileNavMenu({ isAuthed, displayName, username }: Props
     else openMenu();
   };
 
+  // Same-route tap: pathname won't change, so the route-commit effect below
+  // can't close the menu. Detect that case and close eagerly.
+  const handleInternalLinkClick = (href: string) => {
+    if (href === pathname) closeMenu();
+  };
+
   // ── Side effects ─────────────────────────────────────────────────────────────
 
-  // Route change: close menu if it was open or mid-animation.
+  // Route change: close menu if it was open or mid-animation. This is what
+  // closes the menu after an internal link tap — we deliberately do NOT call
+  // closeMenu from the link's onClick, because closing before Next.js commits
+  // the new route exposes the previous page underneath for the duration of
+  // the RSC fetch + transition, producing a jarring "panel disappears, home
+  // flashes, destination appears" sequence. Keeping the panel open through
+  // the transition means the user sees either the previous route or the new
+  // route's loading.tsx skeleton — never a flash of the wrong page.
   useEffect(() => {
     if (!scrollLockedRef.current && !isOpen) return;
     closeMenu();
@@ -272,16 +285,23 @@ export default function MobileNavMenu({ isAuthed, displayName, username }: Props
           <ul className="flex flex-col gap-1">
             {/* Auth item — top of nav */}
             <li>
-              {isAuthed ? (
+              {isAuthed ? (() => {
+                const authHref = username ? `/u/${username}` : "/settings";
+                return (
+                  <Link
+                    href={authHref}
+                    className={linkClass}
+                    onClick={() => handleInternalLinkClick(authHref)}
+                  >
+                    {displayName ?? "Profile"}
+                  </Link>
+                );
+              })() : (
                 <Link
-                  href={username ? `/u/${username}` : "/settings"}
+                  href="/sign-in"
                   className={linkClass}
-                  onClick={closeMenu}
+                  onClick={() => handleInternalLinkClick("/sign-in")}
                 >
-                  {displayName ?? "Profile"}
-                </Link>
-              ) : (
-                <Link href="/sign-in" className={linkClass} onClick={closeMenu}>
                   Sign in
                 </Link>
               )}
@@ -291,7 +311,11 @@ export default function MobileNavMenu({ isAuthed, displayName, username }: Props
 
             {INTERNAL_LINKS.map(({ href, label }) => (
               <li key={href}>
-                <Link href={href} className={linkClass} onClick={closeMenu}>
+                <Link
+                  href={href}
+                  className={linkClass}
+                  onClick={() => handleInternalLinkClick(href)}
+                >
                   {label}
                 </Link>
               </li>
