@@ -39,19 +39,27 @@ function CardArt({ url, name }: { url?: string | null; name: string }) {
 }
 
 function TypeCounts({ counts }: { counts: CardCounts }) {
-  const item = (label: string, n: number) => (
-    <span className="flex items-baseline gap-1 mr-2.5">
-      <span className="text-[10px] uppercase tracking-[0.05em] font-semibold text-text-muted">
-        {label}
-      </span>
-      <span className="text-[13px] font-bold text-text-primary tabular-nums">{n}</span>
-    </span>
-  );
+  const rows = [
+    { label: "Pokémon", n: counts.pokemon },
+    { label: "Trainer", n: counts.trainer },
+    { label: "Energy", n: counts.energy },
+  ];
   return (
-    <div className="flex flex-wrap items-baseline mb-2.5 gap-y-0.5">
-      {item("Pokémon", counts.pokemon)}
-      {item("Trainer", counts.trainer)}
-      {item("Energy", counts.energy)}
+    <div className="flex gap-2 mb-2.5">
+      <div className="flex flex-col items-end">
+        {rows.map(({ label, n }) => (
+          <span key={label} className="h-5 flex items-center text-[13px] font-bold text-text-primary tabular-nums">
+            {n}
+          </span>
+        ))}
+      </div>
+      <div className="flex flex-col items-start">
+        {rows.map(({ label }) => (
+          <span key={label} className="h-5 flex items-center text-[10px] uppercase tracking-[0.05em] font-semibold text-text-muted">
+            {label}
+          </span>
+        ))}
+      </div>
     </div>
   );
 }
