@@ -35,6 +35,7 @@ interface TopDeck {
     sections?: { pokemon: number; trainer: number; energy: number };
     cards?: Array<{ qty: number; name: string; number: string; setCode: string; section: "pokemon" | "trainer" | "energy" }>;
   } | null;
+  cover_image_url: string | null;
   username: string;
   display_name: string;
 }
@@ -88,7 +89,7 @@ async function fetchTopDecks(): Promise<TopDeck[]> {
   // RLS already enforces is_public + owner profile is_public
   const { data: decks } = await supabase
     .from("saved_decks")
-    .select("id, name, like_count, user_id, analysis")
+    .select("id, name, like_count, user_id, analysis, cover_image_url")
     .eq("is_public", true)
     .order("like_count", { ascending: false })
     .limit(10);
@@ -188,7 +189,9 @@ export default async function LeaderboardPage() {
             {topDecks.map((deck) => {
               const price = deck.analysis?.deckPrice ?? null;
               const sections = deck.analysis?.sections ?? null;
-              const imageUrl = primaryCardImageUrl(deck.analysis?.cards ?? []);
+              const imageUrl =
+                deck.cover_image_url ??
+                primaryCardImageUrl(deck.analysis?.cards ?? []);
               return (
                 <UserDeckCard
                   key={deck.id}

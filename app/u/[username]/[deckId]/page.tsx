@@ -18,6 +18,7 @@ interface DeckRecord {
   user_id: string;
   like_count: number;
   is_public: boolean;
+  cover_image_url: string | null;
 }
 
 interface ProfileRecord {
@@ -103,13 +104,13 @@ export default async function DeckPage({
   const { data: deckRaw } = isOwner
     ? await supabase
         .from("saved_decks")
-        .select("id, name, deck_list, analysis, notes, updated_at, user_id, like_count, is_public")
+        .select("id, name, deck_list, analysis, notes, updated_at, user_id, like_count, is_public, cover_image_url")
         .eq("id", deckId)
         .eq("user_id", profile.id)
         .maybeSingle()
     : await supabase
         .from("saved_decks")
-        .select("id, name, deck_list, analysis, notes, updated_at, user_id, like_count, is_public")
+        .select("id, name, deck_list, analysis, notes, updated_at, user_id, like_count, is_public, cover_image_url")
         .eq("id", deckId)
         .eq("user_id", profile.id)
         .eq("is_public", true)
@@ -273,6 +274,7 @@ export default async function DeckPage({
       initialLikeCount={deck.like_count ?? 0}
       isAuthenticated={Boolean(viewer)}
       creator={creator}
+      initialCoverImageUrl={deck.cover_image_url ?? null}
     />
   );
 }

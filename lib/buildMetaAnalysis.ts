@@ -95,6 +95,8 @@ export function buildMetaAnalysis(
   const cards = metaCards.map((c) => ({
     qty: c.qty,
     name: c.name,
+    number: c.number,
+    setCode: c.setCode,
     section: c.category as "pokemon" | "trainer" | "energy",
   }));
 

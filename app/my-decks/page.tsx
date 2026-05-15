@@ -19,6 +19,7 @@ interface DeckRow {
   updated_at: string;
   like_count: number;
   is_public: boolean;
+  cover_image_url: string | null;
 }
 
 interface MatchRow {
@@ -47,7 +48,7 @@ export default async function MyDecksPage() {
 
   const { data: decksRaw } = await supabase
     .from("saved_decks")
-    .select("id, name, analysis, updated_at, like_count, is_public")
+    .select("id, name, analysis, updated_at, like_count, is_public, cover_image_url")
     .eq("user_id", user.id)
     .order("updated_at", { ascending: false });
   const decks = (decksRaw ?? []) as DeckRow[];
@@ -126,7 +127,9 @@ export default async function MyDecksPage() {
             const price = deck.analysis?.deckPrice ?? null;
             const sections = deck.analysis?.sections ?? null;
             const wl = deckWL.get(deck.id) ?? null;
-            const imageUrl = primaryCardImageUrl(deck.analysis?.cards ?? []);
+            const imageUrl =
+              deck.cover_image_url ??
+              primaryCardImageUrl(deck.analysis?.cards ?? []);
             return (
               <UserDeckCard
                 key={deck.id}

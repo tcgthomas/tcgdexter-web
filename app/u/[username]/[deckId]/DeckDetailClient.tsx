@@ -10,8 +10,10 @@ import DeckProfileView, {
 import QRCodeButton from "@/app/components/QRCodeButton";
 import CopyDeckListButton from "@/app/components/CopyDeckListButton";
 import LikeButton from "@/app/components/LikeButton";
+import CoverCardPicker from "@/app/components/CoverCardPicker";
 import MatchLog, { type SharedDeckMatchRow } from "@/app/my-decks/[id]/MatchLog";
 import DeckNotes from "@/app/my-decks/[id]/DeckNotes";
+import { primaryCardImageUrl } from "@/lib/primaryCardImage";
 
 interface Match {
   id: string;
@@ -90,6 +92,7 @@ interface Props {
   initialLikeCount: number;
   isAuthenticated: boolean;
   creator: DeckCreator | null;
+  initialCoverImageUrl: string | null;
 }
 
 export default function DeckDetailClient({
@@ -110,11 +113,14 @@ export default function DeckDetailClient({
   initialLikeCount,
   isAuthenticated,
   creator,
+  initialCoverImageUrl,
 }: Props) {
   const router = useRouter();
   const [logOpen, setLogOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [confirmingDelete, setConfirmingDelete] = useState(false);
+  const [coverImageUrl, setCoverImageUrl] = useState<string | null>(initialCoverImageUrl);
+  const [coverPickerOpen, setCoverPickerOpen] = useState(false);
 
   const [isPublic, setIsPublic] = useState(initialIsPublic);
   const [visibilityBusy, setVisibilityBusy] = useState(false);
@@ -170,6 +176,26 @@ export default function DeckDetailClient({
       setRenameError("Network error.");
     } finally {
       setRenameBusy(false);
+    }
+  }
+
+  async function updateCoverImage(url: string | null) {
+    const prev = coverImageUrl;
+    setCoverImageUrl(url);
+    try {
+      const res = await fetch(`/api/saved-decks/${savedDeckId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ cover_image_url: url }),
+      });
+      if (!res.ok) {
+        setCoverImageUrl(prev);
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data?.error ?? "Failed to update cover.");
+      }
+    } catch (e) {
+      setCoverImageUrl(prev);
+      throw e;
     }
   }
 
@@ -383,6 +409,26 @@ export default function DeckDetailClient({
             <QRCodeButton deckList={deckList} analysis={analysis} />
             <button
               type="button"
+              onClick={() => setCoverPickerOpen(true)}
+              aria-label="Choose cover card"
+              className="inline-flex items-center justify-center rounded-full border border-border bg-bg px-3 py-[7px] text-text-secondary hover:bg-surface-2 transition-colors touch-manipulation"
+            >
+              <svg
+                className="w-3.5 h-3.5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={1.75}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z"
+                />
+              </svg>
+            </button>
+            <button
+              type="button"
               onClick={() => setConfirmingDelete(true)}
               disabled={deleting}
               aria-label="Delete deck"
@@ -414,6 +460,15 @@ export default function DeckDetailClient({
               onOpenChange={setLogOpen}
             />
           )}
+
+          <CoverCardPicker
+            open={coverPickerOpen}
+            onClose={() => setCoverPickerOpen(false)}
+            cards={analysis.cards ?? []}
+            currentUrl={coverImageUrl}
+            defaultUrl={primaryCardImageUrl(analysis.cards ?? [])}
+            onSelect={updateCoverImage}
+          />
 
           {confirmingDelete && (
             <div
