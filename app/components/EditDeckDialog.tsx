@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { cardImageUrlFor } from "@/lib/primaryCardImage";
 
 interface DeckCard {
@@ -23,13 +23,14 @@ interface PickableCard {
 interface Props {
   open: boolean;
   onClose: () => void;
+  initialName: string;
   cards: DeckCard[];
-  /** Currently-selected override URL (null = auto-pick). */
-  currentUrl: string | null;
-  /** Resolved auto-pick URL, shown as the "Use default" preview. */
-  defaultUrl: string | null;
-  /** Persist the selection. `null` clears the override. */
-  onSelect: (url: string | null) => Promise<void>;
+  /** Currently-persisted override URL (null = auto-pick). */
+  currentCoverUrl: string | null;
+  /** Resolved auto-pick URL, shown as the "Auto-pick" preview. */
+  defaultCoverUrl: string | null;
+  /** Persist both changes in one go. Throws on failure. */
+  onSave: (next: { name: string; coverUrl: string | null }) => Promise<void>;
 }
 
 const SECTION_LABEL: Record<DeckCard["section"], string> = {
@@ -39,19 +40,30 @@ const SECTION_LABEL: Record<DeckCard["section"], string> = {
 };
 const SECTION_ORDER: DeckCard["section"][] = ["pokemon", "trainer", "energy"];
 
-export default function CoverCardPicker({
+export default function EditDeckDialog({
   open,
   onClose,
+  initialName,
   cards,
-  currentUrl,
-  defaultUrl,
-  onSelect,
+  currentCoverUrl,
+  defaultCoverUrl,
+  onSave,
 }: Props) {
+  const [nameInput, setNameInput] = useState(initialName);
+  const [pendingCoverUrl, setPendingCoverUrl] = useState<string | null>(currentCoverUrl);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Deduplicate by (name, setCode, number); skip cards we can't resolve to
-  // an image URL.
+  // Re-seed local state whenever the dialog re-opens so a Cancel followed
+  // by a re-open shows the persisted values, not the previous pending edits.
+  useEffect(() => {
+    if (open) {
+      setNameInput(initialName);
+      setPendingCoverUrl(currentCoverUrl);
+      setError(null);
+    }
+  }, [open, initialName, currentCoverUrl]);
+
   const grouped = useMemo(() => {
     const seen = new Map<string, PickableCard>();
     for (const card of cards) {
@@ -73,22 +85,26 @@ export default function CoverCardPicker({
       trainer: [],
       energy: [],
     };
-    seen.forEach((c) => {
-      out[c.section].push(c);
-    });
+    seen.forEach((c) => out[c.section].push(c));
     return out;
   }, [cards]);
 
   if (!open) return null;
 
-  async function commit(url: string | null) {
+  const trimmedName = nameInput.trim();
+  const nameChanged = trimmedName.length > 0 && trimmedName !== initialName;
+  const coverChanged = pendingCoverUrl !== currentCoverUrl;
+  const canSave = !busy && trimmedName.length > 0 && (nameChanged || coverChanged);
+
+  async function handleSave() {
+    if (!canSave) return;
     setBusy(true);
     setError(null);
     try {
-      await onSelect(url);
+      await onSave({ name: trimmedName, coverUrl: pendingCoverUrl });
       onClose();
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Failed to update cover.");
+      setError(e instanceof Error ? e.message : "Failed to save changes.");
     } finally {
       setBusy(false);
     }
@@ -98,7 +114,7 @@ export default function CoverCardPicker({
     <div
       role="dialog"
       aria-modal="true"
-      aria-labelledby="cover-picker-title"
+      aria-labelledby="edit-deck-title"
       className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm"
       onClick={() => !busy && onClose()}
     >
@@ -108,17 +124,12 @@ export default function CoverCardPicker({
       >
         {/* Header */}
         <div className="flex items-center justify-between px-5 pt-5 pb-3 border-b border-black/5">
-          <div>
-            <h2
-              id="cover-picker-title"
-              className="text-base font-semibold text-text-primary"
-            >
-              Choose cover card
-            </h2>
-            <p className="mt-1 text-xs text-text-secondary">
-              Pick any card from your deck list to represent it on previews.
-            </p>
-          </div>
+          <h2
+            id="edit-deck-title"
+            className="text-base font-semibold text-text-primary"
+          >
+            Edit deck
+          </h2>
           <button
             type="button"
             onClick={onClose}
@@ -138,15 +149,42 @@ export default function CoverCardPicker({
           </button>
         </div>
 
-        {/* Default-pick row */}
-        <div className="px-5 py-3 border-b border-black/5">
+        {/* Name */}
+        <div className="px-5 pt-4 pb-3 border-b border-black/5">
+          <label
+            htmlFor="edit-deck-name"
+            className="block text-xs font-semibold uppercase tracking-wider text-text-muted mb-1.5"
+          >
+            Deck name
+          </label>
+          <input
+            id="edit-deck-name"
+            type="text"
+            value={nameInput}
+            onChange={(e) => setNameInput(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                handleSave();
+              }
+            }}
+            disabled={busy}
+            className="w-full rounded-lg border border-border bg-bg px-3 py-2 text-sm text-text-primary focus:outline-none focus:border-accent/40 focus:ring-1 focus:ring-accent/20 disabled:opacity-50 [font-size:16px] sm:text-sm"
+          />
+        </div>
+
+        {/* Cover image */}
+        <div className="px-5 pt-4 pb-2">
+          <p className="text-xs font-semibold uppercase tracking-wider text-text-muted mb-2">
+            Cover image
+          </p>
           <button
             type="button"
-            onClick={() => commit(null)}
+            onClick={() => setPendingCoverUrl(null)}
             disabled={busy}
-            aria-pressed={currentUrl === null}
+            aria-pressed={pendingCoverUrl === null}
             className={`w-full flex items-center gap-3 rounded-xl border p-2.5 text-left transition disabled:opacity-50 ${
-              currentUrl === null
+              pendingCoverUrl === null
                 ? "border-accent bg-accent/5"
                 : "border-black/10 bg-white hover:bg-black/[0.02]"
             }`}
@@ -155,9 +193,9 @@ export default function CoverCardPicker({
               className="shrink-0 rounded-md overflow-hidden border border-black/[0.07] bg-[var(--surface)] flex items-center justify-center"
               style={{ width: 44, height: 60 }}
             >
-              {defaultUrl ? (
+              {defaultCoverUrl ? (
                 // eslint-disable-next-line @next/next/no-img-element
-                <img src={defaultUrl} alt="" className="w-full h-full object-cover" />
+                <img src={defaultCoverUrl} alt="" className="w-full h-full object-cover" />
               ) : (
                 <span className="text-[8px] text-text-muted leading-tight px-1 text-center">
                   Auto
@@ -172,14 +210,14 @@ export default function CoverCardPicker({
                 Highest-stage Pokémon, most copies.
               </p>
             </div>
-            {currentUrl === null && (
+            {pendingCoverUrl === null && (
               <span className="text-xs font-semibold text-accent">Selected</span>
             )}
           </button>
         </div>
 
         {/* Card grid */}
-        <div className="flex-1 overflow-y-auto px-5 py-4">
+        <div className="flex-1 overflow-y-auto px-5 pt-2 pb-4">
           {SECTION_ORDER.every((s) => grouped[s].length === 0) ? (
             <p className="text-sm text-text-secondary text-center py-8">
               No matchable cards in this deck list.
@@ -192,12 +230,12 @@ export default function CoverCardPicker({
                 </h3>
                 <div className="grid grid-cols-3 sm:grid-cols-4 gap-2.5">
                   {grouped[section].map((card) => {
-                    const selected = currentUrl === card.imageUrl;
+                    const selected = pendingCoverUrl === card.imageUrl;
                     return (
                       <button
                         key={card.key}
                         type="button"
-                        onClick={() => commit(card.imageUrl)}
+                        onClick={() => setPendingCoverUrl(card.imageUrl)}
                         disabled={busy}
                         aria-pressed={selected}
                         className={`group relative rounded-lg overflow-hidden border-2 transition disabled:opacity-50 ${
@@ -247,9 +285,28 @@ export default function CoverCardPicker({
           )}
         </div>
 
-        {error && (
-          <p className="px-5 pb-3 text-xs text-accent">{error}</p>
-        )}
+        {/* Footer */}
+        <div className="px-5 py-3 border-t border-black/5 flex items-center justify-end gap-2">
+          {error && (
+            <p className="mr-auto text-xs text-accent">{error}</p>
+          )}
+          <button
+            type="button"
+            onClick={onClose}
+            disabled={busy}
+            className="inline-flex items-center justify-center rounded-full border border-black/10 bg-white px-4 py-1.5 text-xs font-semibold text-text-secondary hover:bg-black/5 transition disabled:opacity-50 touch-manipulation"
+          >
+            Cancel
+          </button>
+          <button
+            type="button"
+            onClick={handleSave}
+            disabled={!canSave}
+            className="inline-flex items-center justify-center rounded-full bg-accent px-4 py-1.5 text-xs font-semibold text-white hover:bg-accent-light transition disabled:opacity-50 touch-manipulation"
+          >
+            {busy ? "Saving…" : "Save"}
+          </button>
+        </div>
       </div>
     </div>
   );

@@ -10,7 +10,7 @@ import DeckProfileView, {
 import QRCodeButton from "@/app/components/QRCodeButton";
 import CopyDeckListButton from "@/app/components/CopyDeckListButton";
 import LikeButton from "@/app/components/LikeButton";
-import CoverCardPicker from "@/app/components/CoverCardPicker";
+import EditDeckDialog from "@/app/components/EditDeckDialog";
 import MatchLog, { type SharedDeckMatchRow } from "@/app/my-decks/[id]/MatchLog";
 import DeckNotes from "@/app/my-decks/[id]/DeckNotes";
 import { primaryCardImageUrl } from "@/lib/primaryCardImage";
@@ -120,16 +120,12 @@ export default function DeckDetailClient({
   const [deleting, setDeleting] = useState(false);
   const [confirmingDelete, setConfirmingDelete] = useState(false);
   const [coverImageUrl, setCoverImageUrl] = useState<string | null>(initialCoverImageUrl);
-  const [coverPickerOpen, setCoverPickerOpen] = useState(false);
 
   const [isPublic, setIsPublic] = useState(initialIsPublic);
   const [visibilityBusy, setVisibilityBusy] = useState(false);
 
   const [deckName, setDeckName] = useState(pageTitle);
-  const [editingTitle, setEditingTitle] = useState(false);
-  const [titleInput, setTitleInput] = useState(pageTitle);
-  const [renameBusy, setRenameBusy] = useState(false);
-  const [renameError, setRenameError] = useState<string | null>(null);
+  const [editOpen, setEditOpen] = useState(false);
 
   async function toggleVisibility() {
     if (visibilityBusy) return;
@@ -150,51 +146,38 @@ export default function DeckDetailClient({
     }
   }
 
-  async function handleRename() {
-    const trimmed = titleInput.trim();
-    if (!trimmed || trimmed === deckName) {
-      setEditingTitle(false);
-      setTitleInput(deckName);
-      return;
-    }
-    setRenameBusy(true);
-    setRenameError(null);
-    try {
-      const res = await fetch(`/api/saved-decks/${savedDeckId}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: trimmed }),
-      });
-      const data = await res.json();
-      if (res.ok) {
-        setDeckName(trimmed);
-        setEditingTitle(false);
-      } else {
-        setRenameError(data.error ?? "Failed to rename.");
-      }
-    } catch {
-      setRenameError("Network error.");
-    } finally {
-      setRenameBusy(false);
-    }
-  }
+  async function handleEditSave({
+    name,
+    coverUrl,
+  }: {
+    name: string;
+    coverUrl: string | null;
+  }) {
+    const payload: { name?: string; cover_image_url?: string | null } = {};
+    if (name !== deckName) payload.name = name;
+    if (coverUrl !== coverImageUrl) payload.cover_image_url = coverUrl;
+    if (Object.keys(payload).length === 0) return;
 
-  async function updateCoverImage(url: string | null) {
-    const prev = coverImageUrl;
-    setCoverImageUrl(url);
+    const prevName = deckName;
+    const prevCover = coverImageUrl;
+    if ("name" in payload) setDeckName(name);
+    if ("cover_image_url" in payload) setCoverImageUrl(coverUrl);
+
     try {
       const res = await fetch(`/api/saved-decks/${savedDeckId}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ cover_image_url: url }),
+        body: JSON.stringify(payload),
       });
       if (!res.ok) {
-        setCoverImageUrl(prev);
+        setDeckName(prevName);
+        setCoverImageUrl(prevCover);
         const data = await res.json().catch(() => ({}));
-        throw new Error(data?.error ?? "Failed to update cover.");
+        throw new Error(data?.error ?? "Failed to save changes.");
       }
     } catch (e) {
-      setCoverImageUrl(prev);
+      setDeckName(prevName);
+      setCoverImageUrl(prevCover);
       throw e;
     }
   }
@@ -265,14 +248,13 @@ export default function DeckDetailClient({
     );
   }
 
-  // Owner rendering
-  const titleAction = !editingTitle ? (
+  // Owner rendering — ellipsis button trailing the title opens the unified
+  // edit dialog (name + cover image).
+  const titleAction = (
     <button
-      onClick={() => {
-        setEditingTitle(true);
-        setTitleInput(deckName);
-      }}
-      aria-label="Rename deck"
+      type="button"
+      onClick={() => setEditOpen(true)}
+      aria-label="Edit deck"
       className="flex-shrink-0 text-on-gradient opacity-50 hover:opacity-100 transition-opacity"
     >
       <svg
@@ -285,46 +267,11 @@ export default function DeckDetailClient({
         <path
           strokeLinecap="round"
           strokeLinejoin="round"
-          d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125"
+          d="M6.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM12.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM18.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0z"
         />
       </svg>
     </button>
-  ) : null;
-
-  const subtitle: React.ReactNode = editingTitle ? (
-    <div className="flex flex-col gap-1.5 mt-1">
-      <div className="flex items-center gap-2">
-        <input
-          type="text"
-          value={titleInput}
-          onChange={(e) => setTitleInput(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && handleRename()}
-          autoFocus
-          disabled={renameBusy}
-          className="flex-1 min-w-0 rounded-lg border border-border bg-bg px-3 py-1.5 text-sm text-text-primary focus:outline-none focus:border-accent/40 focus:ring-1 focus:ring-accent/20 [font-size:16px] sm:text-sm"
-        />
-        <button
-          onClick={handleRename}
-          disabled={renameBusy}
-          className="rounded-full bg-accent px-3 py-1.5 text-xs font-semibold text-white hover:bg-accent-light disabled:opacity-50"
-        >
-          {renameBusy ? "…" : "Save"}
-        </button>
-        <button
-          onClick={() => {
-            setEditingTitle(false);
-            setTitleInput(deckName);
-            setRenameError(null);
-          }}
-          disabled={renameBusy}
-          className="rounded-full border border-border bg-bg px-3 py-1.5 text-xs font-semibold text-text-secondary hover:bg-surface-2 disabled:opacity-50"
-        >
-          Cancel
-        </button>
-      </div>
-      {renameError && <p className="text-xs text-accent">{renameError}</p>}
-    </div>
-  ) : false;
+  );
 
   return (
     <DeckProfileView
@@ -334,7 +281,7 @@ export default function DeckDetailClient({
       profiledAt={profiledAt}
       pageTitle={deckName}
       titleAction={titleAction}
-      subtitle={subtitle}
+      subtitle={false}
       shareUrl={shareUrl}
       preTitle={
         <Link
@@ -409,26 +356,6 @@ export default function DeckDetailClient({
             <QRCodeButton deckList={deckList} analysis={analysis} />
             <button
               type="button"
-              onClick={() => setCoverPickerOpen(true)}
-              aria-label="Choose cover card"
-              className="inline-flex items-center justify-center rounded-full border border-border bg-bg px-3 py-[7px] text-text-secondary hover:bg-surface-2 transition-colors touch-manipulation"
-            >
-              <svg
-                className="w-3.5 h-3.5"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                strokeWidth={1.75}
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z"
-                />
-              </svg>
-            </button>
-            <button
-              type="button"
               onClick={() => setConfirmingDelete(true)}
               disabled={deleting}
               aria-label="Delete deck"
@@ -461,13 +388,14 @@ export default function DeckDetailClient({
             />
           )}
 
-          <CoverCardPicker
-            open={coverPickerOpen}
-            onClose={() => setCoverPickerOpen(false)}
+          <EditDeckDialog
+            open={editOpen}
+            onClose={() => setEditOpen(false)}
+            initialName={deckName}
             cards={analysis.cards ?? []}
-            currentUrl={coverImageUrl}
-            defaultUrl={primaryCardImageUrl(analysis.cards ?? [])}
-            onSelect={updateCoverImage}
+            currentCoverUrl={coverImageUrl}
+            defaultCoverUrl={primaryCardImageUrl(analysis.cards ?? [])}
+            onSave={handleEditSave}
           />
 
           {confirmingDelete && (
