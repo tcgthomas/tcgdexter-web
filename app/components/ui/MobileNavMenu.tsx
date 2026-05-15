@@ -322,8 +322,6 @@ export default function MobileNavMenu({ isAuthed, displayName, username, isAdmin
               </li>
             ))}
 
-            <li role="separator" className="my-4" />
-
             {EXTERNAL_LINKS.map(({ href, label, Icon }) => (
               <li key={href}>
                 <a
