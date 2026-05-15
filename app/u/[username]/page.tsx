@@ -206,7 +206,7 @@ export default async function ProfilePage({
   const showAchievementsCard = isOwner || achievements.length > 0;
 
   return (
-    <main className="mx-auto max-w-4xl px-6 pt-[calc(env(safe-area-inset-top)_+_1.68rem)] md:pt-[calc(env(safe-area-inset-top)_+_3rem)] pb-24">
+    <main className="mx-auto max-w-6xl px-6 pt-[calc(env(safe-area-inset-top)_+_1.68rem)] md:pt-[calc(env(safe-area-inset-top)_+_3rem)] pb-24">
       {/* Profile module */}
       <div className="rounded-2xl border border-black/8 bg-white/90 backdrop-blur-xl shadow-sm p-5 mb-6">
         <div className="flex items-start gap-4">

@@ -119,17 +119,6 @@ export function MetaDeckCard({
       <Link href={href} className="block">
         {/* Header — deck name */}
         <div className="flex items-center gap-2 px-3.5 pt-3">
-          <svg
-            className="w-[15px] h-[15px] shrink-0 text-accent"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth={1.5}
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <path d="M3 21h18M7 17V11M12 17V5M17 17v-7" />
-          </svg>
           <p className="flex-1 min-w-0 text-[17px] font-semibold text-text-primary truncate">
             <span className="text-text-muted font-medium">#{rank} </span>
             {name}
@@ -145,9 +134,22 @@ export function MetaDeckCard({
         <div className="flex gap-3.5 p-3.5 pt-3">
           <CardArt url={image_url} name={name} />
           <div className="flex-1 min-w-0 flex flex-col">
-            <p className="text-[13px] font-semibold text-accent mb-2">
-              Top 30 Meta Decks
-            </p>
+            <div className="flex items-center gap-1.5 mb-2">
+              <svg
+                className="w-[13px] h-[13px] shrink-0 text-accent"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth={1.5}
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M3 21h18M7 17V11M12 17V5M17 17v-7" />
+              </svg>
+              <p className="text-[13px] font-semibold text-accent">
+                Top 30 Meta Decks
+              </p>
+            </div>
             <div className="mt-auto flex gap-5 pt-2">
               <Stat
                 value={`${(representation_pct * 100).toFixed(1)}%`}
@@ -203,12 +205,6 @@ export function UserDeckCard({
       <Link href={href} className="block">
         {/* Header — deck name */}
         <div className="flex items-center gap-2 px-3.5 pt-3">
-          <div
-            className="w-8 h-8 rounded-full shrink-0 flex items-center justify-center text-sm font-bold text-white"
-            style={{ background: bg }}
-          >
-            {initials}
-          </div>
           <p className="flex-1 min-w-0 text-[17px] font-semibold text-text-primary truncate">
             {name}
           </p>
@@ -223,9 +219,17 @@ export function UserDeckCard({
         <div className="flex gap-3.5 p-3.5 pt-3">
           <CardArt url={imageUrl} name={name} />
           <div className="flex-1 min-w-0 flex flex-col">
-            <p className="text-[13px] font-semibold text-text-muted mb-2">
-              @{username}
-            </p>
+            <div className="flex items-center gap-1.5 mb-2">
+              <div
+                className="w-5 h-5 rounded-full shrink-0 flex items-center justify-center text-[10px] font-bold text-white"
+                style={{ background: bg }}
+              >
+                {initials}
+              </div>
+              <p className="text-[13px] font-semibold text-text-muted truncate">
+                @{username}
+              </p>
+            </div>
             {counts && <TypeCounts counts={counts} />}
             <div className="mt-auto">
               {wl ? <WLCircles wl={wl} /> : null}

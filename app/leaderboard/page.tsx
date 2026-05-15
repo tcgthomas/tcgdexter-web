@@ -119,7 +119,7 @@ export default async function LeaderboardPage() {
   const rankMedal = ["🥇", "🥈", "🥉"];
 
   return (
-    <main className="mx-auto max-w-4xl px-6 pt-10 pb-32">
+    <main className="mx-auto max-w-6xl px-6 pt-10 pb-32">
       {/* Header */}
       <div className="mb-8">
         <div className="text-xs uppercase tracking-widest text-accent mb-3 flex items-center gap-2">
