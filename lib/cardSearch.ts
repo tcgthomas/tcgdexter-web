@@ -1,6 +1,6 @@
 import { getAllCards, getSets, type CardIndexEntry } from "@/lib/cardsIndex";
 
-export type SortKey = "name" | "number" | "hp" | "price";
+export type SortKey = "released" | "name" | "number" | "hp" | "price";
 export type SortDir = "asc" | "desc";
 
 export interface CardSearchParams {
@@ -117,20 +117,32 @@ function applyFilters(card: CardIndexEntry, p: CardSearchParams): boolean {
   return true;
 }
 
+function compareNumber(a: CardIndexEntry, b: CardIndexEntry): number {
+  return (
+    (a.numberNumeric ?? Number.MAX_SAFE_INTEGER) -
+      (b.numberNumeric ?? Number.MAX_SAFE_INTEGER) ||
+    a.number.localeCompare(b.number)
+  );
+}
+
 function compareCards(a: CardIndexEntry, b: CardIndexEntry, sort: SortKey, dir: SortDir): number {
   const mult = dir === "desc" ? -1 : 1;
   switch (sort) {
+    case "released":
+      // Primary: set release date (desc by default → newest first).
+      // Secondary: set id (stable tie-break for same-day releases).
+      // Tertiary: card number ascending — always low→high within a set.
+      return (
+        mult * a.setReleaseDate.localeCompare(b.setReleaseDate) ||
+        mult * a.setId.localeCompare(b.setId) ||
+        compareNumber(a, b)
+      );
     case "hp":
       return mult * ((a.hp ?? -1) - (b.hp ?? -1)) || a.name.localeCompare(b.name);
     case "price":
       return mult * (a.marketPrice - b.marketPrice) || a.name.localeCompare(b.name);
     case "number":
-      return (
-        mult *
-          ((a.numberNumeric ?? Number.MAX_SAFE_INTEGER) -
-            (b.numberNumeric ?? Number.MAX_SAFE_INTEGER)) ||
-        a.setName.localeCompare(b.setName)
-      );
+      return mult * compareNumber(a, b) || a.setName.localeCompare(b.setName);
     case "name":
     default:
       return mult * a.name.localeCompare(b.name) || a.setName.localeCompare(b.setName);
@@ -141,8 +153,8 @@ export function searchCards(params: CardSearchParams): CardSearchResult {
   const all = getAllCards();
   const page = Math.max(1, params.page ?? 1);
   const pageSize = Math.min(240, Math.max(12, params.pageSize ?? 120));
-  const sort: SortKey = params.sort ?? "name";
-  const dir: SortDir = params.dir ?? "asc";
+  const sort: SortKey = params.sort ?? "released";
+  const dir: SortDir = params.dir ?? (params.sort === "name" ? "asc" : "desc");
   const q = params.q?.trim();
 
   let filtered: ScoredCard[];

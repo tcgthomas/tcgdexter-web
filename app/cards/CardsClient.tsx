@@ -51,8 +51,9 @@ function buildUrl(pathname: string, params: Params): string {
   if (params.hpMax != null) sp.set("hpMax", String(params.hpMax));
   if (params.priceMin != null) sp.set("priceMin", String(params.priceMin));
   if (params.priceMax != null) sp.set("priceMax", String(params.priceMax));
-  if (params.sort !== "name") sp.set("sort", params.sort);
-  if (params.dir !== "asc") sp.set("dir", params.dir);
+  const defaultDir = params.sort === "name" || params.sort === "number" ? "asc" : "desc";
+  if (params.sort !== "released") sp.set("sort", params.sort);
+  if (params.dir !== defaultDir) sp.set("dir", params.dir);
   if (params.page !== 1) sp.set("page", String(params.page));
   if (params.pageSize !== 120) sp.set("pageSize", String(params.pageSize));
   if (params.view !== "grid") sp.set("view", params.view);
@@ -171,6 +172,8 @@ export default function CardsClient({ initialResult, facets, initialParams }: Pr
             }}
             className="text-xs font-semibold px-3 py-1.5 rounded-full border border-black/10 bg-white"
           >
+            <option value="released:desc">Newest sets first</option>
+            <option value="released:asc">Oldest sets first</option>
             <option value="name:asc">Name A–Z</option>
             <option value="name:desc">Name Z–A</option>
             <option value="number:asc">Number ↑</option>

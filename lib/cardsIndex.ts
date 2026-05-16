@@ -1,4 +1,5 @@
 import cardData from "@/data/cards-standard.json";
+import { setReleaseDate } from "@/lib/setReleaseDates";
 
 export interface CardIndexEntry {
   id: string;
@@ -7,6 +8,7 @@ export interface CardIndexEntry {
   nameTokens: string[];
   setId: string;
   setName: string;
+  setReleaseDate: string;
   ptcgoCode: string | null;
   number: string;
   numberPadded: string;
@@ -47,6 +49,7 @@ export interface RawCard {
   retreat_cost?: number | null;
   regulation_mark?: string | null;
   market_price?: number | null;
+  release_date?: string | null;
   attacks?: CardAttack[];
   abilities?: CardAbility[];
   rules?: string[];
@@ -82,6 +85,7 @@ function buildIndex(): CardIndexEntry[] {
         nameTokens: tokenizeName(c.name),
         setId: c.set_id,
         setName: c.set_name,
+        setReleaseDate: c.release_date ?? setReleaseDate(c.set_id),
         ptcgoCode: c.ptcgo_code ?? null,
         number: c.number,
         numberPadded: padNumber(c.number),
