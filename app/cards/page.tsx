@@ -27,8 +27,8 @@ export default async function CardsPage({
 }: {
   searchParams: Record<string, string | string[] | undefined>;
 }) {
-  const sort = (asString(searchParams.sort) as SortKey | undefined) ?? "name";
-  const dir = (asString(searchParams.dir) as SortDir | undefined) ?? "asc";
+  const sort = (asString(searchParams.sort) as SortKey | undefined) ?? "released";
+  const dir = (asString(searchParams.dir) as SortDir | undefined) ?? "desc";
   const view = asString(searchParams.view) === "list" ? "list" : "grid";
   const page = asNumber(searchParams.page) ?? 1;
   const pageSize = asNumber(searchParams.pageSize) ?? 120;
