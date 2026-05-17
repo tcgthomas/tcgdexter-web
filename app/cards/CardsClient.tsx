@@ -162,13 +162,12 @@ export default function CardsClient({ initialResult, facets, initialParams }: Pr
           >
             Filters{activeFilterCount > 0 ? ` (${activeFilterCount})` : ""}
           </button>
-          <select
+          <PillSelect
             value={`${params.sort}:${params.dir}`}
             onChange={(e) => {
               const [s, d] = e.target.value.split(":") as [SortKey, SortDir];
               updateParams({ sort: s, dir: d });
             }}
-            className="text-xs font-semibold h-[30px] px-3 rounded-full border border-black/10 bg-white"
           >
             <option value="released:desc">Newest sets first</option>
             <option value="released:asc">Oldest sets first</option>
@@ -182,7 +181,7 @@ export default function CardsClient({ initialResult, facets, initialParams }: Pr
             <option value="price:asc">Price ↑</option>
             <option value="rarity:desc">Rarity ↓</option>
             <option value="rarity:asc">Rarity ↑</option>
-          </select>
+          </PillSelect>
           <div className="inline-flex rounded-full border border-black/10 bg-white overflow-hidden">
             <button
               onClick={() => updateParams({ view: "grid" })}
@@ -538,16 +537,55 @@ function Pagination({
       </div>
       <div className="flex items-center gap-2 text-xs text-text-secondary">
         <span>Per page:</span>
-        <select
+        <PillSelect
           value={pageSize}
           onChange={(e) => onPageSize(Number(e.target.value))}
-          className="text-xs font-semibold h-[30px] px-3 rounded-full border border-black/10 bg-white"
         >
           <option value={60}>60</option>
           <option value={120}>120</option>
           <option value={240}>240</option>
-        </select>
+        </PillSelect>
       </div>
+    </div>
+  );
+}
+
+// Native <select> renders its own dropdown chrome on desktop, which
+// overrides border-radius on the trailing edge — the same `rounded-full`
+// that shows as a capsule on mobile reads as a rounded rect on desktop.
+// `appearance-none` strips the native widget so the pill shape holds; a
+// pointer-events-none chevron is painted over the right padding to keep
+// the affordance.
+function PillSelect({
+  value,
+  onChange,
+  children,
+}: {
+  value: string | number;
+  onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="relative inline-flex">
+      <select
+        value={value}
+        onChange={onChange}
+        className="appearance-none text-xs font-semibold h-[30px] pl-3 pr-7 rounded-full border border-black/10 bg-white"
+      >
+        {children}
+      </select>
+      <svg
+        aria-hidden="true"
+        viewBox="0 0 12 12"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 w-3 h-3 text-text-secondary"
+      >
+        <path d="M3 4.5 6 7.5 9 4.5" />
+      </svg>
     </div>
   );
 }
