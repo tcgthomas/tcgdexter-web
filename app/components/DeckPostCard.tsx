@@ -26,7 +26,7 @@ function CardArt({ url, name }: { url?: string | null; name: string }) {
     >
       {url ? (
         // eslint-disable-next-line @next/next/no-img-element
-        <img src={url} alt={name} className="w-full h-full object-cover" />
+        <img src={url} alt={name} className="w-full h-full object-contain" />
       ) : (
         <span className="text-[11px] text-text-muted text-center leading-relaxed px-2">
           No cover
@@ -105,9 +105,13 @@ export interface MetaDeckCardProps {
   name: string;
   rank: number;
   image_url?: string | null;
+  /** URL of the pokémon sprite shown in the leading avatar circle. */
+  icon_url?: string | null;
+  /** Background color of the avatar circle (energy-type color of the
+   *  card used for image_url). */
+  icon_bg?: string | null;
   top_cut_entries: number;
   representation_pct: number;
-  price?: number | null;
   like_count?: number;
   creators?: string[];
 }
@@ -117,9 +121,10 @@ export function MetaDeckCard({
   name,
   rank,
   image_url,
+  icon_url,
+  icon_bg,
   top_cut_entries,
   representation_pct,
-  price,
   like_count = 0,
   creators,
 }: MetaDeckCardProps) {
@@ -128,17 +133,28 @@ export function MetaDeckCard({
   return (
     <div className="rounded-2xl border border-black/8 bg-white/90 backdrop-blur-xl shadow-sm overflow-hidden hover:shadow-md transition-shadow">
       <Link href={href} className="block">
-        {/* Header — deck name */}
+        {/* Header — pokémon avatar + deck name + rank */}
         <div className="flex items-center gap-2 px-3.5 pt-3">
+          {icon_url ? (
+            <div
+              className="w-7 h-7 rounded-full shrink-0 flex items-center justify-center overflow-hidden ring-1 ring-black/[0.06]"
+              style={{ background: icon_bg ?? "#B0A89E" }}
+              aria-hidden
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={icon_url}
+                alt=""
+                className="w-[22px] h-[22px] object-contain"
+              />
+            </div>
+          ) : null}
           <p className="flex-1 min-w-0 text-[17px] font-semibold text-text-primary truncate">
-            <span className="text-text-muted font-medium">#{rank} </span>
             {name}
           </p>
-          {price != null && price > 0 && (
-            <span className="ml-2 shrink-0 text-[17px] font-bold text-text-primary">
-              ${Math.round(price)}
-            </span>
-          )}
+          <span className="ml-2 shrink-0 text-[17px] font-bold text-text-primary tabular-nums">
+            #{rank}
+          </span>
         </div>
 
         {/* Body */}
