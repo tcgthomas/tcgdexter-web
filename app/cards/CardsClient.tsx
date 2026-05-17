@@ -8,6 +8,7 @@ import type { CardIndexEntry } from "@/lib/cardsIndex";
 import type { SortKey, SortDir } from "@/lib/cardSearch";
 import CardImage from "./CardImage";
 import CardFooterOverlay from "./CardFooterOverlay";
+import SectionHeader from "@/app/components/ui/SectionHeader";
 
 interface Facets {
   supertypes: string[];
@@ -139,8 +140,8 @@ export default function CardsClient({ initialResult, facets, initialParams }: Pr
 
   return (
     <main className="mx-auto max-w-[1400px] px-4 sm:px-6 pt-[calc(env(safe-area-inset-top)_+_1.68rem)] md:pt-[calc(env(safe-area-inset-top)_+_3rem)] pb-24">
-      <div className="flex items-center justify-between mb-4">
-        <h1 className="text-2xl font-semibold text-text-primary">Card Catalog</h1>
+      <div className="mb-6">
+        <SectionHeader eyebrow="Pokémon TCG" title="Card Catalog" />
       </div>
 
       {/* Toolbar */}
