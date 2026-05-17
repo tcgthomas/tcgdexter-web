@@ -77,6 +77,24 @@ function Stat({ value, label }: { value: string | number; label: string }) {
   );
 }
 
+// SF-Symbols-style `<n>.circle`: digit centered inside a thin circular
+// outline. Tabular-nums keeps single and double-digit ranks aligned, and
+// the slightly smaller font for 2-digit numbers preserves the airy
+// padding you'd see on SF Symbols' regular weight.
+function RankBadge({ rank }: { rank: number }) {
+  const twoDigit = rank >= 10;
+  return (
+    <span
+      className={`shrink-0 inline-flex items-center justify-center rounded-full border-[1.5px] border-text-primary text-text-primary font-semibold tabular-nums ${
+        twoDigit ? "w-7 h-7 text-[12px]" : "w-7 h-7 text-[14px]"
+      }`}
+      aria-label={`Rank ${rank}`}
+    >
+      {rank}
+    </span>
+  );
+}
+
 function WLCircles({ wl }: { wl: WinLoss }) {
   if (wl.w + wl.l + wl.d === 0) return null;
   return (
@@ -152,9 +170,7 @@ export function MetaDeckCard({
           <p className="flex-1 min-w-0 text-[17px] font-semibold text-text-primary truncate">
             {name}
           </p>
-          <span className="ml-2 shrink-0 text-[17px] font-bold text-text-primary tabular-nums">
-            #{rank}
-          </span>
+          <RankBadge rank={rank} />
         </div>
 
         {/* Body */}
