@@ -156,16 +156,6 @@ export default function CardsClient({ initialResult, facets, initialParams }: Pr
           />
         </div>
         <div className="flex items-center gap-2">
-          <button
-            onClick={() => setShowFilters((s) => !s)}
-            className={`text-xs font-semibold h-[30px] px-3 rounded-full transition ${
-              activeFilterCount > 0
-                ? "border border-transparent bg-gradient-brand bg-origin-border text-white shadow-brand hover:shadow-brand-lg"
-                : "border border-black/10 bg-white hover:bg-surface"
-            }`}
-          >
-            Filters{activeFilterCount > 0 ? ` (${activeFilterCount})` : ""}
-          </button>
           <PillSelect
             value={`${params.sort}:${params.dir}`}
             onChange={(e) => {
@@ -186,6 +176,16 @@ export default function CardsClient({ initialResult, facets, initialParams }: Pr
             <option value="rarity:desc">Rarity ↓</option>
             <option value="rarity:asc">Rarity ↑</option>
           </PillSelect>
+          <button
+            onClick={() => setShowFilters((s) => !s)}
+            className={`text-xs font-semibold h-[30px] px-3 rounded-full transition ${
+              activeFilterCount > 0
+                ? "border border-transparent bg-gradient-brand bg-origin-border text-white shadow-brand hover:shadow-brand-lg"
+                : "border border-black/10 bg-white hover:bg-surface"
+            }`}
+          >
+            Filters{activeFilterCount > 0 ? ` (${activeFilterCount})` : ""}
+          </button>
           <div className="inline-flex rounded-full border border-black/10 bg-white overflow-hidden">
             <button
               onClick={() => updateParams({ view: "grid" })}
