@@ -29,7 +29,7 @@ export default function CardFooterOverlay({
   const num = padNumber(number);
   const leading = setSize > 0 ? `${code} ${num}/${setSize}` : `${code} ${num}`;
   return (
-    <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[5%] min-h-[12px] flex items-center justify-between gap-1 px-1.5 bg-black/65 backdrop-blur-[2px] text-white text-[10px] font-semibold leading-none tabular-nums overflow-hidden">
+    <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[10%] min-h-[24px] flex items-end justify-between gap-1 px-1.5 pb-1 bg-gradient-to-b from-transparent to-black text-white text-[10px] font-semibold leading-none tabular-nums overflow-hidden">
       <span className="truncate">{leading}</span>
       <span className="shrink-0">{formatPrice(marketPrice)}</span>
     </div>
