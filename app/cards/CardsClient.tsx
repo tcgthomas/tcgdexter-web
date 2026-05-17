@@ -172,7 +172,7 @@ export default function CardsClient({ initialResult, facets, initialParams }: Pr
               const [s, d] = e.target.value.split(":") as [SortKey, SortDir];
               updateParams({ sort: s, dir: d });
             }}
-            className="text-xs font-semibold px-3 py-1.5 rounded-full border border-black/10 bg-white"
+            className="text-xs font-semibold h-[30px] px-3 rounded-full border border-black/10 bg-white"
           >
             <option value="released:desc">Newest sets first</option>
             <option value="released:asc">Oldest sets first</option>
@@ -545,7 +545,7 @@ function Pagination({
         <select
           value={pageSize}
           onChange={(e) => onPageSize(Number(e.target.value))}
-          className="text-xs font-semibold px-3 py-1.5 rounded-full border border-black/10 bg-white"
+          className="text-xs font-semibold h-[30px] px-3 rounded-full border border-black/10 bg-white"
         >
           <option value={60}>60</option>
           <option value={120}>120</option>
