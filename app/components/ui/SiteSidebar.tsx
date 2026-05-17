@@ -53,12 +53,12 @@ export default function SiteSidebar({
   // My Decks shows for everyone — the /my-decks route redirects anon
   // visitors to /sign-in, so the nav row doubles as a sign-in funnel.
   const INTERNAL_LINKS = [
+    { href: "/cards", label: "Card Catalog", Icon: CardsIcon },
     { href: "/", label: "Deck Profiler", Icon: StackIcon },
+    { href: "/my-decks", label: "My Decks", Icon: BookmarkIcon },
     { href: "/meta-decks", label: "Top 30 Meta Decks", Icon: ChartBarIcon },
     { href: "/leaderboard", label: "Leaderboard", Icon: TrophyIcon },
     { href: "/learn", label: "Learn to Play", Icon: BookOpenIcon },
-    { href: "/my-decks", label: "My Decks", Icon: BookmarkIcon },
-    { href: "/cards", label: "Card Catalog", Icon: CardsIcon },
   ];
 
   // "/" gets exact match so it doesn't light up on every page; others match
