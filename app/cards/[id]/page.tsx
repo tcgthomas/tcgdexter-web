@@ -136,7 +136,7 @@ export default function CardDetailPage({ params }: Props) {
                   name={c.name}
                   setName={c.setName}
                   number={c.number}
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-contain"
                 />
               </Link>
             ))}

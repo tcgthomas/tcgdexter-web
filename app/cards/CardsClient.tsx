@@ -438,7 +438,7 @@ function GridView({ cards }: { cards: CardIndexEntry[] }) {
             name={c.name}
             setName={c.setName}
             number={c.number}
-            className="w-full h-full object-cover transition-transform group-hover:scale-[1.02]"
+            className="w-full h-full object-contain transition-transform group-hover:scale-[1.02]"
           />
         </Link>
       ))}
