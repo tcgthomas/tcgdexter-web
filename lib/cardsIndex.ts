@@ -9,6 +9,7 @@ export interface CardIndexEntry {
   setId: string;
   setName: string;
   setReleaseDate: string;
+  setSize: number;
   ptcgoCode: string | null;
   number: string;
   numberPadded: string;
@@ -76,6 +77,12 @@ function padNumber(num: string): string {
 function buildIndex(): CardIndexEntry[] {
   const raw = cardData as unknown as Record<string, RawCard[]>;
   const out: CardIndexEntry[] = [];
+  const setSizes = new Map<string, number>();
+  for (const variants of Object.values(raw)) {
+    for (const c of variants) {
+      setSizes.set(c.set_id, (setSizes.get(c.set_id) ?? 0) + 1);
+    }
+  }
   for (const variants of Object.values(raw)) {
     for (const c of variants) {
       const hpNum = c.hp == null ? null : Number(c.hp);
@@ -88,6 +95,7 @@ function buildIndex(): CardIndexEntry[] {
         setId: c.set_id,
         setName: c.set_name,
         setReleaseDate: c.release_date ?? setReleaseDate(c.set_id),
+        setSize: setSizes.get(c.set_id) ?? 0,
         ptcgoCode: c.ptcgo_code ?? null,
         number: c.number,
         numberPadded: padNumber(c.number),
