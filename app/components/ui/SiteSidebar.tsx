@@ -28,9 +28,9 @@ interface Props {
  *
  * Paired with SiteSidebarRight, which carries the external links. Both rails
  * are `hidden xl:flex`; the mobile toolbar is `xl:hidden`, so the three
- * surfaces never overlap. Root layout reserves space with `xl:pl-72
- * xl:pr-72` on the page wrapper. Landscape iPad and smaller laptops stay
- * on the mobile hamburger.
+ * surfaces never overlap. Root layout reserves space with `xl:pl-[230px]
+ * xl:pr-[230px]` on the page wrapper. Landscape iPad and smaller laptops
+ * stay on the mobile hamburger.
  *
  * Layout follows the x.com signed-in shell: the brand mark hugs the
  * leading edge of the rail (aligning with the icon column of the nav
@@ -64,12 +64,12 @@ export default function SiteSidebar({
   const isActive = (href: string) =>
     href === "/" ? pathname === "/" : pathname === href || pathname.startsWith(`${href}/`);
 
-  // Rows are icon + label. `gap-4` keeps the icon column from crowding
-  // the larger text-lg label. `rounded-full` matches the capsule shape
-  // used elsewhere in the chrome (search input, result chips, Share
-  // button) so hover/active states read as part of the same family.
+  // Rows are icon + label. `gap-3` pairs the icon column with the
+  // text-base label. `rounded-full` matches the capsule shape used
+  // elsewhere in the chrome (search input, result chips, Share button)
+  // so hover/active states read as part of the same family.
   const linkBase =
-    "flex items-center gap-4 px-3 py-2 rounded-full text-lg font-medium transition-colors";
+    "flex items-center gap-3 px-3 py-2 rounded-full text-base font-medium transition-colors";
   const linkInactive = "text-text-secondary hover:text-text-primary hover:bg-surface";
   const linkActive = "text-text-primary bg-surface";
 
@@ -79,7 +79,7 @@ export default function SiteSidebar({
   return (
     <aside
       aria-label="Primary navigation"
-      className="hidden xl:flex fixed inset-y-0 left-0 z-30 w-72 flex-col bg-bg border-r border-[var(--border)]"
+      className="hidden xl:flex fixed inset-y-0 left-0 z-30 w-[230px] flex-col bg-bg border-r border-[var(--border)]"
     >
       {/* Brand mark — square source clipped into a circle via
           `rounded-full`. `pl-6` puts the logo's left edge at 24px from
