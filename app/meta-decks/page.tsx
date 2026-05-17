@@ -39,9 +39,8 @@ export default function MetaDecksPage() {
 
   return (
     <main className="mx-auto max-w-6xl px-6 pt-[calc(env(safe-area-inset-top)_+_1.68rem)] md:pt-[calc(env(safe-area-inset-top)_+_3rem)] pb-24">
-      <div className="flex items-end justify-between mb-8">
-        <SectionHeader eyebrow="Live meta" title="Top 30 Meta Decks" />
-        <p className="text-sm text-text-secondary pb-1">Standard · Top 30</p>
+      <div className="mb-8">
+        <SectionHeader eyebrow="Standard format" title="Top 30 Meta Decks" />
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
