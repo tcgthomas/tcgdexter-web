@@ -145,6 +145,9 @@ export function MetaDeckCard({
           <CardArt url={image_url} name={name} />
           <div className="flex-1 min-w-0 flex flex-col">
             <div className="flex flex-col gap-0.5">
+              <p className="text-[12px] font-bold text-text-primary">
+                Top 5 Deck Lists
+              </p>
               {creatorList.map((c, i) => (
                 <p
                   key={`${c}-${i}`}
