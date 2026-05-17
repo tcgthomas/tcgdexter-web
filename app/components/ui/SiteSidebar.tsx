@@ -58,7 +58,7 @@ export default function SiteSidebar({
     { href: "/leaderboard", label: "Leaderboard", Icon: TrophyIcon },
     { href: "/learn", label: "Learn to Play", Icon: BookOpenIcon },
     { href: "/my-decks", label: "My Decks", Icon: BookmarkIcon },
-    { href: "/cards", label: "Cards", Icon: CardsIcon },
+    { href: "/cards", label: "Card Catalog", Icon: CardsIcon },
   ];
 
   // "/" gets exact match so it doesn't light up on every page; others match
