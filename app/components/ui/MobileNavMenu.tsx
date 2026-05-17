@@ -221,7 +221,7 @@ export default function MobileNavMenu({ isAuthed, displayName, username, isAdmin
     { href: "/leaderboard", label: "Leaderboard", Icon: TrophyIcon },
     { href: "/learn", label: "Learn to Play", Icon: BookOpenIcon },
     { href: "/my-decks", label: "My Decks", Icon: BookmarkIcon },
-    { href: "/cards", label: "Cards", Icon: CardsIcon },
+    { href: "/cards", label: "Card Catalog", Icon: CardsIcon },
   ];
 
   const EXTERNAL_LINKS = [
