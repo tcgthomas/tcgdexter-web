@@ -140,7 +140,7 @@ export default function CardsClient({ initialResult, facets, initialParams }: Pr
   return (
     <main className="mx-auto max-w-[1400px] px-4 sm:px-6 pt-[calc(env(safe-area-inset-top)_+_1.68rem)] md:pt-[calc(env(safe-area-inset-top)_+_3rem)] pb-24">
       <div className="flex items-center justify-between mb-4">
-        <h1 className="text-2xl font-semibold text-text-primary">Pokémon Cards</h1>
+        <h1 className="text-2xl font-semibold text-text-primary">Card Catalog</h1>
       </div>
 
       {/* Toolbar */}
