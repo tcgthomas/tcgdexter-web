@@ -6,6 +6,7 @@ import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { cardImageSmall } from "@/lib/cardImages";
 import type { CardIndexEntry } from "@/lib/cardsIndex";
 import type { SortKey, SortDir } from "@/lib/cardSearch";
+import CardImage from "./CardImage";
 
 interface Facets {
   supertypes: string[];
@@ -429,12 +430,12 @@ function GridView({ cards }: { cards: CardIndexEntry[] }) {
           className="group block rounded-xl overflow-hidden bg-surface hover:shadow-md transition-shadow"
           style={{ aspectRatio: "245 / 342" }}
         >
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
+          <CardImage
             src={cardImageSmall(c.setId, c.number)}
             alt={`${c.name} — ${c.setName} ${c.number}`}
-            loading="lazy"
-            decoding="async"
+            name={c.name}
+            setName={c.setName}
+            number={c.number}
             className="w-full h-full object-cover transition-transform group-hover:scale-[1.02]"
           />
         </Link>
@@ -462,13 +463,13 @@ function ListView({ cards }: { cards: CardIndexEntry[] }) {
               href={`/cards/${encodeURIComponent(c.id)}`}
               className="grid grid-cols-[48px_1fr] md:grid-cols-[64px_2fr_1.5fr_80px_80px_80px_80px] gap-3 px-4 py-2 items-center hover:bg-surface transition-colors"
             >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
+              <CardImage
                 src={cardImageSmall(c.setId, c.number)}
-                alt=""
-                loading="lazy"
-                decoding="async"
-                className="w-12 h-[68px] md:w-14 md:h-[78px] object-cover rounded-md bg-surface"
+                alt={`${c.name} — ${c.setName} ${c.number}`}
+                name={c.name}
+                setName={c.setName}
+                number={c.number}
+                className="w-12 h-[68px] md:w-14 md:h-[78px] object-cover rounded-md bg-surface text-[9px]"
               />
               <div className="md:contents">
                 <span className="text-sm font-medium text-text-primary truncate">{c.name}</span>
