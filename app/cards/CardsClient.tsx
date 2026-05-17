@@ -163,18 +163,15 @@ export default function CardsClient({ initialResult, facets, initialParams }: Pr
               updateParams({ sort: s, dir: d });
             }}
           >
-            <option value="released:desc">Newest sets first</option>
-            <option value="released:asc">Oldest sets first</option>
-            <option value="name:asc">Name A–Z</option>
-            <option value="name:desc">Name Z–A</option>
-            <option value="number:asc">Number ↑</option>
-            <option value="number:desc">Number ↓</option>
-            <option value="hp:desc">HP ↓</option>
-            <option value="hp:asc">HP ↑</option>
-            <option value="price:desc">Price ↓</option>
-            <option value="price:asc">Price ↑</option>
-            <option value="rarity:desc">Rarity ↓</option>
-            <option value="rarity:asc">Rarity ↑</option>
+            <option value="released:desc">Card Number by Set</option>
+            <option value="name:asc">Card Name (A–Z)</option>
+            <option value="name:desc">Card Name (Z–A)</option>
+            <option value="hp:desc">Hit Points (High to Low)</option>
+            <option value="hp:asc">Hit Points (Low to High)</option>
+            <option value="price:desc">Market Price (High to Low)</option>
+            <option value="price:asc">Market Price (Low to High)</option>
+            <option value="rarity:desc">Rarity (Descending)</option>
+            <option value="rarity:asc">Rarity (Ascending)</option>
           </PillSelect>
           <button
             onClick={() => setShowFilters((s) => !s)}
