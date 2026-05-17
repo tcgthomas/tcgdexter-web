@@ -2,7 +2,7 @@ import { searchCards, getFilterFacets, type SortKey, type SortDir } from "@/lib/
 import CardsClient from "./CardsClient";
 
 export const metadata = {
-  title: "Cards — TCG Dexter",
+  title: "Pokémon Cards — TCG Dexter",
 };
 
 function asArray(v: string | string[] | undefined): string[] | undefined {
