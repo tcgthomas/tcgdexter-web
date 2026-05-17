@@ -50,7 +50,7 @@ export default async function MyDecksPage() {
     .from("saved_decks")
     .select("id, name, analysis, updated_at, like_count, is_public, cover_image_url")
     .eq("user_id", user.id)
-    .order("updated_at", { ascending: false });
+    .order("created_at", { ascending: false });
   const decks = (decksRaw ?? []) as DeckRow[];
 
   const { data: matchesRaw } = await supabase
