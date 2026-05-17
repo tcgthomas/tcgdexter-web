@@ -1,7 +1,8 @@
 [
   {
     "id": "dragapult-ex",
-    "name": "Dragapult ex",
+    "name": "Dragapult",
+    "annotation": "ex",
     "icons": "[\"dragapult\"]",
     "total_entries": 1506,
     "top_cut_entries": 0,
@@ -20,7 +21,8 @@
   },
   {
     "id": "crustle-mysterious-rock-inn",
-    "name": "Crustle Mysterious Rock Inn",
+    "name": "Crustle",
+    "annotation": "Mysterious Rock Inn",
     "icons": "[\"crustle\"]",
     "total_entries": 200,
     "top_cut_entries": 0,
@@ -39,7 +41,8 @@
   },
   {
     "id": "raging-bolt-ex",
-    "name": "Raging Bolt ex",
+    "name": "Raging Bolt",
+    "annotation": "ex",
     "icons": "[\"raging-bolt\"]",
     "total_entries": 196,
     "top_cut_entries": 0,
@@ -58,7 +61,8 @@
   },
   {
     "id": "rocket-s-mewtwo-ex",
-    "name": "Rocket's Mewtwo ex",
+    "name": "Rocket's Mewtwo",
+    "annotation": "ex",
     "icons": "[\"mewtwo\", \"spidops\"]",
     "total_entries": 196,
     "top_cut_entries": 0,
@@ -78,6 +82,7 @@
   {
     "id": "festival-lead",
     "name": "Festival Lead",
+    "annotation": "",
     "icons": "[\"dipplin\", \"thwackey\"]",
     "total_entries": 175,
     "top_cut_entries": 0,
@@ -97,6 +102,7 @@
   {
     "id": "ogerpon-meganium",
     "name": "Ogerpon Meganium",
+    "annotation": "",
     "icons": "[\"ogerpon\", \"meganium\"]",
     "total_entries": 157,
     "top_cut_entries": 0,
@@ -115,7 +121,8 @@
   },
   {
     "id": "cynthia-s-garchomp-ex",
-    "name": "Cynthia's Garchomp ex",
+    "name": "Cynthia's Garchomp",
+    "annotation": "ex",
     "icons": "[\"garchomp\"]",
     "total_entries": 139,
     "top_cut_entries": 0,
@@ -134,7 +141,8 @@
   },
   {
     "id": "alakazam-powerful-hand",
-    "name": "Alakazam Powerful Hand",
+    "name": "Alakazam",
+    "annotation": "Powerful Hand",
     "icons": "[\"alakazam\"]",
     "total_entries": 106,
     "top_cut_entries": 0,
@@ -153,7 +161,8 @@
   },
   {
     "id": "n-s-zoroark-ex",
-    "name": "N's Zoroark ex",
+    "name": "N's Zoroark",
+    "annotation": "ex",
     "icons": "[\"zoroark\"]",
     "total_entries": 83,
     "top_cut_entries": 0,
@@ -172,7 +181,8 @@
   },
   {
     "id": "mega-lucario-ex",
-    "name": "Mega Lucario ex",
+    "name": "Mega Lucario",
+    "annotation": "ex",
     "icons": "[\"lucario-mega\"]",
     "total_entries": 73,
     "top_cut_entries": 0,
@@ -191,7 +201,8 @@
   },
   {
     "id": "mega-starmie-ex",
-    "name": "Mega Starmie ex",
+    "name": "Mega Starmie",
+    "annotation": "ex",
     "icons": "[\"starmie-mega\"]",
     "total_entries": 73,
     "top_cut_entries": 0,
@@ -211,6 +222,7 @@
   {
     "id": "ogerpon-box",
     "name": "Ogerpon Box",
+    "annotation": "",
     "icons": "[\"ogerpon\", \"ogerpon-wellspring\"]",
     "total_entries": 69,
     "top_cut_entries": 0,
@@ -229,7 +241,8 @@
   },
   {
     "id": "mega-lopunny-ex",
-    "name": "Mega Lopunny ex",
+    "name": "Mega Lopunny",
+    "annotation": "ex",
     "icons": "[\"lopunny-mega\"]",
     "total_entries": 60,
     "top_cut_entries": 0,
@@ -248,7 +261,8 @@
   },
   {
     "id": "okidogi-adrena-power",
-    "name": "Okidogi Adrena-Power",
+    "name": "Okidogi",
+    "annotation": "Adrena-Power",
     "icons": "[\"okidogi\"]",
     "total_entries": 44,
     "top_cut_entries": 0,
@@ -267,7 +281,8 @@
   },
   {
     "id": "marnie-s-grimmsnarl-ex",
-    "name": "Marnie's Grimmsnarl ex",
+    "name": "Marnie's Grimmsnarl",
+    "annotation": "ex",
     "icons": "[\"grimmsnarl\"]",
     "total_entries": 33,
     "top_cut_entries": 0,
@@ -287,6 +302,7 @@
   {
     "id": "tera-box",
     "name": "Tera Box",
+    "annotation": "",
     "icons": "[\"noctowl\", \"ogerpon-wellspring\"]",
     "total_entries": 30,
     "top_cut_entries": 0,
@@ -305,7 +321,8 @@
   },
   {
     "id": "lillie-s-clefairy-ex",
-    "name": "Lillie's Clefairy ex",
+    "name": "Lillie's Clefairy",
+    "annotation": "ex",
     "icons": "[\"clefairy\"]",
     "total_entries": 30,
     "top_cut_entries": 0,
@@ -325,6 +342,7 @@
   {
     "id": "rocket-s-honchkrow",
     "name": "Rocket's Honchkrow",
+    "annotation": "",
     "icons": "[\"honchkrow\", \"porygon2\"]",
     "total_entries": 25,
     "top_cut_entries": 0,
@@ -343,7 +361,8 @@
   },
   {
     "id": "slowking-seek-inspiration",
-    "name": "Slowking Seek Inspiration",
+    "name": "Slowking",
+    "annotation": "Seek Inspiration",
     "icons": "[\"slowking\"]",
     "total_entries": 23,
     "top_cut_entries": 0,
@@ -362,7 +381,8 @@
   },
   {
     "id": "hydrapple-ex",
-    "name": "Hydrapple ex",
+    "name": "Hydrapple",
+    "annotation": "ex",
     "icons": "[\"hydrapple\"]",
     "total_entries": 20,
     "top_cut_entries": 0,
@@ -382,6 +402,7 @@
   {
     "id": "mega-absol-box",
     "name": "Mega Absol Box",
+    "annotation": "",
     "icons": "[\"absol-mega\", \"kangaskhan-mega\"]",
     "total_entries": 14,
     "top_cut_entries": 0,
@@ -401,6 +422,7 @@
   {
     "id": "hop-s-trevenant",
     "name": "Hop's Trevenant",
+    "annotation": "",
     "icons": "[\"trevenant\"]",
     "total_entries": 13,
     "top_cut_entries": 0,
@@ -419,7 +441,8 @@
   },
   {
     "id": "greninja-ex",
-    "name": "Greninja ex",
+    "name": "Greninja",
+    "annotation": "ex",
     "icons": "[\"greninja\"]",
     "total_entries": 9,
     "top_cut_entries": 0,
@@ -438,7 +461,8 @@
   },
   {
     "id": "archaludon-ex",
-    "name": "Archaludon ex",
+    "name": "Archaludon",
+    "annotation": "ex",
     "icons": "[\"archaludon\"]",
     "total_entries": 5,
     "top_cut_entries": 0,
@@ -458,6 +482,7 @@
   {
     "id": "ethan-s-typhlosion",
     "name": "Ethan's Typhlosion",
+    "annotation": "",
     "icons": "[\"typhlosion\"]",
     "total_entries": 5,
     "top_cut_entries": 0,
@@ -476,7 +501,8 @@
   },
   {
     "id": "flareon-ex",
-    "name": "Flareon ex",
+    "name": "Flareon",
+    "annotation": "ex",
     "icons": "[\"flareon\"]",
     "total_entries": 4,
     "top_cut_entries": 0,
@@ -495,7 +521,8 @@
   },
   {
     "id": "bloodmoon-ursaluna-mad-bite",
-    "name": "Bloodmoon Ursaluna Mad Bite",
+    "name": "Bloodmoon Ursaluna",
+    "annotation": "Mad Bite",
     "icons": "[\"ursaluna-bloodmoon\"]",
     "total_entries": 3,
     "top_cut_entries": 0,
@@ -514,7 +541,8 @@
   },
   {
     "id": "mega-venusaur-ex",
-    "name": "Mega Venusaur ex",
+    "name": "Mega Venusaur",
+    "annotation": "ex",
     "icons": "[\"venusaur-mega\"]",
     "total_entries": 3,
     "top_cut_entries": 0,
@@ -533,7 +561,8 @@
   },
   {
     "id": "mega-froslass-ex",
-    "name": "Mega Froslass ex",
+    "name": "Mega Froslass",
+    "annotation": "ex",
     "icons": "[\"froslass-mega\"]",
     "total_entries": 3,
     "top_cut_entries": 0,
