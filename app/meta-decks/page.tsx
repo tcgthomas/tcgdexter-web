@@ -40,12 +40,12 @@ export default function MetaDecksPage() {
   return (
     <main className="mx-auto max-w-6xl px-6 pt-[calc(env(safe-area-inset-top)_+_1.68rem)] md:pt-[calc(env(safe-area-inset-top)_+_3rem)] pb-24">
       <div className="flex items-end justify-between mb-8">
-        <SectionHeader eyebrow="Live meta" title="Meta Decks" />
+        <SectionHeader eyebrow="Live meta" title="Top 30 Meta Decks" />
         <p className="text-sm text-text-secondary pb-1">Standard · Top 30</p>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-        {archetypes.map((arch, i) => {
+        {archetypes.map((arch) => {
           const deckData = metaDecks.find((d) => d.id === arch.id);
           const cards =
             deckData?.variants?.[0]?.cards ?? deckData?.cards ?? [];
@@ -75,11 +75,9 @@ export default function MetaDecksPage() {
               key={arch.id}
               id={arch.id}
               name={arch.name}
-              rank={i + 1}
               image_url={cardImage}
               icon_url={iconUrl}
               icon_bg={iconBg}
-              top_cut_entries={arch.top_cut_entries}
               representation_pct={arch.representation_pct}
               creators={creators}
             />

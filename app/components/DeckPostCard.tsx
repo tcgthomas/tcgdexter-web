@@ -64,37 +64,6 @@ function TypeCounts({ counts }: { counts: CardCounts }) {
   );
 }
 
-function Stat({ value, label }: { value: string | number; label: string }) {
-  return (
-    <div>
-      <p className="text-[19px] font-bold leading-none tabular-nums text-text-primary">
-        {value}
-      </p>
-      <p className="text-[11px] uppercase tracking-[0.05em] font-semibold text-text-muted mt-1">
-        {label}
-      </p>
-    </div>
-  );
-}
-
-// SF-Symbols-style `<n>.circle`: digit centered inside a thin circular
-// outline. Tabular-nums keeps single and double-digit ranks aligned, and
-// the slightly smaller font for 2-digit numbers preserves the airy
-// padding you'd see on SF Symbols' regular weight.
-function RankBadge({ rank }: { rank: number }) {
-  const twoDigit = rank >= 10;
-  return (
-    <span
-      className={`shrink-0 inline-flex items-center justify-center rounded-full border-[1.5px] border-text-primary text-text-primary font-semibold tabular-nums ${
-        twoDigit ? "w-7 h-7 text-[12px]" : "w-7 h-7 text-[14px]"
-      }`}
-      aria-label={`Rank ${rank}`}
-    >
-      {rank}
-    </span>
-  );
-}
-
 function WLCircles({ wl }: { wl: WinLoss }) {
   if (wl.w + wl.l + wl.d === 0) return null;
   return (
@@ -121,14 +90,12 @@ function WLCircles({ wl }: { wl: WinLoss }) {
 export interface MetaDeckCardProps {
   id: string;
   name: string;
-  rank: number;
   image_url?: string | null;
   /** URL of the pokémon sprite shown in the leading avatar circle. */
   icon_url?: string | null;
   /** Background color of the avatar circle (energy-type color of the
    *  card used for image_url). */
   icon_bg?: string | null;
-  top_cut_entries: number;
   representation_pct: number;
   like_count?: number;
   creators?: string[];
@@ -137,11 +104,9 @@ export interface MetaDeckCardProps {
 export function MetaDeckCard({
   id,
   name,
-  rank,
   image_url,
   icon_url,
   icon_bg,
-  top_cut_entries,
   representation_pct,
   like_count = 0,
   creators,
@@ -170,14 +135,16 @@ export function MetaDeckCard({
           <p className="flex-1 min-w-0 text-[17px] font-semibold text-text-primary truncate">
             {name}
           </p>
-          <RankBadge rank={rank} />
+          <span className="ml-2 shrink-0 text-[17px] font-bold text-text-primary tabular-nums">
+            {(representation_pct * 100).toFixed(1)}%
+          </span>
         </div>
 
         {/* Body */}
         <div className="flex gap-3.5 p-3.5 pt-3">
           <CardArt url={image_url} name={name} />
           <div className="flex-1 min-w-0 flex flex-col">
-            <div className="flex flex-col gap-0.5 mb-2">
+            <div className="flex flex-col gap-0.5">
               {creatorList.map((c, i) => (
                 <p
                   key={`${c}-${i}`}
@@ -186,13 +153,6 @@ export function MetaDeckCard({
                   {c}
                 </p>
               ))}
-            </div>
-            <div className="mt-auto flex gap-5 pt-2">
-              <Stat
-                value={`${(representation_pct * 100).toFixed(1)}%`}
-                label="Meta share"
-              />
-              <Stat value={top_cut_entries} label="Top cuts" />
             </div>
           </div>
         </div>
