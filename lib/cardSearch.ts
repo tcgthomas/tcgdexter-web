@@ -1,6 +1,50 @@
 import { getAllCards, getSets, type CardIndexEntry } from "@/lib/cardsIndex";
 
-export type SortKey = "released" | "name" | "number" | "hp" | "price";
+export type SortKey = "released" | "name" | "number" | "hp" | "price" | "rarity";
+
+// Approximate ranking of pokemontcg.io rarity strings — higher = scarcer.
+// Unknown rarities get rank -1 so they sort to the end of a desc list.
+const RARITY_RANK: Record<string, number> = {
+  "Common": 1,
+  "Uncommon": 2,
+  "Promo": 3,
+  "Rare": 4,
+  "Classic Collection": 4,
+  "Rare Holo": 5,
+  "Rare BREAK": 5,
+  "Rare Prime": 6,
+  "Rare ACE": 6,
+  "ACE SPEC Rare": 6,
+  "Rare Holo LV.X": 6,
+  "LEGEND": 7,
+  "Rare Holo EX": 7,
+  "Rare Holo GX": 7,
+  "Rare Holo V": 7,
+  "Rare Holo VMAX": 8,
+  "Rare Holo VSTAR": 8,
+  "Double Rare": 7,
+  "Ultra Rare": 8,
+  "Rare Ultra": 8,
+  "Rare Shining": 9,
+  "Shiny Rare": 9,
+  "Rare Shiny": 9,
+  "Rare Shiny GX": 10,
+  "Rare Prism Star": 8,
+  "Amazing Rare": 9,
+  "Radiant Rare": 9,
+  "Trainer Gallery Rare Holo": 9,
+  "Illustration Rare": 10,
+  "Special Illustration Rare": 11,
+  "Hyper Rare": 12,
+  "Rare Secret": 12,
+  "Rare Rainbow": 12,
+  "Rare Holo Star": 11,
+};
+
+function rarityRank(r: string | null): number {
+  if (!r) return -1;
+  return RARITY_RANK[r] ?? -1;
+}
 export type SortDir = "asc" | "desc";
 
 export interface CardSearchParams {
@@ -141,6 +185,14 @@ function compareCards(a: CardIndexEntry, b: CardIndexEntry, sort: SortKey, dir: 
       return mult * ((a.hp ?? -1) - (b.hp ?? -1)) || a.name.localeCompare(b.name);
     case "price":
       return mult * (a.marketPrice - b.marketPrice) || a.name.localeCompare(b.name);
+    case "rarity": {
+      const ra = rarityRank(a.rarity);
+      const rb = rarityRank(b.rarity);
+      // Unknown rarities (rank -1) always sort to the end, regardless of dir.
+      if (ra === -1 && rb !== -1) return 1;
+      if (rb === -1 && ra !== -1) return -1;
+      return mult * (ra - rb) || a.name.localeCompare(b.name);
+    }
     case "number":
       return mult * compareNumber(a, b) || a.setName.localeCompare(b.setName);
     case "name":

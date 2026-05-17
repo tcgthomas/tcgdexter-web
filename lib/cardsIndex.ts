@@ -20,6 +20,7 @@ export interface CardIndexEntry {
   retreatCost: number;
   regulationMark: string | null;
   marketPrice: number;
+  rarity: string | null;
 }
 
 export interface CardAttack {
@@ -49,6 +50,7 @@ export interface RawCard {
   retreat_cost?: number | null;
   regulation_mark?: string | null;
   market_price?: number | null;
+  rarity?: string | null;
   release_date?: string | null;
   attacks?: CardAttack[];
   abilities?: CardAbility[];
@@ -97,6 +99,7 @@ function buildIndex(): CardIndexEntry[] {
         retreatCost: c.retreat_cost ?? 0,
         regulationMark: c.regulation_mark ?? null,
         marketPrice: c.market_price ?? 0,
+        rarity: c.rarity ?? null,
       });
     }
   }

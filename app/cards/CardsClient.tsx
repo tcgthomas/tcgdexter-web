@@ -183,6 +183,8 @@ export default function CardsClient({ initialResult, facets, initialParams }: Pr
             <option value="hp:asc">HP ↑</option>
             <option value="price:desc">Price ↓</option>
             <option value="price:asc">Price ↑</option>
+            <option value="rarity:desc">Rarity ↓</option>
+            <option value="rarity:asc">Rarity ↑</option>
           </select>
           <div className="inline-flex rounded-full border border-black/10 bg-white overflow-hidden">
             <button

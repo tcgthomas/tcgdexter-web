@@ -16,6 +16,8 @@ Output format (consumed by /api/analyze):
       "number": "56",
       "supertype": "Pokémon",
       "subtypes": ["Basic"],
+      "types": ["Lightning"],
+      "rarity": "Common",
       "hp": "60",
       "abilities": [],
       "attacks": [...],
@@ -123,6 +125,7 @@ def load_cards(db_path: Path, prices: dict) -> dict[str, list[dict]]:
                 return default
 
         subtypes = parse_json(row["subtypes"])
+        types = parse_json(row["types"])
         abilities_raw = parse_json(row["abilities"])
         attacks_raw = parse_json(row["attacks"])
         rules = parse_json(row["rules"])
@@ -154,6 +157,8 @@ def load_cards(db_path: Path, prices: dict) -> dict[str, list[dict]]:
             "number": number,
             "supertype": row["supertype"] or "",
             "subtypes": subtypes,
+            "types": types,
+            "rarity": row["rarity"],
             "hp": row["hp"],
             "abilities": abilities,
             "attacks": attacks,
