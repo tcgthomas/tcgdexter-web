@@ -182,9 +182,9 @@ export const SET_RELEASE_DATES: Record<string, string> = {
 
   // Mega Evolution era (2025–2026)
   me1: "2025-09-26",
-  me2: "2025-12-05",
-  me2pt5: "2026-02-06",
-  me3: "2026-04-03",
+  me2: "2025-11-14",
+  me2pt5: "2026-01-30",
+  me3: "2026-03-27",
 
   // McDonald's promotional collections
   mcd11: "2011-08-01",
