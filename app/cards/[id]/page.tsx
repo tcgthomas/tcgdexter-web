@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getCardById, getCardsByName, getRawCard } from "@/lib/cardsIndex";
 import { cardImageLarge, cardImageSmall } from "@/lib/cardImages";
+import CardImage from "../CardImage";
 
 interface Props {
   params: { id: string };
@@ -34,10 +35,13 @@ export default function CardDetailPage({ params }: Props) {
 
       <div className="grid grid-cols-1 md:grid-cols-[minmax(0,400px)_1fr] gap-6">
         <div className="flex flex-col gap-3">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
+          <CardImage
             src={cardImageLarge(card.setId, card.number)}
             alt={`${card.name} — ${card.setName} ${card.number}`}
+            name={card.name}
+            setName={card.setName}
+            number={card.number}
+            loading="eager"
             className="w-full rounded-2xl shadow-md bg-surface"
             style={{ aspectRatio: "245 / 342" }}
           />
@@ -126,12 +130,12 @@ export default function CardDetailPage({ params }: Props) {
                 style={{ aspectRatio: "245 / 342" }}
                 title={`${c.setName} ${c.number}`}
               >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
+                <CardImage
                   src={cardImageSmall(c.setId, c.number)}
                   alt={`${c.name} — ${c.setName} ${c.number}`}
-                  loading="lazy"
-                  decoding="async"
+                  name={c.name}
+                  setName={c.setName}
+                  number={c.number}
                   className="w-full h-full object-cover"
                 />
               </Link>
