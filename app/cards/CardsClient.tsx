@@ -158,7 +158,11 @@ export default function CardsClient({ initialResult, facets, initialParams }: Pr
         <div className="flex items-center gap-2">
           <button
             onClick={() => setShowFilters((s) => !s)}
-            className="text-xs font-semibold px-3 py-1.5 rounded-full border border-black/10 bg-white hover:bg-surface transition-colors"
+            className={`text-xs font-semibold h-[30px] px-3 rounded-full transition ${
+              activeFilterCount > 0
+                ? "border border-transparent bg-gradient-brand bg-origin-border text-white shadow-brand hover:shadow-brand-lg"
+                : "border border-black/10 bg-white hover:bg-surface"
+            }`}
           >
             Filters{activeFilterCount > 0 ? ` (${activeFilterCount})` : ""}
           </button>
