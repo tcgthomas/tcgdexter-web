@@ -14,7 +14,6 @@ import metaDecksRaw from "@/data/meta-decks.json";
 import { MetaDeckCard } from "@/app/components/DeckPostCard";
 import { metaPrimaryCard, typeColor } from "@/lib/metaPrimaryCard";
 import { getTierByTitle } from "@/lib/trainer-tiers";
-import TrainerSearch from "@/app/leaderboard/TrainerSearch";
 import type { TopTrainer } from "@/app/page";
 
 const EXAMPLE_DECK = `Pokémon: 13
@@ -309,15 +308,8 @@ export default function HomeClient({
             </div>
           </section>
 
-          {/* Secondary CTA */}
-          <section className="mx-auto max-w-4xl px-6 py-24 text-center">
-            <div className="text-3xl md:text-4xl font-semibold tracking-tight leading-tight text-text-primary">
-              A dex for your decks. Save your own lists, share with fellow trainers, and browse the top meta archetypes. Track your progress and earn badges.
-            </div>
-          </section>
-
-          {/* Top Trainers + Search */}
-          <section className="mx-auto max-w-2xl px-6 pb-24">
+          {/* Top Trainers */}
+          <section className="mx-auto max-w-2xl px-6 py-6">
             <div className="mb-6">
               <div className="text-xs uppercase tracking-widest text-accent mb-3 flex items-center gap-2">
                 <span className="relative flex h-2 w-2">
@@ -330,7 +322,7 @@ export default function HomeClient({
             </div>
 
             {topTrainers.length > 0 && (
-              <div className="rounded-xl border border-black/8 bg-white shadow-sm overflow-hidden mb-8">
+              <div className="rounded-xl border border-black/8 bg-white shadow-sm overflow-hidden">
                 {topTrainers.map((trainer, i) => {
                   const tier = getTierByTitle(trainer.trainer_title ?? "Rookie Trainer");
                   return (
@@ -356,14 +348,13 @@ export default function HomeClient({
                 })}
               </div>
             )}
+          </section>
 
-            <div className="flex items-center gap-4 mb-8">
-              <div className="flex-1 h-px bg-black/10" />
-              <span className="text-sm font-semibold text-text-muted">Find a trainer</span>
-              <div className="flex-1 h-px bg-black/10" />
+          {/* Secondary CTA */}
+          <section className="mx-auto max-w-4xl px-6 py-24 text-center">
+            <div className="text-3xl md:text-4xl font-semibold tracking-tight leading-tight text-text-primary">
+              A dex for your decks. Save your own lists, share with fellow trainers, and browse the top meta archetypes. Track your progress and earn badges.
             </div>
-
-            <TrainerSearch />
           </section>
 
           {/* Final CTA */}
