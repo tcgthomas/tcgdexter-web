@@ -135,7 +135,7 @@ export function MetaDeckCard({
           <p className="flex-1 min-w-0 text-[17px] font-semibold text-text-primary truncate">
             {name}
           </p>
-          <span className="ml-2 shrink-0 text-[17px] font-bold text-text-primary tabular-nums">
+          <span className="ml-2 shrink-0 text-[13px] font-medium text-text-muted tabular-nums">
             {(representation_pct * 100).toFixed(1)}%
           </span>
         </div>
