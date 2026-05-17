@@ -28,8 +28,8 @@ interface Props {
  *
  * Paired with SiteSidebarRight, which carries the external links. Both rails
  * are `hidden xl:flex`; the mobile toolbar is `xl:hidden`, so the three
- * surfaces never overlap. Root layout reserves space with `xl:pl-80
- * xl:pr-80` on the page wrapper. Landscape iPad and smaller laptops stay
+ * surfaces never overlap. Root layout reserves space with `xl:pl-72
+ * xl:pr-72` on the page wrapper. Landscape iPad and smaller laptops stay
  * on the mobile hamburger.
  *
  * Layout follows the x.com signed-in shell: the brand mark hugs the
@@ -79,7 +79,7 @@ export default function SiteSidebar({
   return (
     <aside
       aria-label="Primary navigation"
-      className="hidden xl:flex fixed inset-y-0 left-0 z-30 w-80 flex-col bg-bg border-r border-[var(--border)]"
+      className="hidden xl:flex fixed inset-y-0 left-0 z-30 w-72 flex-col bg-bg border-r border-[var(--border)]"
     >
       {/* Brand mark — square source clipped into a circle via
           `rounded-full`. `pl-6` puts the logo's left edge at 24px from

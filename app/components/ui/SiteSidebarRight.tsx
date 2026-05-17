@@ -11,7 +11,7 @@ import {
  *
  * Carries the global search and the external links. Paired with SiteSidebar
  * on the leading edge; both rails are `hidden xl:flex`. Root layout
- * reserves space with `xl:pr-80` on the page wrapper. Landscape iPad and
+ * reserves space with `xl:pr-72` on the page wrapper. Landscape iPad and
  * smaller laptops stay on the mobile hamburger.
  *
  * The search occupies the same `h-20` header block that the logo claims on
@@ -36,7 +36,7 @@ export default function SiteSidebarRight() {
   return (
     <aside
       aria-label="External links"
-      className="hidden xl:flex fixed inset-y-0 right-0 z-30 w-80 flex-col bg-bg border-l border-[var(--border)]"
+      className="hidden xl:flex fixed inset-y-0 right-0 z-30 w-72 flex-col bg-bg border-l border-[var(--border)]"
     >
       {/* Header — same h-20 footprint as the logo block on the left rail.
           `pl-3 pr-6` mirrors the logo's `pl-6 pr-3` so the input's trailing
