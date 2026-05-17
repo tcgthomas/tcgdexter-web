@@ -7,6 +7,7 @@ import { cardImageSmall } from "@/lib/cardImages";
 import type { CardIndexEntry } from "@/lib/cardsIndex";
 import type { SortKey, SortDir } from "@/lib/cardSearch";
 import CardImage from "./CardImage";
+import CardFooterOverlay from "./CardFooterOverlay";
 
 interface Facets {
   supertypes: string[];
@@ -429,7 +430,7 @@ function GridView({ cards }: { cards: CardIndexEntry[] }) {
         <Link
           key={c.id}
           href={`/cards/${encodeURIComponent(c.id)}`}
-          className="group block rounded-xl overflow-hidden bg-surface hover:shadow-md transition-shadow"
+          className="group relative block rounded-xl overflow-hidden bg-surface hover:shadow-md transition-shadow"
           style={{ aspectRatio: "245 / 342" }}
         >
           <CardImage
@@ -439,6 +440,13 @@ function GridView({ cards }: { cards: CardIndexEntry[] }) {
             setName={c.setName}
             number={c.number}
             className="w-full h-full object-contain transition-transform group-hover:scale-[1.02]"
+          />
+          <CardFooterOverlay
+            setCode={c.ptcgoCode}
+            setId={c.setId}
+            number={c.number}
+            setSize={c.setSize}
+            marketPrice={c.marketPrice}
           />
         </Link>
       ))}

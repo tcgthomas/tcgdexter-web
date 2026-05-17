@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { getCardById, getCardsByName, getRawCard } from "@/lib/cardsIndex";
 import { cardImageLarge, cardImageSmall } from "@/lib/cardImages";
 import CardImage from "../CardImage";
+import CardFooterOverlay from "../CardFooterOverlay";
 
 interface Props {
   params: { id: string };
@@ -126,7 +127,7 @@ export default function CardDetailPage({ params }: Props) {
               <Link
                 key={c.id}
                 href={`/cards/${encodeURIComponent(c.id)}`}
-                className="block rounded-lg overflow-hidden bg-surface hover:shadow-md transition-shadow"
+                className="relative block rounded-lg overflow-hidden bg-surface hover:shadow-md transition-shadow"
                 style={{ aspectRatio: "245 / 342" }}
                 title={`${c.setName} ${c.number}`}
               >
@@ -137,6 +138,13 @@ export default function CardDetailPage({ params }: Props) {
                   setName={c.setName}
                   number={c.number}
                   className="w-full h-full object-contain"
+                />
+                <CardFooterOverlay
+                  setCode={c.ptcgoCode}
+                  setId={c.setId}
+                  number={c.number}
+                  setSize={c.setSize}
+                  marketPrice={c.marketPrice}
                 />
               </Link>
             ))}
