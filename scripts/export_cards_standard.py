@@ -160,6 +160,7 @@ def load_cards(db_path: Path, prices: dict) -> dict[str, list[dict]]:
             "types": types,
             "rarity": row["rarity"],
             "hp": row["hp"],
+            "artist": row["artist"],
             "abilities": abilities,
             "attacks": attacks,
             "rules": rules,
