@@ -163,8 +163,8 @@ export default function CardsClient({ initialResult, facets, initialParams }: Pr
               updateParams({ sort: s, dir: d });
             }}
           >
-            <option value="released:desc">Release Date (Newest to Oldest)</option>
-            <option value="released:asc">Release Date (Oldest to Newest)</option>
+            <option value="released:desc">Set (New to Old)</option>
+            <option value="released:asc">Set (Old to New)</option>
             <option value="name:asc">Card Name (A–Z)</option>
             <option value="name:desc">Card Name (Z–A)</option>
             <option value="hp:desc">Hit Points (High to Low)</option>
