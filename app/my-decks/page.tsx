@@ -1,10 +1,10 @@
-import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { UserDeckCard } from "@/app/components/DeckPostCard";
+import type { UserDeckCardProps } from "@/app/components/DeckPostCard";
 import { primaryCardImageUrl } from "@/lib/primaryCardImage";
 import { deckResult } from "@/lib/shared-matches";
 import type { SharedMatchCore } from "@/lib/shared-matches";
+import MyDecksClient from "./MyDecksClient";
 
 interface DeckRow {
   id: string;
@@ -93,63 +93,21 @@ export default async function MyDecksPage() {
     deckWL.set(deckId, prev);
   }
 
-  return (
-    <main className="mx-auto max-w-6xl px-6 pt-[calc(env(safe-area-inset-top)_+_1.68rem)] md:pt-[calc(env(safe-area-inset-top)_+_3rem)] pb-24">
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-semibold text-text-primary">
-          My Decks
-          {decks.length > 0 && (
-            <span className="ml-2 text-base font-normal text-text-muted">
-              ({decks.length})
-            </span>
-          )}
-        </h1>
-        <Link
-          href="/"
-          className="text-sm font-semibold px-3 py-1.5 rounded-full bg-black text-white border border-transparent hover:bg-neutral-800 transition-colors"
-        >
-          + New Deck
-        </Link>
-      </div>
+  const deckCards: UserDeckCardProps[] = decks.map((deck) => ({
+    id: deck.id,
+    name: deck.name,
+    href: `/u/${profile.username}/${deck.id}`,
+    username: profile.username,
+    displayName: profile.display_name,
+    price: deck.analysis?.deckPrice ?? null,
+    counts: deck.analysis?.sections ?? null,
+    wl: deckWL.get(deck.id) ?? null,
+    likeCount: deck.like_count,
+    isPrivate: !deck.is_public,
+    imageUrl:
+      deck.cover_image_url ?? primaryCardImageUrl(deck.analysis?.cards ?? []),
+    ownerUserId: user.id,
+  }));
 
-      {decks.length === 0 ? (
-        <div className="rounded-2xl border border-black/8 bg-white/90 backdrop-blur-xl shadow-sm p-8 text-center">
-          <p className="text-sm text-text-secondary">
-            No decks yet.{" "}
-            <Link href="/" className="text-accent hover:underline">
-              Create your first deck profile →
-            </Link>
-          </p>
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-          {decks.map((deck) => {
-            const price = deck.analysis?.deckPrice ?? null;
-            const sections = deck.analysis?.sections ?? null;
-            const wl = deckWL.get(deck.id) ?? null;
-            const imageUrl =
-              deck.cover_image_url ??
-              primaryCardImageUrl(deck.analysis?.cards ?? []);
-            return (
-              <UserDeckCard
-                key={deck.id}
-                id={deck.id}
-                name={deck.name}
-                href={`/u/${profile.username}/${deck.id}`}
-                username={profile.username}
-                displayName={profile.display_name}
-                price={price}
-                counts={sections}
-                wl={wl}
-                likeCount={deck.like_count}
-                isPrivate={!deck.is_public}
-                imageUrl={imageUrl}
-                ownerUserId={user.id}
-              />
-            );
-          })}
-        </div>
-      )}
-    </main>
-  );
+  return <MyDecksClient decks={deckCards} />;
 }
