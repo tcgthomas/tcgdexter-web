@@ -11,6 +11,7 @@ import {
   ChartBarIcon,
   BookOpenIcon,
   BookmarkIcon,
+  CardsIcon,
   UserIcon,
   NewspaperIcon,
   DiscordIcon,
@@ -215,11 +216,12 @@ export default function MobileNavMenu({ isAuthed, displayName, username, isAdmin
   // icon assignments in sync with SiteSidebar / SiteSidebarRight so the two
   // surfaces tell the same visual story.
   const INTERNAL_LINKS = [
-    { href: "/", label: "Create a Deck Profile", Icon: StackIcon },
+    { href: "/cards", label: "Card Catalog", Icon: CardsIcon },
+    { href: "/", label: "Deck Profiler", Icon: StackIcon },
+    { href: "/my-decks", label: "My Decks", Icon: BookmarkIcon },
     { href: "/meta-decks", label: "Top 30 Meta Decks", Icon: ChartBarIcon },
     { href: "/leaderboard", label: "Leaderboard", Icon: TrophyIcon },
     { href: "/learn", label: "Learn to Play", Icon: BookOpenIcon },
-    ...(isAuthed ? [{ href: "/my-decks", label: "My Decks", Icon: BookmarkIcon }] : []),
   ];
 
   const EXTERNAL_LINKS = [

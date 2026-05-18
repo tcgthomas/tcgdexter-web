@@ -113,6 +113,18 @@ export function DiscordIcon({ className }: IconProps) {
   );
 }
 
+/** 2x2 squares — "Cards". */
+export function CardsIcon({ className }: IconProps) {
+  return (
+    <svg {...outlineProps} className={className}>
+      <rect x="3.5" y="3.5" width="7" height="7" rx="1.5" />
+      <rect x="13.5" y="3.5" width="7" height="7" rx="1.5" />
+      <rect x="3.5" y="13.5" width="7" height="7" rx="1.5" />
+      <rect x="13.5" y="13.5" width="7" height="7" rx="1.5" />
+    </svg>
+  );
+}
+
 /** Bookmark — "My Decks". */
 export function BookmarkIcon({ className }: IconProps) {
   return (

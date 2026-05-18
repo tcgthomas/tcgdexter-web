@@ -26,7 +26,7 @@ function CardArt({ url, name }: { url?: string | null; name: string }) {
     >
       {url ? (
         // eslint-disable-next-line @next/next/no-img-element
-        <img src={url} alt={name} className="w-full h-full object-cover" />
+        <img src={url} alt={name} className="w-full h-full object-contain" />
       ) : (
         <span className="text-[11px] text-text-muted text-center leading-relaxed px-2">
           No cover
@@ -64,19 +64,6 @@ function TypeCounts({ counts }: { counts: CardCounts }) {
   );
 }
 
-function Stat({ value, label }: { value: string | number; label: string }) {
-  return (
-    <div>
-      <p className="text-[19px] font-bold leading-none tabular-nums text-text-primary">
-        {value}
-      </p>
-      <p className="text-[11px] uppercase tracking-[0.05em] font-semibold text-text-muted mt-1">
-        {label}
-      </p>
-    </div>
-  );
-}
-
 function WLCircles({ wl }: { wl: WinLoss }) {
   if (wl.w + wl.l + wl.d === 0) return null;
   return (
@@ -103,11 +90,13 @@ function WLCircles({ wl }: { wl: WinLoss }) {
 export interface MetaDeckCardProps {
   id: string;
   name: string;
-  rank: number;
   image_url?: string | null;
-  top_cut_entries: number;
+  /** URL of the pokémon sprite shown in the leading avatar circle. */
+  icon_url?: string | null;
+  /** Background color of the avatar circle (energy-type color of the
+   *  card used for image_url). */
+  icon_bg?: string | null;
   representation_pct: number;
-  price?: number | null;
   like_count?: number;
   creators?: string[];
 }
@@ -115,11 +104,10 @@ export interface MetaDeckCardProps {
 export function MetaDeckCard({
   id,
   name,
-  rank,
   image_url,
-  top_cut_entries,
+  icon_url,
+  icon_bg,
   representation_pct,
-  price,
   like_count = 0,
   creators,
 }: MetaDeckCardProps) {
@@ -128,24 +116,38 @@ export function MetaDeckCard({
   return (
     <div className="rounded-2xl border border-black/8 bg-white/90 backdrop-blur-xl shadow-sm overflow-hidden hover:shadow-md transition-shadow">
       <Link href={href} className="block">
-        {/* Header — deck name */}
+        {/* Header — pokémon avatar + deck name + rank */}
         <div className="flex items-center gap-2 px-3.5 pt-3">
+          {icon_url ? (
+            <div
+              className="w-7 h-7 rounded-full shrink-0 flex items-center justify-center overflow-hidden ring-1 ring-black/[0.06]"
+              style={{ background: icon_bg ?? "#B0A89E" }}
+              aria-hidden
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={icon_url}
+                alt=""
+                className="w-[22px] h-[22px] object-contain"
+              />
+            </div>
+          ) : null}
           <p className="flex-1 min-w-0 text-[17px] font-semibold text-text-primary truncate">
-            <span className="text-text-muted font-medium">#{rank} </span>
             {name}
           </p>
-          {price != null && price > 0 && (
-            <span className="ml-2 shrink-0 text-[17px] font-bold text-text-primary">
-              ${Math.round(price)}
-            </span>
-          )}
+          <span className="ml-2 shrink-0 text-[13px] font-semibold text-text-muted tabular-nums">
+            {(representation_pct * 100).toFixed(1)}%
+          </span>
         </div>
 
         {/* Body */}
         <div className="flex gap-3.5 p-3.5 pt-3">
           <CardArt url={image_url} name={name} />
           <div className="flex-1 min-w-0 flex flex-col">
-            <div className="flex flex-col gap-0.5 mb-2">
+            <div className="flex flex-col gap-0.5">
+              <p className="text-[12px] font-bold text-text-primary">
+                Top 5 Deck Lists
+              </p>
               {creatorList.map((c, i) => (
                 <p
                   key={`${c}-${i}`}
@@ -154,13 +156,6 @@ export function MetaDeckCard({
                   {c}
                 </p>
               ))}
-            </div>
-            <div className="mt-auto flex gap-5 pt-2">
-              <Stat
-                value={`${(representation_pct * 100).toFixed(1)}%`}
-                label="Meta share"
-              />
-              <Stat value={top_cut_entries} label="Top cuts" />
             </div>
           </div>
         </div>

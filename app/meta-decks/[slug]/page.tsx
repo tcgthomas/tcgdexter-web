@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import Link from "next/link";
 import archetypesRaw from "@/data/meta-archetypes.json";
 import metaDecksRaw from "@/data/meta-decks.json";
 import DeckProfileView from "@/app/components/DeckProfileView";
@@ -192,6 +193,14 @@ export default async function MetaDeckDetailPage({
       analysis={analysis}
       profiledAt={profiledAt}
       pageTitle={arch.name}
+      preTitle={
+        <Link
+          href="/meta-decks"
+          className="text-xs font-semibold text-text-secondary hover:text-text-primary transition-colors underline-offset-2 hover:underline"
+        >
+          ← Top 30 Meta Decks
+        </Link>
+      }
       subtitle={false}
       preOverviewSlot={preOverviewSlot}
       topSlot={topSlot}

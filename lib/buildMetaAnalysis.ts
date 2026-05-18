@@ -28,7 +28,7 @@ interface CardDataEntry {
   attacks: Array<{ name: string; cost: string[]; damage: string; text: string; convertedEnergyCost: number }>;
   rules: string[];
   regulation_mark: string | null;
-  market_price: number;
+  market_price: number | null;
 }
 
 const CARD_DB = cardData as unknown as Record<string, CardDataEntry[]>;
@@ -95,6 +95,8 @@ export function buildMetaAnalysis(
   const cards = metaCards.map((c) => ({
     qty: c.qty,
     name: c.name,
+    number: c.number,
+    setCode: c.setCode,
     section: c.category as "pokemon" | "trainer" | "energy",
   }));
 

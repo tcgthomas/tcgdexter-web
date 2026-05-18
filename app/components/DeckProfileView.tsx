@@ -104,7 +104,13 @@ export interface AnalysisResult {
     rank: number | null;
     conversionRate: number | null;
   };
-  cards: Array<{ qty: number; name: string; section: string }>;
+  cards: Array<{
+    qty: number;
+    name: string;
+    number: string;
+    setCode: string;
+    section: "pokemon" | "trainer" | "energy";
+  }>;
   warnings: string[];
   shopMatches: Array<{
     cardName: string;

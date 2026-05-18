@@ -58,7 +58,12 @@ export async function PATCH(
     );
   }
 
-  let body: { name?: string; notes?: string; is_public?: boolean };
+  let body: {
+    name?: string;
+    notes?: string;
+    is_public?: boolean;
+    cover_image_url?: string | null;
+  };
   try {
     body = await req.json();
   } catch {
@@ -66,7 +71,7 @@ export async function PATCH(
   }
 
   // Build the update payload — only include provided fields
-  const updates: Record<string, string | boolean> = {};
+  const updates: Record<string, string | boolean | null> = {};
 
   if (typeof body.name === "string") {
     const name = body.name.trim();
@@ -85,6 +90,26 @@ export async function PATCH(
 
   if (typeof body.is_public === "boolean") {
     updates.is_public = body.is_public;
+  }
+
+  // Cover image: null clears the override; otherwise must be a pokemontcg.io
+  // image URL to prevent arbitrary <img src> injection on every page that
+  // renders the deck preview card.
+  if ("cover_image_url" in body) {
+    const val = body.cover_image_url;
+    if (val === null) {
+      updates.cover_image_url = null;
+    } else if (
+      typeof val === "string" &&
+      val.startsWith("https://images.pokemontcg.io/")
+    ) {
+      updates.cover_image_url = val;
+    } else {
+      return NextResponse.json(
+        { error: "cover_image_url must be a pokemontcg.io URL or null" },
+        { status: 400 }
+      );
+    }
   }
 
   if (Object.keys(updates).length === 0) {

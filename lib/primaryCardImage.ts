@@ -37,6 +37,33 @@ function stageRank(subtypes: string[]): number {
   return subtypes.reduce((max, s) => Math.max(max, SUBTYPE_RANK[s] ?? 0), 0);
 }
 
+function resolveEntry(card: Pick<AnalysisCard, "name" | "number" | "setCode">):
+  | CardEntry
+  | null {
+  const entries =
+    CARD_DB[card.name] ??
+    CARD_DB_LOWER.get(card.name.toLowerCase()) ??
+    [];
+  return (
+    entries.find((e) => e.ptcgo_code === card.setCode && e.number === card.number) ??
+    entries.find((e) => e.number === card.number) ??
+    entries[0] ??
+    null
+  );
+}
+
+/**
+ * Resolve a single deck-list card to its pokemontcg.io image URL.
+ * Returns null when the card name + number can't be matched in the DB.
+ */
+export function cardImageUrlFor(
+  card: Pick<AnalysisCard, "name" | "number" | "setCode">,
+): string | null {
+  const match = resolveEntry(card);
+  if (!match?.set_id) return null;
+  return `https://images.pokemontcg.io/${match.set_id}/${card.number}.png`;
+}
+
 /**
  * Given a saved deck's analysis.cards list, returns the pokemontcg.io image
  * URL for the most prominent Pokémon: highest stage first, then highest copy
@@ -47,18 +74,7 @@ export function primaryCardImageUrl(cards: AnalysisCard[]): string | null {
   if (!pokemon.length) return null;
 
   const annotated = pokemon.map((card) => {
-    const entries =
-      CARD_DB[card.name] ??
-      CARD_DB_LOWER.get(card.name.toLowerCase()) ??
-      [];
-
-    // Prefer exact ptcgo_code + number match, then number-only, then first entry
-    const match =
-      entries.find((e) => e.ptcgo_code === card.setCode && e.number === card.number) ??
-      entries.find((e) => e.number === card.number) ??
-      entries[0] ??
-      null;
-
+    const match = resolveEntry(card);
     return {
       card,
       set_id: match?.set_id ?? null,

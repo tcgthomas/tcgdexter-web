@@ -8,6 +8,7 @@ import {
   ChartBarIcon,
   BookOpenIcon,
   BookmarkIcon,
+  CardsIcon,
   UserIcon,
 } from "./nav-icons";
 
@@ -27,9 +28,9 @@ interface Props {
  *
  * Paired with SiteSidebarRight, which carries the external links. Both rails
  * are `hidden xl:flex`; the mobile toolbar is `xl:hidden`, so the three
- * surfaces never overlap. Root layout reserves space with `xl:pl-80
- * xl:pr-80` on the page wrapper. Landscape iPad and smaller laptops stay
- * on the mobile hamburger.
+ * surfaces never overlap. Root layout reserves space with `xl:pl-[230px]
+ * xl:pr-[230px]` on the page wrapper. Landscape iPad and smaller laptops
+ * stay on the mobile hamburger.
  *
  * Layout follows the x.com signed-in shell: the brand mark hugs the
  * leading edge of the rail (aligning with the icon column of the nav
@@ -49,12 +50,15 @@ export default function SiteSidebar({
   // Each row pairs a route with the icon that fronts its label. Adding a
   // new internal route? Pick an icon from ./nav-icons (or add one there)
   // and append below.
+  // My Decks shows for everyone — the /my-decks route redirects anon
+  // visitors to /sign-in, so the nav row doubles as a sign-in funnel.
   const INTERNAL_LINKS = [
-    { href: "/", label: "Create a Deck Profile", Icon: StackIcon },
+    { href: "/cards", label: "Card Catalog", Icon: CardsIcon },
+    { href: "/", label: "Deck Profiler", Icon: StackIcon },
+    { href: "/my-decks", label: "My Decks", Icon: BookmarkIcon },
     { href: "/meta-decks", label: "Top 30 Meta Decks", Icon: ChartBarIcon },
     { href: "/leaderboard", label: "Leaderboard", Icon: TrophyIcon },
     { href: "/learn", label: "Learn to Play", Icon: BookOpenIcon },
-    ...(isAuthed ? [{ href: "/my-decks", label: "My Decks", Icon: BookmarkIcon }] : []),
   ];
 
   // "/" gets exact match so it doesn't light up on every page; others match
@@ -62,12 +66,12 @@ export default function SiteSidebar({
   const isActive = (href: string) =>
     href === "/" ? pathname === "/" : pathname === href || pathname.startsWith(`${href}/`);
 
-  // Rows are icon + label. `gap-4` keeps the icon column from crowding
-  // the larger text-lg label. `rounded-full` matches the capsule shape
-  // used elsewhere in the chrome (search input, result chips, Share
-  // button) so hover/active states read as part of the same family.
+  // Rows are icon + label. `gap-3` pairs the icon column with the
+  // text-base label. `rounded-full` matches the capsule shape used
+  // elsewhere in the chrome (search input, result chips, Share button)
+  // so hover/active states read as part of the same family.
   const linkBase =
-    "flex items-center gap-4 px-3 py-2 rounded-full text-lg font-medium transition-colors";
+    "flex items-center gap-3 px-3 py-2 rounded-full text-base font-medium transition-colors";
   const linkInactive = "text-text-secondary hover:text-text-primary hover:bg-surface";
   const linkActive = "text-text-primary bg-surface";
 
@@ -77,7 +81,7 @@ export default function SiteSidebar({
   return (
     <aside
       aria-label="Primary navigation"
-      className="hidden xl:flex fixed inset-y-0 left-0 z-30 w-80 flex-col bg-bg border-r border-[var(--border)]"
+      className="hidden xl:flex fixed inset-y-0 left-0 z-30 w-[230px] flex-col bg-bg border-r border-[var(--border)]"
     >
       {/* Brand mark — square source clipped into a circle via
           `rounded-full`. `pl-6` puts the logo's left edge at 24px from

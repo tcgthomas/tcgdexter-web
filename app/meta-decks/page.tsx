@@ -2,7 +2,7 @@ import archetypesRaw from "@/data/meta-archetypes.json";
 import metaDecksRaw from "@/data/meta-decks.json";
 import SectionHeader from "@/app/components/ui/SectionHeader";
 import { MetaDeckCard } from "@/app/components/DeckPostCard";
-import { buildMetaAnalysis } from "@/lib/buildMetaAnalysis";
+import { metaPrimaryCard, typeColor } from "@/lib/metaPrimaryCard";
 
 interface Archetype {
   id: string;
@@ -12,6 +12,7 @@ interface Archetype {
   representation_pct: number;
   last_updated: string;
   image_url?: string;
+  icons?: string;
 }
 
 interface DeckCard {
@@ -38,22 +39,30 @@ export default function MetaDecksPage() {
 
   return (
     <main className="mx-auto max-w-6xl px-6 pt-[calc(env(safe-area-inset-top)_+_1.68rem)] md:pt-[calc(env(safe-area-inset-top)_+_3rem)] pb-24">
-      <div className="flex items-end justify-between mb-8">
-        <SectionHeader eyebrow="Live meta" title="Meta Decks" />
-        <p className="text-sm text-text-secondary pb-1">Standard · Top 30</p>
+      <div className="mb-8">
+        <SectionHeader eyebrow="Standard format" title="Top 30 Meta Decks" />
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-        {archetypes.map((arch, i) => {
+        {archetypes.map((arch) => {
           const deckData = metaDecks.find((d) => d.id === arch.id);
           const cards =
             deckData?.variants?.[0]?.cards ?? deckData?.cards ?? [];
-          const analysis = buildMetaAnalysis(cards, {
-            name: arch.name,
-            rank: i + 1,
-            conversionRate: 0,
-            representationPct: arch.representation_pct,
-          });
+          // Parse the icons string (e.g. `["dragapult"]`) saved by the
+          // Limitless scraper. Use as a hint for matching the deck's
+          // primary pokémon card in the list.
+          let iconList: string[] = [];
+          try {
+            iconList = arch.icons ? (JSON.parse(arch.icons) as string[]) : [];
+          } catch {
+            iconList = [];
+          }
+          const primary = metaPrimaryCard(cards, iconList);
+          const cardImage = primary?.imageUrl ?? arch.image_url ?? null;
+          const iconBg = typeColor(primary?.types);
+          const iconUrl = iconList[0]
+            ? `https://r2.limitlesstcg.net/pokemon/gen9/${iconList[0]}.png`
+            : null;
           const creators: string[] = [];
           for (const v of deckData?.variants ?? []) {
             const c = (v.creator ?? "").trim() || "Trainer";
@@ -65,11 +74,10 @@ export default function MetaDecksPage() {
               key={arch.id}
               id={arch.id}
               name={arch.name}
-              rank={i + 1}
-              image_url={arch.image_url}
-              top_cut_entries={arch.top_cut_entries}
+              image_url={cardImage}
+              icon_url={iconUrl}
+              icon_bg={iconBg}
               representation_pct={arch.representation_pct}
-              price={analysis.deckPrice}
               creators={creators}
             />
           );
