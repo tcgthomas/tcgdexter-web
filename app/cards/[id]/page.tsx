@@ -1,6 +1,11 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getCardById, getCardsByName, getRawCard } from "@/lib/cardsIndex";
+import {
+  getCardById,
+  getCardsByArtist,
+  getCardsByName,
+  getRawCard,
+} from "@/lib/cardsIndex";
 import { cardImageLarge, cardImageSmall } from "@/lib/cardImages";
 import CardImage from "../CardImage";
 
@@ -24,6 +29,15 @@ export default function CardDetailPage({ params }: Props) {
   if (!card || !raw) notFound();
 
   const otherPrintings = getCardsByName(card.name).filter((c) => c.id !== card.id);
+  // Pull other cards illustrated by the same artist. Cap to ~3 rows at lg
+  // (8 cols) so a prolific illustrator's catalog doesn't take over the
+  // page. Excludes any printing of the current card so the section sits
+  // cleanly alongside "More {name}".
+  const moreByArtist = card.artist
+    ? getCardsByArtist(card.artist)
+        .filter((c) => c.nameLower !== card.nameLower)
+        .slice(0, 24)
+    : [];
 
   return (
     <main className="mx-auto max-w-5xl px-4 sm:px-6 pt-[calc(env(safe-area-inset-top)_+_1.68rem)] md:pt-[calc(env(safe-area-inset-top)_+_3rem)] pb-24">
@@ -129,6 +143,34 @@ export default function CardDetailPage({ params }: Props) {
                 className="block rounded-lg overflow-hidden bg-surface hover:shadow-md transition-shadow"
                 style={{ aspectRatio: "245 / 342" }}
                 title={`${c.setName} ${c.number}`}
+              >
+                <CardImage
+                  src={cardImageSmall(c.setId, c.number)}
+                  alt={`${c.name} — ${c.setName} ${c.number}`}
+                  name={c.name}
+                  setName={c.setName}
+                  number={c.number}
+                  className="w-full h-full object-contain"
+                />
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {moreByArtist.length > 0 && (
+        <div className="mt-10">
+          <h2 className="text-lg font-semibold text-text-primary mb-3">
+            More by {card.artist}
+          </h2>
+          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-3">
+            {moreByArtist.map((c) => (
+              <Link
+                key={c.id}
+                href={`/cards/${encodeURIComponent(c.id)}`}
+                className="block rounded-lg overflow-hidden bg-surface hover:shadow-md transition-shadow"
+                style={{ aspectRatio: "245 / 342" }}
+                title={`${c.name} — ${c.setName} ${c.number}`}
               >
                 <CardImage
                   src={cardImageSmall(c.setId, c.number)}

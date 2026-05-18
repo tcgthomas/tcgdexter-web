@@ -22,6 +22,7 @@ export interface CardIndexEntry {
   regulationMark: string | null;
   marketPrice: number;
   rarity: string | null;
+  artist: string | null;
 }
 
 export interface CardAttack {
@@ -52,6 +53,7 @@ export interface RawCard {
   regulation_mark?: string | null;
   market_price?: number | null;
   rarity?: string | null;
+  artist?: string | null;
   release_date?: string | null;
   attacks?: CardAttack[];
   abilities?: CardAbility[];
@@ -108,6 +110,7 @@ function buildIndex(): CardIndexEntry[] {
         regulationMark: c.regulation_mark ?? null,
         marketPrice: c.market_price ?? 0,
         rarity: c.rarity ?? null,
+        artist: c.artist ?? null,
       });
     }
   }
@@ -138,6 +141,12 @@ export function getCardById(id: string): CardIndexEntry | null {
 export function getCardsByName(name: string): CardIndexEntry[] {
   const lower = name.toLowerCase();
   return getAllCards().filter((c) => c.nameLower === lower);
+}
+
+export function getCardsByArtist(artist: string): CardIndexEntry[] {
+  const lower = artist.trim().toLowerCase();
+  if (!lower) return [];
+  return getAllCards().filter((c) => c.artist?.toLowerCase() === lower);
 }
 
 export function getRawCard(id: string): RawCard | null {
