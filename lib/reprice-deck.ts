@@ -14,7 +14,7 @@ interface CardDataEntry {
   set_name: string;
   number: string;
   regulation_mark: string | null;
-  market_price: number;
+  market_price: number | null;
 }
 
 const CARD_DB = cardData as unknown as Record<string, CardDataEntry[]>;
@@ -74,7 +74,7 @@ export function repriceDeck(deckList: string): RepriceResult {
 
     // Use the first entry's price (same logic as /api/analyze)
     const entry = entries[0];
-    if (entry.market_price > 0) {
+    if (entry.market_price !== null && entry.market_price > 0) {
       totalPrice += entry.market_price * card.qty;
     }
 

@@ -45,7 +45,7 @@ interface CardDataEntry {
   rules: string[];
   regulation_mark: string | null;
   retreat_cost: number | null;
-  market_price: number;
+  market_price: number | null;
 }
 
 const CARD_DB = cardData as unknown as Record<string, CardDataEntry[]>;
